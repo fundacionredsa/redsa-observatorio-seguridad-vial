@@ -17,6 +17,9 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
     <!-- Estilos Premium Personalizados -->
     <style>
         :root {
@@ -459,6 +462,15 @@
                         <div class="detail-label">Código DPA Provincia</div>
                         <div id="info-cod-provincia" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
                     </div>
+                    
+                    <!-- Serie Histórica de Siniestralidad (Chart.js) -->
+                    <div class="detail-row" style="flex-direction: column; align-items: stretch; margin-top: 15px; border-top: 1px solid var(--border-glass); padding-top: 15px;">
+                        <div class="detail-label" style="margin-bottom: 8px;">Tendencia Histórica de Fallecidos <span class="source-label">(INEC V01-V89)</span></div>
+                        <div id="chart-container" style="position: relative; height: 180px; width: 100%; display: none;">
+                            <canvas id="chart-historico"></canvas>
+                        </div>
+                        <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
+                    </div>
                 </div>
             </div>
 
@@ -546,6 +558,7 @@
         let selectedLayer = null;
         let layerControl = null;
         let overlayMaps = {};
+        let historicoChart = null;
 
         // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha)
         function getCantonStyle(feature, isHovered = false, isSelected = false) {
@@ -592,6 +605,9 @@
         }
 
         function updateSidebar(props) {
+            const chartContainer = document.getElementById("chart-container");
+            const chartEmptyMsg = document.getElementById("chart-empty-msg");
+
             if (!props) {
                 domCanton.textContent = "Pasa el cursor o haz clic en un cantón";
                 domCanton.classList.add("empty");
@@ -615,6 +631,14 @@
                 domCodCanton.classList.add("empty");
                 domCodProvincia.textContent = "—";
                 domCodProvincia.classList.add("empty");
+
+                if (historicoChart) {
+                    historicoChart.destroy();
+                    historicoChart = null;
+                }
+                chartContainer.style.display = "none";
+                chartEmptyMsg.style.display = "block";
+                chartEmptyMsg.textContent = "Pasa el cursor o haz clic en un cantón para ver la tendencia";
                 return;
             }
             
@@ -655,6 +679,99 @@
             
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
             domCodProvincia.classList.remove("empty");
+
+            // Renderizar mini-gráfico Chart.js
+            const hist = props.fallecidos_historico;
+            if (hist && Object.keys(hist).length > 0) {
+                chartContainer.style.display = "block";
+                chartEmptyMsg.style.display = "none";
+                
+                const years = Object.keys(hist).sort();
+                const values = years.map(y => hist[y]);
+                
+                if (historicoChart) {
+                    historicoChart.destroy();
+                }
+                
+                const ctx = document.getElementById('chart-historico').getContext('2d');
+                historicoChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Fallecidos',
+                            data: values,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.15)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true,
+                            pointBackgroundColor: '#0ea5e9',
+                            pointBorderColor: '#f8fafc',
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#f8fafc',
+                                borderColor: 'rgba(255, 255, 255, 0.15)',
+                                borderWidth: 1,
+                                padding: 8,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: {
+                                        size: 10,
+                                        family: 'Inter'
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: {
+                                        size: 10,
+                                        family: 'Inter'
+                                    },
+                                    stepSize: 1,
+                                    precision: 0
+                                },
+                                min: 0
+                            }
+                        }
+                    }
+                });
+            } else {
+                if (historicoChart) {
+                    historicoChart.destroy();
+                    historicoChart = null;
+                }
+                chartContainer.style.display = "none";
+                chartEmptyMsg.style.display = "block";
+                chartEmptyMsg.textContent = "Sin datos de serie histórica para este cantón";
+            }
         }
 
         // Funciones interactivas para cada feature (Cantón)
@@ -832,6 +949,7 @@
                         });
                         
                         overlayMaps["Ciclovías (Pichincha)"] = cicloviasLayer;
+                        cicloviasLayer.addTo(map); // Encendido por defecto
                         
                         if (layerControl) {
                             map.removeControl(layerControl);
@@ -844,6 +962,70 @@
                     })
                     .catch(err => {
                         console.warn("Advertencia al cargar ciclovías:", err);
+                    });
+
+                // --- CARGAR CAPA DE MAPILLARY (OPCIONAL/FASE 7) ---
+                const RUTA_MAPILLARY = "data/mapillary_pichincha.geojson";
+                fetch(RUTA_MAPILLARY)
+                    .then(res => {
+                        if (!res.ok) throw new Error("No se pudo cargar Mapillary.");
+                        return res.json();
+                    })
+                    .then(mapillaryData => {
+                        const mapillaryLayer = L.geoJSON(mapillaryData, {
+                            attribution: 'Datos de infraestructura vial: Mapillary (CC-BY-SA)',
+                            pointToLayer: function(feature, latlng) {
+                                const val = feature.properties.value;
+                                let color = "#94a3b8"; // Gris por defecto
+                                
+                                if (val === "crosswalk") color = "#eab308"; // Amarillo
+                                else if (val === "bicycle-rack") color = "#22c55e"; // Verde
+                                else if (val.startsWith("regulatory--")) color = "#ef4444"; // Rojo
+                                else if (val.startsWith("warning--")) color = "#f97316"; // Naranja
+                                
+                                return L.circleMarker(latlng, {
+                                    radius: 6,
+                                    fillColor: color,
+                                    color: "#f8fafc",
+                                    weight: 1.5,
+                                    opacity: 1,
+                                    fillOpacity: 0.8
+                                });
+                            },
+                            style: function(feature) {
+                                const val = feature.properties.value;
+                                let color = "#94a3b8";
+                                if (val === "crosswalk") color = "#eab308";
+                                else if (val === "bicycle-rack") color = "#22c55e";
+                                else if (val.startsWith("regulatory--")) color = "#ef4444";
+                                else if (val.startsWith("warning--")) color = "#f97316";
+                                return {
+                                    color: color,
+                                    weight: 3,
+                                    opacity: 0.8
+                                };
+                            },
+                            onEachFeature: function(feature, layer) {
+                                if (feature.properties) {
+                                    const val = feature.properties.value || "Desconocido";
+                                    layer.bindPopup(`<strong>Mapillary Feature:</strong> ${val}`);
+                                }
+                            }
+                        });
+                        
+                        overlayMaps["Mapillary (Pichincha)"] = mapillaryLayer;
+                        
+                        if (layerControl) {
+                            map.removeControl(layerControl);
+                        }
+                        
+                        layerControl = L.control.layers(baseMaps, overlayMaps, {
+                            position: 'topright',
+                            collapsed: false
+                        }).addTo(map);
+                    })
+                    .catch(err => {
+                        console.log("Capa de Mapillary opcional no cargada (esperable si no hay token).");
                     });
 
                 // Ocultar pantalla de carga
