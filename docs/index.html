@@ -133,11 +133,12 @@
 
         .header-brand h1 span.highlight {
             color: var(--accent);
-            font-size: 0.85rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-top: 4px;
+            letter-spacing: 0.04em;
+            margin-top: 6px;
             font-weight: 600;
+            line-height: 1.35;
         }
 
         .header-brand p {
@@ -395,7 +396,7 @@
             <div class="header-brand">
                 <h1>
                     REDSA
-                    <span class="highlight">Observatorio Vial</span>
+                    <span class="highlight">Observatorio de Seguridad Vial y Movilidad Sostenible</span>
                 </h1>
                 <p>Geoportal de consulta territorial y límites cantonales oficiales de la República del Ecuador.</p>
             </div>
@@ -476,7 +477,7 @@
 
         // Reposicionar el control de Zoom
         L.control.zoom({
-            position: 'bottomleft'
+            position: 'topright'
         }).addTo(map);
 
         // Definir Atribuciones Requeridas
