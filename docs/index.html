@@ -9,6 +9,11 @@
     <meta name="description" content="Observatorio ciudadano de seguridad vial en Ecuador: estadísticas de siniestralidad (SPPAT, INEC), infraestructura ciclista y límites territoriales, con piloto en Pichincha. Datos abiertos, fuentes citadas.">
     <meta name="author" content="Fundación REDSA">
     
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Observatorio de Seguridad Vial y Movilidad Sostenible | Fundación REDSA">
+    <meta property="og:description" content="Observatorio ciudadano de seguridad vial en Ecuador: estadísticas de siniestralidad (SPPAT, INEC), infraestructura ciclista y límites territoriales, con piloto en Pichincha. Datos abiertos, fuentes citadas.">
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,6 +218,53 @@
             font-size: 0.95rem;
         }
 
+        /* Panel de Leyenda (Glassmorphism) */
+        .legend-panel {
+            background: var(--bg-glass) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid var(--border-glass) !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            color: var(--text-primary) !important;
+            box-shadow: var(--shadow) !important;
+            font-size: 0.8rem;
+            min-width: 220px;
+            pointer-events: auto;
+            display: none; /* Se muestra/oculta dinámicamente si hay elementos */
+        }
+        .legend-title {
+            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .legend-color-line {
+            width: 18px;
+            height: 3px;
+            border-radius: 1px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .legend-color-circle {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+            border: 1px solid #f8fafc;
+        }
+
         /* Panel de Diagnóstico de Rendimiento */
         .diagnostic-panel {
             background: rgba(14, 165, 233, 0.05);
@@ -220,6 +272,7 @@
             border-radius: 12px;
             padding: 14px;
             font-size: 0.8rem;
+            display: none; /* Oculto por defecto en producción */
         }
 
         .diagnostic-title {
@@ -510,6 +563,26 @@
         // Registrar tiempo inicial exacto
         const tStart = performance.now();
         
+        // --- CONSTANTES DE COLOR ---
+        const COLOR_CANTON_PICHINCHA = "#0ea5e9";
+        const COLOR_CANTON_RESTO = "#94a3b8";
+        const COLOR_CICLOVIAS = "#22c55e";
+        const COLOR_MAPILLARY = {
+            crosswalk: "#eab308", // Amarillo
+            bikeRack: "#22c55e",  // Verde
+            regulatory: "#ef4444", // Rojo
+            warning: "#f97316"    // Naranja
+        };
+        
+        // Activar panel de diagnóstico si ?debug=true
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('debug') === 'true') {
+            document.addEventListener("DOMContentLoaded", () => {
+                const diagPanel = document.querySelector('.diagnostic-panel');
+                if (diagPanel) diagPanel.style.display = 'block';
+            });
+        }
+        
         // --- CONFIGURACIÓN REQUERIDA ---
         const RUTA_GEOJSON_RELATIVA = "data/cantones_wgs84.geojson";
         const CENTRO_MAPA = [-0.15, -78.48]; // Centrado en Pichincha
@@ -528,6 +601,27 @@
         L.control.zoom({
             position: 'topright'
         }).addTo(map);
+
+        // --- CONTROL DE LEYENDA (Glassmorphism) ---
+        const LegendControl = L.Control.extend({
+            options: {
+                position: 'bottomright'
+            },
+            onAdd: function(map) {
+                const div = L.DomUtil.create('div', 'legend-panel');
+                L.DomEvent.disableClickPropagation(div);
+                L.DomEvent.disableScrollPropagation(div);
+                
+                div.innerHTML = `
+                    <div class="legend-title">Leyenda</div>
+                    <div id="legend-items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                `;
+                return div;
+            }
+        });
+        
+        const legendControlInstance = new LegendControl();
+        legendControlInstance.addTo(map);
 
         // Definir Atribuciones Requeridas
         const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong>';
@@ -565,10 +659,10 @@
             const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
             
             // Colores e intensidades
-            let color = isPichincha ? "#0ea5e9" : "#94a3b8"; // Celeste vs Gris
+            let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO; // Celeste vs Gris
             let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.2);
             let opacity = isHovered ? 1.0 : (isSelected ? 1.0 : (isPichincha ? 0.7 : 0.2));
-            let fillColor = isPichincha ? "#0ea5e9" : "#64748b";
+            let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
             let fillOpacity = isHovered ? 0.25 : (isSelected ? 0.20 : (isPichincha ? 0.08 : 0.02));
             
             if (isSelected) {
@@ -585,6 +679,76 @@
                 fillOpacity: fillOpacity
             };
         }
+
+        // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
+        function updateLegend() {
+            const container = document.getElementById("legend-items");
+            const panel = document.querySelector(".legend-panel");
+            if (!container || !panel) return;
+            
+            container.innerHTML = "";
+            let hasItems = false;
+            
+            // 1. Límites Cantonales
+            if (cantonLayer && map.hasLayer(cantonLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Límites Cantonales:</div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_CANTON_PICHINCHA}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                        <span>Pichincha</span>
+                    </div>
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_CANTON_RESTO}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                        <span>Resto del país</span>
+                    </div>
+                `;
+            }
+            
+            // 2. Ciclovías
+            const cicloviasLayer = overlayMaps["Ciclovías (Pichincha)"];
+            if (cicloviasLayer && map.hasLayer(cicloviasLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Movilidad Activa:</div>
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_CICLOVIAS};"></span>
+                        <span>Ciclovías (OpenStreetMap)</span>
+                    </div>
+                `;
+            }
+            
+            // 3. Mapillary
+            const mapillaryLayer = overlayMaps["Mapillary (Pichincha)"];
+            if (mapillaryLayer && map.hasLayer(mapillaryLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Infraestructura Vial (Mapillary):</div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.crosswalk};"></span>
+                        <span>Cruce peatonal</span>
+                    </div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.bikeRack};"></span>
+                        <span>Espacio para bicicletas</span>
+                    </div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.regulatory};"></span>
+                        <span>Señal regulatoria</span>
+                    </div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.warning};"></span>
+                        <span>Señal de advertencia</span>
+                    </div>
+                `;
+            }
+            
+            panel.style.display = hasItems ? "block" : "none";
+        }
+
+        // Registrar listeners para actualización de leyenda
+        map.on('overlayadd', updateLegend);
+        map.on('overlayremove', updateLegend);
 
         // Elementos del DOM
         const domCanton = document.getElementById("info-canton");
@@ -892,6 +1056,8 @@
                     collapsed: false
                 }).addTo(map);
 
+                updateLegend();
+
                 // Manejo de Hash Routing en carga inicial y cambios
                 const handleHash = () => {
                     const hash = window.location.hash;
@@ -936,7 +1102,7 @@
                         const cicloviasLayer = L.geoJSON(cicloviasData, {
                             attribution: 'Ciclovías: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ODbL',
                             style: {
-                                color: "#22c55e", // Verde brillante
+                                color: COLOR_CICLOVIAS,
                                 weight: 3,
                                 opacity: 0.85
                             },
@@ -959,6 +1125,8 @@
                             position: 'topright',
                             collapsed: false
                         }).addTo(map);
+                        
+                        updateLegend();
                     })
                     .catch(err => {
                         console.warn("Advertencia al cargar ciclovías:", err);
@@ -978,10 +1146,10 @@
                                 const val = feature.properties.value;
                                 let color = "#94a3b8"; // Gris por defecto
                                 
-                                if (val === "crosswalk") color = "#eab308"; // Amarillo
-                                else if (val === "bicycle-rack") color = "#22c55e"; // Verde
-                                else if (val.startsWith("regulatory--")) color = "#ef4444"; // Rojo
-                                else if (val.startsWith("warning--")) color = "#f97316"; // Naranja
+                                if (val === "crosswalk") color = COLOR_MAPILLARY.crosswalk;
+                                else if (val === "bicycle-rack") color = COLOR_MAPILLARY.bikeRack;
+                                else if (val.startsWith("regulatory--")) color = COLOR_MAPILLARY.regulatory;
+                                else if (val.startsWith("warning--")) color = COLOR_MAPILLARY.warning;
                                 
                                 return L.circleMarker(latlng, {
                                     radius: 6,
@@ -995,10 +1163,10 @@
                             style: function(feature) {
                                 const val = feature.properties.value;
                                 let color = "#94a3b8";
-                                if (val === "crosswalk") color = "#eab308";
-                                else if (val === "bicycle-rack") color = "#22c55e";
-                                else if (val.startsWith("regulatory--")) color = "#ef4444";
-                                else if (val.startsWith("warning--")) color = "#f97316";
+                                if (val === "crosswalk") color = COLOR_MAPILLARY.crosswalk;
+                                else if (val === "bicycle-rack") color = COLOR_MAPILLARY.bikeRack;
+                                else if (val.startsWith("regulatory--")) color = COLOR_MAPILLARY.regulatory;
+                                else if (val.startsWith("warning--")) color = COLOR_MAPILLARY.warning;
                                 return {
                                     color: color,
                                     weight: 3,
@@ -1023,6 +1191,8 @@
                             position: 'topright',
                             collapsed: false
                         }).addTo(map);
+                        
+                        updateLegend();
                     })
                     .catch(err => {
                         console.log("Capa de Mapillary opcional no cargada (esperable si no hay token).");
