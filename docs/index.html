@@ -141,6 +141,15 @@
             line-height: 1.35;
         }
 
+        .source-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: normal;
+            margin-left: 4px;
+        }
+
         .header-brand p {
             font-size: 0.875rem;
             color: var(--text-secondary);
@@ -408,11 +417,39 @@
                 <div class="canton-details">
                     <div class="detail-row">
                         <div class="detail-label">Cantón</div>
-                        <div id="info-canton" class="detail-value empty">Pasa el cursor sobre un cantón</div>
+                        <div id="info-canton" class="detail-value empty">Pasa el cursor o haz clic en un cantón</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Provincia</div>
                         <div id="info-provincia" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Población <span class="source-label">(INEC)</span></div>
+                        <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fallecidos SPPAT <span class="source-label">(Total 2016-2021)</span></div>
+                        <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Siniestros de Tránsito <span class="source-label">(INEC 2019)</span></div>
+                        <div id="info-siniestros-inec" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Lesionados <span class="source-label">(INEC 2019)</span></div>
+                        <div id="info-lesionados-inec" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fallecidos <span class="source-label">(INEC 2019)</span></div>
+                        <div id="info-fallecidos-inec" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Vehículos Matriculados <span class="source-label">(Provincial - INEC 2019)</span></div>
+                        <div id="info-matriculados-prov" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Tasa de Fallecidos por 100k Hab.</div>
+                        <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Código DPA Cantón</div>
@@ -463,16 +500,16 @@
         
         // --- CONFIGURACIÓN REQUERIDA ---
         const RUTA_GEOJSON_RELATIVA = "data/cantones_wgs84.geojson";
-        const CENTRO_MAPA = [-0.1807, -78.4678]; // Quito
-        const ZOOM_INICIAL = 8;
+        const CENTRO_MAPA = [-0.15, -78.48]; // Centrado en Pichincha
+        const ZOOM_INICIAL = 9.5;
         // -------------------------------
 
         // Inicializar el Mapa
         const map = L.map('map', {
             center: CENTRO_MAPA,
             zoom: ZOOM_INICIAL,
-            zoomControl: false, // Deshabilitado para colocarlo personalizado abajo a la izquierda
-            attributionControl: true // Habilitado para mostrar la atribución requerida
+            zoomControl: false,
+            attributionControl: true
         });
 
         // Reposicionar el control de Zoom
@@ -506,29 +543,119 @@
 
         // Capa GeoJSON
         let cantonLayer;
+        let selectedLayer = null;
+        let layerControl = null;
+        let overlayMaps = {};
 
-        // Estilos para la capa de Cantones
-        const styleNormal = {
-            color: "#0ea5e9",       // Celeste brillante
-            weight: 1.2,
-            opacity: 0.7,
-            fillColor: "#0ea5e9",
-            fillOpacity: 0.08
-        };
+        // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha)
+        function getCantonStyle(feature, isHovered = false, isSelected = false) {
+            const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
+            
+            // Colores e intensidades
+            let color = isPichincha ? "#0ea5e9" : "#94a3b8"; // Celeste vs Gris
+            let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.2);
+            let opacity = isHovered ? 1.0 : (isSelected ? 1.0 : (isPichincha ? 0.7 : 0.2));
+            let fillColor = isPichincha ? "#0ea5e9" : "#64748b";
+            let fillOpacity = isHovered ? 0.25 : (isSelected ? 0.20 : (isPichincha ? 0.08 : 0.02));
+            
+            if (isSelected) {
+                color = "#38bdf8"; // Resaltado de selección celeste muy brillante
+            } else if (isHovered) {
+                color = isPichincha ? "#38bdf8" : "#cbd5e1";
+            }
+            
+            return {
+                color: color,
+                weight: weight,
+                opacity: opacity,
+                fillColor: fillColor,
+                fillOpacity: fillOpacity
+            };
+        }
 
-        const styleHover = {
-            color: "#38bdf8",       // Celeste muy brillante
-            weight: 2.5,
-            opacity: 1.0,
-            fillColor: "#0ea5e9",
-            fillOpacity: 0.25
-        };
-
-        // Elementos del DOM para actualización dinámica de información
+        // Elementos del DOM
         const domCanton = document.getElementById("info-canton");
         const domProvincia = document.getElementById("info-provincia");
+        const domPoblacion = document.getElementById("info-poblacion");
+        const domFallecidosSppat = document.getElementById("info-fallecidos-sppat");
+        const domSiniestrosInec = document.getElementById("info-siniestros-inec");
+        const domLesionadosInec = document.getElementById("info-lesionados-inec");
+        const domFallecidosInec = document.getElementById("info-fallecidos-inec");
+        const domMatriculadosProv = document.getElementById("info-matriculados-prov");
+        const domTasaFallecidos = document.getElementById("info-tasa-fallecidos");
         const domCodCanton = document.getElementById("info-cod-canton");
         const domCodProvincia = document.getElementById("info-cod-provincia");
+
+        function formatNumber(val) {
+            if (val === null || val === undefined) return "Dato no disponible a este nivel";
+            return Number(val).toLocaleString('de-DE');
+        }
+
+        function updateSidebar(props) {
+            if (!props) {
+                domCanton.textContent = "Pasa el cursor o haz clic en un cantón";
+                domCanton.classList.add("empty");
+                domProvincia.textContent = "—";
+                domProvincia.classList.add("empty");
+                domPoblacion.textContent = "Dato no disponible a este nivel";
+                domPoblacion.classList.add("empty");
+                domFallecidosSppat.textContent = "—";
+                domFallecidosSppat.classList.add("empty");
+                domSiniestrosInec.textContent = "—";
+                domSiniestrosInec.classList.add("empty");
+                domLesionadosInec.textContent = "—";
+                domLesionadosInec.classList.add("empty");
+                domFallecidosInec.textContent = "—";
+                domFallecidosInec.classList.add("empty");
+                domMatriculadosProv.textContent = "—";
+                domMatriculadosProv.classList.add("empty");
+                domTasaFallecidos.textContent = "Dato no disponible a este nivel";
+                domTasaFallecidos.classList.add("empty");
+                domCodCanton.textContent = "—";
+                domCodCanton.classList.add("empty");
+                domCodProvincia.textContent = "—";
+                domCodProvincia.classList.add("empty");
+                return;
+            }
+            
+            domCanton.textContent = props.DPA_DESCAN || "Sin Nombre";
+            domCanton.classList.remove("empty");
+            
+            domProvincia.textContent = props.DPA_DESPRO || "Sin Nombre";
+            domProvincia.classList.remove("empty");
+            
+            domPoblacion.textContent = "Dato no disponible a este nivel";
+            domPoblacion.classList.add("empty");
+            
+            domFallecidosSppat.textContent = formatNumber(props.fallecidos_sppat_2016_2021);
+            if (props.fallecidos_sppat_2016_2021 !== null) domFallecidosSppat.classList.remove("empty");
+            else domFallecidosSppat.classList.add("empty");
+            
+            domSiniestrosInec.textContent = formatNumber(props.siniestros_inec_2019);
+            if (props.siniestros_inec_2019 !== null) domSiniestrosInec.classList.remove("empty");
+            else domSiniestrosInec.classList.add("empty");
+            
+            domLesionadosInec.textContent = formatNumber(props.lesionados_inec_2019);
+            if (props.lesionados_inec_2019 !== null) domLesionadosInec.classList.remove("empty");
+            else domLesionadosInec.classList.add("empty");
+            
+            domFallecidosInec.textContent = formatNumber(props.fallecidos_inec_2019);
+            if (props.fallecidos_inec_2019 !== null) domFallecidosInec.classList.remove("empty");
+            else domFallecidosInec.classList.add("empty");
+            
+            domMatriculadosProv.textContent = formatNumber(props.matriculados_prov_inec_2019);
+            if (props.matriculados_prov_inec_2019 !== null) domMatriculadosProv.classList.remove("empty");
+            else domMatriculadosProv.classList.add("empty");
+            
+            domTasaFallecidos.textContent = "Dato no disponible a este nivel";
+            domTasaFallecidos.classList.add("empty");
+            
+            domCodCanton.textContent = props.DPA_CANTON || "—";
+            domCodCanton.classList.remove("empty");
+            
+            domCodProvincia.textContent = props.DPA_PROVIN || "—";
+            domCodProvincia.classList.remove("empty");
+        }
 
         // Funciones interactivas para cada feature (Cantón)
         function onEachFeature(feature, layer) {
@@ -552,13 +679,29 @@
                 });
             }
 
-            // Eventos de Mouse (hover)
+            // Eventos de Mouse
             layer.on({
                 mouseover: highlightFeature,
                 mouseout: resetHighlight,
                 click: function(e) {
-                    // Centrar mapa ligeramente en el cantón al hacer clic si se desea
-                    // map.panTo(e.target.getBounds().getCenter());
+                    // Zoom al cantón seleccionado
+                    map.fitBounds(e.target.getBounds());
+                    
+                    // Manejar selección persistente
+                    const prevLayer = selectedLayer;
+                    selectedLayer = e.target;
+                    
+                    if (prevLayer && prevLayer !== e.target) {
+                        cantonLayer.resetStyle(prevLayer);
+                    }
+                    
+                    e.target.setStyle(getCantonStyle(e.target.feature, false, true));
+                    
+                    // Actualizar URL sin recargar
+                    const name = e.target.feature.properties.DPA_DESCAN;
+                    window.location.hash = "canton=" + encodeURIComponent(name);
+                    
+                    updateSidebar(e.target.feature.properties);
                 }
             });
         }
@@ -566,47 +709,33 @@
         // Resaltado al pasar el mouse
         function highlightFeature(e) {
             const layer = e.target;
-            layer.setStyle(styleHover);
+            if (layer !== selectedLayer) {
+                layer.setStyle(getCantonStyle(layer.feature, true, false));
+            }
             
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layer.bringToFront();
             }
 
-            // Actualizar panel lateral de información
-            const props = layer.feature.properties;
-            domCanton.textContent = props.DPA_DESCAN || "Sin Nombre";
-            domCanton.classList.remove("empty");
-            
-            domProvincia.textContent = props.DPA_DESPRO || "Sin Nombre";
-            domProvincia.classList.remove("empty");
-            
-            domCodCanton.textContent = props.DPA_CANTON || "—";
-            domCodCanton.classList.remove("empty");
-            
-            domCodProvincia.textContent = props.DPA_PROVIN || "—";
-            domCodProvincia.classList.remove("empty");
+            updateSidebar(layer.feature.properties);
         }
 
         // Restaurar estilo normal al quitar el mouse
         function resetHighlight(e) {
-            cantonLayer.resetStyle(e.target);
+            const layer = e.target;
+            if (layer !== selectedLayer) {
+                cantonLayer.resetStyle(layer);
+            }
             
-            // Regresar el panel lateral al estado inicial
-            domCanton.textContent = "Pasa el cursor sobre un cantón";
-            domCanton.classList.add("empty");
-            
-            domProvincia.textContent = "—";
-            domProvincia.classList.add("empty");
-            
-            domCodCanton.textContent = "—";
-            domCodCanton.classList.add("empty");
-            
-            domCodProvincia.textContent = "—";
-            domCodProvincia.classList.add("empty");
+            if (selectedLayer) {
+                updateSidebar(selectedLayer.feature.properties);
+            } else {
+                updateSidebar(null);
+            }
         }
 
         // Iniciar Fetch de datos y medición
-        document.getElementById("loader-status").textContent = "Descargando límites cantonales (4.67 MB)...";
+        document.getElementById("loader-status").textContent = "Descargando límites cantonales y estadísticas (4.75 MB)...";
         
         fetch(RUTA_GEOJSON_RELATIVA)
             .then(response => {
@@ -623,9 +752,12 @@
             .then(data => {
                 const tRenderStart = performance.now();
                 
-                // Crear y añadir capa GeoJSON al mapa
+                // Crear y añadir capa GeoJSON al mapa con estilo dinámico
                 cantonLayer = L.geoJSON(data, {
-                    style: styleNormal,
+                    style: function(feature) {
+                        const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
+                        return getCantonStyle(feature, false, isSelected);
+                    },
                     onEachFeature: onEachFeature
                 }).addTo(map);
 
@@ -633,19 +765,86 @@
                 const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
                 const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
                 
-                // Actualizar diagnósticos de rendimiento en la UI
                 document.getElementById("diag-render").textContent = `${tRender}s`;
                 document.getElementById("diag-total").textContent = `${tTotal}s`;
                 document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
 
-                // Configurar el Control de Capas (L.control.layers)
-                const overlayMaps = {
-                    "Límites Cantonales": cantonLayer
-                };
-                L.control.layers(baseMaps, overlayMaps, {
+                overlayMaps["Límites Cantonales"] = cantonLayer;
+                layerControl = L.control.layers(baseMaps, overlayMaps, {
                     position: 'topright',
-                    collapsed: false // Mantener abierto para fácil interacción y visualización premium
+                    collapsed: false
                 }).addTo(map);
+
+                // Manejo de Hash Routing en carga inicial y cambios
+                const handleHash = () => {
+                    const hash = window.location.hash;
+                    if (hash && hash.startsWith("#canton=")) {
+                        const cantonName = decodeURIComponent(hash.substring(8)).trim().toUpperCase();
+                        let foundLayer = null;
+                        
+                        cantonLayer.eachLayer(layer => {
+                            if (layer.feature && layer.feature.properties && 
+                                layer.feature.properties.DPA_DESCAN.trim().toUpperCase() === cantonName) {
+                                foundLayer = layer;
+                            }
+                        });
+                        
+                        if (foundLayer) {
+                            map.fitBounds(foundLayer.getBounds());
+                            const prevLayer = selectedLayer;
+                            selectedLayer = foundLayer;
+                            
+                            if (prevLayer && prevLayer !== foundLayer) {
+                                cantonLayer.resetStyle(prevLayer);
+                            }
+                            
+                            foundLayer.setStyle(getCantonStyle(foundLayer.feature, false, true));
+                            updateSidebar(foundLayer.feature.properties);
+                        }
+                    }
+                };
+
+                handleHash();
+                window.addEventListener("hashchange", handleHash);
+
+                // --- CARGAR CAPA DE CICLOVIAS (FASE 6) ---
+                const RUTA_CICLOVIAS = "data/ciclovias_pichincha.geojson";
+                
+                fetch(RUTA_CICLOVIAS)
+                    .then(res => {
+                        if (!res.ok) throw new Error("No se pudo cargar ciclovías.");
+                        return res.json();
+                    })
+                    .then(cicloviasData => {
+                        const cicloviasLayer = L.geoJSON(cicloviasData, {
+                            attribution: 'Ciclovías: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ODbL',
+                            style: {
+                                color: "#22c55e", // Verde brillante
+                                weight: 3,
+                                opacity: 0.85
+                            },
+                            onEachFeature: function(feature, layer) {
+                                if (feature.properties) {
+                                    const name = feature.properties.name || "Ciclovía sin nombre";
+                                    layer.bindPopup(`<strong>Ciclovía:</strong> ${name}<br><strong> highway:</strong> ${feature.properties.highway}`);
+                                }
+                            }
+                        });
+                        
+                        overlayMaps["Ciclovías (Pichincha)"] = cicloviasLayer;
+                        
+                        if (layerControl) {
+                            map.removeControl(layerControl);
+                        }
+                        
+                        layerControl = L.control.layers(baseMaps, overlayMaps, {
+                            position: 'topright',
+                            collapsed: false
+                        }).addTo(map);
+                    })
+                    .catch(err => {
+                        console.warn("Advertencia al cargar ciclovías:", err);
+                    });
 
                 // Ocultar pantalla de carga
                 const loader = document.getElementById("loader");
