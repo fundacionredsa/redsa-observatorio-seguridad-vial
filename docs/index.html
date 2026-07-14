@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoportal - Observatorio Ciudadano de Seguridad Vial | REDSA</title>
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Geoportal interactivo del Observatorio Ciudadano de Seguridad Vial de la Fundación REDSA. Visualización de límites cantonales de Ecuador.">
+    <meta name="author" content="Fundación REDSA">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <!-- Estilos Premium Personalizados -->
+    <style>
+        :root {
+            --bg-glass: rgba(15, 23, 42, 0.85);
+            --bg-glass-hover: rgba(30, 41, 59, 0.9);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #0ea5e9;
+            --accent-hover: #38bdf8;
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: var(--font-sans);
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* Contenedor principal de controles (UI) */
+        .ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            grid-template-rows: auto 1fr;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .ui-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+                padding: 10px;
+                gap: 10px;
+                overflow-y: auto;
+                pointer-events: auto;
+            }
+            .ui-panel {
+                pointer-events: auto !important;
+            }
+        }
+
+        /* Panel Glassmorphism */
+        .ui-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 24px;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+            pointer-events: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Cabecera / Info Panel Izquierdo */
+        .sidebar {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                grid-row: 1;
+                grid-column: 1;
+                max-height: none;
+            }
+        }
+
+        .header-brand {
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 16px;
+        }
+
+        .header-brand h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-brand h1 span.highlight {
+            color: var(--accent);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .header-brand p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* Panel Informativo del Cantón */
+        .info-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .canton-details {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .detail-value.empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        /* Panel de Diagnóstico de Rendimiento */
+        .diagnostic-panel {
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(14, 165, 233, 0.15);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.8rem;
+        }
+
+        .diagnostic-title {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diagnostic-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+
+        .diagnostic-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .diagnostic-val {
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* Pantalla de Carga (Overlay) */
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(14, 165, 233, 0.1);
+            border-left-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .loader-subtext {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilo de Popup de Leaflet */
+        .leaflet-popup-content-wrapper {
+            background: var(--bg-glass) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid var(--border-glass) !important;
+            color: var(--text-primary) !important;
+            border-radius: 12px !important;
+            box-shadow: var(--shadow) !important;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(15, 23, 42, 0.95) !important;
+            border: 1px solid var(--border-glass) !important;
+        }
+
+        .custom-popup {
+            padding: 8px 4px;
+        }
+
+        .custom-popup h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 6px;
+        }
+
+        .custom-popup p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .custom-popup p strong {
+            color: var(--text-primary);
+        }
+
+        .custom-popup .dpa-code {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: monospace;
+        }
+
+        /* Personalización de los controles de Leaflet */
+        .leaflet-bar {
+            border: 1px solid var(--border-glass) !important;
+            box-shadow: var(--shadow) !important;
+            border-radius: 8px !important;
+            overflow: hidden;
+        }
+
+        .leaflet-bar a {
+            background-color: var(--bg-glass) !important;
+            color: var(--text-primary) !important;
+            border-bottom: 1px solid var(--border-glass) !important;
+            transition: background 0.2s;
+        }
+
+        .leaflet-bar a:hover {
+            background-color: var(--bg-glass-hover) !important;
+            color: var(--accent) !important;
+        }
+
+        .leaflet-control-layers {
+            background: var(--bg-glass) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            border: 1px solid var(--border-glass) !important;
+            color: var(--text-primary) !important;
+            border-radius: 12px !important;
+            box-shadow: var(--shadow) !important;
+            padding: 10px 14px !important;
+            font-family: var(--font-sans) !important;
+            font-size: 0.85rem !important;
+        }
+
+        .leaflet-control-layers-list label {
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        /* Custom Zoom Buttons Container */
+        .zoom-control-container {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            z-index: 1000;
+            pointer-events: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .zoom-control-container {
+                display: none; /* Hide zoom controls on mobile to save space */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader Overlay -->
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <div class="loader-text">Cargando Geoportal...</div>
+        <div id="loader-status" class="loader-subtext">Descargando límites cantonales (4.67 MB)...</div>
+    </div>
+
+    <!-- Contenedor Principal de la Interfaz -->
+    <div class="ui-container">
+        <!-- Sidebar / Panel de Control -->
+        <div class="ui-panel sidebar">
+            <!-- Marca/Cabecera -->
+            <div class="header-brand">
+                <h1>
+                    REDSA
+                    <span class="highlight">Observatorio Vial</span>
+                </h1>
+                <p>Geoportal de consulta territorial y límites cantonales oficiales de la República del Ecuador.</p>
+            </div>
+
+            <!-- Sección Informativa Dinámica -->
+            <div class="info-section">
+                <div class="section-title">Información del Territorio</div>
+                
+                <div class="canton-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Cantón</div>
+                        <div id="info-canton" class="detail-value empty">Pasa el cursor sobre un cantón</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Provincia</div>
+                        <div id="info-provincia" class="detail-value empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Código DPA Cantón</div>
+                        <div id="info-cod-canton" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Código DPA Provincia</div>
+                        <div id="info-cod-provincia" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Diagnóstico -->
+            <div class="diagnostic-panel">
+                <div class="diagnostic-title">
+                    <span>Rendimiento de Carga</span>
+                    <span style="font-size: 0.7rem; background: rgba(14, 165, 233, 0.2); padding: 2px 6px; border-radius: 4px; color: var(--accent-hover);">EN VIVO</span>
+                </div>
+                <div class="diagnostic-row">
+                    <span>Descarga de GeoJSON:</span>
+                    <span id="diag-download" class="diagnostic-val">cargando...</span>
+                </div>
+                <div class="diagnostic-row">
+                    <span>Tiempo de Renderizado:</span>
+                    <span id="diag-render" class="diagnostic-val">esperando...</span>
+                </div>
+                <div class="diagnostic-row">
+                    <span>Tiempo Total de Carga:</span>
+                    <span id="diag-total" class="diagnostic-val">esperando...</span>
+                </div>
+                <div class="diagnostic-row" style="margin-top: 6px; border-top: 1px solid var(--border-glass); padding-top: 6px; font-size: 0.75rem;">
+                    <span>Polígonos cargados:</span>
+                    <span id="diag-features" class="diagnostic-val">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor del Mapa Leaflet -->
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        // Registrar tiempo inicial exacto
+        const tStart = performance.now();
+        
+        // --- CONFIGURACIÓN REQUERIDA ---
+        const RUTA_GEOJSON_RELATIVA = "data/cantones_wgs84.geojson";
+        const CENTRO_MAPA = [-0.1807, -78.4678]; // Quito
+        const ZOOM_INICIAL = 8;
+        // -------------------------------
+
+        // Inicializar el Mapa
+        const map = L.map('map', {
+            center: CENTRO_MAPA,
+            zoom: ZOOM_INICIAL,
+            zoomControl: false, // Deshabilitado para colocarlo personalizado abajo a la izquierda
+            attributionControl: true // Habilitado para mostrar la atribución requerida
+        });
+
+        // Reposicionar el control de Zoom
+        L.control.zoom({
+            position: 'bottomleft'
+        }).addTo(map);
+
+        // Definir Atribuciones Requeridas
+        const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong>';
+
+        // Definición de Capas Base (Mapas de fondo)
+        const baseMaps = {
+            "CartoDB Positron (Claro)": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' + attributionCantonales,
+                subdomains: 'abcd',
+                maxZoom: 20
+            }),
+            "CartoDB Dark Matter (Oscuro)": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' + attributionCantonales,
+                subdomains: 'abcd',
+                maxZoom: 20
+            }),
+            "OpenStreetMap (Estándar)": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' + attributionCantonales,
+                maxZoom: 19
+            })
+        };
+
+        // Agregar mapa base por defecto (Positron)
+        baseMaps["CartoDB Positron (Claro)"].addTo(map);
+
+        // Capa GeoJSON
+        let cantonLayer;
+
+        // Estilos para la capa de Cantones
+        const styleNormal = {
+            color: "#0ea5e9",       // Celeste brillante
+            weight: 1.2,
+            opacity: 0.7,
+            fillColor: "#0ea5e9",
+            fillOpacity: 0.08
+        };
+
+        const styleHover = {
+            color: "#38bdf8",       // Celeste muy brillante
+            weight: 2.5,
+            opacity: 1.0,
+            fillColor: "#0ea5e9",
+            fillOpacity: 0.25
+        };
+
+        // Elementos del DOM para actualización dinámica de información
+        const domCanton = document.getElementById("info-canton");
+        const domProvincia = document.getElementById("info-provincia");
+        const domCodCanton = document.getElementById("info-cod-canton");
+        const domCodProvincia = document.getElementById("info-cod-provincia");
+
+        // Funciones interactivas para cada feature (Cantón)
+        function onEachFeature(feature, layer) {
+            // Popup al hacer clic
+            if (feature.properties) {
+                const canton = feature.properties.DPA_DESCAN || "Desconocido";
+                const provincia = feature.properties.DPA_DESPRO || "Desconocido";
+                const codCanton = feature.properties.DPA_CANTON || "—";
+                const codProvincia = feature.properties.DPA_PROVIN || "—";
+
+                const popupContent = `
+                    <div class="custom-popup">
+                        <h3>${canton}</h3>
+                        <p><strong>Provincia:</strong> ${provincia}</p>
+                        <div class="dpa-code">Cód. Cantón: ${codCanton} | Cód. Prov: ${codProvincia}</div>
+                    </div>
+                `;
+                layer.bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'custom-leaflet-popup'
+                });
+            }
+
+            // Eventos de Mouse (hover)
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: function(e) {
+                    // Centrar mapa ligeramente en el cantón al hacer clic si se desea
+                    // map.panTo(e.target.getBounds().getCenter());
+                }
+            });
+        }
+
+        // Resaltado al pasar el mouse
+        function highlightFeature(e) {
+            const layer = e.target;
+            layer.setStyle(styleHover);
+            
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+
+            // Actualizar panel lateral de información
+            const props = layer.feature.properties;
+            domCanton.textContent = props.DPA_DESCAN || "Sin Nombre";
+            domCanton.classList.remove("empty");
+            
+            domProvincia.textContent = props.DPA_DESPRO || "Sin Nombre";
+            domProvincia.classList.remove("empty");
+            
+            domCodCanton.textContent = props.DPA_CANTON || "—";
+            domCodCanton.classList.remove("empty");
+            
+            domCodProvincia.textContent = props.DPA_PROVIN || "—";
+            domCodProvincia.classList.remove("empty");
+        }
+
+        // Restaurar estilo normal al quitar el mouse
+        function resetHighlight(e) {
+            cantonLayer.resetStyle(e.target);
+            
+            // Regresar el panel lateral al estado inicial
+            domCanton.textContent = "Pasa el cursor sobre un cantón";
+            domCanton.classList.add("empty");
+            
+            domProvincia.textContent = "—";
+            domProvincia.classList.add("empty");
+            
+            domCodCanton.textContent = "—";
+            domCodCanton.classList.add("empty");
+            
+            domCodProvincia.textContent = "—";
+            domCodProvincia.classList.add("empty");
+        }
+
+        // Iniciar Fetch de datos y medición
+        document.getElementById("loader-status").textContent = "Descargando límites cantonales (4.67 MB)...";
+        
+        fetch(RUTA_GEOJSON_RELATIVA)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("No se pudo cargar el archivo GeoJSON.");
+                }
+                const tDownloadEnd = performance.now();
+                const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
+                document.getElementById("diag-download").textContent = `${tDownload}s`;
+                
+                document.getElementById("loader-status").textContent = "Procesando y renderizando polígonos...";
+                return response.json();
+            })
+            .then(data => {
+                const tRenderStart = performance.now();
+                
+                // Crear y añadir capa GeoJSON al mapa
+                cantonLayer = L.geoJSON(data, {
+                    style: styleNormal,
+                    onEachFeature: onEachFeature
+                }).addTo(map);
+
+                const tRenderEnd = performance.now();
+                const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
+                const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
+                
+                // Actualizar diagnósticos de rendimiento en la UI
+                document.getElementById("diag-render").textContent = `${tRender}s`;
+                document.getElementById("diag-total").textContent = `${tTotal}s`;
+                document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
+
+                // Configurar el Control de Capas (L.control.layers)
+                const overlayMaps = {
+                    "Límites Cantonales": cantonLayer
+                };
+                L.control.layers(baseMaps, overlayMaps, {
+                    position: 'topright',
+                    collapsed: false // Mantener abierto para fácil interacción y visualización premium
+                }).addTo(map);
+
+                // Ocultar pantalla de carga
+                const loader = document.getElementById("loader");
+                loader.style.opacity = 0;
+                setTimeout(() => {
+                    loader.style.display = "none";
+                }, 500);
+            })
+            .catch(error => {
+                console.error("Error al inicializar el geoportal:", error);
+                document.getElementById("loader-status").innerHTML = `<span style="color: #ef4444; font-weight: bold;">Error: ${error.message}</span>`;
+                document.getElementById("diag-download").textContent = "Error";
+                document.getElementById("diag-download").style.color = "#ef4444";
+            });
+    </script>
+</body>
+</html>
