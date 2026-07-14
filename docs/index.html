@@ -214,6 +214,10 @@
             color: var(--text-primary);
         }
 
+        .detail-value.secondary {
+            font-size: 1rem;
+        }
+
         .detail-value.empty {
             color: var(--text-muted);
             font-style: italic;
@@ -482,8 +486,18 @@
                         <div class="detail-label">Provincia</div>
                         <div id="info-provincia" class="detail-value empty">—</div>
                     </div>
+                    
+                    <!-- Serie Histórica de Siniestralidad (Chart.js) - REORDENADO ARRIBA -->
+                    <div id="chart-wrapper" style="display: flex; flex-direction: column; align-items: stretch; margin-top: 15px; margin-bottom: 15px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px;">
+                        <div class="detail-label" style="margin-bottom: 8px;">Tendencia Histórica de Fallecidos <span class="source-label">(INEC V01-V89)</span></div>
+                        <div id="chart-container" style="position: relative; height: 230px; width: 100%; display: none;">
+                            <canvas id="chart-historico"></canvas>
+                        </div>
+                        <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
+                    </div>
+
                     <div class="detail-row">
-                        <div class="detail-label">Población <span class="source-label">(INEC)</span></div>
+                        <div class="detail-label">Población <span class="source-label">(INEC 2024)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row">
@@ -492,11 +506,11 @@
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Siniestros de Tránsito <span class="source-label">(INEC 2019)</span></div>
-                        <div id="info-siniestros-inec" class="detail-value empty">—</div>
+                        <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Lesionados <span class="source-label">(INEC 2019)</span></div>
-                        <div id="info-lesionados-inec" class="detail-value empty">—</div>
+                        <div id="info-lesionados-inec" class="detail-value secondary empty">—</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Fallecidos <span class="source-label">(INEC 2019)</span></div>
@@ -504,10 +518,10 @@
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Vehículos Matriculados <span class="source-label">(Provincial - INEC 2019)</span></div>
-                        <div id="info-matriculados-prov" class="detail-value empty">—</div>
+                        <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Tasa de Fallecidos por 100k Hab.</div>
+                        <div class="detail-label">Tasa de Fallecidos por 100k Hab. <span class="source-label">(INEC 2019)</span></div>
                         <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row">
@@ -517,15 +531,6 @@
                     <div class="detail-row">
                         <div class="detail-label">Código DPA Provincia</div>
                         <div id="info-cod-provincia" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
-                    </div>
-                    
-                    <!-- Serie Histórica de Siniestralidad (Chart.js) -->
-                    <div class="detail-row" style="flex-direction: column; align-items: stretch; margin-top: 15px; border-top: 1px solid var(--border-glass); padding-top: 15px;">
-                        <div class="detail-label" style="margin-bottom: 8px;">Tendencia Histórica de Fallecidos <span class="source-label">(INEC V01-V89)</span></div>
-                        <div id="chart-container" style="position: relative; height: 180px; width: 100%; display: none;">
-                            <canvas id="chart-historico"></canvas>
-                        </div>
-                        <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
                     </div>
                 </div>
             </div>
@@ -815,8 +820,13 @@
             domProvincia.textContent = props.DPA_DESPRO || "Sin Nombre";
             domProvincia.classList.remove("empty");
             
-            domPoblacion.textContent = "Dato no disponible a este nivel";
-            domPoblacion.classList.add("empty");
+            const poblacion = props.poblacion_2024;
+            domPoblacion.textContent = formatNumber(poblacion);
+            if (poblacion !== null && poblacion !== undefined) domPoblacion.classList.remove("empty");
+            else {
+                domPoblacion.textContent = "Dato no disponible a este nivel";
+                domPoblacion.classList.add("empty");
+            }
             
             domFallecidosSppat.textContent = formatNumber(props.fallecidos_sppat_2016_2021);
             if (props.fallecidos_sppat_2016_2021 !== null) domFallecidosSppat.classList.remove("empty");
@@ -838,8 +848,14 @@
             if (props.matriculados_prov_inec_2019 !== null) domMatriculadosProv.classList.remove("empty");
             else domMatriculadosProv.classList.add("empty");
             
-            domTasaFallecidos.textContent = "Dato no disponible a este nivel";
-            domTasaFallecidos.classList.add("empty");
+            const tasa = props.tasa_fallecidos_100k;
+            if (tasa !== null && tasa !== undefined) {
+                domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                domTasaFallecidos.classList.remove("empty");
+            } else {
+                domTasaFallecidos.textContent = "Dato no disponible a este nivel";
+                domTasaFallecidos.classList.add("empty");
+            }
             
             domCodCanton.textContent = props.DPA_CANTON || "—";
             domCodCanton.classList.remove("empty");
