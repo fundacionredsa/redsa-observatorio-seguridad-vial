@@ -449,6 +449,125 @@
                 display: none; /* Hide zoom controls on mobile to save space */
             }
         }
+        
+        /* Styles for Accordion and Demographic Profiles */
+        .accordion-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            width: 100%;
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .accordion-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-hover);
+        }
+        .accordion-btn::after {
+            content: '▼';
+            font-size: 0.6rem;
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+        }
+        .accordion-btn.active::after {
+            transform: rotate(180deg);
+            color: var(--text-primary);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding: 0 4px;
+            border-left: 1px solid var(--border-glass);
+            margin-left: 4px;
+        }
+        .accordion-content.active {
+            max-height: 1200px;
+            transition: max-height 0.6s ease-in;
+        }
+        
+        /* Bi-color Gender Bar */
+        .gender-bar-wrapper {
+            display: flex;
+            width: 100%;
+            height: 18px;
+            border-radius: 9px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 6px 0 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gender-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            transition: width 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .gender-segment.male {
+            background: #0ea5e9; /* Celeste */
+        }
+        .gender-segment.female {
+            background: #ec4899; /* Rosa */
+        }
+        .gender-segment.nodata {
+            background: #475569;
+            width: 100%;
+            color: var(--text-muted);
+        }
+
+        /* Horizontal Progress Bars */
+        .profile-bar-row {
+            margin-bottom: 8px;
+        }
+        .profile-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+        .profile-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            margin-top: 3px;
+            position: relative;
+        }
+        .profile-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        /* Map Selector Control */
+        .map-selector-control {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+            width: 190px;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -478,6 +597,7 @@
                 <div class="section-title">Información del Territorio</div>
                 
                 <div class="canton-details">
+                    <!-- SECCIÓN 1: IDENTIFICACIÓN -->
                     <div class="detail-row">
                         <div class="detail-label">Cantón</div>
                         <div id="info-canton" class="detail-value empty">Pasa el cursor o haz clic en un cantón</div>
@@ -486,51 +606,88 @@
                         <div class="detail-label">Provincia</div>
                         <div id="info-provincia" class="detail-value empty">—</div>
                     </div>
-                    
-                    <!-- Serie Histórica de Siniestralidad (Chart.js) - REORDENADO ARRIBA -->
-                    <div id="chart-wrapper" style="display: flex; flex-direction: column; align-items: stretch; margin-top: 15px; margin-bottom: 15px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px;">
-                        <div class="detail-label" style="margin-bottom: 8px;">Tendencia Histórica de Fallecidos <span class="source-label">(INEC V01-V89)</span></div>
-                        <div id="chart-container" style="position: relative; height: 230px; width: 100%; display: none;">
-                            <canvas id="chart-historico"></canvas>
-                        </div>
-                        <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
-                    </div>
-
                     <div class="detail-row">
                         <div class="detail-label">Población <span class="source-label">(INEC 2024)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
+                    <div class="detail-row" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
+                        <span>DPA Cantón / Prov:</span>
+                        <span style="font-family: monospace; font-weight: bold;"><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
+                    </div>
+
+                    <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
+                    <div class="section-title" style="margin-top: 15px; margin-bottom: 6px;">Tendencia Histórica</div>
+                    <div id="chart-wrapper" style="display: flex; flex-direction: column; align-items: stretch; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-glass);">
+                        <div class="detail-label" style="margin-bottom: 6px; font-size: 0.7rem; color: var(--text-muted);">Fallecidos por accidentes de transporte <span class="source-label">(INEC CIE-10 V01-V89)</span></div>
+                        <div id="chart-container" style="position: relative; height: 180px; width: 100%; display: none;">
+                            <canvas id="chart-historico"></canvas>
+                        </div>
+                        <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 15px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
+                    </div>
+
+                    <!-- SECCIÓN 3: SINIESTROS (INEC 2019) -->
+                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Siniestros (INEC 2019)</div>
+                    <div class="detail-row">
+                        <div class="detail-label">Siniestros de Tránsito</div>
+                        <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Lesionados / Heridos</div>
+                        <div id="info-lesionados-inec" class="detail-value secondary empty">—</div>
+                    </div>
+                    
+                    <!-- INEC Detailed sub-panel (rendered dynamically in JS) -->
+                    <div id="inec-detailed-stats" style="margin-top: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; display: none;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Distribución Zona:</div>
+                        <div id="inec-zona-ratio" style="font-size: 0.75rem; color: var(--text-primary); margin-bottom: 6px; font-weight: 500;">—</div>
+                        
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Clases de Siniestro:</div>
+                        <div id="inec-clase-list" style="margin-bottom: 6px; font-size: 0.75rem; color: var(--text-secondary);">—</div>
+                        
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Principales Causas Probables:</div>
+                        <div id="inec-causa-list" style="margin-bottom: 6px; font-size: 0.75rem; color: var(--text-secondary);">—</div>
+                        
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;">Rango Horario Peak:</div>
+                        <div id="inec-horapico" style="font-size: 0.75rem; color: var(--text-primary); font-weight: 500;">—</div>
+                    </div>
+
+                    <!-- SECCIÓN 4: FALLECIDOS (MORTALIDAD) -->
+                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Fallecidos en Vías</div>
                     <div class="detail-row">
                         <div class="detail-label">Fallecidos SPPAT <span class="source-label">(Total 2016-2021)</span></div>
                         <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Siniestros de Tránsito <span class="source-label">(INEC 2019)</span></div>
-                        <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Lesionados <span class="source-label">(INEC 2019)</span></div>
-                        <div id="info-lesionados-inec" class="detail-value secondary empty">—</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Fallecidos <span class="source-label">(INEC 2019)</span></div>
+                        <div class="detail-label">Fallecidos INEC <span class="source-label">(2019)</span></div>
                         <div id="info-fallecidos-inec" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Vehículos Matriculados <span class="source-label">(Provincial - INEC 2019)</span></div>
                         <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
                         <div class="detail-label">Tasa de Fallecidos por 100k Hab. <span class="source-label">(INEC 2019)</span></div>
                         <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Código DPA Cantón</div>
-                        <div id="info-cod-canton" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Código DPA Provincia</div>
-                        <div id="info-cod-provincia" class="detail-value empty" style="font-family: monospace; font-size: 0.95rem;">—</div>
+
+                    <!-- Collapsible Accordion for Perfil de Fallecidos -->
+                    <button type="button" class="accordion-btn" id="profile-accordion-btn">Perfil de Fallecidos (2020-2024)</button>
+                    <div class="accordion-content" id="profile-accordion-content">
+                        <!-- INEC EDG (2020-2024) Profile -->
+                        <div style="margin-top: 8px;">
+                            <div style="font-size: 0.72rem; color: var(--accent-hover); font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; text-transform: uppercase;">INEC EDG (Historico CIE-10)</div>
+                            <div id="edg-profile-container">
+                                <!-- Rendered in JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- SPPAT (2016-2021) Profile -->
+                        <div style="margin-top: 12px; margin-bottom: 8px;">
+                            <div style="font-size: 0.72rem; color: var(--accent-hover); font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; text-transform: uppercase;">SPPAT Microdatos (Reclamaciones)</div>
+                            <div id="sppat-profile-container">
+                                <!-- Rendered in JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -588,6 +745,8 @@
         const COLOR_ILUMINACION = "#e2e8f0"; // Plateado/Blanco
         const COLOR_VELOCIDAD = "#ef4444"; // Rojo
         const COLOR_BRT_METROBUS = "#06b6d4"; // Cyan
+        const COLOR_CORREDOR_MUY_ALTA = "#f43f5e"; // Rosa/Rojo vibrante
+        const COLOR_CORREDOR_ALTA = "#fb923c"; // Naranja vibrante
         
         // Activar panel de diagnóstico si ?debug=true
         const urlParams = new URLSearchParams(window.location.search);
@@ -669,30 +828,89 @@
         let overlayMaps = {};
         let historicoChart = null;
 
-        // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha)
+        let selectedVariable = 'normal'; // variable de coropletas seleccionada
+        
+        // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha y Coropletas)
         function getCantonStyle(feature, isHovered = false, isSelected = false) {
             const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
             
-            // Colores e intensidades
-            let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO; // Celeste vs Gris
-            let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.2);
-            let opacity = isHovered ? 1.0 : (isSelected ? 1.0 : (isPichincha ? 0.7 : 0.2));
-            let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
-            let fillOpacity = isHovered ? 0.25 : (isSelected ? 0.20 : (isPichincha ? 0.08 : 0.02));
-            
-            if (isSelected) {
-                color = "#38bdf8"; // Resaltado de selección celeste muy brillante
-            } else if (isHovered) {
-                color = isPichincha ? "#38bdf8" : "#cbd5e1";
+            if (selectedVariable === 'normal') {
+                // Colores e intensidades normales (Pichincha-enfocado)
+                let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO; // Celeste vs Gris
+                let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.2);
+                let opacity = isHovered ? 1.0 : (isSelected ? 1.0 : (isPichincha ? 0.7 : 0.2));
+                let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
+                let fillOpacity = isHovered ? 0.25 : (isSelected ? 0.20 : (isPichincha ? 0.08 : 0.02));
+                
+                if (isSelected) {
+                    color = "#38bdf8"; // Resaltado de selección celeste muy brillante
+                } else if (isHovered) {
+                    color = isPichincha ? "#38bdf8" : "#cbd5e1";
+                }
+                
+                return {
+                    color: color,
+                    weight: weight,
+                    opacity: opacity,
+                    fillColor: fillColor,
+                    fillOpacity: fillOpacity,
+                    dashArray: ''
+                };
+            } else {
+                // Modo Coropletas - Opacidad plena nacional
+                let val = null;
+                let bins = [];
+                let colors = [];
+                
+                if (selectedVariable === 'siniestros_inec_2019') {
+                    val = feature.properties.siniestros_inec_2019;
+                    bins = [6, 16, 37, 82];
+                    colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]; // Reds
+                } else if (selectedVariable === 'fallecidos_inec_2019') {
+                    val = feature.properties.fallecidos_inec_2019;
+                    bins = [3, 5, 10, 19];
+                    colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]; // Reds
+                } else if (selectedVariable === 'tasa_fallecidos_100k') {
+                    val = feature.properties.tasa_fallecidos_100k;
+                    bins = [8.8, 12.6, 19.7, 29.2];
+                    colors = ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"]; // PuRd
+                } else if (selectedVariable === 'fallecidos_sppat_2016_2021') {
+                    val = feature.properties.fallecidos_sppat_2016_2021;
+                    bins = [7, 19, 47, 112];
+                    colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]; // OrRd
+                }
+                
+                let color = "#cbd5e1"; // border color
+                let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
+                let opacity = 0.8;
+                let fillColor = "#334155"; // default slate-grey for "sin dato"
+                let fillOpacity = 0.65;
+                let dashArray = '';
+                
+                if (val === null || val === undefined || val === 0) {
+                    fillColor = "#1e293b";
+                    fillOpacity = 0.45;
+                    dashArray = '3, 4';
+                    color = "#475569";
+                } else {
+                    let idx = 0;
+                    while (idx < bins.length && val > bins[idx]) {
+                        idx++;
+                    }
+                    fillColor = colors[idx];
+                    color = isSelected ? "#38bdf8" : (isHovered ? "#ffffff" : "#475569");
+                    opacity = (isSelected || isHovered) ? 1.0 : 0.6;
+                }
+                
+                return {
+                    color: color,
+                    weight: weight,
+                    opacity: opacity,
+                    fillColor: fillColor,
+                    fillOpacity: fillOpacity,
+                    dashArray: dashArray
+                };
             }
-            
-            return {
-                color: color,
-                weight: weight,
-                opacity: opacity,
-                fillColor: fillColor,
-                fillOpacity: fillOpacity
-            };
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -704,20 +922,77 @@
             container.innerHTML = "";
             let hasItems = false;
             
-            // 1. Límites Cantonales
+            // 1. Límites Cantonales o Coropletas
             if (cantonLayer && map.hasLayer(cantonLayer)) {
                 hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Límites Cantonales:</div>
-                    <div class="legend-item" style="padding-left: 8px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_CANTON_PICHINCHA}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                        <span>Pichincha</span>
-                    </div>
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_CANTON_RESTO}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                        <span>Resto del país</span>
-                    </div>
-                `;
+                if (selectedVariable === 'normal') {
+                    container.innerHTML += `
+                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Límites Cantonales:</div>
+                        <div class="legend-item" style="padding-left: 8px;">
+                            <span class="legend-color-line" style="background-color: ${COLOR_CANTON_PICHINCHA}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                            <span>Pichincha</span>
+                        </div>
+                        <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                            <span class="legend-color-line" style="background-color: ${COLOR_CANTON_RESTO}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                            <span>Resto del país</span>
+                        </div>
+                    `;
+                } else {
+                    let title = "";
+                    let bins = [];
+                    let colors = [];
+                    let formatFunc = (v) => v.toString();
+                    
+                    if (selectedVariable === 'siniestros_inec_2019') {
+                        title = "Siniestros INEC 2019:";
+                        bins = [6, 16, 37, 82];
+                        colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
+                    } else if (selectedVariable === 'fallecidos_inec_2019') {
+                        title = "Fallecidos INEC 2019:";
+                        bins = [3, 5, 10, 19];
+                        colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
+                    } else if (selectedVariable === 'tasa_fallecidos_100k') {
+                        title = "Tasa por 100k (2019):";
+                        bins = [8.8, 12.6, 19.7, 29.2];
+                        colors = ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"];
+                        formatFunc = (v) => v.toFixed(1);
+                    } else if (selectedVariable === 'fallecidos_sppat_2016_2021') {
+                        title = "Fallecidos SPPAT (16-21):";
+                        bins = [7, 19, 47, 112];
+                        colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"];
+                    }
+                    
+                    let itemsHtml = `
+                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${title}</div>
+                    `;
+                    
+                    for (let i = 0; i <= bins.length; i++) {
+                        let label = "";
+                        if (i === 0) {
+                            label = `<= ${formatFunc(bins[0])}`;
+                        } else if (i === bins.length) {
+                            label = `> ${formatFunc(bins[bins.length - 1])}`;
+                        } else {
+                            label = `${formatFunc(bins[i - 1] + (selectedVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
+                        }
+                        
+                        itemsHtml += `
+                            <div class="legend-item" style="padding-left: 8px;">
+                                <span class="legend-color-line" style="background-color: ${colors[i]}; height: 10px; width: 14px; border-radius: 2px; opacity: 0.75; border: 1px solid rgba(255,255,255,0.15)"></span>
+                                <span>${label}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    itemsHtml += `
+                        <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                            <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569; height: 10px; width: 14px; border-radius: 2px;"></span>
+                            <span style="color: var(--text-muted)">Sin dato oficial</span>
+                        </div>
+                    `;
+                    
+                    container.innerHTML += itemsHtml;
+                }
             }
             
             // 2. Ciclovías
@@ -729,6 +1004,23 @@
                     <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
                         <span class="legend-color-line" style="background-color: ${COLOR_CICLOVIAS};"></span>
                         <span>Ciclovías (OpenStreetMap)</span>
+                    </div>
+                `;
+            }
+            
+            // Corredores REDSA
+            const corredoresLayer = overlayMaps["Corredores Prioritarios REDSA (Pichincha)"];
+            if (corredoresLayer && map.hasLayer(corredoresLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Corredores REDSA:</div>
+                    <div class="legend-item" style="padding-left: 8px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_CORREDOR_MUY_ALTA}; height: 6px; width: 14px; border-radius: 1px;"></span>
+                        <span>Prioridad Muy Alta</span>
+                    </div>
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_CORREDOR_ALTA}; height: 6px; width: 14px; border-radius: 1px;"></span>
+                        <span>Prioridad Alta</span>
                     </div>
                 `;
             }
@@ -861,10 +1153,34 @@
         const domTasaFallecidos = document.getElementById("info-tasa-fallecidos");
         const domCodCanton = document.getElementById("info-cod-canton");
         const domCodProvincia = document.getElementById("info-cod-provincia");
+        
+        // Dynamic Containers
+        const inecDetailedStats = document.getElementById("inec-detailed-stats");
+        const inecZonaRatio = document.getElementById("inec-zona-ratio");
+        const inecClaseList = document.getElementById("inec-clase-list");
+        const inecCausaList = document.getElementById("inec-causa-list");
+        const inecHoraPico = document.getElementById("inec-horapico");
+        const edgProfileContainer = document.getElementById("edg-profile-container");
+        const sppatProfileContainer = document.getElementById("sppat-profile-container");
 
         function formatNumber(val) {
             if (val === null || val === undefined) return "Dato no disponible a este nivel";
             return Number(val).toLocaleString('de-DE');
+        }
+
+        // Helper to render dynamic progress bar
+        defProgressBar = (label, count, pct, color) => {
+            return `
+                <div class="profile-bar-row">
+                    <div class="profile-bar-labels">
+                        <span>${label}</span>
+                        <span style="font-weight: 600;">${count} (${pct.toFixed(1)}%)</span>
+                    </div>
+                    <div class="profile-bar-wrapper">
+                        <div class="profile-bar-fill" style="width: ${pct}%; background-color: ${color};"></div>
+                    </div>
+                </div>
+            `;
         }
 
         function updateSidebar(props) {
@@ -891,9 +1207,12 @@
                 domTasaFallecidos.textContent = "Dato no disponible a este nivel";
                 domTasaFallecidos.classList.add("empty");
                 domCodCanton.textContent = "—";
-                domCodCanton.classList.add("empty");
                 domCodProvincia.textContent = "—";
-                domCodProvincia.classList.add("empty");
+                
+                // Hide dynamic sections
+                inecDetailedStats.style.display = "none";
+                edgProfileContainer.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Pasa el cursor o haz clic en un cantón</div>`;
+                sppatProfileContainer.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Pasa el cursor o haz clic en un cantón</div>`;
 
                 if (historicoChart) {
                     historicoChart.destroy();
@@ -941,7 +1260,7 @@
             
             const tasa = props.tasa_fallecidos_100k;
             if (tasa !== null && tasa !== undefined) {
-                domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " por 100k hab.";
                 domTasaFallecidos.classList.remove("empty");
             } else {
                 domTasaFallecidos.textContent = "Dato no disponible a este nivel";
@@ -949,10 +1268,178 @@
             }
             
             domCodCanton.textContent = props.DPA_CANTON || "—";
-            domCodCanton.classList.remove("empty");
-            
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
-            domCodProvincia.classList.remove("empty");
+
+            // Render detailed Siniestros (INEC 2019)
+            if (props.siniestros_inec_2019) {
+                inecDetailedStats.style.display = "block";
+                
+                // Zona (Urbana vs Rural)
+                const ur = props.inec_urbano_rural || {};
+                const u_count = ur.URBANA || 0;
+                const r_count = ur.RURAL || 0;
+                const total_ur = u_count + r_count;
+                if (total_ur > 0) {
+                    inecZonaRatio.textContent = `Urbana: ${u_count} (${(u_count/total_ur*100).toFixed(0)}%) / Rural: ${r_count} (${(r_count/total_ur*100).toFixed(0)}%)`;
+                } else {
+                    inecZonaRatio.textContent = "Sin datos de zona";
+                }
+                
+                // Clase Siniestros (Top 3)
+                const claseObj = props.inec_por_clase || {};
+                const sortedClases = Object.keys(claseObj).map(k => [k, claseObj[k]]).sort((a,b) => b[1] - a[1]);
+                let claseHtml = "";
+                sortedClases.slice(0, 3).forEach(c => {
+                    const pct = (c[1] / props.siniestros_inec_2019) * 100;
+                    claseHtml += defProgressBar(c[0], c[1], pct, "#38bdf8");
+                });
+                inecClaseList.innerHTML = claseHtml || "Sin datos de clase";
+                
+                // Causa Siniestros (Top 2)
+                const causaObj = props.inec_por_causa || {};
+                const sortedCausas = Object.keys(causaObj).map(k => [k, causaObj[k]]).sort((a,b) => b[1] - a[1]);
+                let causaHtml = "";
+                sortedCausas.slice(0, 2).forEach(c => {
+                    const pct = (c[1] / props.siniestros_inec_2019) * 100;
+                    causaHtml += `<div style="margin-bottom: 4px; line-height: 1.2;">• <strong style="color: var(--text-primary);">${c[0]}:</strong> ${c[1]} (${pct.toFixed(0)}%)</div>`;
+                });
+                inecCausaList.innerHTML = causaHtml || "Sin datos de causas";
+                
+                // Hora pico
+                const horaObj = props.inec_patron_horario || {};
+                const sortedHoras = Object.keys(horaObj).map(k => [k, horaObj[k]]).sort((a,b) => b[1] - a[1]);
+                if (sortedHoras.length > 0) {
+                    inecHoraPico.textContent = `${sortedHoras[0][0]} (${sortedHoras[0][1]} siniestros)`;
+                } else {
+                    inecHoraPico.textContent = "Sin datos horarios";
+                }
+            } else {
+                inecDetailedStats.style.display = "none";
+            }
+
+            // Render demographic profiles in accordion (EDG 2020-2024)
+            const edg = props.fallecidos_detallado;
+            if (edg) {
+                const total_edg = Object.values(edg.sexo).reduce((a,b) => a+b, 0);
+                if (total_edg > 0) {
+                    let edgHtml = "";
+                    
+                    // Gender distribution bi-color bar
+                    const m_pct = (edg.sexo.Hombre / total_edg) * 100;
+                    const f_pct = (edg.sexo.Mujer / total_edg) * 100;
+                    edgHtml += `
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 2px;">Distribución por Género (Total: ${total_edg}):</div>
+                        <div class="gender-bar-wrapper">
+                            ${edg.sexo.Hombre > 0 ? `<div class="gender-segment male" style="width: ${m_pct}%;">H: ${m_pct.toFixed(0)}%</div>` : ''}
+                            ${edg.sexo.Mujer > 0 ? `<div class="gender-segment female" style="width: ${f_pct}%;">M: ${f_pct.toFixed(0)}%</div>` : ''}
+                        </div>
+                    `;
+                    
+                    // Road User Type
+                    edgHtml += `<div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 8px; margin-bottom: 4px;">Tipo de Usuario Vial:</div>`;
+                    const userColors = {
+                        peaton: "#eab308",
+                        ciclista: "#22c55e",
+                        motociclista: "#f97316",
+                        ocupante: "#38bdf8",
+                        otro: "#94a3b8"
+                    };
+                    const userLabels = {
+                        peaton: "Peatón",
+                        ciclista: "Ciclista",
+                        motociclista: "Motociclista",
+                        ocupante: "Ocupante Vehículo 4+ ruedas",
+                        otro: "Otro / No especificado"
+                    };
+                    Object.keys(edg.usuario).forEach(k => {
+                        const count = edg.usuario[k];
+                        if (count > 0) {
+                            const pct = (count / total_edg) * 100;
+                            edgHtml += defProgressBar(userLabels[k], count, pct, userColors[k]);
+                        }
+                    });
+                    
+                    // Age Groups
+                    edgHtml += `<div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 8px; margin-bottom: 4px;">Grupos de Edad:</div>`;
+                    const ageLabels = {
+                        '0-14': "Niños (0-14 años)",
+                        '15-29': "Jóvenes (15-29 años)",
+                        '30-49': "Adultos (30-49 años)",
+                        '50-64': "Adultos Mayores (50-64 años)",
+                        '65+': "Elderly (65+ años)"
+                    };
+                    Object.keys(edg.edad).forEach(k => {
+                        const count = edg.edad[k];
+                        if (count > 0) {
+                            const pct = (count / total_edg) * 100;
+                            edgHtml += defProgressBar(ageLabels[k], count, pct, "#cbd5e1");
+                        }
+                    });
+                    
+                    edgProfileContainer.innerHTML = edgHtml;
+                } else {
+                    edgProfileContainer.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Sin registros en INEC EDG</div>`;
+                }
+            } else {
+                edgProfileContainer.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Dato no disponible en INEC EDG</div>`;
+            }
+
+            // Render SPPAT (2016-2021) Profile
+            const sppat_t = props.fallecidos_sppat_2016_2021;
+            if (sppat_t && props.sppat_por_sexo) {
+                let sppatHtml = "";
+                
+                // Gender
+                const s_m_count = props.sppat_por_sexo.MASCULINO || 0;
+                const s_f_count = props.sppat_por_sexo.FEMENINO || 0;
+                const s_total_sex = s_m_count + s_f_count;
+                if (s_total_sex > 0) {
+                    const sm_pct = (s_m_count / s_total_sex) * 100;
+                    const sf_pct = (s_f_count / s_total_sex) * 100;
+                    sppatHtml += `
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 2px;">Distribución por Género (Total: ${s_total_sex}):</div>
+                        <div class="gender-bar-wrapper">
+                            ${s_m_count > 0 ? `<div class="gender-segment male" style="width: ${sm_pct}%;">Masc: ${sm_pct.toFixed(0)}%</div>` : ''}
+                            ${s_f_count > 0 ? `<div class="gender-segment female" style="width: ${sf_pct}%;">Fem: ${sf_pct.toFixed(0)}%</div>` : ''}
+                        </div>
+                    `;
+                }
+                
+                // Condicion (User type)
+                const condObj = props.sppat_por_condicion || {};
+                const total_cond = Object.values(condObj).reduce((a,b) => a+b, 0);
+                if (total_cond > 0) {
+                    sppatHtml += `<div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 8px; margin-bottom: 4px;">Condición de la Víctima:</div>`;
+                    const condColors = {
+                        "PEATÓN": "#eab308",
+                        "OCUPANTE": "#38bdf8",
+                        "BICICLETA": "#22c55e",
+                        "DESCONOCIDO": "#94a3b8"
+                    };
+                    Object.keys(condObj).forEach(k => {
+                        const count = condObj[k];
+                        const pct = (count / total_cond) * 100;
+                        sppatHtml += defProgressBar(k, count, pct, condColors[k] || "#94a3b8");
+                    });
+                }
+                
+                // Tipo Accidente
+                const tipoObj = props.sppat_por_tipo_accidente || {};
+                const total_tipo = Object.values(tipoObj).reduce((a,b) => a+b, 0);
+                if (total_tipo > 0) {
+                    sppatHtml += `<div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 8px; margin-bottom: 4px;">Tipo de Accidente:</div>`;
+                    Object.keys(tipoObj).forEach(k => {
+                        const count = tipoObj[k];
+                        const pct = (count / total_tipo) * 100;
+                        sppatHtml += defProgressBar(k, count, pct, "#a855f7");
+                    });
+                }
+                
+                sppatProfileContainer.innerHTML = sppatHtml;
+            } else {
+                sppatProfileContainer.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 10px 0;">Dato no disponible en SPPAT</div>`;
+            }
+            
 
             // Renderizar mini-gráfico Chart.js
             const hist = props.fallecidos_historico;
@@ -1473,6 +1960,64 @@
                             l.bindPopup(`<strong>Carril Exclusivo BRT/Bus:</strong> ${name}<br><strong>Nº Carriles:</strong> ${lanes}<br><small>${f.properties.attribution}</small>`);
                         }
                     }
+                });
+                
+                loadOSMLayer("data/corredores_redsa.geojson", "Corredores Prioritarios REDSA (Pichincha)", {
+                    style: function(f) {
+                        const isVeryHigh = f.properties && f.properties.priority === "Muy Alta";
+                        return {
+                            color: isVeryHigh ? COLOR_CORREDOR_MUY_ALTA : COLOR_CORREDOR_ALTA,
+                            weight: isVeryHigh ? 4 : 3,
+                            opacity: 0.85
+                        };
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const name = f.properties.name || "Corredor sin nombre";
+                            const prio = f.properties.priority || "Alta";
+                            l.bindPopup(`<strong>Corredor REDSA:</strong> ${name}<br><strong>Prioridad:</strong> ${prio}<br><small>OpenStreetMap contributors, ODbL</small>`);
+                        }
+                    }
+                });
+
+                // Initialize Selector Control on Map
+                const MapControl = L.Control.extend({
+                    options: { position: 'topleft' },
+                    onAdd: function(map) {
+                        const div = L.DomUtil.create('div', 'map-selector-control glass');
+                        div.innerHTML = `
+                            <div style="font-weight: 600; font-size: 0.7rem; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Variables del Mapa</div>
+                            <select id="map-variable-select" style="background: rgba(15, 23, 42, 0.85); color: #f8fafc; border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px 6px; font-size: 0.75rem; cursor: pointer; outline: none; width: 100%;">
+                                <option value="normal">Por defecto (Límites)</option>
+                                <option value="siniestros_inec_2019">Siniestros INEC 2019</option>
+                                <option value="fallecidos_inec_2019">Fallecidos INEC 2019</option>
+                                <option value="tasa_fallecidos_100k">Tasa por 100k (2019)</option>
+                                <option value="fallecidos_sppat_2016_2021">Fallecidos SPPAT (16-21)</option>
+                            </select>
+                        `;
+                        L.DomEvent.disableClickPropagation(div);
+                        return div;
+                    }
+                });
+                new MapControl().addTo(map);
+                
+                document.addEventListener("change", (e) => {
+                    if (e.target && e.target.id === "map-variable-select") {
+                        selectedVariable = e.target.value;
+                        if (cantonLayer) {
+                            cantonLayer.eachLayer(layer => {
+                                cantonLayer.resetStyle(layer);
+                            });
+                        }
+                        updateLegend();
+                    }
+                });
+
+                // Accordion Toggler
+                document.getElementById("profile-accordion-btn").addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    const content = document.getElementById("profile-accordion-content");
+                    content.classList.toggle("active");
                 });
 
                 // Ocultar pantalla de carga
