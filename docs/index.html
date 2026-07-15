@@ -656,6 +656,7 @@
                         <div class="detail-label">Parroquia</div>
                         <div id="info-parroquia" class="detail-value empty">—</div>
                     </div>
+                    <div id="cabecera-warning-box" style="display: none; margin-top: 6px; margin-bottom: 8px; padding: 10px; border-radius: 6px; background: rgba(239, 68, 68, 0.08); border: 1px dashed rgba(239, 68, 68, 0.3); font-size: 0.7rem; line-height: 1.35; color: #fca5a5;"></div>
                     <div class="detail-row">
                         <div class="detail-label">Cantón</div>
                         <div id="info-canton" class="detail-value empty">Pasa el cursor o haz clic en un cantón</div>
@@ -1388,6 +1389,11 @@
         const domCodParroquia = document.getElementById("info-cod-parroquia");
         const domParroquiaRow = document.getElementById("parroquia-row");
         const domFallecidosParroquiaRow = document.getElementById("fallecidos-parroquia-row");
+        const domWarningBox = document.getElementById("cabecera-warning-box");
+
+        // Configuración de aviso de cabecera
+        const CABECERA_SUFFIX = "50";
+        const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} sin límite propio en el shapefile oficial CONALI 2022. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
         
         // Dynamic Containers
         const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -1560,6 +1566,13 @@
                 domFallecidosParroquia.classList.remove("empty");
                 domCodParroquia.textContent = parishProps.DPA_PARROQ;
                 
+                if (String(parishProps.DPA_PARROQ).endsWith(CABECERA_SUFFIX)) {
+                    domWarningBox.textContent = MENSAJE_CABECERA.replace("{DPA_DESCAN}", parishProps.DPA_DESCAN);
+                    domWarningBox.style.display = "block";
+                } else {
+                    domWarningBox.style.display = "none";
+                }
+                
                 document.getElementById("dpa-label-prefix").textContent = "Parr / Cant / Prov";
                 document.getElementById("info-cod-parroquia-span").style.display = "inline";
                 document.getElementById("info-cod-parroquia").textContent = parishProps.DPA_PARROQ;
@@ -1569,6 +1582,9 @@
                     domParroquia.classList.add("empty");
                     domFallecidosParroquia.textContent = "—";
                     domFallecidosParroquia.classList.add("empty");
+                }
+                if (domWarningBox) {
+                    domWarningBox.style.display = "none";
                 }
                 
                 const span = document.getElementById("info-cod-parroquia-span");
