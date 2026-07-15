@@ -1,6 +1,6 @@
 # Hotspots cantonales - metodologia
 
-Fecha de generacion: 2026-07-15T18:01:24-05:00
+Fecha de generacion: 2026-07-15T18:51:16-05:00
 
 ## Entradas
 
@@ -33,10 +33,10 @@ Los cantones sin vecinos geograficos reales en la matriz de contiguidad se exclu
 ## Resumen por anio
 
 - 2019: 0 cantones validos; 224 cantones `sin_dato`; componentes=no calculado; islas=ninguna.
-- 2021: 190 cantones validos; 34 cantones `sin_dato`; componentes=2; islas=2003.
-- 2022: 187 cantones validos; 37 cantones `sin_dato`; componentes=2; islas=2003.
-- 2023: 192 cantones validos; 32 cantones `sin_dato`; componentes=3; islas=2001, 2003.
-- 2024: 195 cantones validos; 29 cantones `sin_dato`; componentes=3; islas=2001, 2003.
+- 2021: 195 cantones validos; 29 cantones `sin_dato`; componentes=2; islas=2003.
+- 2022: 193 cantones validos; 31 cantones `sin_dato`; componentes=2; islas=2003.
+- 2023: 198 cantones validos; 26 cantones `sin_dato`; componentes=3; islas=2001, 2003.
+- 2024: 202 cantones validos; 22 cantones `sin_dato`; componentes=3; islas=2001, 2003.
 
 ## Advertencias
 
@@ -45,6 +45,13 @@ Los cantones sin vecinos geograficos reales en la matriz de contiguidad se exclu
 - 2022: matriz de contiguidad no plenamente conectada; islas=2003
 - 2023: matriz de contiguidad no plenamente conectada; islas=2001, 2003
 - 2024: matriz de contiguidad no plenamente conectada; islas=2001, 2003
+
+## Nota EDG / CIE-10
+
+- El numerador EDG usa los primeros 3 caracteres del campo `CAUSA` y filtra exactamente `V01-V89` como accidentes de transporte terrestre. `V00` queda excluido explicitamente; en 2021-2024 no existieron registros `V00`, por lo que el cierre de la regex no altera los conteos actuales.
+- Los codigos `V90-V99` quedan excluidos porque corresponden a transporte acuatico/aereo u otros accidentes de transporte no terrestre. En 2021-2024 se identificaron 43 registros `V90-V99` excluidos.
+- Los 179 registros que pasaban `V01-V89` pero no resolvian a canton/parroquia fueron recuperados mediante normalizacion de variantes territoriales del origen EDG (`Empalme` -> `El Empalme`, `La Condordia` -> `La Concordia`, abreviaturas `Crnel.`/`Gnral.`, y errores tipograficos como `Cotacahi`, `Olemdo`). El conteo final `fallecidos_sin_georreferenciar_2021_2024` es 0.
+- `V89` (tipo de vehiculo no especificado) concentra 11,648 de 15,297 fallecidos de transito EDG 2021-2024 (~76.1%). Es una limitacion conocida del registro civil, no un error del pipeline. El desglose por tipo de usuario vial es mas confiable en SPPAT (campo `Condicion`) que en EDG por esta razon.
 
 ## Limitaciones
 
