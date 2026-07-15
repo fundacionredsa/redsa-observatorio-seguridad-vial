@@ -1,6 +1,6 @@
 # Hotspots cantonales - metodologia
 
-Fecha de generacion: 2026-07-15T17:51:10-05:00
+Fecha de generacion: 2026-07-15T18:01:24-05:00
 
 ## Entradas
 
@@ -27,6 +27,8 @@ Sobre la tasa por 100,000 habitantes se calculan:
 - Local Moran's I (`esda.Moran_Local`).
 
 Cada canton/anio sin numerador o poblacion valida se marca como `sin_dato`; no se reemplazan faltantes por cero.
+
+Los cantones sin vecinos geograficos reales en la matriz de contiguidad se excluyen del calculo inferencial y se marcan como `isla_sin_vecinos`, con `z_score`, `i_local` y `p_value` en `null`.
 
 ## Resumen por anio
 
