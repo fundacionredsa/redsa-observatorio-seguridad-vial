@@ -586,7 +586,7 @@
             <!-- Marca/Cabecera -->
             <div class="header-brand">
                 <h1>
-                    REDSA
+                    Fundación REDSA
                     <span class="highlight">Observatorio de Seguridad Vial y Movilidad Sostenible</span>
                 </h1>
                 <p>Observatorio de seguridad vial con datos oficiales de siniestralidad y movilidad activa. Piloto en la provincia de Pichincha con proyección de expansión nacional.</p>
@@ -625,8 +625,21 @@
                         <div id="chart-empty-msg" style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 15px 0;">Pasa el cursor o haz clic en un cantón para ver la tendencia</div>
                     </div>
 
-                    <!-- SECCIÓN 3: SINIESTROS (INEC 2019) -->
-                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Siniestros (INEC 2019)</div>
+                    <!-- SECCIÓN 3: SINIESTROS DE TRÁNSITO (INEC 2019 - 2024) -->
+                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Siniestros de Tránsito (INEC 2019 - 2024)</div>
+                    <div class="detail-row" style="margin-bottom: 8px;">
+                        <div class="detail-label" style="font-weight: 600;">Periodo a visualizar:</div>
+                        <div class="detail-value">
+                            <select id="siniestros-year-select" style="background: var(--bg-panel); color: var(--text-primary); border: 1px solid var(--border-glass); border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; outline: none;">
+                                <option value="consolidado" selected>Consolidado (2019-2024)</option>
+                                <option value="2019">2019</option>
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="detail-row">
                         <div class="detail-label">Siniestros de Tránsito</div>
                         <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
@@ -651,8 +664,8 @@
                         <div id="inec-horapico" style="font-size: 0.75rem; color: var(--text-primary); font-weight: 500;">—</div>
                     </div>
 
-                    <!-- SECCIÓN 4: FALLECIDOS (MORTALIDAD) -->
-                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Fallecidos en Vías</div>
+                    <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
+                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Fallecidos en Siniestros de Tránsito</div>
                     <div class="detail-row">
                         <div class="detail-label">Fallecidos SPPAT <span class="source-label">(Total 2016-2021)</span></div>
                         <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
@@ -668,6 +681,17 @@
                     <div class="detail-row" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
                         <div class="detail-label">Tasa de Fallecidos por 100k Hab. <span class="source-label">(INEC 2019)</span></div>
                         <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
+                    </div>
+
+                    <!-- Nota metodológica sobre fuentes de Fallecidos -->
+                    <div class="note-box" style="margin-top: 10px; margin-bottom: 12px; padding: 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); font-size: 0.68rem; line-height: 1.3; color: var(--text-secondary);">
+                        <strong style="color: var(--text-primary);"><i class="fas fa-info-circle" style="color: #0ea5e9; margin-right: 4px;"></i> Nota sobre fuentes de Fallecidos:</strong>
+                        <ul style="margin: 4px 0 0 0; padding-left: 12px; list-style-type: disc;">
+                            <li><strong>SPPAT (2016-2021):</strong> Reclamaciones de seguro pagadas (puede subestimar el total por rezagos administrativos).</li>
+                            <li><strong>INEC Siniestros (2019):</strong> Registro puntual de partes policiales consolidados por la ANT.</li>
+                            <li><strong>EDG / Perfil (2020-2024):</strong> Registro Civil de defunciones por causa de muerte (CIE-10), la fuente más completa y con serie histórica.</li>
+                        </ul>
+                        <div style="margin-top: 4px; font-weight: 500; color: var(--text-primary);">* No se deben sumar ni promediar entre sí al usar metodologías y periodos distintos.</div>
                     </div>
 
                     <!-- Collapsible Accordion for Perfil de Fallecidos -->
@@ -1009,11 +1033,11 @@
             }
             
             // Corredores REDSA
-            const corredoresLayer = overlayMaps["Corredores Prioritarios REDSA (Pichincha)"];
+            const corredoresLayer = overlayMaps["Corredores Prioritarios Fundación REDSA (Pichincha)"];
             if (corredoresLayer && map.hasLayer(corredoresLayer)) {
                 hasItems = true;
                 container.innerHTML += `
-                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Corredores REDSA:</div>
+                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Corredores Fundación REDSA:</div>
                     <div class="legend-item" style="padding-left: 8px;">
                         <span class="legend-color-line" style="background-color: ${COLOR_CORREDOR_MUY_ALTA}; height: 6px; width: 14px; border-radius: 1px;"></span>
                         <span>Prioridad Muy Alta</span>
@@ -1183,6 +1207,131 @@
             `;
         }
 
+        let currentProps = null;
+
+        function renderSiniestrosSection(props, yearVal) {
+            const inecDetailedStats = document.getElementById("inec-detailed-stats");
+            const inecZonaRatio = document.getElementById("inec-zona-ratio");
+            const inecClaseList = document.getElementById("inec-clase-list");
+            const inecCausaList = document.getElementById("inec-causa-list");
+            const inecHoraPico = document.getElementById("inec-horapico");
+            
+            const domSiniestrosInec = document.getElementById("info-siniestros-inec");
+            const domLesionadosInec = document.getElementById("info-lesionados-inec");
+            
+            if (!props || !props.siniestros_historico) {
+                inecDetailedStats.style.display = "none";
+                domSiniestrosInec.textContent = "—";
+                domSiniestrosInec.classList.add("empty");
+                domLesionadosInec.textContent = "—";
+                domLesionadosInec.classList.add("empty");
+                return;
+            }
+            
+            let yearsToProcess = [];
+            if (yearVal === "consolidado") {
+                yearsToProcess = Object.keys(props.siniestros_historico);
+            } else {
+                if (props.siniestros_historico[yearVal] !== undefined) {
+                    yearsToProcess = [yearVal];
+                }
+            }
+            
+            if (yearsToProcess.length === 0) {
+                inecDetailedStats.style.display = "none";
+                domSiniestrosInec.textContent = "Sin datos";
+                domSiniestrosInec.classList.add("empty");
+                domLesionadosInec.textContent = "Sin datos";
+                domLesionadosInec.classList.add("empty");
+                return;
+            }
+            
+            let totalSiniestros = 0;
+            let totalLesionados = 0;
+            
+            let mergedZona = {};
+            let mergedClase = {};
+            let mergedCausa = {};
+            let mergedHorario = {};
+            
+            yearsToProcess.forEach(yr => {
+                totalSiniestros += props.siniestros_historico[yr] || 0;
+                
+                const res = props.inec_resumen_historico && props.inec_resumen_historico[yr];
+                if (res) {
+                    totalLesionados += res.lesionados || 0;
+                }
+                
+                const zObj = props.inec_urbano_rural && props.inec_urbano_rural[yr];
+                if (zObj) {
+                    Object.keys(zObj).forEach(k => {
+                        mergedZona[k] = (mergedZona[k] || 0) + zObj[k];
+                    });
+                }
+                
+                const cObj = props.inec_por_clase && props.inec_por_clase[yr];
+                if (cObj) {
+                    Object.keys(cObj).forEach(k => {
+                        mergedClase[k] = (mergedClase[k] || 0) + cObj[k];
+                    });
+                }
+                
+                const cauObj = props.inec_por_causa && props.inec_por_causa[yr];
+                if (cauObj) {
+                    Object.keys(cauObj).forEach(k => {
+                        mergedCausa[k] = (mergedCausa[k] || 0) + cauObj[k];
+                    });
+                }
+                
+                const hObj = props.inec_patron_horario && props.inec_patron_horario[yr];
+                if (hObj) {
+                    Object.keys(hObj).forEach(k => {
+                        mergedHorario[k] = (mergedHorario[k] || 0) + hObj[k];
+                    });
+                }
+            });
+            
+            domSiniestrosInec.textContent = totalSiniestros.toLocaleString('de-DE');
+            domSiniestrosInec.classList.remove("empty");
+            
+            domLesionadosInec.textContent = totalLesionados.toLocaleString('de-DE');
+            domLesionadosInec.classList.remove("empty");
+            
+            inecDetailedStats.style.display = "block";
+            
+            const u_count = mergedZona.URBANA || 0;
+            const r_count = mergedZona.RURAL || 0;
+            const total_ur = u_count + r_count;
+            if (total_ur > 0) {
+                inecZonaRatio.textContent = `Urbana: ${u_count.toLocaleString('de-DE')} (${(u_count/total_ur*100).toFixed(0)}%) / Rural: ${r_count.toLocaleString('de-DE')} (${(r_count/total_ur*100).toFixed(0)}%)`;
+            } else {
+                inecZonaRatio.textContent = "Sin datos de zona";
+            }
+            
+            const sortedClases = Object.keys(mergedClase).map(k => [k, mergedClase[k]]).sort((a,b) => b[1] - a[1]);
+            let claseHtml = "";
+            sortedClases.slice(0, 3).forEach(c => {
+                const pct = totalSiniestros > 0 ? (c[1] / totalSiniestros) * 100 : 0;
+                claseHtml += defProgressBar(c[0], c[1], pct, "#38bdf8");
+            });
+            inecClaseList.innerHTML = claseHtml || "Sin datos de clase";
+            
+            const sortedCausas = Object.keys(mergedCausa).map(k => [k, mergedCausa[k]]).sort((a,b) => b[1] - a[1]);
+            let causaHtml = "";
+            sortedCausas.slice(0, 2).forEach(c => {
+                const pct = totalSiniestros > 0 ? (c[1] / totalSiniestros) * 100 : 0;
+                causaHtml += `<div style="margin-bottom: 4px; line-height: 1.2;">• <strong style="color: var(--text-primary);">${c[0]}:</strong> ${c[1].toLocaleString('de-DE')} (${pct.toFixed(0)}%)</div>`;
+            });
+            inecCausaList.innerHTML = causaHtml || "Sin datos de causas";
+            
+            const sortedHoras = Object.keys(mergedHorario).map(k => [k, mergedHorario[k]]).sort((a,b) => b[1] - a[1]);
+            if (sortedHoras.length > 0) {
+                inecHoraPico.textContent = `${sortedHoras[0][0]} (${sortedHoras[0][1].toLocaleString('de-DE')} siniestros)`;
+            } else {
+                inecHoraPico.textContent = "Sin datos horarios";
+            }
+        }
+
         function updateSidebar(props) {
             const chartContainer = document.getElementById("chart-container");
             const chartEmptyMsg = document.getElementById("chart-empty-msg");
@@ -1270,52 +1419,8 @@
             domCodCanton.textContent = props.DPA_CANTON || "—";
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
 
-            // Render detailed Siniestros (INEC 2019)
-            if (props.siniestros_inec_2019) {
-                inecDetailedStats.style.display = "block";
-                
-                // Zona (Urbana vs Rural)
-                const ur = props.inec_urbano_rural || {};
-                const u_count = ur.URBANA || 0;
-                const r_count = ur.RURAL || 0;
-                const total_ur = u_count + r_count;
-                if (total_ur > 0) {
-                    inecZonaRatio.textContent = `Urbana: ${u_count} (${(u_count/total_ur*100).toFixed(0)}%) / Rural: ${r_count} (${(r_count/total_ur*100).toFixed(0)}%)`;
-                } else {
-                    inecZonaRatio.textContent = "Sin datos de zona";
-                }
-                
-                // Clase Siniestros (Top 3)
-                const claseObj = props.inec_por_clase || {};
-                const sortedClases = Object.keys(claseObj).map(k => [k, claseObj[k]]).sort((a,b) => b[1] - a[1]);
-                let claseHtml = "";
-                sortedClases.slice(0, 3).forEach(c => {
-                    const pct = (c[1] / props.siniestros_inec_2019) * 100;
-                    claseHtml += defProgressBar(c[0], c[1], pct, "#38bdf8");
-                });
-                inecClaseList.innerHTML = claseHtml || "Sin datos de clase";
-                
-                // Causa Siniestros (Top 2)
-                const causaObj = props.inec_por_causa || {};
-                const sortedCausas = Object.keys(causaObj).map(k => [k, causaObj[k]]).sort((a,b) => b[1] - a[1]);
-                let causaHtml = "";
-                sortedCausas.slice(0, 2).forEach(c => {
-                    const pct = (c[1] / props.siniestros_inec_2019) * 100;
-                    causaHtml += `<div style="margin-bottom: 4px; line-height: 1.2;">• <strong style="color: var(--text-primary);">${c[0]}:</strong> ${c[1]} (${pct.toFixed(0)}%)</div>`;
-                });
-                inecCausaList.innerHTML = causaHtml || "Sin datos de causas";
-                
-                // Hora pico
-                const horaObj = props.inec_patron_horario || {};
-                const sortedHoras = Object.keys(horaObj).map(k => [k, horaObj[k]]).sort((a,b) => b[1] - a[1]);
-                if (sortedHoras.length > 0) {
-                    inecHoraPico.textContent = `${sortedHoras[0][0]} (${sortedHoras[0][1]} siniestros)`;
-                } else {
-                    inecHoraPico.textContent = "Sin datos horarios";
-                }
-            } else {
-                inecDetailedStats.style.display = "none";
-            }
+            currentProps = props;
+            renderSiniestrosSection(props, document.getElementById("siniestros-year-select").value);
 
             // Render demographic profiles in accordion (EDG 2020-2024)
             const edg = props.fallecidos_detallado;
@@ -1441,14 +1546,17 @@
             }
             
 
-            // Renderizar mini-gráfico Chart.js
-            const hist = props.fallecidos_historico;
-            if (hist && Object.keys(hist).length > 0) {
+            // Renderizar mini-gráfico Chart.js con doble eje Y (Siniestros vs Fallecidos)
+            const hasHistFallecidos = props.fallecidos_historico && Object.keys(props.fallecidos_historico).length > 0;
+            const hasHistSiniestros = props.siniestros_historico && Object.keys(props.siniestros_historico).length > 0;
+            
+            if (hasHistFallecidos || hasHistSiniestros) {
                 chartContainer.style.display = "block";
                 chartEmptyMsg.style.display = "none";
                 
-                const years = Object.keys(hist).sort();
-                const values = years.map(y => hist[y]);
+                const years = ['2019', '2020', '2021', '2022', '2023', '2024'];
+                const valSiniestros = years.map(y => props.siniestros_historico && props.siniestros_historico[y] !== undefined ? props.siniestros_historico[y] : null);
+                const valFallecidos = years.map(y => props.fallecidos_historico && props.fallecidos_historico[y] !== undefined ? props.fallecidos_historico[y] : null);
                 
                 if (historicoChart) {
                     historicoChart.destroy();
@@ -1459,26 +1567,55 @@
                     type: 'line',
                     data: {
                         labels: years,
-                        datasets: [{
-                            label: 'Fallecidos',
-                            data: values,
-                            borderColor: '#0ea5e9',
-                            backgroundColor: 'rgba(14, 165, 233, 0.15)',
-                            borderWidth: 2,
-                            tension: 0.1,
-                            fill: true,
-                            pointBackgroundColor: '#0ea5e9',
-                            pointBorderColor: '#f8fafc',
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
+                        datasets: [
+                            {
+                                label: 'Siniestros (INEC)',
+                                data: valSiniestros,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                                borderWidth: 2,
+                                tension: 0.15,
+                                fill: true,
+                                pointBackgroundColor: '#f59e0b',
+                                pointBorderColor: '#f8fafc',
+                                pointRadius: 4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Fallecidos (EDG)',
+                                data: valFallecidos,
+                                borderColor: '#0ea5e9',
+                                backgroundColor: 'rgba(14, 165, 233, 0.12)',
+                                borderWidth: 2,
+                                tension: 0.15,
+                                fill: true,
+                                pointBackgroundColor: '#0ea5e9',
+                                pointBorderColor: '#f8fafc',
+                                pointRadius: 4,
+                                yAxisID: 'y1'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#94a3b8',
+                                    boxWidth: 8,
+                                    boxHeight: 4,
+                                    font: {
+                                        size: 9,
+                                        family: 'Inter'
+                                    }
+                                }
                             },
                             tooltip: {
                                 enabled: true,
@@ -1487,8 +1624,7 @@
                                 bodyColor: '#f8fafc',
                                 borderColor: 'rgba(255, 255, 255, 0.15)',
                                 borderWidth: 1,
-                                padding: 8,
-                                displayColors: false
+                                padding: 8
                             }
                         },
                         scales: {
@@ -1500,24 +1636,61 @@
                                 ticks: {
                                     color: '#94a3b8',
                                     font: {
-                                        size: 10,
+                                        size: 9,
                                         family: 'Inter'
                                     }
                                 }
                             },
                             y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Siniestros',
+                                    color: '#f59e0b',
+                                    font: {
+                                        size: 9,
+                                        family: 'Inter',
+                                        weight: 'bold'
+                                    }
+                                },
                                 grid: {
                                     color: 'rgba(255, 255, 255, 0.05)',
                                     drawBorder: false
                                 },
                                 ticks: {
-                                    color: '#94a3b8',
+                                    color: '#f59e0b',
                                     font: {
-                                        size: 10,
+                                        size: 9,
                                         family: 'Inter'
-                                    },
-                                    stepSize: 1,
-                                    precision: 0
+                                    }
+                                },
+                                min: 0
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Fallecidos',
+                                    color: '#0ea5e9',
+                                    font: {
+                                        size: 9,
+                                        family: 'Inter',
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    color: '#0ea5e9',
+                                    font: {
+                                        size: 9,
+                                        family: 'Inter'
+                                    }
                                 },
                                 min: 0
                             }
@@ -1962,7 +2135,7 @@
                     }
                 });
                 
-                loadOSMLayer("data/corredores_redsa.geojson", "Corredores Prioritarios REDSA (Pichincha)", {
+                loadOSMLayer("data/corredores_redsa.geojson", "Corredores Prioritarios Fundación REDSA (Pichincha)", {
                     style: function(f) {
                         const isVeryHigh = f.properties && f.properties.priority === "Muy Alta";
                         return {
@@ -1975,7 +2148,7 @@
                         if (f.properties) {
                             const name = f.properties.name || "Corredor sin nombre";
                             const prio = f.properties.priority || "Alta";
-                            l.bindPopup(`<strong>Corredor REDSA:</strong> ${name}<br><strong>Prioridad:</strong> ${prio}<br><small>OpenStreetMap contributors, ODbL</small>`);
+                            l.bindPopup(`<strong>Corredor Fundación REDSA:</strong> ${name}<br><strong>Prioridad:</strong> ${prio}<br><small>OpenStreetMap contributors, ODbL</small>`);
                         }
                     }
                 });
@@ -2018,6 +2191,11 @@
                     this.classList.toggle("active");
                     const content = document.getElementById("profile-accordion-content");
                     content.classList.toggle("active");
+                });
+
+                // Siniestros Year Select listener
+                document.getElementById("siniestros-year-select").addEventListener("change", function() {
+                    renderSiniestrosSection(currentProps, this.value);
                 });
 
                 // Ocultar pantalla de carga

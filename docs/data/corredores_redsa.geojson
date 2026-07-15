@@ -21614,57 +21614,6 @@
         "type": "LineString",
         "coordinates": [
           [
-            -78.5587277,
-            -0.2926546
-          ],
-          [
-            -78.5587914,
-            -0.2927075
-          ],
-          [
-            -78.5588383,
-            -0.2927685
-          ],
-          [
-            -78.5588772,
-            -0.2928416
-          ],
-          [
-            -78.5590882,
-            -0.2933366
-          ],
-          [
-            -78.5591814,
-            -0.2936868
-          ],
-          [
-            -78.559233,
-            -0.293973
-          ],
-          [
-            -78.5592603,
-            -0.2941982
-          ],
-          [
-            -78.559287,
-            -0.2947534
-          ]
-        ]
-      },
-      "properties": {
-        "osm_id": 266933049,
-        "name": "Vieja Avenida Mariscal Sucre",
-        "priority": "Alta",
-        "corridor_key": "mariscal_sucre",
-        "highway": "residential"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
             -78.5594063,
             -0.3080066
           ],
@@ -22074,45 +22023,6 @@
         "priority": "Alta",
         "corridor_key": "mariscal_sucre",
         "highway": "primary"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -78.5591988,
-            -0.2967849
-          ],
-          [
-            -78.5591914,
-            -0.2969713
-          ],
-          [
-            -78.5591781,
-            -0.2975737
-          ],
-          [
-            -78.5591715,
-            -0.2978754
-          ],
-          [
-            -78.5591649,
-            -0.2981759
-          ],
-          [
-            -78.5591421,
-            -0.2992093
-          ]
-        ]
-      },
-      "properties": {
-        "osm_id": 267065627,
-        "name": "Vieja Avenida Mariscal Sucre",
-        "priority": "Alta",
-        "corridor_key": "mariscal_sucre",
-        "highway": "residential"
       }
     },
     {
@@ -29685,37 +29595,6 @@
         "priority": "Alta",
         "corridor_key": "mariscal_sucre",
         "highway": "primary"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            -78.559287,
-            -0.2947534
-          ],
-          [
-            -78.5592792,
-            -0.2949334
-          ],
-          [
-            -78.559249,
-            -0.295628
-          ],
-          [
-            -78.5591988,
-            -0.2967849
-          ]
-        ]
-      },
-      "properties": {
-        "osm_id": 644585023,
-        "name": "Vieja Avenida Mariscal Sucre",
-        "priority": "Alta",
-        "corridor_key": "mariscal_sucre",
-        "highway": "residential"
       }
     },
     {
