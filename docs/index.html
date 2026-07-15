@@ -581,6 +581,13 @@
             regulatory: "#ef4444", // Rojo
             warning: "#f97316"    // Naranja
         };
+        const COLOR_ACERAS = "#ec4899"; // Rosa
+        const COLOR_CRUCES = "#eab308"; // Amarillo
+        const COLOR_PACIFICACION = "#a855f7"; // Púrpura
+        const COLOR_SEMAFOROS_ROTONDAS = "#f97316"; // Naranja
+        const COLOR_ILUMINACION = "#e2e8f0"; // Plateado/Blanco
+        const COLOR_VELOCIDAD = "#ef4444"; // Rojo
+        const COLOR_BRT_METROBUS = "#06b6d4"; // Cyan
         
         // Activar panel de diagnóstico si ?debug=true
         const urlParams = new URLSearchParams(window.location.search);
@@ -744,9 +751,93 @@
                         <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.regulatory};"></span>
                         <span>Señal regulatoria</span>
                     </div>
-                    <div class="legend-item" style="padding-left: 8px;">
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
                         <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.warning};"></span>
                         <span>Señal de advertencia</span>
+                    </div>
+                `;
+            }
+
+            // 4. Aceras
+            const acerasLayer = overlayMaps["Aceras (Pichincha)"];
+            if (acerasLayer && map.hasLayer(acerasLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_ACERAS};"></span>
+                        <span>Aceras (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 5. Cruces Peatonales
+            const crucesLayer = overlayMaps["Cruces Peatonales (Pichincha)"];
+            if (crucesLayer && map.hasLayer(crucesLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_CRUCES};"></span>
+                        <span>Cruces Peatonales (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 6. Pacificación de Tránsito
+            const pacificacionLayer = overlayMaps["Pacificación de Tránsito (Pichincha)"];
+            if (pacificacionLayer && map.hasLayer(pacificacionLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_PACIFICACION};"></span>
+                        <span>Pacificación de Tránsito (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 7. Semáforos y Rotondas
+            const semaforosLayer = overlayMaps["Semáforos y Rotondas (Pichincha)"];
+            if (semaforosLayer && map.hasLayer(semaforosLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-circle" style="background-color: ${COLOR_SEMAFOROS_ROTONDAS};"></span>
+                        <span>Semáforos y Rotondas (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 8. Iluminación Vial
+            const iluminacionLayer = overlayMaps["Iluminación Vial (Pichincha)"];
+            if (iluminacionLayer && map.hasLayer(iluminacionLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_ILUMINACION};"></span>
+                        <span>Iluminación Vial (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 9. Límites de Velocidad
+            const velocidadLayer = overlayMaps["Límites de Velocidad (Pichincha)"];
+            if (velocidadLayer && map.hasLayer(velocidadLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_VELOCIDAD};"></span>
+                        <span>Límites de Velocidad (OSM)</span>
+                    </div>
+                `;
+            }
+            
+            // 10. Carriles BRT/Metrobús-Q
+            const brtLayer = overlayMaps["Carriles BRT/Metrobús-Q (Pichincha)"];
+            if (brtLayer && map.hasLayer(brtLayer)) {
+                hasItems = true;
+                container.innerHTML += `
+                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                        <span class="legend-color-line" style="background-color: ${COLOR_BRT_METROBUS};"></span>
+                        <span>Carriles BRT/Metrobús-Q (OSM)</span>
                     </div>
                 `;
             }
@@ -1216,6 +1307,173 @@
                     .catch(err => {
                         console.log("Capa de Mapillary opcional no cargada (esperable si no hay token).");
                     });
+
+                // --- HELPER PARA CARGAR CAPAS ADICIONALES DE OSM (FASE 8) ---
+                function loadOSMLayer(url, labelName, geojsonOptions) {
+                    fetch(url)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`No se pudo cargar la capa ${labelName}.`);
+                            return res.json();
+                        })
+                        .then(data => {
+                            const layer = L.geoJSON(data, geojsonOptions);
+                            overlayMaps[labelName] = layer; // Añadir a las capas (apagas por defecto)
+                            
+                            // Registrar eventos para leyenda reactiva
+                            layer.on('add', updateLegend);
+                            layer.on('remove', updateLegend);
+                            
+                            // Actualizar Control de Capas
+                            if (layerControl) {
+                                map.removeControl(layerControl);
+                            }
+                            layerControl = L.control.layers(baseMaps, overlayMaps, {
+                                position: 'topright',
+                                collapsed: false
+                            }).addTo(map);
+                            
+                            updateLegend();
+                        })
+                        .catch(err => {
+                            console.warn(`Advertencia al cargar la capa OSM '${labelName}':`, err);
+                        });
+                }
+
+                // Cargar las 7 Capas Adicionales de OpenStreetMap (Apagadas por defecto)
+                loadOSMLayer("data/aceras_pichincha.geojson", "Aceras (Pichincha)", {
+                    style: {
+                        color: COLOR_ACERAS,
+                        weight: 2,
+                        opacity: 0.7
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const name = f.properties.name || "Acera sin nombre";
+                            const hw = f.properties.highway || "footway";
+                            l.bindPopup(`<strong>Acera:</strong> ${name}<br><strong>Tipo:</strong> ${hw}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/cruces_pichincha.geojson", "Cruces Peatonales (Pichincha)", {
+                    pointToLayer: function(f, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 4,
+                            fillColor: COLOR_CRUCES,
+                            color: "#ffffff",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const type = f.properties.crossing || "cruce";
+                            l.bindPopup(`<strong>Cruce Peatonal:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/pacificacion_pichincha.geojson", "Pacificación de Tránsito (Pichincha)", {
+                    pointToLayer: function(f, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 5,
+                            fillColor: COLOR_PACIFICACION,
+                            color: "#ffffff",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.85
+                        });
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const cal = f.properties.traffic_calming || "desconocido";
+                            l.bindPopup(`<strong>Pacificación de Tránsito:</strong> ${cal}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/semaforos_rotondas_pichincha.geojson", "Semáforos y Rotondas (Pichincha)", {
+                    pointToLayer: function(f, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 5,
+                            fillColor: COLOR_SEMAFOROS_ROTONDAS,
+                            color: "#ffffff",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.85
+                        });
+                    },
+                    style: function(f) {
+                        return {
+                            color: COLOR_SEMAFOROS_ROTONDAS,
+                            weight: 3,
+                            opacity: 0.8
+                        };
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const type = f.properties.junction === "roundabout" ? "Rotonda" : "Semáforo";
+                            l.bindPopup(`<strong>Infraestructura:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/iluminacion_pichincha.geojson", "Iluminación Vial (Pichincha)", {
+                    pointToLayer: function(f, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 3,
+                            fillColor: COLOR_ILUMINACION,
+                            color: "#94a3b8",
+                            weight: 0.8,
+                            opacity: 0.9,
+                            fillOpacity: 0.7
+                        });
+                    },
+                    style: function(f) {
+                        return {
+                            color: COLOR_ILUMINACION,
+                            weight: 1.5,
+                            opacity: 0.6
+                        };
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const type = f.properties.highway === "street_lamp" ? "Lámpara de Alumbrado Público" : "Vía Iluminada (lit=yes)";
+                            l.bindPopup(`<strong>Iluminación:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/velocidad_pichincha.geojson", "Límites de Velocidad (Pichincha)", {
+                    style: {
+                        color: COLOR_VELOCIDAD,
+                        weight: 2.5,
+                        opacity: 0.8
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const speed = f.properties.maxspeed || "No especificado";
+                            const name = f.properties.name || "Tramo sin nombre";
+                            l.bindPopup(`<strong>Límite de Velocidad:</strong> ${speed} km/h<br><strong>Vía:</strong> ${name}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
+
+                loadOSMLayer("data/brt_metrobus_pichincha.geojson", "Carriles BRT/Metrobús-Q (Pichincha)", {
+                    style: {
+                        color: COLOR_BRT_METROBUS,
+                        weight: 3,
+                        opacity: 0.85
+                    },
+                    onEachFeature: function(f, l) {
+                        if (f.properties) {
+                            const name = f.properties.name || "Carril exclusivo";
+                            const lanes = f.properties.lanes_bus || "1";
+                            l.bindPopup(`<strong>Carril Exclusivo BRT/Bus:</strong> ${name}<br><strong>Nº Carriles:</strong> ${lanes}<br><small>${f.properties.attribution}</small>`);
+                        }
+                    }
+                });
 
                 // Ocultar pantalla de carga
                 const loader = document.getElementById("loader");
