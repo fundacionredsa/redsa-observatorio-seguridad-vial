@@ -652,6 +652,10 @@
                 
                 <div class="canton-details">
                     <!-- SECCIÓN 1: IDENTIFICACIÓN -->
+                    <div class="detail-row" id="parroquia-row" style="display: none;">
+                        <div class="detail-label">Parroquia</div>
+                        <div id="info-parroquia" class="detail-value empty">—</div>
+                    </div>
                     <div class="detail-row">
                         <div class="detail-label">Cantón</div>
                         <div id="info-canton" class="detail-value empty">Pasa el cursor o haz clic en un cantón</div>
@@ -660,13 +664,17 @@
                         <div class="detail-label">Provincia</div>
                         <div id="info-provincia" class="detail-value empty">—</div>
                     </div>
+                    <div class="detail-row" id="fallecidos-parroquia-row" style="display: none;">
+                        <div class="detail-label" style="color: var(--accent-hover); font-weight: 700;">Fallecidos Parroquiales <span class="source-label">(Total 2021-2024)</span></div>
+                        <div id="info-fallecidos-parroquia" class="detail-value empty" style="color: var(--accent-hover); font-weight: 700;">—</div>
+                    </div>
                     <div class="detail-row">
                         <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
-                        <span>DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span> Cantón / Prov:</span>
-                        <span style="font-family: monospace; font-weight: bold;"><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
+                        <span>DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span> <span id="dpa-label-prefix">Cantón / Prov</span>:</span>
+                        <span style="font-family: monospace; font-weight: bold;"><span id="info-cod-parroquia-span" style="display: none;"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
                     </div>
 
                     <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
@@ -929,6 +937,9 @@
         let historicoChart = null;
 
         let selectedVariable = 'normal'; // variable de coropletas seleccionada
+        let parishLayer = null;
+        let parishData = null;
+        let selectedParishLayer = null;
         
         // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha y Coropletas)
         function getCantonStyle(feature, isHovered = false, isSelected = false) {
@@ -1013,6 +1024,119 @@
             }
         }
 
+        function getParishStyle(feature, isHovered = false, isSelected = false) {
+            const val = feature.properties.fallecidos_2021_2024;
+            const bins = [2, 5, 15, 50];
+            const colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]; // OrRd
+            
+            let color = "#cbd5e1"; // border color
+            let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
+            let opacity = 0.8;
+            let fillColor = "#334155";
+            let fillOpacity = 0.65;
+            let dashArray = '';
+            
+            if (val === null || val === undefined || val === 0) {
+                fillColor = "#1e293b";
+                fillOpacity = 0.45;
+                dashArray = '3, 4';
+                color = "#475569";
+            } else {
+                let idx = 0;
+                while (idx < bins.length && val > bins[idx]) {
+                    idx++;
+                }
+                fillColor = colors[idx];
+                color = isSelected ? "#38bdf8" : (isHovered ? "#ffffff" : "#475569");
+                opacity = (isSelected || isHovered) ? 1.0 : 0.6;
+            }
+            
+            return {
+                color: color,
+                weight: weight,
+                opacity: opacity,
+                fillColor: fillColor,
+                fillOpacity: fillOpacity,
+                dashArray: dashArray
+            };
+        }
+
+        function onEachParishFeature(feature, layer) {
+            if (feature.properties) {
+                const parroquia = feature.properties.DPA_DESPAR || "Desconocido";
+                const canton = feature.properties.DPA_DESCAN || "Desconocido";
+                const provincia = feature.properties.DPA_DESPRO || "Desconocido";
+                const codParroquia = feature.properties.DPA_PARROQ || "—";
+                
+                const popupContent = `
+                    <div class="custom-popup">
+                        <h3>${parroquia}</h3>
+                        <p><strong>Cantón:</strong> ${canton}</p>
+                        <p><strong>Provincia:</strong> ${provincia}</p>
+                        <div class="dpa-code">Cód. Parroquia: ${codParroquia}</div>
+                    </div>
+                `;
+                layer.bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'custom-leaflet-popup'
+                });
+            }
+            
+            layer.on({
+                mouseover: highlightParish,
+                mouseout: resetParishHighlight,
+                click: function(e) {
+                    map.fitBounds(e.target.getBounds());
+                    
+                    const prevLayer = selectedParishLayer;
+                    selectedParishLayer = e.target;
+                    
+                    if (prevLayer && prevLayer !== e.target) {
+                        parishLayer.resetStyle(prevLayer);
+                    }
+                    
+                    e.target.setStyle(getParishStyle(e.target.feature, false, true));
+                    
+                    updateSidebar(e.target.feature.properties);
+                }
+            });
+        }
+        
+        function highlightParish(e) {
+            const layer = e.target;
+            if (layer !== selectedParishLayer) {
+                layer.setStyle(getParishStyle(layer.feature, true, false));
+            }
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            updateSidebar(layer.feature.properties);
+        }
+        
+        function resetParishHighlight(e) {
+            const layer = e.target;
+            if (layer !== selectedParishLayer) {
+                parishLayer.resetStyle(layer);
+            }
+            if (selectedParishLayer) {
+                updateSidebar(selectedParishLayer.feature.properties);
+            } else {
+                updateSidebar(null);
+            }
+        }
+
+        function getCantonProps(cantonCode) {
+            let found = null;
+            if (cantonLayer) {
+                cantonLayer.eachLayer(layer => {
+                    if (layer.feature && layer.feature.properties && layer.feature.properties.DPA_CANTON === cantonCode) {
+                        found = layer.feature.properties;
+                    }
+                });
+            }
+            return found;
+        }
+
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
         function updateLegend() {
             const container = document.getElementById("legend-items");
@@ -1043,7 +1167,11 @@
                     let colors = [];
                     let formatFunc = (v) => v.toString();
                     
-                    if (selectedVariable === 'siniestros_inec_2019') {
+                    if (selectedVariable === 'fallecidos_parroquial') {
+                        title = "Fallecidos Parroquial (21-24):";
+                        bins = [2, 5, 15, 50];
+                        colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"];
+                    } else if (selectedVariable === 'siniestros_inec_2019') {
                         title = "Siniestros INEC 2019:";
                         bins = [6, 16, 37, 82];
                         colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
@@ -1253,6 +1381,13 @@
         const domTasaFallecidos = document.getElementById("info-tasa-fallecidos");
         const domCodCanton = document.getElementById("info-cod-canton");
         const domCodProvincia = document.getElementById("info-cod-provincia");
+
+        // Elementos parroquiales
+        const domParroquia = document.getElementById("info-parroquia");
+        const domFallecidosParroquia = document.getElementById("info-fallecidos-parroquia");
+        const domCodParroquia = document.getElementById("info-cod-parroquia");
+        const domParroquiaRow = document.getElementById("parroquia-row");
+        const domFallecidosParroquiaRow = document.getElementById("fallecidos-parroquia-row");
         
         // Dynamic Containers
         const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -1411,6 +1546,36 @@
         function updateSidebar(props) {
             const chartContainer = document.getElementById("chart-container");
             const chartEmptyMsg = document.getElementById("chart-empty-msg");
+
+            let parishProps = null;
+            if (props && props.DPA_PARROQ) {
+                parishProps = props;
+                props = getCantonProps(parishProps.DPA_CANTON);
+            }
+            
+            if (parishProps) {
+                domParroquia.textContent = parishProps.DPA_DESPAR;
+                domParroquia.classList.remove("empty");
+                domFallecidosParroquia.textContent = formatNumber(parishProps.fallecidos_2021_2024);
+                domFallecidosParroquia.classList.remove("empty");
+                domCodParroquia.textContent = parishProps.DPA_PARROQ;
+                
+                document.getElementById("dpa-label-prefix").textContent = "Parr / Cant / Prov";
+                document.getElementById("info-cod-parroquia-span").style.display = "inline";
+                document.getElementById("info-cod-parroquia").textContent = parishProps.DPA_PARROQ;
+            } else {
+                if (domParroquia) {
+                    domParroquia.textContent = "—";
+                    domParroquia.classList.add("empty");
+                    domFallecidosParroquia.textContent = "—";
+                    domFallecidosParroquia.classList.add("empty");
+                }
+                
+                const span = document.getElementById("info-cod-parroquia-span");
+                if (span) span.style.display = "none";
+                const prefix = document.getElementById("dpa-label-prefix");
+                if (prefix) prefix.textContent = "Cantón / Prov";
+            }
 
             if (!props) {
                 domCanton.textContent = "Pasa el cursor o haz clic en un cantón";
@@ -2242,6 +2407,7 @@
                                 <option value="fallecidos_inec_2019">Fallecidos INEC 2019</option>
                                 <option value="tasa_fallecidos_100k">Tasa por 100k (2019)</option>
                                 <option value="fallecidos_sppat_2016_2021">Fallecidos SPPAT (16-21)</option>
+                                <option value="fallecidos_parroquial">Fallecidos Parroquial (INEC 2021-2024)</option>
                             </select>
                         `;
                         L.DomEvent.disableClickPropagation(div);
@@ -2253,14 +2419,109 @@
                 document.addEventListener("change", (e) => {
                     if (e.target && e.target.id === "map-variable-select") {
                         selectedVariable = e.target.value;
+                        handleVariableChange();
+                    }
+                });
+
+                function handleVariableChange() {
+                    if (selectedVariable === 'fallecidos_parroquial') {
+                        if (cantonLayer && map.hasLayer(cantonLayer)) {
+                            map.removeLayer(cantonLayer);
+                        }
+                        
+                        domParroquiaRow.style.display = "flex";
+                        domFallecidosParroquiaRow.style.display = "flex";
+                        
+                        if (parishLayer) {
+                            if (!map.hasLayer(parishLayer)) {
+                                parishLayer.addTo(map);
+                            }
+                            parishLayer.eachLayer(layer => {
+                                parishLayer.resetStyle(layer);
+                            });
+                            updateLegend();
+                            updateSidebar(null);
+                        } else {
+                            const loader = document.getElementById("loader");
+                            if (loader) {
+                                document.getElementById("loader-status").textContent = "Descargando límites parroquiales (5.46 MB)...";
+                                loader.style.display = "flex";
+                            }
+                            
+                            const tStart = performance.now();
+                            
+                            fetch("data/parroquias_wgs84.geojson")
+                                .then(response => {
+                                    if (!response.ok) throw new Error("No se pudo cargar el geojson parroquial.");
+                                    const tDownloadEnd = performance.now();
+                                    const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
+                                    document.getElementById("diag-download").textContent = `${tDownload}s`;
+                                    document.getElementById("loader-status").textContent = "Renderizando 1,040 parroquias...";
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    const tRenderStart = performance.now();
+                                    parishData = data;
+                                    
+                                    parishLayer = L.geoJSON(parishData, {
+                                        style: function(feature) {
+                                            const isSelected = selectedParishLayer && selectedParishLayer.feature.properties.DPA_PARROQ === feature.properties.DPA_PARROQ;
+                                            return getParishStyle(feature, false, isSelected);
+                                        },
+                                        onEachFeature: onEachParishFeature
+                                    });
+                                    
+                                    const tRenderEnd = performance.now();
+                                    const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
+                                    const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
+                                    
+                                    document.getElementById("diag-render").textContent = `${tRender}s`;
+                                    document.getElementById("diag-total").textContent = `${tTotal}s`;
+                                    document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
+                                    
+                                    if (loader) loader.style.display = "none";
+                                    
+                                    parishLayer.addTo(map);
+                                    
+                                    if (layerControl) {
+                                        layerControl.addOverlay(parishLayer, "Límites Parroquiales");
+                                    }
+                                    
+                                    updateLegend();
+                                    updateSidebar(null);
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    document.getElementById("loader-status").textContent = "Error al cargar parroquias: " + err.message;
+                                    setTimeout(() => { if (loader) loader.style.display = "none"; }, 3000);
+                                });
+                        }
+                    } else {
+                        if (parishLayer && map.hasLayer(parishLayer)) {
+                            map.removeLayer(parishLayer);
+                        }
+                        
+                        domParroquiaRow.style.display = "none";
+                        domFallecidosParroquiaRow.style.display = "none";
+                        
+                        if (cantonLayer && !map.hasLayer(cantonLayer)) {
+                            cantonLayer.addTo(map);
+                        }
+                        
                         if (cantonLayer) {
                             cantonLayer.eachLayer(layer => {
                                 cantonLayer.resetStyle(layer);
                             });
                         }
+                        
                         updateLegend();
+                        if (selectedLayer) {
+                            updateSidebar(selectedLayer.feature.properties);
+                        } else {
+                            updateSidebar(null);
+                        }
                     }
-                });
+                }
 
                 // Accordion Toggler
                 document.getElementById("profile-accordion-btn").addEventListener("click", function() {
