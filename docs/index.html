@@ -46,8 +46,8 @@
             --ui-padding: 20px;
             --ui-gap: 20px;
             --floating-panel-z: 1100;
-            --perfil-card-width: 720px;
-            --perfil-card-max-height: min(300px, calc(100vh - 120px));
+            --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
+            --perfil-card-max-height: calc(100vh - 120px);
         }
 
         * {
@@ -653,6 +653,79 @@
             line-height: 1.25;
         }
 
+        .interpretation-card {
+            display: none;
+            margin: 10px 0 12px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(14, 165, 233, 0.25);
+            background: rgba(14, 165, 233, 0.08);
+        }
+
+        .interpretation-card.visible {
+            display: block;
+        }
+
+        .interpretation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .interpretation-title {
+            color: var(--accent-hover);
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .interpretation-badge {
+            flex-shrink: 0;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #f8fafc;
+            background: #64748b;
+        }
+
+        .interpretation-badge.caliente {
+            background: #dc2626;
+        }
+
+        .interpretation-badge.frio {
+            background: #2563eb;
+        }
+
+        .interpretation-badge.no_significativo {
+            background: #64748b;
+        }
+
+        .interpretation-badge.isla_sin_vecinos,
+        .interpretation-badge.sin_dato {
+            background: #92400e;
+        }
+
+        .interpretation-text {
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .interpretation-share {
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }
+
         .leaflet-top.leaflet-left .map-selector-control {
             margin-top: var(--ui-padding);
             margin-left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
@@ -681,7 +754,7 @@
 
         .perfil-card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 12px 16px;
             align-items: start;
         }
@@ -746,7 +819,7 @@
             }
 
             .perfil-card-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
             }
         }
     </style>
@@ -803,6 +876,16 @@
                     <div class="detail-row" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
                         <span>DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span> <span id="dpa-label-prefix">Cantón / Prov</span>:</span>
                         <span style="font-family: monospace; font-weight: bold;"><span id="info-cod-parroquia-span" style="display: none;"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
+                    </div>
+
+                    <!-- SECCIÓN 1B: INTERPRETACIÓN ESTADÍSTICA -->
+                    <div id="interpretation-card" class="interpretation-card">
+                        <div class="interpretation-header">
+                            <div class="interpretation-title">Interpretación</div>
+                            <div id="interpretation-badge" class="interpretation-badge">—</div>
+                        </div>
+                        <div id="interpretation-text" class="interpretation-text">—</div>
+                        <div id="interpretation-share" class="interpretation-share">—</div>
                     </div>
 
                     <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
@@ -979,6 +1062,7 @@
         const RUTA_PROVINCIAS_RELATIVA = "data/provincias_wgs84.geojson";
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
+        const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
         const CENTRO_MAPA = [-0.15, -78.48]; // Centrado en Pichincha
         const ZOOM_INICIAL = 9.5;
         const ZOOM_PROVINCIAS_MAX = 7;
@@ -1050,6 +1134,8 @@
         let provinceData = null;
         let cantonLayer;
         let cantonData = null;
+        let hotspotData = null;
+        let nationalFatalitiesByYear = {};
         let selectedLayer = null;
         let selectedProvinceLayer = null;
         let layerControl = null;
@@ -1351,6 +1437,99 @@
                 });
             }
             return found;
+        }
+
+        function isOfficialProvinceCode(code) {
+            const value = String(code || "");
+            return /^\d{2}$/.test(value) && Number(value) >= 1 && Number(value) <= 24;
+        }
+
+        function mergeHotspotsIntoCantons(cantons, hotspots) {
+            const hotspotByCanton = new Map();
+            (hotspots.features || []).forEach(feature => {
+                const props = feature.properties || {};
+                if (props.DPA_CANTON) {
+                    hotspotByCanton.set(String(props.DPA_CANTON), props.hotspot_gi || null);
+                }
+            });
+
+            (cantons.features || []).forEach(feature => {
+                const props = feature.properties || {};
+                const hotspot = hotspotByCanton.get(String(props.DPA_CANTON));
+                props.hotspot_gi = hotspot || null;
+            });
+        }
+
+        function calculateNationalFatalitiesByYear(cantons) {
+            const totals = {};
+            (cantons.features || []).forEach(feature => {
+                const props = feature.properties || {};
+                if (!isOfficialProvinceCode(props.DPA_PROVIN)) return;
+                const historico = props.fallecidos_historico || {};
+                Object.keys(historico).forEach(year => {
+                    const value = historico[year];
+                    if (Number.isFinite(value)) {
+                        totals[year] = (totals[year] || 0) + value;
+                    }
+                });
+            });
+            return totals;
+        }
+
+        const HOTSPOT_TEXT = {
+            caliente: "Concentracion de fallecidos significativamente MAYOR de lo esperado para su poblacion (estadisticamente significativo).",
+            frio: "Concentracion de fallecidos significativamente MENOR de lo esperado para su poblacion.",
+            no_significativo: "Dentro del rango esperado para su poblacion, sin patron estadistico relevante.",
+            isla_sin_vecinos: "No se pudo comparar contra cantones vecinos (aislamiento geografico).",
+            sin_dato: "Sin datos suficientes para este ano."
+        };
+
+        function getInterpretationYear(props) {
+            const selector = document.getElementById("siniestros-year-select");
+            const selectedYear = selector ? selector.value : "consolidado";
+            const hotspotYears = props && props.hotspot_gi ? Object.keys(props.hotspot_gi).sort() : [];
+            if (selectedYear !== "consolidado") return selectedYear;
+            const yearsWithData = hotspotYears.filter(year => {
+                const category = props.hotspot_gi[year] && props.hotspot_gi[year].categoria;
+                return category && category !== "sin_dato";
+            });
+            return yearsWithData[yearsWithData.length - 1] || hotspotYears[hotspotYears.length - 1] || "2024";
+        }
+
+        function updateInterpretationCard(props) {
+            const card = document.getElementById("interpretation-card");
+            const badge = document.getElementById("interpretation-badge");
+            const text = document.getElementById("interpretation-text");
+            const share = document.getElementById("interpretation-share");
+            if (!card || !badge || !text || !share) return;
+
+            if (!props || props.nivel_agregacion === "provincia" || props.DPA_PARROQ || !props.hotspot_gi) {
+                card.classList.remove("visible");
+                badge.textContent = "—";
+                badge.className = "interpretation-badge";
+                text.textContent = "—";
+                share.textContent = "—";
+                return;
+            }
+
+            const year = getInterpretationYear(props);
+            const hotspot = props.hotspot_gi[year] || { categoria: "sin_dato" };
+            const category = hotspot.categoria || "sin_dato";
+            const categoryText = HOTSPOT_TEXT[category] || HOTSPOT_TEXT.sin_dato;
+            const fatalities = props.fallecidos_historico ? props.fallecidos_historico[year] : null;
+            const nationalTotal = nationalFatalitiesByYear[year];
+
+            card.classList.add("visible");
+            badge.className = `interpretation-badge ${category}`;
+            badge.textContent = `${category.replaceAll("_", " ")} ${year}`;
+            text.textContent = categoryText;
+
+            if (Number.isFinite(fatalities) && Number.isFinite(nationalTotal) && nationalTotal > 0) {
+                const pct = (fatalities / nationalTotal) * 100;
+                share.textContent = `${fatalities.toLocaleString('de-DE')} fallecidos = ${pct.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% del total nacional de ese ano`;
+            } else {
+                share.textContent = `Sin dato de fallecidos para calcular proporcion nacional de ${year}.`;
+            }
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -1768,10 +1947,10 @@
             const root = document.documentElement;
             const safetyMargin = 16;
             const minUsableWidth = 320;
-            const compactPreferredWidth = 720;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             const legend = document.querySelector(".legend-panel");
+            const layerSelector = document.querySelector(".leaflet-control-layers");
             const selector = document.querySelector(".map-selector-control");
 
             card.style.bottom = "0px";
@@ -1780,29 +1959,36 @@
             const cardLeft = card.getBoundingClientRect().left;
             const legendVisible = isVisibleElement(legend);
             const legendRect = legendVisible ? legend.getBoundingClientRect() : null;
+            const layerSelectorVisible = isVisibleElement(layerSelector);
+            const layerSelectorRect = layerSelectorVisible ? layerSelector.getBoundingClientRect() : null;
             const selectorVisible = isVisibleElement(selector);
             const selectorRect = selectorVisible ? selector.getBoundingClientRect() : null;
 
             let bottomOffset = 0;
-            let reservedLegendWidth = 0;
+            let rightBoundary = viewportWidth;
 
             if (legendVisible) {
-                const widthBesideLegend = viewportWidth - cardLeft - legendRect.width - safetyMargin;
-                if (widthBesideLegend >= minUsableWidth) {
-                    reservedLegendWidth = legendRect.width + safetyMargin;
-                } else {
+                rightBoundary = Math.min(rightBoundary, legendRect.left);
+            }
+            if (layerSelectorVisible) {
+                rightBoundary = Math.min(rightBoundary, layerSelectorRect.left);
+            }
+
+            if (rightBoundary - cardLeft < minUsableWidth) {
+                rightBoundary = viewportWidth;
+                if (legendVisible) {
                     bottomOffset = Math.max(0, viewportHeight - legendRect.top + safetyMargin);
                 }
             }
 
             const availableWidth = Math.max(
                 180,
-                viewportWidth - cardLeft - reservedLegendWidth - safetyMargin
+                rightBoundary - cardLeft - (rightBoundary < viewportWidth ? safetyMargin : 0)
             );
-            const width = Math.floor(Math.min(compactPreferredWidth, availableWidth));
+            const width = Math.floor(availableWidth);
             const selectorBottom = selectorVisible ? selectorRect.bottom : 0;
             const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
-            const maxHeight = Math.floor(Math.max(140, Math.min(300, availableHeight)));
+            const maxHeight = Math.floor(Math.max(160, availableHeight));
 
             root.style.setProperty("--perfil-card-width", `${width}px`);
             root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
@@ -2179,6 +2365,7 @@
 
             if (!props) {
                 const promptLevel = activeTerritoryLevel === "province" ? "una provincia" : (activeTerritoryLevel === "parish" ? "una parroquia" : "un cantón");
+                currentProps = null;
                 domCanton.textContent = `Pasa el cursor o haz clic en ${promptLevel}`;
                 domCanton.classList.add("empty");
                 domProvincia.textContent = "—";
@@ -2199,6 +2386,7 @@
                 domTasaFallecidos.classList.add("empty");
                 domCodCanton.textContent = "—";
                 domCodProvincia.textContent = "—";
+                updateInterpretationCard(null);
                 
                 // Hide dynamic sections
                 inecDetailedStats.style.display = "none";
@@ -2268,6 +2456,7 @@
 
             currentProps = props;
             renderSiniestrosSection(props, document.getElementById("siniestros-year-select").value);
+            updateInterpretationCard(parishProps ? null : props);
 
             // Perfil demográfico renderizado en tarjeta flotante on hover
             
@@ -2524,9 +2713,13 @@
             fetch(RUTA_CANTONES_RELATIVA).then(response => {
                 if (!response.ok) throw new Error("No se pudo cargar el GeoJSON cantonal.");
                 return response.json();
+            }),
+            fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
+                return response.json();
             })
         ])
-            .then(([provinces, cantons]) => {
+            .then(([provinces, cantons, hotspots]) => {
                 const tDownloadEnd = performance.now();
                 const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
                 document.getElementById("diag-download").textContent = `${tDownload}s`;
@@ -2534,6 +2727,9 @@
                 const tRenderStart = performance.now();
                 provinceData = provinces;
                 cantonData = cantons;
+                hotspotData = hotspots;
+                mergeHotspotsIntoCantons(cantonData, hotspotData);
+                nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
 
                 provinceLayer = L.geoJSON(provinceData, {
                     style: function(feature) {
@@ -3020,6 +3216,7 @@
                 // Siniestros Year Select listener
                 document.getElementById("siniestros-year-select").addEventListener("change", function() {
                     renderSiniestrosSection(currentProps, this.value);
+                    updateInterpretationCard(activeTerritoryLevel === "canton" ? currentProps : null);
                 });
 
                 // Ocultar pantalla de carga
