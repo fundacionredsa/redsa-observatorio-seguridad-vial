@@ -1949,6 +1949,7 @@
             const legend = document.querySelector(".legend-panel");
             const layerSelector = document.querySelector(".leaflet-control-layers");
             const selector = document.querySelector(".map-selector-control");
+            const attribution = document.querySelector(".leaflet-control-attribution");
 
             card.style.bottom = "0px";
             card.style.width = "";
@@ -1960,8 +1961,12 @@
             const layerSelectorRect = layerSelectorVisible ? layerSelector.getBoundingClientRect() : null;
             const selectorVisible = isVisibleElement(selector);
             const selectorRect = selectorVisible ? selector.getBoundingClientRect() : null;
+            const attributionVisible = isVisibleElement(attribution);
+            const attributionRect = attributionVisible ? attribution.getBoundingClientRect() : null;
 
-            let bottomOffset = 0;
+            let bottomOffset = attributionVisible
+                ? Math.max(0, viewportHeight - attributionRect.top + safetyMargin / 2)
+                : safetyMargin / 2;
             let rightBoundary = viewportWidth;
 
             if (legendVisible) {
@@ -1974,7 +1979,10 @@
             if (rightBoundary - cardLeft < minUsableWidth) {
                 rightBoundary = viewportWidth;
                 if (legendVisible) {
-                    bottomOffset = Math.max(0, viewportHeight - legendRect.top + safetyMargin);
+                    bottomOffset = Math.max(
+                        bottomOffset,
+                        viewportHeight - legendRect.top + safetyMargin
+                    );
                 }
             }
 
