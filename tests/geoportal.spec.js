@@ -96,6 +96,32 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
   await expect(page.locator("#timeline-marks .timeline-mark.gap")).toHaveCount(6);
 });
 
+test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
+  await loadPortal(page);
+  const description = page.locator("#map-variable-description");
+  await expect(description).toHaveText("Solo muestra los límites administrativos, sin datos de color.");
+
+  const descriptions = {
+    siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
+    tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
+    cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó."
+  };
+  for (const [variable, text] of Object.entries(descriptions)) {
+    await page.evaluate(selected => window.__redsaAudit.selectVariable(selected), variable);
+    await expect(description).toHaveText(text);
+  }
+
+  await page.evaluate(() => {
+    window.__redsaAudit.setZoom(9);
+    window.__redsaAudit.selectVariable("fallecidos_inec_2019");
+    window.__redsaAudit.selectYear(2024);
+    window.__redsaAudit.showTerritory("canton", "1701");
+  });
+  await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí? (2024)");
+  await expect(page.locator(".profile-card-source-detail").first()).toContainText("según registro civil");
+  await expect(page.locator(".profile-card-source-detail").first()).toContainText("Los iconos ⓘ explican los códigos técnicos");
+});
+
 test("panel demografico permanece visible y dentro del viewport", async ({ page }) => {
   await loadPortal(page);
   await page.evaluate(() => {
