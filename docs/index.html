@@ -640,7 +640,7 @@
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid var(--border-glass);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
-            width: 190px;
+            width: 340px;
         }
 
         .map-level-note {
@@ -807,7 +807,7 @@
             .leaflet-top.leaflet-left .map-selector-control {
                 margin-top: var(--ui-padding);
                 margin-left: var(--ui-padding);
-                width: min(190px, calc(100vw - 20px));
+                width: min(320px, calc(100vw - 20px));
             }
 
             .perfil-fallecidos-card {
@@ -980,6 +980,9 @@
                             </div>
                             <div style="margin-bottom: 8px;">
                                 <strong style="color: var(--text-primary);">DPA:</strong> División Político Administrativa — codificación oficial de provincias, cantones y parroquias de Ecuador.
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: var(--text-primary);">Vehículos Matriculados (INEC ESTRA 2024):</strong> registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.
                             </div>
                         </div>
                     </div>
@@ -1177,6 +1180,30 @@
                 colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
                 format: value => value.toFixed(1)
             },
+            tasa_siniestros_1000_vehiculos_2024: {
+                label: "Tasa de Siniestros por 1,000 Vehículos (2024)",
+                property: "tasa_siniestros_por_1000_vehiculos_2024",
+                levels: ["province", "canton"],
+                binsByLevel: {},
+                dynamicBins: true,
+                zeroIsData: true,
+                continuous: true,
+                infoSigla: "VEHICULOS_MATRICULADOS",
+                colors: ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
+                format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            },
+            tasa_motociclistas_1000_motos_2024: {
+                label: "Motociclistas Fallecidos por 1,000 Motos (2024)",
+                property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
+                levels: ["province", "canton"],
+                binsByLevel: {},
+                dynamicBins: true,
+                zeroIsData: true,
+                continuous: true,
+                infoSigla: "VEHICULOS_MATRICULADOS",
+                colors: ["#ffffcc", "#fed976", "#fd8d3c", "#e31a1c", "#800026"],
+                format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 3, maximumFractionDigits: 3 })
+            },
             fallecidos_sppat_2016_2021: {
                 label: "Fallecidos SPPAT (16-21)",
                 property: "fallecidos_sppat_2016_2021",
@@ -1204,6 +1231,48 @@
         function getEffectiveVariable(level = activeTerritoryLevel) {
             const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
             return config.levels.includes(level) ? selectedVariable : "normal";
+        }
+
+        function calculateQuantileBins(features, property, quantiles = [0.2, 0.4, 0.6, 0.8]) {
+            const values = features
+                .map(feature => Number(feature.properties ? feature.properties[property] : null))
+                .filter(value => Number.isFinite(value) && value > 0)
+                .sort((a, b) => a - b);
+            if (!values.length) return [];
+
+            return [...new Set(quantiles.map(quantile => {
+                const index = (values.length - 1) * quantile;
+                const lower = Math.floor(index);
+                const upper = Math.ceil(index);
+                const interpolated = lower === upper
+                    ? values[lower]
+                    : values[lower] + (values[upper] - values[lower]) * (index - lower);
+                return Number(interpolated.toFixed(6));
+            }))];
+        }
+
+        function initializeDynamicVariableBins() {
+            const featuresByLevel = {
+                province: provinceData && provinceData.features ? provinceData.features : [],
+                canton: cantonData && cantonData.features ? cantonData.features : []
+            };
+            Object.values(VARIABLE_CONFIGS).forEach(config => {
+                if (!config.dynamicBins) return;
+                config.levels.forEach(level => {
+                    if (featuresByLevel[level]) {
+                        config.binsByLevel[level] = calculateQuantileBins(
+                            featuresByLevel[level],
+                            config.property
+                        );
+                    }
+                });
+            });
+        }
+
+        function getVariableBins(config, level) {
+            return config.dynamicBins
+                ? (config.binsByLevel[level] || [])
+                : (config.bins || []);
         }
 
         function getBoundaryStyle(feature, level, isHovered = false, isSelected = false) {
@@ -1236,9 +1305,10 @@
             };
         }
 
-        function getChoroplethStyle(feature, variable, isHovered = false, isSelected = false) {
+        function getChoroplethStyle(feature, variable, level, isHovered = false, isSelected = false) {
             const config = VARIABLE_CONFIGS[variable];
             const val = feature.properties ? feature.properties[config.property] : null;
+            const bins = getVariableBins(config, level);
             let color = "#cbd5e1";
             let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
             let opacity = 0.8;
@@ -1246,14 +1316,14 @@
             let fillOpacity = 0.65;
             let dashArray = '';
             
-            if (val === null || val === undefined || val === 0) {
+            if (val === null || val === undefined || !Number.isFinite(Number(val)) || (val === 0 && !config.zeroIsData)) {
                 fillColor = "#1e293b";
                 fillOpacity = 0.45;
                 dashArray = '3, 4';
                 color = "#475569";
             } else {
                 let idx = 0;
-                while (idx < config.bins.length && val > config.bins[idx]) {
+                while (idx < bins.length && val > bins[idx]) {
                     idx++;
                 }
                 fillColor = config.colors[idx];
@@ -1276,7 +1346,7 @@
             if (effectiveVariable === "normal") {
                 return getBoundaryStyle(feature, level, isHovered, isSelected);
             }
-            return getChoroplethStyle(feature, effectiveVariable, isHovered, isSelected);
+            return getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
         }
 
         function getProvinceStyle(feature, isHovered = false, isSelected = false) {
@@ -1552,8 +1622,8 @@
                     `;
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
-                    const title = `${config.label}:`;
-                    const bins = config.bins;
+                    const title = `${config.label}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}:`;
+                    const bins = getVariableBins(config, currentLevel);
                     const colors = config.colors;
                     const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
@@ -1567,7 +1637,9 @@
                         } else if (i === bins.length) {
                             label = `> ${formatFunc(bins[bins.length - 1])}`;
                         } else {
-                            label = `${formatFunc(bins[i - 1] + (effectiveVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
+                            label = config.continuous
+                                ? `> ${formatFunc(bins[i - 1])} - <= ${formatFunc(bins[i])}`
+                                : `${formatFunc(bins[i - 1] + (effectiveVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
                         }
                         
                         itemsHtml += `
@@ -2764,6 +2836,7 @@
                 hotspotData = hotspots;
                 mergeHotspotsIntoCantons(cantonData, hotspotData);
                 nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
+                initializeDynamicVariableBins();
 
                 provinceLayer = L.geoJSON(provinceData, {
                     style: function(feature) {
@@ -3134,6 +3207,8 @@
                                 <option value="siniestros_inec_2019">Siniestros INEC 2019</option>
                                 <option value="fallecidos_inec_2019">Fallecidos INEC 2019</option>
                                 <option value="tasa_fallecidos_100k">Tasa por 100k (2019)</option>
+                                <option value="tasa_siniestros_1000_vehiculos_2024">Tasa de Siniestros por 1,000 Vehículos (2024)</option>
+                                <option value="tasa_motociclistas_1000_motos_2024">Motociclistas Fallecidos por 1,000 Motos (2024)</option>
                                 <option value="fallecidos_sppat_2016_2021">Fallecidos SPPAT (16-21)</option>
                                 <option value="fallecidos_parroquial">Fallecidos Parroquial (INEC 2021-2024)</option>
                             </select>
@@ -3173,7 +3248,8 @@
                     "SPPAT": "Servicio Público para Pago de Accidentes de Tránsito — reclamaciones de seguro procesadas y pagadas.",
                     "INEC": "Instituto Nacional de Estadística y Censos de Ecuador.",
                     "CIE-10": "Clasificación Internacional de Enfermedades, 10ª revisión — estándar usado para causas de muerte por tránsito (códigos V01 a V89).",
-                    "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador."
+                    "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador.",
+                    "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo."
                 };
 
                 const popover = document.createElement("div");
