@@ -72,6 +72,7 @@ def main() -> None:
     provinces = load("provincias_wgs84.geojson")
     parishes = load("parroquias_wgs84.geojson")
     hotspots = load("hotspots_cantonales.geojson")
+    osm_report = load("osm_cobertura_reporte.json")
     result: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "ok",
@@ -97,6 +98,25 @@ def main() -> None:
         if actual != count:
             result["failures"].append(f"{name}: {actual} features; esperados {count}")
 
+    for layer_name, layer_report in osm_report.get("capas", {}).items():
+        name = layer_report["archivo"]
+        payload = load(name)
+        actual = len(payload.get("features", []))
+        expected_count = int(layer_report["features_despues_nacional"])
+        result["files"][name] = {
+            "features": actual,
+            "expected_features": expected_count,
+            "bytes": (DATA / name).stat().st_size,
+            "sha256": sha256(DATA / name),
+            "alcance": (payload.get("metadata") or {}).get("alcance"),
+        }
+        if actual != expected_count:
+            result["failures"].append(
+                f"{name}: {actual} features; reporte OSM declara {expected_count}"
+            )
+        if result["files"][name]["alcance"] != "Ecuador nacional":
+            result["failures"].append(f"{name}: alcance nacional no declarado")
+
     for field, years in {
         "fallecidos_historico": ["2020", "2021", "2022", "2023", "2024"],
         "siniestros_historico": ["2019", "2021", "2022", "2023", "2024"],
@@ -120,6 +140,14 @@ def main() -> None:
     result["national_controls"]["vehiculos_matriculados_2024"] = vehicles
     if vehicles != 3_138_562:
         result["failures"].append(f"Vehiculos: {vehicles}; esperado 3138562")
+
+    sppat = sum(
+        feature["properties"].get("fallecidos_sppat_2016_2021") or 0
+        for feature in cantons["features"]
+    )
+    result["national_controls"]["fallecidos_sppat_2016_2021"] = sppat
+    if sppat != 16_363:
+        result["failures"].append(f"SPPAT 2016-2021: {sppat}; esperado 16363")
 
     if RAW and RAW.exists():
         for year, filename in {

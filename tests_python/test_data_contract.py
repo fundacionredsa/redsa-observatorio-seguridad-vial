@@ -18,6 +18,7 @@ class PublishedDataContractTest(unittest.TestCase):
         cls.provinces = load("provincias_wgs84.geojson")
         cls.parishes = load("parroquias_wgs84.geojson")
         cls.hotspots = load("hotspots_cantonales.geojson")
+        cls.osm_report = load("osm_cobertura_reporte.json")
 
     def test_feature_counts_and_unique_codes(self):
         cases = [
@@ -56,6 +57,100 @@ class PublishedDataContractTest(unittest.TestCase):
             vehicles = feature["properties"].get("vehiculos_matriculados_2024") or {}
             if not vehicles.get("total"):
                 self.assertEqual(vehicles.get("estado"), "sin_dato")
+
+    def test_annual_edg_profiles_reconcile_with_historical_totals(self):
+        for year in ["2020", "2021", "2022", "2023", "2024"]:
+            with self.subTest(year=year):
+                historical = sum(
+                    (feature["properties"].get("fallecidos_historico") or {}).get(year, 0) or 0
+                    for feature in self.cantons["features"]
+                )
+                profiles = [
+                    (feature["properties"].get("fallecidos_detallado") or {}).get(year) or {}
+                    for feature in self.cantons["features"]
+                ]
+                profile_total = sum(profile.get("total", 0) or 0 for profile in profiles)
+                user_total = sum(
+                    sum((profile.get("usuario") or {}).values()) for profile in profiles
+                )
+                self.assertEqual(profile_total, historical)
+                self.assertEqual(user_total, historical)
+
+    def test_annual_sppat_profiles_reconcile_with_counts(self):
+        fields = ["sppat_por_sexo", "sppat_por_condicion", "sppat_por_tipo_accidente"]
+        for year in ["2016", "2017", "2018", "2019", "2020", "2021"]:
+            expected = sum(
+                (feature["properties"].get("sppat_fallecidos_por_anio") or {}).get(year, 0) or 0
+                for feature in self.cantons["features"]
+            )
+            for field in fields:
+                with self.subTest(year=year, field=field):
+                    actual = sum(
+                        (((feature["properties"].get(field) or {}).get(year) or {}).get("total", 0))
+                        for feature in self.cantons["features"]
+                    )
+                    self.assertEqual(actual, expected)
+
+        aggregate = sum(
+            feature["properties"].get("fallecidos_sppat_2016_2021", 0) or 0
+            for feature in self.cantons["features"]
+        )
+        self.assertEqual(aggregate, 16_363)
+
+    def test_national_osm_layers_match_extraction_report(self):
+        layer_names = [
+            "ciclovias",
+            "aceras",
+            "cruces",
+            "pacificacion",
+            "semaforos_rotondas",
+            "iluminacion",
+            "velocidad",
+            "brt_metrobus",
+        ]
+        report_layers = self.osm_report["capas"]
+        for layer_name in layer_names:
+            with self.subTest(layer=layer_name):
+                layer = load(f"{layer_name}_ecuador.geojson")
+                self.assertEqual(layer["metadata"]["alcance"], "Ecuador nacional")
+                self.assertEqual(
+                    len(layer["features"]),
+                    report_layers[layer_name]["features_despues_nacional"],
+                )
+                for feature in layer["features"]:
+                    codes = feature["properties"].get("DPA_CANTONES") or []
+                    self.assertTrue(codes)
+                    self.assertEqual(len(codes), len(set(codes)))
+
+    def test_osm_mapping_coverage_is_explicit_at_both_levels(self):
+        for level in [self.cantons, self.provinces]:
+            for feature in level["features"]:
+                properties = feature["properties"]
+                coverage = properties.get("cobertura_mapeo_osm") or {}
+                self.assertIn(
+                    coverage.get("estado"),
+                    {"disponible", "sin_elementos_mapeados", "sin_dato_poblacion"},
+                )
+                self.assertIn("elementos_total", coverage)
+                self.assertIn("advertencia", coverage)
+
+    def test_province_osm_coverage_uses_direct_deduplicated_counts(self):
+        expected = {}
+        for layer_name in ["semaforos_rotondas", "cruces", "aceras"]:
+            layer = load(f"{layer_name}_ecuador.geojson")
+            for feature in layer["features"]:
+                for province_code in set(
+                    map(str, feature["properties"].get("DPA_PROVINCIAS") or [])
+                ):
+                    expected.setdefault(province_code, {}).setdefault(layer_name, 0)
+                    expected[province_code][layer_name] += 1
+        for feature in self.provinces["features"]:
+            properties = feature["properties"]
+            code = str(properties["DPA_PROVIN"])
+            actual = properties["cobertura_mapeo_osm"]["por_capa"]
+            for layer_name in ["semaforos_rotondas", "cruces", "aceras"]:
+                with self.subTest(province=code, layer=layer_name):
+                    self.assertEqual(actual[layer_name], expected.get(code, {}).get(layer_name, 0))
 
     def test_islands_never_have_inferential_values(self):
         for feature in self.hotspots["features"]:

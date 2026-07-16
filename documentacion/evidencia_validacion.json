@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-07-16T18:51:38.958649+00:00",
+  "generated_at": "2026-07-16T21:56:11.197415+00:00",
   "status": "ok",
   "failures": [],
   "files": {
     "cantones_wgs84.geojson": {
       "features": 224,
       "expected_features": 224,
-      "bytes": 19985385,
-      "sha256": "c6a7a0d9fbaf5650599da562808f4bb3d50a3f04ffa5b68079b820019d4cfad4"
+      "bytes": 6494148,
+      "sha256": "6b3bbfcb4db9eb8de0fe2b70547279ecccc493cec83de866c2fdb14444e472de"
     },
     "provincias_wgs84.geojson": {
       "features": 24,
       "expected_features": 24,
-      "bytes": 2267561,
-      "sha256": "180e73f5e832b23272d3e5b91b00d7a993920b46018b18ec20fc6ad1e1638b2a"
+      "bytes": 2363997,
+      "sha256": "97625bc0e06bb298dac7df0735837e5be8b77182f6d8a92269f4e60950a97067"
     },
     "parroquias_wgs84.geojson": {
       "features": 1040,
@@ -26,6 +26,62 @@
       "expected_features": 224,
       "bytes": 5089005,
       "sha256": "eae33128273d42f823c21660d9c3ad508d861999d7c7bfeb1ef781a25ed6fc2f"
+    },
+    "iluminacion_ecuador.geojson": {
+      "features": 8191,
+      "expected_features": 8191,
+      "bytes": 3042314,
+      "sha256": "db36b4f3f20557f7f705c2967d275d880b96f7318f9b85e0cc5210d98a0e104e",
+      "alcance": "Ecuador nacional"
+    },
+    "cruces_ecuador.geojson": {
+      "features": 18125,
+      "expected_features": 18125,
+      "bytes": 6073938,
+      "sha256": "62a5902d627e9cdd84e4fb879e5d1ea1d13ff34ae0cd37c524755beed6ec9f16",
+      "alcance": "Ecuador nacional"
+    },
+    "aceras_ecuador.geojson": {
+      "features": 14879,
+      "expected_features": 14879,
+      "bytes": 6332047,
+      "sha256": "9391c72428675948085b5f2f1c96e58684cd12c848f399771eb21c6abab2658a",
+      "alcance": "Ecuador nacional"
+    },
+    "semaforos_rotondas_ecuador.geojson": {
+      "features": 7889,
+      "expected_features": 7889,
+      "bytes": 2875986,
+      "sha256": "04d47b671949fd22a27dcdcac5dee8b9b5e2b0659e3a32c32a487cbd35e923ee",
+      "alcance": "Ecuador nacional"
+    },
+    "velocidad_ecuador.geojson": {
+      "features": 26960,
+      "expected_features": 26960,
+      "bytes": 10324251,
+      "sha256": "8342b927d682132b7acce245f92ab86cba3ddbc159448eac507fa67774e979f3",
+      "alcance": "Ecuador nacional"
+    },
+    "brt_metrobus_ecuador.geojson": {
+      "features": 27,
+      "expected_features": 27,
+      "bytes": 11640,
+      "sha256": "6cee23b3c14ede01c302fa7314dedfc04e6489607dfc7176e8af837de0dd6ad2",
+      "alcance": "Ecuador nacional"
+    },
+    "pacificacion_ecuador.geojson": {
+      "features": 1348,
+      "expected_features": 1348,
+      "bytes": 440830,
+      "sha256": "ef4d971501d7b83345084a2ae98071be70d42ae72e379872b344dd1504faec10",
+      "alcance": "Ecuador nacional"
+    },
+    "ciclovias_ecuador.geojson": {
+      "features": 1892,
+      "expected_features": 1892,
+      "bytes": 1064613,
+      "sha256": "f82ca48260ce79e9c13e4b276f346194149109edcd7944175857e005f74ec5e5",
+      "alcance": "Ecuador nacional"
     }
   },
   "national_controls": {
@@ -83,68 +139,8 @@
         "match": true
       }
     },
-    "vehiculos_matriculados_2024": 3138562
+    "vehiculos_matriculados_2024": 3138562,
+    "fallecidos_sppat_2016_2021": 16363
   },
-  "raw_controls": {
-    "siniestros_2019": {
-      "raw_rows": 24595,
-      "published": 24595,
-      "unresolved": 0
-    },
-    "siniestros_2021": {
-      "raw_rows": 21352,
-      "published": 21307,
-      "unresolved": 45
-    },
-    "siniestros_2022": {
-      "raw_rows": 21739,
-      "published": 21705,
-      "unresolved": 34
-    },
-    "siniestros_2023": {
-      "raw_rows": 20994,
-      "published": 20983,
-      "unresolved": 11
-    },
-    "siniestros_2024": {
-      "raw_rows": 21220,
-      "published": 21191,
-      "unresolved": 29
-    },
-    "edg_2020": {
-      "total_edg": 117030,
-      "v01_v89": 2578,
-      "v89": 1758,
-      "published": 2578,
-      "difference": 0
-    },
-    "edg_2021": {
-      "total_edg": 107648,
-      "v01_v89": 3339,
-      "v89": 2217,
-      "published": 3339,
-      "difference": 0
-    },
-    "edg_2022": {
-      "total_edg": 91954,
-      "v01_v89": 3676,
-      "v89": 2693,
-      "published": 3676,
-      "difference": 0
-    },
-    "edg_2023": {
-      "total_edg": 89877,
-      "v01_v89": 4068,
-      "v89": 3324,
-      "published": 4068,
-      "difference": 0
-    },
-    "edg_2024": {
-      "total_edg": 91803,
-      "v01_v89": 4214,
-      "v89": 3414,
-      "published": 4214,
-      "difference": 0
-    }
-  }
+  "raw_controls": {}
 }

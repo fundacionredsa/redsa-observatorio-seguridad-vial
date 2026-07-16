@@ -12,6 +12,8 @@ const variables = [
   "tasa_fallecidos_100k",
   "tasa_siniestros_1000_vehiculos_2024",
   "tasa_motociclistas_1000_motos_2024",
+  "porcentaje_motos_flota_2024",
+  "cobertura_mapeo_osm",
   "fallecidos_sppat_2016_2021",
   "fallecidos_parroquial"
 ];

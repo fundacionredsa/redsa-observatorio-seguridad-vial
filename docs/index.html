@@ -653,6 +653,78 @@
             line-height: 1.25;
         }
 
+        .timeline-control {
+            margin-top: 9px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f8fafc;
+            background: rgba(14, 165, 233, 0.22);
+            font-weight: 700;
+        }
+
+        .timeline-badge.fixed {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.14);
+        }
+
+        #map-year-slider {
+            width: 100%;
+            accent-color: #0ea5e9;
+            cursor: pointer;
+        }
+
+        #map-year-slider:disabled {
+            cursor: not-allowed;
+            opacity: 0.35;
+        }
+
+        .timeline-marks {
+            display: grid;
+            grid-template-columns: repeat(var(--timeline-year-count, 1), 1fr);
+            gap: 1px;
+            margin-top: 2px;
+        }
+
+        .timeline-mark {
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 0.53rem;
+        }
+
+        .timeline-mark.gap {
+            color: #64748b;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .profile-row-with-trend {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 72px;
+            gap: 8px;
+            align-items: end;
+        }
+
+        .profile-sparkline {
+            width: 72px;
+            height: 23px;
+            overflow: visible;
+        }
+
         .interpretation-card {
             display: none;
             margin: 10px 0 12px 0;
@@ -865,11 +937,11 @@
                         <div id="info-provincia" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row" id="fallecidos-parroquia-row" style="display: none;">
-                        <div class="detail-label" style="color: var(--accent-hover); font-weight: 700;">Fallecidos Parroquiales <span class="source-label">(Total 2021-2024)</span></div>
+                        <div class="detail-label" style="color: var(--accent-hover); font-weight: 700;">Fallecidos Parroquiales <span class="source-label">(<span id="parroquia-sidebar-year">2024</span>)</span></div>
                         <div id="info-fallecidos-parroquia" class="detail-value empty" style="color: var(--accent-hover); font-weight: 700;">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024)</span></div>
+                        <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> <span id="info-poblacion-year">2024</span>)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row">
@@ -892,20 +964,7 @@
                     </div>
 
                     <!-- SECCIÓN 3: SINIESTROS DE TRÁNSITO (INEC 2019 - 2024) -->
-                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Siniestros de Tránsito (INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2019 - 2024)</div>
-                    <div class="detail-row" style="margin-bottom: 8px;">
-                        <div class="detail-label" style="font-weight: 600;">Periodo a visualizar:</div>
-                        <div class="detail-value">
-                            <select id="siniestros-year-select" style="background: var(--bg-panel); color: var(--text-primary); border: 1px solid var(--border-glass); border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; outline: none;">
-                                <option value="consolidado" selected>Consolidado (2019-2024)</option>
-                                <option value="2019">2019</option>
-                                <option value="2021">2021</option>
-                                <option value="2022">2022</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                            </select>
-                        </div>
-                    </div>
+                    <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Siniestros de Tránsito (INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>, <span id="siniestros-section-year">2024</span>)</div>
                     <div class="detail-row">
                         <div class="detail-label">Siniestros de Tránsito</div>
                         <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
@@ -933,19 +992,19 @@
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
                     <div class="section-title" style="margin-top: 12px; margin-bottom: 6px;">Fallecidos en Siniestros de Tránsito</div>
                     <div class="detail-row">
-                        <div class="detail-label">Fallecidos SPPAT <span class="sigla-tooltip-trigger" data-sigla="SPPAT">ⓘ</span> <span class="source-label">(Total 2016-2021)</span></div>
+                        <div class="detail-label">Fallecidos SPPAT <span class="sigla-tooltip-trigger" data-sigla="SPPAT">ⓘ</span> <span class="source-label">(<span id="sppat-sidebar-year">2024</span>)</span></div>
                         <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Fallecidos INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> <span class="source-label">(2019)</span></div>
+                        <div class="detail-label">Fallecidos EDG <span class="sigla-tooltip-trigger" data-sigla="EDG">ⓘ</span> <span class="source-label">(<span id="edg-sidebar-year">2024</span>)</span></div>
                         <div id="info-fallecidos-inec" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Vehículos Matriculados <span class="source-label">(Provincial - INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2019)</span></div>
+                        <div class="detail-label">Vehículos Matriculados <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024, dato fijo)</span></div>
                         <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
                     </div>
                     <div class="detail-row" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
-                        <div class="detail-label">Tasa de Fallecidos por 100k Hab. <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2019)</span></div>
+                        <div class="detail-label">Tasa de Fallecidos por 100k Hab. <span class="source-label">(EDG/INEC, <span id="tasa-fallecidos-year">2024</span>)</span></div>
                         <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
 
@@ -983,6 +1042,9 @@
                             </div>
                             <div style="margin-bottom: 8px;">
                                 <strong style="color: var(--text-primary);">Vehículos Matriculados (INEC ESTRA 2024):</strong> registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: var(--text-primary);">Cobertura de mapeo OSM:</strong> densidad de semáforos/rotondas, cruces y aceras registrados en OpenStreetMap. Un cero significa "sin elementos mapeados", no ausencia comprobada de infraestructura.
                             </div>
                         </div>
                     </div>
@@ -1071,6 +1133,7 @@
         const map = L.map('map', {
             center: CENTRO_MAPA,
             zoom: ZOOM_INICIAL,
+            preferCanvas: true,
             zoomControl: false,
             attributionControl: true
         });
@@ -1139,6 +1202,7 @@
         let historicoChart = null;
 
         let selectedVariable = 'normal'; // variable de coropletas seleccionada
+        let selectedYear = 2024;
         let parishLayer = null;
         let parishData = null;
         let parishLoadPromise = null;
@@ -1154,29 +1218,42 @@
         const VARIABLE_CONFIGS = {
             normal: {
                 label: "Límites",
-                levels: ["province", "canton", "parish"]
+                levels: ["province", "canton", "parish"],
+                temporal: { tipo: "foto_unica", anios_disponibles: [] }
             },
             siniestros_inec_2019: {
-                label: "Siniestros INEC 2019",
-                property: "siniestros_inec_2019",
+                label: "Siniestros INEC por año",
+                getValue: (props, year) => props.siniestros_historico?.[String(year)],
                 levels: ["province", "canton"],
+                temporal: { tipo: "anual", anios_disponibles: [2019, 2021, 2022, 2023, 2024] },
                 dynamicBins: true,
+                zeroIsData: true,
                 colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
                 format: value => value.toString()
             },
             fallecidos_inec_2019: {
-                label: "Fallecidos INEC 2019",
-                property: "fallecidos_inec_2019",
+                label: "Fallecidos EDG por año",
+                getValue: (props, year) => props.fallecidos_historico?.[String(year)],
                 levels: ["province", "canton"],
+                temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
                 dynamicBins: true,
+                zeroIsData: true,
                 colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
                 format: value => value.toString()
             },
             tasa_fallecidos_100k: {
-                label: "Tasa por 100k (2019)",
-                property: "tasa_fallecidos_100k",
+                label: "Tasa de fallecidos por 100k",
+                getValue: (props, year) => {
+                    const numerator = props.fallecidos_historico?.[String(year)];
+                    const denominator = props.poblacion_por_anio?.[String(year)];
+                    return Number.isFinite(Number(numerator)) && Number(denominator) > 0
+                        ? Number(numerator) / Number(denominator) * 100000
+                        : null;
+                },
                 levels: ["province", "canton"],
+                temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
                 dynamicBins: true,
+                zeroIsData: true,
                 continuous: true,
                 colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
                 format: value => value.toFixed(1)
@@ -1185,6 +1262,7 @@
                 label: "Tasa de Siniestros por 1,000 Vehículos (2024)",
                 property: "tasa_siniestros_por_1000_vehiculos_2024",
                 levels: ["province", "canton"],
+                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
                 dynamicBins: true,
                 zeroIsData: true,
                 continuous: true,
@@ -1196,6 +1274,7 @@
                 label: "Motociclistas Fallecidos por 1,000 Motos (2024)",
                 property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
                 levels: ["province", "canton"],
+                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
                 dynamicBins: true,
                 zeroIsData: true,
                 continuous: true,
@@ -1204,26 +1283,104 @@
                 format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 3, maximumFractionDigits: 3 })
             },
             fallecidos_sppat_2016_2021: {
-                label: "Fallecidos SPPAT (16-21)",
-                property: "fallecidos_sppat_2016_2021",
+                label: "Fallecidos SPPAT por año",
+                getValue: (props, year) => props.sppat_fallecidos_por_anio?.[String(year)],
                 levels: ["province", "canton"],
+                temporal: { tipo: "anual", anios_disponibles: [2016, 2017, 2018, 2019, 2020, 2021] },
                 dynamicBins: true,
+                zeroIsData: true,
                 colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
                 format: value => value.toString()
             },
             fallecidos_parroquial: {
-                label: "Fallecidos Parroquial (21-24)",
-                property: "fallecidos_2021_2024",
+                label: "Fallecidos parroquiales por año",
+                getValue: (props, year) => props.fallecidos_por_anio?.[String(year)],
                 levels: ["parish"],
+                temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
                 dynamicBins: true,
+                zeroIsData: true,
                 colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
                 format: value => value.toString()
+            },
+            porcentaje_motos_flota_2024: {
+                label: "% de motocicletas en la flota (2024)",
+                property: "porcentaje_motocicletas_vehiculos_2024",
+                levels: ["province", "canton"],
+                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
+                dynamicBins: true,
+                zeroIsData: true,
+                continuous: true,
+                infoSigla: "VEHICULOS_MATRICULADOS",
+                colors: ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
+                format: value => `${value.toFixed(1)}%`
+            },
+            cobertura_mapeo_osm: {
+                label: "Cobertura de mapeo OSM por 100k hab.",
+                property: "cobertura_mapeo_infraestructura_por_100k",
+                levels: ["province", "canton"],
+                temporal: { tipo: "foto_unica", anios_disponibles: [2026] },
+                dynamicBins: true,
+                zeroIsData: true,
+                zeroAsNoMapping: true,
+                continuous: true,
+                infoSigla: "COBERTURA_OSM",
+                colors: ["#f7fcf0", "#ccebc5", "#7bccc4", "#2b8cbe", "#084081"],
+                format: value => value.toFixed(1)
             }
         };
+
+        const TEMPORAL_COVERAGE = Object.fromEntries(
+            Object.entries(VARIABLE_CONFIGS).map(([id, config]) => [id, config.temporal])
+        );
+        const DECLARED_TIMELINE_YEARS = Object.values(TEMPORAL_COVERAGE)
+            .flatMap(coverage => coverage?.anios_disponibles || [])
+            .map(Number)
+            .filter(Number.isFinite);
+        const TIMELINE_MIN_YEAR = Math.min(...DECLARED_TIMELINE_YEARS);
+        const TIMELINE_MAX_YEAR = Math.max(...DECLARED_TIMELINE_YEARS);
+        const ALL_TIMELINE_YEARS = Array.from(
+            { length: TIMELINE_MAX_YEAR - TIMELINE_MIN_YEAR + 1 },
+            (_, index) => TIMELINE_MIN_YEAR + index
+        );
+
+        function getVariableValue(properties, variable, year = selectedYear) {
+            const config = VARIABLE_CONFIGS[variable];
+            if (!config || !properties) return null;
+            if (config.temporal?.tipo === "anual" && !config.temporal.anios_disponibles.includes(Number(year))) {
+                return null;
+            }
+            return config.getValue
+                ? config.getValue(properties, year)
+                : properties[config.property];
+        }
+
+        function updateTimelineControl() {
+            const slider = document.getElementById("map-year-slider");
+            const badge = document.getElementById("timeline-badge");
+            const marks = document.getElementById("timeline-marks");
+            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+            if (!slider || !badge || !marks) return;
+
+            const isAnnual = coverage.tipo === "anual";
+            slider.disabled = !isAnnual;
+            slider.value = String(selectedYear);
+            badge.className = `timeline-badge${isAnnual ? "" : " fixed"}`;
+            badge.textContent = isAnnual
+                ? String(selectedYear)
+                : (coverage.anios_disponibles.length
+                    ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
+                    : "Vista territorial");
+            marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
+            marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
+                const covered = isAnnual && coverage.anios_disponibles.includes(year);
+                return `<span class="timeline-mark${covered ? "" : " gap"}">${String(year).slice(2)}</span>`;
+            }).join("");
+        }
 
         let activeVariableBins = {
             variable: "normal",
             level: null,
+            year: null,
             bins: [],
             validValueCount: 0
         };
@@ -1239,12 +1396,14 @@
             return config.levels.includes(level) ? selectedVariable : "normal";
         }
 
-        function calculateQuantileBins(features, config, quantiles = [0.2, 0.4, 0.6, 0.8]) {
+        function calculateQuantileBins(features, config, variable, quantiles = [0.2, 0.4, 0.6, 0.8]) {
             const values = features
-                .map(feature => feature.properties ? feature.properties[config.property] : null)
+                .map(feature => getVariableValue(feature.properties, variable, selectedYear))
                 .filter(value => value !== null && value !== undefined)
                 .map(value => Number(value))
-                .filter(value => Number.isFinite(value) && (config.zeroIsData ? value >= 0 : value > 0))
+                .filter(value => Number.isFinite(value) && (
+                    config.zeroAsNoMapping ? value > 0 : (config.zeroIsData ? value >= 0 : value > 0)
+                ))
                 .sort((a, b) => a - b);
             if (!values.length) return { bins: [], validValueCount: 0 };
 
@@ -1275,12 +1434,13 @@
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
             if (variable === "normal" || !config.levels.includes(level)) {
-                activeVariableBins = { variable: "normal", level, bins: [], validValueCount: 0 };
+                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], validValueCount: 0 };
             } else {
-                const result = calculateQuantileBins(getFeaturesForLevel(level), config);
+                const result = calculateQuantileBins(getFeaturesForLevel(level), config, variable);
                 activeVariableBins = {
                     variable,
                     level,
+                    year: selectedYear,
                     bins: result.bins,
                     validValueCount: result.validValueCount
                 };
@@ -1288,6 +1448,7 @@
             window.__redsaActiveBins = {
                 variable: activeVariableBins.variable,
                 level: activeVariableBins.level,
+                year: activeVariableBins.year,
                 bins: [...activeVariableBins.bins],
                 validValueCount: activeVariableBins.validValueCount
             };
@@ -1295,7 +1456,11 @@
         }
 
         function getVariableBins(variable, level) {
-            if (activeVariableBins.variable !== variable || activeVariableBins.level !== level) {
+            if (
+                activeVariableBins.variable !== variable
+                || activeVariableBins.level !== level
+                || activeVariableBins.year !== selectedYear
+            ) {
                 return recalculateActiveVariableBins(variable, level);
             }
             return activeVariableBins.bins;
@@ -1333,7 +1498,7 @@
 
         function getChoroplethStyle(feature, variable, level, isHovered = false, isSelected = false) {
             const config = VARIABLE_CONFIGS[variable];
-            const val = feature.properties ? feature.properties[config.property] : null;
+            const val = getVariableValue(feature.properties, variable, selectedYear);
             const bins = getVariableBins(variable, level);
             let color = "#cbd5e1";
             let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
@@ -1342,7 +1507,12 @@
             let fillOpacity = 0.65;
             let dashArray = '';
             
-            if (val === null || val === undefined || !Number.isFinite(Number(val)) || (val === 0 && !config.zeroIsData)) {
+            if (config.zeroAsNoMapping && Number(val) === 0) {
+                fillColor = "#475569";
+                fillOpacity = 0.28;
+                dashArray = "6, 4";
+                color = "#94a3b8";
+            } else if (val === null || val === undefined || !Number.isFinite(Number(val)) || (val === 0 && !config.zeroIsData)) {
                 fillColor = "#1e293b";
                 fillOpacity = 0.45;
                 dashArray = '3, 4';
@@ -1572,10 +1742,8 @@
         };
 
         function getInterpretationYear(props) {
-            const selector = document.getElementById("siniestros-year-select");
-            const selectedYear = selector ? selector.value : "consolidado";
             const hotspotYears = props && props.hotspot_gi ? Object.keys(props.hotspot_gi).sort() : [];
-            if (selectedYear !== "consolidado") return selectedYear;
+            if (hotspotYears.includes(String(selectedYear))) return String(selectedYear);
             const yearsWithData = hotspotYears.filter(year => {
                 const category = props.hotspot_gi[year] && props.hotspot_gi[year].categoria;
                 return category && category !== "sin_dato";
@@ -1648,7 +1816,8 @@
                     `;
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
-                    const title = `${config.label}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}:`;
+                    const temporalLabel = config.temporal?.tipo === "anual" ? ` · ${selectedYear}` : "";
+                    const title = `${config.label}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}:`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const colors = config.colors;
                     const formatFunc = config.format || (v => v.toString());
@@ -1676,6 +1845,14 @@
                         `;
                     }
                     
+                    if (config.zeroAsNoMapping) {
+                        itemsHtml += `
+                            <div class="legend-item" style="padding-left: 8px;">
+                                <span class="legend-color-line" style="background-color: #475569; border: 1px dashed #94a3b8; height: 10px; width: 14px; border-radius: 2px;"></span>
+                                <span style="color: var(--text-muted)">Sin elementos mapeados en OSM; no implica ausencia</span>
+                            </div>
+                        `;
+                    }
                     itemsHtml += `
                         <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
                             <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569; height: 10px; width: 14px; border-radius: 2px;"></span>
@@ -1688,7 +1865,7 @@
             }
             
             // 2. Ciclovías
-            const cicloviasLayer = overlayMaps["Ciclovías (Pichincha)"];
+            const cicloviasLayer = overlayMaps["Ciclovías"];
             if (cicloviasLayer && map.hasLayer(cicloviasLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1743,7 +1920,7 @@
             }
 
             // 4. Aceras
-            const acerasLayer = overlayMaps["Aceras (Pichincha)"];
+            const acerasLayer = overlayMaps["Aceras"];
             if (acerasLayer && map.hasLayer(acerasLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1755,7 +1932,7 @@
             }
             
             // 5. Cruces Peatonales
-            const crucesLayer = overlayMaps["Cruces Peatonales (Pichincha)"];
+            const crucesLayer = overlayMaps["Cruces Peatonales"];
             if (crucesLayer && map.hasLayer(crucesLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1767,7 +1944,7 @@
             }
             
             // 6. Pacificación de Tránsito
-            const pacificacionLayer = overlayMaps["Pacificación de Tránsito (Pichincha)"];
+            const pacificacionLayer = overlayMaps["Pacificación de Tránsito"];
             if (pacificacionLayer && map.hasLayer(pacificacionLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1779,7 +1956,7 @@
             }
             
             // 7. Semáforos y Rotondas
-            const semaforosLayer = overlayMaps["Semáforos y Rotondas (Pichincha)"];
+            const semaforosLayer = overlayMaps["Semáforos y Rotondas"];
             if (semaforosLayer && map.hasLayer(semaforosLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1791,7 +1968,7 @@
             }
             
             // 8. Iluminación Vial
-            const iluminacionLayer = overlayMaps["Iluminación Vial (Pichincha)"];
+            const iluminacionLayer = overlayMaps["Iluminación Vial"];
             if (iluminacionLayer && map.hasLayer(iluminacionLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1803,7 +1980,7 @@
             }
             
             // 9. Límites de Velocidad
-            const velocidadLayer = overlayMaps["Límites de Velocidad (Pichincha)"];
+            const velocidadLayer = overlayMaps["Límites de Velocidad"];
             if (velocidadLayer && map.hasLayer(velocidadLayer)) {
                 hasItems = true;
                 container.innerHTML += `
@@ -1814,18 +1991,35 @@
                 `;
             }
             
-            // 10. Carriles BRT/Metrobús-Q
-            const brtLayer = overlayMaps["Carriles BRT/Metrobús-Q (Pichincha)"];
+            // 10. Carriles BRT/Metrobús
+            const brtLayer = overlayMaps["Carriles BRT/Metrobús"];
             if (brtLayer && map.hasLayer(brtLayer)) {
                 hasItems = true;
                 container.innerHTML += `
                     <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
                         <span class="legend-color-line" style="background-color: ${COLOR_BRT_METROBUS};"></span>
-                        <span>Carriles BRT/Metrobús-Q (OSM)</span>
+                        <span>Carriles BRT/Metrobús (OSM)</span>
                     </div>
                 `;
             }
             
+            const osmNationalLabels = [
+                "Ciclovías", "Aceras", "Cruces Peatonales", "Pacificación de Tránsito",
+                "Semáforos y Rotondas", "Iluminación Vial", "Límites de Velocidad",
+                "Carriles BRT/Metrobús"
+            ];
+            const hasActiveOsmLayer = osmNationalLabels.some(label => {
+                const layer = overlayMaps[label];
+                return layer && map.hasLayer(layer);
+            });
+            if (hasActiveOsmLayer) {
+                container.innerHTML += `
+                    <div class="legend-item" style="margin-top:4px;padding-top:6px;border-top:1px dashed rgba(251,191,36,.25);color:#fbbf24;font-size:.67rem;line-height:1.3;align-items:flex-start;">
+                        <span class="legend-color-line" style="flex:0 0 auto;background-color:rgba(148,163,184,.18);border:1px dashed #94a3b8;height:10px;width:14px;border-radius:2px;margin-top:2px;"></span>
+                        <span>Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.</span>
+                    </div>
+                `;
+            }
             panel.style.display = hasItems ? "block" : "none";
             updateHoverCardLayout();
         }
@@ -1839,8 +2033,12 @@
             if (!note || !level) return;
             const requestedConfig = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
             const effectiveVariable = getEffectiveVariable(level);
+            const coverage = TEMPORAL_COVERAGE[selectedVariable];
             if (selectedVariable !== "normal" && effectiveVariable === "normal") {
                 note.textContent = `"${requestedConfig.label}" no está disponible en ${LEVEL_LABELS[level]}; se muestran solo límites.`;
+                note.style.display = "block";
+            } else if (coverage?.tipo === "anual" && !coverage.anios_disponibles.includes(selectedYear)) {
+                note.textContent = `Sin cobertura de "${requestedConfig.label}" en ${selectedYear}; se muestra sin dato, sin sustituir otro año.`;
                 note.style.display = "block";
             } else {
                 note.textContent = "";
@@ -1964,6 +2162,7 @@
         const domCanton = document.getElementById("info-canton");
         const domProvincia = document.getElementById("info-provincia");
         const domPoblacion = document.getElementById("info-poblacion");
+        const domPoblacionYear = document.getElementById("info-poblacion-year");
         const domTasaSiniestros = document.getElementById("info-tasa-siniestros");
         const domTasaSiniestrosYear = document.getElementById("info-tasa-siniestros-year");
         const domFallecidosSppat = document.getElementById("info-fallecidos-sppat");
@@ -2000,23 +2199,16 @@
             return Number(val).toLocaleString('de-DE');
         }
 
-        function getLatestSiniestrosRate(props) {
+        function getSiniestrosRate(props, year) {
             const siniestros = props && props.siniestros_historico;
             const poblacion = props && props.poblacion_por_anio;
             if (!siniestros || !poblacion) return null;
-
-            const years = Object.keys(siniestros)
-                .filter(year => Object.prototype.hasOwnProperty.call(poblacion, year))
-                .sort((a, b) => Number(b) - Number(a));
-
-            for (const year of years) {
-                const total = Number(siniestros[year]);
-                const population = Number(poblacion[year]);
-                if (Number.isFinite(total) && Number.isFinite(population) && population > 0) {
-                    return { year, value: total / population * 100000 };
-                }
-            }
-            return null;
+            const yearKey = String(year);
+            const total = Number(siniestros[yearKey]);
+            const population = Number(poblacion[yearKey]);
+            return Number.isFinite(total) && Number.isFinite(population) && population > 0
+                ? { year: yearKey, value: total / population * 100000 }
+                : null;
         }
 
         function siglaInfoIcon(sigla) {
@@ -2024,8 +2216,8 @@
         }
 
         // Helper to render dynamic progress bar
-        defProgressBar = (label, count, pct, color) => {
-            return `
+        defProgressBar = (label, count, pct, color, trendHtml = "") => {
+            const bar = `
                 <div class="profile-bar-row">
                     <div class="profile-bar-labels">
                         <span>${label}</span>
@@ -2036,6 +2228,29 @@
                     </div>
                 </div>
             `;
+            return trendHtml
+                ? `<div class="profile-row-with-trend">${bar}${trendHtml}</div>`
+                : bar;
+        }
+
+        function renderSparkline(values, color) {
+            const numeric = values.map(value => Number.isFinite(Number(value)) ? Number(value) : null);
+            const available = numeric.filter(value => value !== null);
+            if (available.length < 2) {
+                return `<span style="font-size:0.58rem;color:var(--text-muted);">sin serie</span>`;
+            }
+            const width = 72;
+            const height = 23;
+            const min = Math.min(...available);
+            const max = Math.max(...available);
+            const range = max - min || 1;
+            const points = numeric.map((value, index) => {
+                if (value === null) return null;
+                const x = index / Math.max(1, numeric.length - 1) * width;
+                const y = height - 2 - ((value - min) / range) * (height - 4);
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            }).filter(Boolean).join(" ");
+            return `<svg class="profile-sparkline" viewBox="0 0 ${width} ${height}" role="img" aria-label="Tendencia 2020 a 2024"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${width}" cy="${points.split(" ").at(-1).split(",")[1]}" r="2.4" fill="${color}"/></svg>`;
         }
 
         function isVisibleElement(el) {
@@ -2128,6 +2343,9 @@
             const title = document.getElementById("hover-card-title");
             
             if (!card || !body || !title) return;
+            currentHoverProps = props;
+            const periodBadge = document.getElementById("hover-card-period");
+            if (periodBadge) periodBadge.textContent = String(selectedYear);
             
             // Fixed lower panel; dynamic sizing prevents overlap with map controls.
             card.style.display = "block";
@@ -2137,7 +2355,7 @@
                 title.textContent = `${props.DPA_DESPAR} (Parroquia)`;
                 let html = `
                     <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; padding: 6px 0;">
-                        <strong>Fallecidos Parroquiales (2021-2024):</strong> ${props.fallecidos_2021_2024 || 0}
+                        <strong>Fallecidos Parroquiales (${selectedYear}):</strong> ${props.fallecidos_por_anio?.[String(selectedYear)] ?? "Sin dato"}
                     </div>
                     <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.35; margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px;">
                         Perfil demográfico no disponible a nivel parroquial (requiere microdatos de georreferenciación fina).
@@ -2152,14 +2370,15 @@
             const isProvinceProfile = props.nivel_agregacion === "provincia";
             title.textContent = isProvinceProfile ? `${props.DPA_DESPRO} (Provincia)` : `${props.DPA_DESCAN} (Cantón)`;
             
-            const edg = props.fallecidos_detallado;
+            const edgSeries = props.fallecidos_detallado || {};
+            const edg = edgSeries[String(selectedYear)];
             let html = `<div class="perfil-card-grid">`;
             
             // 1. INEC EDG Profile
-            html += `<div class="profile-card-source-title">INEC ${siglaInfoIcon("INEC")} EDG ${siglaInfoIcon("EDG")} (Perfil Demográfico, CIE-10 ${siglaInfoIcon("CIE-10")} V01-V89)</div>`;
+            html += `<div class="profile-card-source-title">INEC ${siglaInfoIcon("INEC")} EDG ${siglaInfoIcon("EDG")} (Perfil Demográfico ${selectedYear}, CIE-10 ${siglaInfoIcon("CIE-10")} V01-V89)</div>`;
             
-            if (edg) {
-                const total_edg = Object.values(edg.sexo).reduce((a,b) => a+b, 0);
+            if (edg && edg.estado !== "sin_dato" && edg.sexo && edg.usuario && edg.edad) {
+                const total_edg = Number(edg.total) || Object.values(edg.sexo).reduce((a,b) => a+b, 0);
                 if (total_edg > 0) {
                     const m_pct = (edg.sexo.Hombre / total_edg) * 100;
                     const f_pct = (edg.sexo.Mujer / total_edg) * 100;
@@ -2188,12 +2407,20 @@
                         ocupante: "Ocupante",
                         otro: "Otros / Sin dato"
                     };
-                    Object.keys(edg.usuario).forEach(k => {
+                    Object.keys(userLabels).forEach(k => {
                         const count = edg.usuario[k];
-                        if (count > 0) {
-                            const pct = (count / total_edg) * 100;
-                            html += defProgressBar(userLabels[k], count, pct, userColors[k]);
-                        }
+                        const pct = (count / total_edg) * 100;
+                        const trend = ["2020", "2021", "2022", "2023", "2024"].map(year => {
+                            const annual = edgSeries[year];
+                            return annual && annual.estado !== "sin_dato" ? annual.usuario?.[k] : null;
+                        });
+                        html += defProgressBar(
+                            userLabels[k],
+                            count,
+                            pct,
+                            userColors[k],
+                            renderSparkline(trend, userColors[k])
+                        );
                     });
                     html += `</div>`;
                     
@@ -2224,12 +2451,17 @@
             }
             
             // 2. SPPAT Profile
-            const sppat_t = props.fallecidos_sppat_2016_2021;
-            html += `<div class="profile-card-source-title">SPPAT ${siglaInfoIcon("SPPAT")} (Reclamaciones 16-21)</div>`;
+            const yearKey = String(selectedYear);
+            const sppat_t = props.sppat_fallecidos_por_anio?.[yearKey];
+            const sppatSexoEntry = props.sppat_por_sexo?.[yearKey];
+            const sppatCondEntry = props.sppat_por_condicion?.[yearKey];
+            const sppatTipoEntry = props.sppat_por_tipo_accidente?.[yearKey];
+            html += `<div class="profile-card-source-title">SPPAT ${siglaInfoIcon("SPPAT")} (Reclamaciones ${selectedYear})</div>`;
             
-            if (sppat_t && props.sppat_por_sexo) {
-                const s_m_count = props.sppat_por_sexo.MASCULINO || 0;
-                const s_f_count = props.sppat_por_sexo.FEMENINO || 0;
+            if (sppat_t !== undefined && sppatSexoEntry?.estado === "disponible") {
+                const sppatSexo = sppatSexoEntry.categorias || {};
+                const s_m_count = sppatSexo.MASCULINO || 0;
+                const s_f_count = sppatSexo.FEMENINO || 0;
                 const s_total_sex = s_m_count + s_f_count;
                 if (s_total_sex > 0) {
                     const sm_pct = (s_m_count / s_total_sex) * 100;
@@ -2246,9 +2478,9 @@
                     `;
                 }
 
-                const condObj = props.sppat_por_condicion || {};
+                const condObj = sppatCondEntry?.categorias || {};
                 const total_cond = Object.values(condObj).reduce((a,b) => a+b, 0);
-                const tipoObj = props.sppat_por_tipo_accidente || {};
+                const tipoObj = sppatTipoEntry?.categorias || {};
                 const total_tipo = Object.values(tipoObj).reduce((a,b) => a+b, 0);
                 if (total_cond > 0 || total_tipo > 0) {
                     html += `
@@ -2280,12 +2512,12 @@
                     html += `</div>`;
                 }
             } else {
-                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">Sin registros en SPPAT</div>`;
+                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">Sin desagregación SPPAT disponible en ${selectedYear}</div>`;
             }
             
             html += `
                 <div class="profile-note" style="grid-column: 1 / -1;">
-                    Dato agregado 2020-2024, desagregación por año pendiente
+                    Perfiles anuales sin imputación. Los años sin fuente o sin registros suficientes se muestran como sin dato.
                 </div>
                 </div>
             `;
@@ -2303,6 +2535,7 @@
         });
 
         let currentProps = null;
+        let currentHoverProps = null;
 
         function renderSiniestrosSection(props, yearVal) {
             const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -2323,14 +2556,10 @@
                 return;
             }
             
-            let yearsToProcess = [];
-            if (yearVal === "consolidado") {
-                yearsToProcess = Object.keys(props.siniestros_historico);
-            } else {
-                if (props.siniestros_historico[yearVal] !== undefined) {
-                    yearsToProcess = [yearVal];
-                }
-            }
+            const yearKey = String(yearVal);
+            const yearsToProcess = props.siniestros_historico[yearKey] !== undefined
+                ? [yearKey]
+                : [];
             
             if (yearsToProcess.length === 0) {
                 inecDetailedStats.style.display = "none";
@@ -2440,7 +2669,9 @@
             if (parishProps) {
                 domParroquia.textContent = parishProps.DPA_DESPAR;
                 domParroquia.classList.remove("empty");
-                domFallecidosParroquia.textContent = formatNumber(parishProps.fallecidos_2021_2024);
+                document.getElementById("parroquia-sidebar-year").textContent = String(selectedYear);
+                const parishFatalities = parishProps.fallecidos_por_anio?.[String(selectedYear)];
+                domFallecidosParroquia.textContent = parishFatalities === undefined ? "Sin dato" : formatNumber(parishFatalities);
                 domFallecidosParroquia.classList.remove("empty");
                 domCodParroquia.textContent = parishProps.DPA_PARROQ;
                 
@@ -2479,10 +2710,15 @@
                 domProvincia.textContent = "—";
                 domProvincia.classList.add("empty");
                 domPoblacion.textContent = "Dato no disponible a este nivel";
+                domPoblacionYear.textContent = String(selectedYear);
                 domPoblacion.classList.add("empty");
                 domTasaSiniestros.textContent = "Sin dato";
                 domTasaSiniestros.classList.add("empty");
                 domTasaSiniestrosYear.textContent = "sin dato";
+                document.getElementById("siniestros-section-year").textContent = String(selectedYear);
+                document.getElementById("sppat-sidebar-year").textContent = String(selectedYear);
+                document.getElementById("edg-sidebar-year").textContent = String(selectedYear);
+                document.getElementById("tasa-fallecidos-year").textContent = String(selectedYear);
                 domFallecidosSppat.textContent = "—";
                 domFallecidosSppat.classList.add("empty");
                 domSiniestrosInec.textContent = "—";
@@ -2525,7 +2761,9 @@
                 domWarningBox.style.display = "block";
             }
             
-            const poblacion = props.poblacion_2024;
+            const yearKey = String(selectedYear);
+            const poblacion = props.poblacion_por_anio?.[yearKey];
+            domPoblacionYear.textContent = yearKey;
             domPoblacion.textContent = formatNumber(poblacion);
             if (poblacion !== null && poblacion !== undefined) domPoblacion.classList.remove("empty");
             else {
@@ -2533,22 +2771,24 @@
                 domPoblacion.classList.add("empty");
             }
 
-            const latestSiniestrosRate = getLatestSiniestrosRate(parishProps || props);
-            if (latestSiniestrosRate) {
-                domTasaSiniestros.textContent = latestSiniestrosRate.value.toLocaleString('de-DE', {
+            const selectedSiniestrosRate = getSiniestrosRate(parishProps || props, selectedYear);
+            if (selectedSiniestrosRate) {
+                domTasaSiniestros.textContent = selectedSiniestrosRate.value.toLocaleString('de-DE', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 }) + " por 100,000 hab.";
                 domTasaSiniestros.classList.remove("empty");
-                domTasaSiniestrosYear.textContent = latestSiniestrosRate.year;
+                domTasaSiniestrosYear.textContent = selectedSiniestrosRate.year;
             } else {
                 domTasaSiniestros.textContent = "Sin dato";
                 domTasaSiniestros.classList.add("empty");
                 domTasaSiniestrosYear.textContent = "sin dato";
             }
             
-            domFallecidosSppat.textContent = formatNumber(props.fallecidos_sppat_2016_2021);
-            if (props.fallecidos_sppat_2016_2021 !== null) domFallecidosSppat.classList.remove("empty");
+            const sppatAnnual = props.sppat_fallecidos_por_anio?.[yearKey];
+            document.getElementById("sppat-sidebar-year").textContent = yearKey;
+            domFallecidosSppat.textContent = sppatAnnual === undefined ? "Sin dato" : formatNumber(sppatAnnual);
+            if (sppatAnnual !== undefined) domFallecidosSppat.classList.remove("empty");
             else domFallecidosSppat.classList.add("empty");
             
             domSiniestrosInec.textContent = formatNumber(props.siniestros_inec_2019);
@@ -2559,15 +2799,19 @@
             if (props.lesionados_inec_2019 !== null) domLesionadosInec.classList.remove("empty");
             else domLesionadosInec.classList.add("empty");
             
-            domFallecidosInec.textContent = formatNumber(props.fallecidos_inec_2019);
-            if (props.fallecidos_inec_2019 !== null) domFallecidosInec.classList.remove("empty");
+            const edgAnnual = props.fallecidos_historico?.[yearKey];
+            document.getElementById("edg-sidebar-year").textContent = yearKey;
+            domFallecidosInec.textContent = edgAnnual === undefined ? "Sin dato" : formatNumber(edgAnnual);
+            if (edgAnnual !== undefined) domFallecidosInec.classList.remove("empty");
             else domFallecidosInec.classList.add("empty");
             
-            domMatriculadosProv.textContent = formatNumber(props.matriculados_prov_inec_2019);
-            if (props.matriculados_prov_inec_2019 !== null) domMatriculadosProv.classList.remove("empty");
+            const vehiculos2024 = props.vehiculos_matriculados_2024?.total;
+            domMatriculadosProv.textContent = formatNumber(vehiculos2024);
+            if (vehiculos2024 !== null && vehiculos2024 !== undefined) domMatriculadosProv.classList.remove("empty");
             else domMatriculadosProv.classList.add("empty");
             
-            const tasa = props.tasa_fallecidos_100k;
+            const tasa = getVariableValue(props, "tasa_fallecidos_100k", selectedYear);
+            document.getElementById("tasa-fallecidos-year").textContent = yearKey;
             if (tasa !== null && tasa !== undefined) {
                 domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " por 100k hab.";
                 domTasaFallecidos.classList.remove("empty");
@@ -2580,7 +2824,8 @@
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
 
             currentProps = props;
-            renderSiniestrosSection(props, document.getElementById("siniestros-year-select").value);
+            document.getElementById("siniestros-section-year").textContent = yearKey;
+            renderSiniestrosSection(props, selectedYear);
             updateInterpretationCard(parishProps ? null : props);
 
             // Perfil demográfico renderizado en tarjeta flotante on hover
@@ -2594,7 +2839,7 @@
                 chartContainer.style.display = "block";
                 chartEmptyMsg.style.display = "none";
                 
-                const years = ['2019', '2020', '2021', '2022', '2023', '2024'];
+                const years = ALL_TIMELINE_YEARS.map(String);
                 const valSiniestros = years.map(y => props.siniestros_historico && props.siniestros_historico[y] !== undefined ? props.siniestros_historico[y] : null);
                 const valFallecidos = years.map(y => props.fallecidos_historico && props.fallecidos_historico[y] !== undefined ? props.fallecidos_historico[y] : null);
                 
@@ -2603,6 +2848,25 @@
                 }
                 
                 const ctx = document.getElementById('chart-historico').getContext('2d');
+                const selectedYearMarker = {
+                    id: "selectedYearMarker",
+                    afterDatasetsDraw(chart) {
+                        const index = chart.data.labels.indexOf(String(selectedYear));
+                        if (index < 0) return;
+                        const x = chart.scales.x.getPixelForValue(index);
+                        const { top, bottom } = chart.chartArea;
+                        const context = chart.ctx;
+                        context.save();
+                        context.strokeStyle = "#f8fafc";
+                        context.lineWidth = 1;
+                        context.setLineDash([3, 3]);
+                        context.beginPath();
+                        context.moveTo(x, top);
+                        context.lineTo(x, bottom);
+                        context.stroke();
+                        context.restore();
+                    }
+                };
                 historicoChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -2618,7 +2882,7 @@
                                 fill: true,
                                 pointBackgroundColor: '#f59e0b',
                                 pointBorderColor: '#f8fafc',
-                                pointRadius: 4,
+                                pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
                                 yAxisID: 'y'
                             },
                             {
@@ -2631,11 +2895,12 @@
                                 fill: true,
                                 pointBackgroundColor: '#0ea5e9',
                                 pointBorderColor: '#f8fafc',
-                                pointRadius: 4,
+                                pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
                                 yAxisID: 'y1'
                             }
                         ]
                     },
+                    plugins: [selectedYearMarker],
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -2919,47 +3184,16 @@
                 handleHash();
                 window.addEventListener("hashchange", handleHash);
 
-                // --- CARGAR CAPA DE CICLOVIAS (FASE 6) ---
-                const RUTA_CICLOVIAS = "data/ciclovias_pichincha.geojson";
-                
-                fetch(RUTA_CICLOVIAS)
-                    .then(res => {
-                        if (!res.ok) throw new Error("No se pudo cargar ciclovías.");
-                        return res.json();
-                    })
-                    .then(cicloviasData => {
-                        const cicloviasLayer = L.geoJSON(cicloviasData, {
-                            attribution: 'Ciclovías: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ODbL',
-                            style: {
-                                color: COLOR_CICLOVIAS,
-                                weight: 3,
-                                opacity: 0.85
-                            },
-                            onEachFeature: function(feature, layer) {
-                                if (feature.properties) {
-                                    const name = feature.properties.name || "Ciclovía sin nombre";
-                                    layer.bindPopup(`<strong>Ciclovía:</strong> ${name}<br><strong> highway:</strong> ${feature.properties.highway}`);
-                                }
-                            }
-                        });
-                        
-                        overlayMaps["Ciclovías (Pichincha)"] = cicloviasLayer;
-                        cicloviasLayer.addTo(map); // Encendido por defecto
-                        
-                        if (layerControl) {
-                            map.removeControl(layerControl);
+                loadOSMLayer("data/ciclovias_ecuador.geojson", "Ciclovías", {
+                    attribution: 'Ciclovías: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ODbL',
+                    style: { color: COLOR_CICLOVIAS, weight: 3, opacity: 0.85 },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            const name = feature.properties.name || "Ciclovía sin nombre";
+                            layer.bindPopup(`<strong>Ciclovía:</strong> ${name}<br><strong>highway:</strong> ${feature.properties.highway || "—"}`);
                         }
-                        
-                        layerControl = L.control.layers(baseMaps, overlayMaps, {
-                            position: 'topright',
-                            collapsed: false
-                        }).addTo(map);
-                        
-                        updateLegend();
-                    })
-                    .catch(err => {
-                        console.warn("Advertencia al cargar ciclovías:", err);
-                    });
+                    }
+                });
 
                 // --- CARGAR CAPA DE MAPILLARY (OPCIONAL/FASE 7) ---
                 const RUTA_MAPILLARY = "data/mapillary_pichincha.geojson";
@@ -3028,38 +3262,74 @@
                     });
 
                 // --- HELPER PARA CARGAR CAPAS ADICIONALES DE OSM (FASE 8) ---
-                function loadOSMLayer(url, labelName, geojsonOptions) {
-                    fetch(url)
-                        .then(res => {
-                            if (!res.ok) throw new Error(`No se pudo cargar la capa ${labelName}.`);
-                            return res.json();
-                        })
-                        .then(data => {
-                            const layer = L.geoJSON(data, geojsonOptions);
-                            overlayMaps[labelName] = layer; // Añadir a las capas (apagas por defecto)
-                            
-                            // Registrar eventos para leyenda reactiva
-                            layer.on('add', updateLegend);
-                            layer.on('remove', updateLegend);
-                            
-                            // Actualizar Control de Capas
-                            if (layerControl) {
-                                map.removeControl(layerControl);
-                            }
-                            layerControl = L.control.layers(baseMaps, overlayMaps, {
-                                position: 'topright',
-                                collapsed: false
-                            }).addTo(map);
-                            
-                            updateLegend();
-                        })
-                        .catch(err => {
-                            console.warn(`Advertencia al cargar la capa OSM '${labelName}':`, err);
-                        });
+                function loadOSMLayer(url, labelName, geojsonOptions, preload = false) {
+                    const placeholder = L.layerGroup();
+                    placeholder._redsaLoaded = false;
+                    placeholder._redsaFeatureCount = 0;
+                    const startLoad = () => {
+                        if (placeholder._redsaLoadPromise) return;
+                        placeholder._redsaLoadPromise = fetch(url)
+                            .then(res => {
+                                if (!res.ok) throw new Error(`No se pudo cargar la capa ${labelName}.`);
+                                return res.json();
+                            })
+                            .then(data => {
+                                const layer = L.geoJSON(data, geojsonOptions);
+                                const mappedCantons = new Set(
+                                    (data.features || []).flatMap(feature =>
+                                        feature.properties?.DPA_CANTONES || []
+                                    ).map(String)
+                                );
+                                const unmappedFeatures = (cantonData?.features || []).filter(feature =>
+                                    !mappedCantons.has(String(feature.properties?.DPA_CANTON))
+                                );
+                                const unmappedMask = L.geoJSON({
+                                    type: "FeatureCollection",
+                                    features: unmappedFeatures
+                                }, {
+                                    interactive: false,
+                                    style: {
+                                        color: "#64748b",
+                                        weight: 0.8,
+                                        opacity: 0.65,
+                                        dashArray: "4 4",
+                                        fillColor: "#94a3b8",
+                                        fillOpacity: 0.12
+                                    }
+                                });
+                                placeholder._redsaFeatureCount = data.features?.length || 0;
+                                placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
+                                placeholder._redsaLoaded = true;
+                                placeholder.addLayer(unmappedMask);
+                                placeholder.addLayer(layer);
+                                updateLegend();
+                                return layer;
+                            })
+                            .catch(err => {
+                                placeholder._redsaLoadError = err.message;
+                                console.warn(`Advertencia al cargar la capa OSM '${labelName}':`, err);
+                                updateLegend();
+                                throw err;
+                            });
+                    };
+                    placeholder.on("add", () => {
+                        updateLegend();
+                        startLoad();
+                    });
+                    placeholder.on("remove", updateLegend);
+                    overlayMaps[labelName] = placeholder;
+
+                    if (layerControl) map.removeControl(layerControl);
+                    layerControl = L.control.layers(baseMaps, overlayMaps, {
+                        position: 'topright',
+                        collapsed: false
+                    }).addTo(map);
+                    if (preload) startLoad();
+                    updateLegend();
                 }
 
                 // Cargar las 7 Capas Adicionales de OpenStreetMap (Apagadas por defecto)
-                loadOSMLayer("data/aceras_pichincha.geojson", "Aceras (Pichincha)", {
+                loadOSMLayer("data/aceras_ecuador.geojson", "Aceras", {
                     style: {
                         color: COLOR_ACERAS,
                         weight: 2,
@@ -3074,7 +3344,7 @@
                     }
                 });
 
-                loadOSMLayer("data/cruces_pichincha.geojson", "Cruces Peatonales (Pichincha)", {
+                loadOSMLayer("data/cruces_ecuador.geojson", "Cruces Peatonales", {
                     pointToLayer: function(f, latlng) {
                         return L.circleMarker(latlng, {
                             radius: 4,
@@ -3093,7 +3363,7 @@
                     }
                 });
 
-                loadOSMLayer("data/pacificacion_pichincha.geojson", "Pacificación de Tránsito (Pichincha)", {
+                loadOSMLayer("data/pacificacion_ecuador.geojson", "Pacificación de Tránsito", {
                     pointToLayer: function(f, latlng) {
                         return L.circleMarker(latlng, {
                             radius: 5,
@@ -3112,7 +3382,7 @@
                     }
                 });
 
-                loadOSMLayer("data/semaforos_rotondas_pichincha.geojson", "Semáforos y Rotondas (Pichincha)", {
+                loadOSMLayer("data/semaforos_rotondas_ecuador.geojson", "Semáforos y Rotondas", {
                     pointToLayer: function(f, latlng) {
                         return L.circleMarker(latlng, {
                             radius: 5,
@@ -3138,7 +3408,7 @@
                     }
                 });
 
-                loadOSMLayer("data/iluminacion_pichincha.geojson", "Iluminación Vial (Pichincha)", {
+                loadOSMLayer("data/iluminacion_ecuador.geojson", "Iluminación Vial", {
                     pointToLayer: function(f, latlng) {
                         return L.circleMarker(latlng, {
                             radius: 3,
@@ -3164,7 +3434,17 @@
                     }
                 });
 
-                loadOSMLayer("data/velocidad_pichincha.geojson", "Límites de Velocidad (Pichincha)", {
+                loadOSMLayer("data/velocidad_ecuador.geojson", "Límites de Velocidad", {
+                    pointToLayer: function(f, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 3,
+                            fillColor: COLOR_VELOCIDAD,
+                            color: "#ffffff",
+                            weight: 0.8,
+                            opacity: 0.9,
+                            fillOpacity: 0.75
+                        });
+                    },
                     style: {
                         color: COLOR_VELOCIDAD,
                         weight: 2.5,
@@ -3174,12 +3454,12 @@
                         if (f.properties) {
                             const speed = f.properties.maxspeed || "No especificado";
                             const name = f.properties.name || "Tramo sin nombre";
-                            l.bindPopup(`<strong>Límite de Velocidad:</strong> ${speed} km/h<br><strong>Vía:</strong> ${name}<br><small>${f.properties.attribution}</small>`);
+                            l.bindPopup(`<strong>Etiqueta maxspeed OSM:</strong> ${speed}<br><strong>Vía:</strong> ${name}<br><small>Los tramos nacionales pueden mostrarse por su centro representativo. ${f.properties.attribution}</small>`);
                         }
                     }
                 });
 
-                loadOSMLayer("data/brt_metrobus_pichincha.geojson", "Carriles BRT/Metrobús-Q (Pichincha)", {
+                loadOSMLayer("data/brt_metrobus_ecuador.geojson", "Carriles BRT/Metrobús", {
                     style: {
                         color: COLOR_BRT_METROBUS,
                         weight: 3,
@@ -3188,7 +3468,7 @@
                     onEachFeature: function(f, l) {
                         if (f.properties) {
                             const name = f.properties.name || "Carril exclusivo";
-                            const lanes = f.properties.lanes_bus || "1";
+                            const lanes = f.properties["lanes:bus"] || "No especificado";
                             l.bindPopup(`<strong>Carril Exclusivo BRT/Bus:</strong> ${name}<br><strong>Nº Carriles:</strong> ${lanes}<br><small>${f.properties.attribution}</small>`);
                         }
                     }
@@ -3210,7 +3490,7 @@
                             l.bindPopup(`<strong>Corredor Fundación REDSA:</strong> ${name}<br><strong>Prioridad:</strong> ${prio}<br><small>OpenStreetMap contributors, ODbL</small>`);
                         }
                     }
-                });
+                }, true);
 
                 // Initialize Selector Control on Map
                 const MapControl = L.Control.extend({
@@ -3220,15 +3500,16 @@
                         div.innerHTML = `
                             <div style="font-weight: 600; font-size: 0.7rem; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Variables del Mapa</div>
                             <select id="map-variable-select" style="background: rgba(15, 23, 42, 0.85); color: #f8fafc; border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px 6px; font-size: 0.75rem; cursor: pointer; outline: none; width: 100%;">
-                                <option value="normal">Por defecto (Límites)</option>
-                                <option value="siniestros_inec_2019">Siniestros INEC 2019</option>
-                                <option value="fallecidos_inec_2019">Fallecidos INEC 2019</option>
-                                <option value="tasa_fallecidos_100k">Tasa por 100k (2019)</option>
-                                <option value="tasa_siniestros_1000_vehiculos_2024">Tasa de Siniestros por 1,000 Vehículos (2024)</option>
-                                <option value="tasa_motociclistas_1000_motos_2024">Motociclistas Fallecidos por 1,000 Motos (2024)</option>
-                                <option value="fallecidos_sppat_2016_2021">Fallecidos SPPAT (16-21)</option>
-                                <option value="fallecidos_parroquial">Fallecidos Parroquial (INEC 2021-2024)</option>
+                                ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}">${config.label}</option>`).join("")}
                             </select>
+                            <div class="timeline-control">
+                                <div class="timeline-header">
+                                    <span>Línea de tiempo global</span>
+                                    <span id="timeline-badge" class="timeline-badge">2024</span>
+                                </div>
+                                <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año del geoportal">
+                                <div id="timeline-marks" class="timeline-marks"></div>
+                            </div>
                             <div id="map-level-note" class="map-level-note"></div>
                         `;
                         L.DomEvent.disableClickPropagation(div);
@@ -3236,6 +3517,7 @@
                     }
                 });
                 new MapControl().addTo(map);
+                updateTimelineControl();
                 updateMapLevelNote(activeTerritoryLevel);
                 updateLegend();
                 
@@ -3248,11 +3530,24 @@
 
                 function handleVariableChange() {
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
                     updateMapLevelNote(level);
                     updateLegend();
                 }
+
+                document.getElementById("map-year-slider").addEventListener("input", function() {
+                    selectedYear = Number(this.value);
+                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateTimelineControl();
+                    recalculateActiveVariableBins(selectedVariable, level);
+                    refreshTerritoryLayerStyles(level);
+                    updateMapLevelNote(level);
+                    updateLegend();
+                    if (currentProps) updateSidebar(currentProps);
+                    if (currentHoverProps) showHoverCard(currentHoverProps, null);
+                });
 
                 // profile-accordion-btn listener removed
 
@@ -3270,7 +3565,8 @@
                     "INEC": "Instituto Nacional de Estadística y Censos de Ecuador.",
                     "CIE-10": "Clasificación Internacional de Enfermedades, 10ª revisión — estándar usado para causas de muerte por tránsito (códigos V01 a V89).",
                     "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador.",
-                    "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo."
+                    "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.",
+                    "COBERTURA_OSM": "Cobertura de mapeo OSM: densidad de semáforos/rotondas, cruces y aceras registrados. Un cero significa sin elementos mapeados, no ausencia comprobada de infraestructura."
                 };
 
                 const popover = document.createElement("div");
@@ -3344,12 +3640,6 @@
                     }
                 });
 
-                // Siniestros Year Select listener
-                document.getElementById("siniestros-year-select").addEventListener("change", function() {
-                    renderSiniestrosSection(currentProps, this.value);
-                    updateInterpretationCard(activeTerritoryLevel === "canton" ? currentProps : null);
-                });
-
                 // API minima y de solo diagnostico para pruebas reejecutables.
                 window.__redsaGeojsonLoadMetrics = {
                     downloadMs: Number(tDownload) * 1000,
@@ -3372,6 +3662,15 @@
                         handleVariableChange();
                         return true;
                     },
+                    selectYear(year) {
+                        const numericYear = Number(year);
+                        const slider = document.getElementById("map-year-slider");
+                        if (!ALL_TIMELINE_YEARS.includes(numericYear) || !slider || slider.disabled) return false;
+                        selectedYear = numericYear;
+                        slider.value = String(numericYear);
+                        slider.dispatchEvent(new Event("input", { bubbles: true }));
+                        return true;
+                    },
                     showTerritory(level, code) {
                         const layer = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
                         if (!layer) return false;
@@ -3386,6 +3685,13 @@
                         showHoverCard(found.feature.properties, { target: found });
                         return true;
                     },
+                    setOverlay(label, visible = true) {
+                        const layer = overlayMaps[label];
+                        if (!layer) return false;
+                        if (visible) map.addLayer(layer);
+                        else map.removeLayer(layer);
+                        return true;
+                    },
                     state() {
                         const layerState = layer => ({
                             ready: Boolean(layer),
@@ -3396,6 +3702,10 @@
                             zoom: map.getZoom(),
                             level: activeTerritoryLevel,
                             selectedVariable,
+                            selectedYear,
+                            temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
+                            timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
+                            timelineBadge: document.getElementById("timeline-badge")?.textContent,
                             effectiveVariable: getEffectiveVariable(activeTerritoryLevel),
                             bins: [...activeVariableBins.bins],
                             validValueCount: activeVariableBins.validValueCount,
@@ -3403,7 +3713,22 @@
                                 province: layerState(provinceLayer),
                                 canton: layerState(cantonLayer),
                                 parish: layerState(parishLayer)
-                            }
+                            },
+                            osmLayers: Object.fromEntries([
+                                "Ciclovías", "Aceras", "Cruces Peatonales", "Pacificación de Tránsito",
+                                "Semáforos y Rotondas", "Iluminación Vial", "Límites de Velocidad",
+                                "Carriles BRT/Metrobús"
+                            ].map(label => {
+                                const layer = overlayMaps[label];
+                                return [label, {
+                                    registered: Boolean(layer),
+                                    visible: Boolean(layer && map.hasLayer(layer)),
+                                    loaded: Boolean(layer?._redsaLoaded),
+                                    features: layer?._redsaFeatureCount || 0,
+                                    unmappedCantons: layer?._redsaUnmappedCantonCount ?? null,
+                                    error: layer?._redsaLoadError || null
+                                }];
+                            }))
                         };
                     }
                 };
@@ -3426,7 +3751,7 @@
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div style="font-weight: 700; font-size: 0.8rem; color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center;">
             <span id="hover-card-title">Perfil de Fallecidos</span>
-            <span style="font-size: 0.65rem; background: rgba(251, 191, 36, 0.2); padding: 1px 4px; border-radius: 3px; color: #fbbf24;">HISTÓRICO</span>
+            <span id="hover-card-period" style="font-size: 0.65rem; background: rgba(251, 191, 36, 0.2); padding: 1px 4px; border-radius: 3px; color: #fbbf24;">2024</span>
         </div>
         <div id="hover-card-body"></div>
     </div>

@@ -18,12 +18,13 @@ El SAV se agrego mediante los codigos oficiales de `Provincia` y `Canton`. El to
 
 - `tasa_siniestros_por_1000_vehiculos_2024` = siniestros INEC 2024 / vehiculos matriculados 2024 x 1.000.
 - `tasa_fallecidos_por_1000_vehiculos_2024` = fallecidos EDG 2024 / vehiculos matriculados 2024 x 1.000.
-- `tasa_motociclistas_fallecidos_por_1000_motos_2024` = fallecidos clasificados como motociclistas / motocicletas matriculadas 2024 x 1.000.
+- `tasa_motociclistas_fallecidos_por_1000_motos_2024` = fallecidos clasificados como motociclistas EDG 2024 / motocicletas matriculadas 2024 x 1.000.
+- `porcentaje_motocicletas_vehiculos_2024` = motocicletas matriculadas / total de vehiculos matriculados x 100.
 
 Cuando falta el numerador, falta el registro vehicular o el denominador es cero, la tasa queda en `null` y el motivo se declara en `calidad_tasas_vehiculos_2024`.
 
 ## Limitacion de la tasa de motociclistas
 
-La tasa de motociclistas usa fallecidos_detallado.usuario.motociclista acumulado 2020-2024 como numerador y motocicletas matriculadas en 2024 como denominador; no es una tasa anual y debe interpretarse solo como indicador exploratorio.
+La tasa usa numerador y denominador de 2024. El registro EDG concentra muchos casos en CIE-10 `V89`, por lo que el numerador clasificado como motociclista puede estar subestimado.
 
 Ademas, el registro EDG concentra una proporcion alta de casos en CIE-10 `V89` (vehiculo no especificado), por lo que el desglose de usuario vial debe interpretarse con cautela. Para condicion del usuario vial, SPPAT suele ofrecer mayor especificidad que EDG.

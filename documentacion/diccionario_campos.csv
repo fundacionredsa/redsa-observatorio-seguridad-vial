@@ -1,14 +1,35 @@
 ﻿archivo,campo_json,tipo_observado,nullable,significado,unidad,fuente,ejemplo_real
-aceras_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-aceras_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,secondary
-aceras_pichincha.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Avenida Cumanda
-aceras_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,24735104
-aceras_pichincha.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
-brt_metrobus_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-brt_metrobus_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,primary_link
-brt_metrobus_pichincha.geojson,lanes_bus,string,no,Valor del tag OSM lanes_bus,texto,OpenStreetMap,1
-brt_metrobus_pichincha.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Carril Bus
-brt_metrobus_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,24559926
+aceras_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+aceras_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+aceras_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+aceras_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,marked
+aceras_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,shared_lane
+aceras_ecuador.geojson,cycleway:both,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no
+aceras_ecuador.geojson,cycleway:left,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+aceras_ecuador.geojson,cycleway:right,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+aceras_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+aceras_ecuador.geojson,footway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,sidewalk
+aceras_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,footway
+aceras_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,roundabout
+aceras_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,no
+aceras_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,50
+aceras_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,1 de septiembre
+aceras_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,768186604
+aceras_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+aceras_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+aceras_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
+aceras_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,table
+brt_metrobus_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+brt_metrobus_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+brt_metrobus_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+brt_metrobus_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+brt_metrobus_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,busway
+brt_metrobus_ecuador.geojson,lanes:bus,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+brt_metrobus_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,40
+brt_metrobus_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Antonio Jose de Sucre Alcala
+brt_metrobus_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,1445454262
+brt_metrobus_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+brt_metrobus_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 cantones_wgs84.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
 cantones_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
 cantones_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
@@ -17,22 +38,132 @@ cantones_wgs84.geojson,calidad_tasas_vehiculos_2024,object,no,Bandera de calidad
 cantones_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_fallecidos,string,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,disponible
 cantones_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_motociclistas,string,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,disponible
 cantones_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_siniestros,string,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,disponible
-cantones_wgs84.geojson,fallecidos_detallado,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-cantones_wgs84.geojson,fallecidos_detallado.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-cantones_wgs84.geojson,fallecidos_detallado.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,29
-cantones_wgs84.geojson,fallecidos_detallado.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,161
-cantones_wgs84.geojson,fallecidos_detallado.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,123
-cantones_wgs84.geojson,fallecidos_detallado.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,51
-cantones_wgs84.geojson,fallecidos_detallado.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,56
-cantones_wgs84.geojson,fallecidos_detallado.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-cantones_wgs84.geojson,fallecidos_detallado.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,322
-cantones_wgs84.geojson,fallecidos_detallado.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,98
-cantones_wgs84.geojson,fallecidos_detallado.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-cantones_wgs84.geojson,fallecidos_detallado.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
-cantones_wgs84.geojson,fallecidos_detallado.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,47
-cantones_wgs84.geojson,fallecidos_detallado.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
-cantones_wgs84.geojson,fallecidos_detallado.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,327
-cantones_wgs84.geojson,fallecidos_detallado.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,38
+cantones_wgs84.geojson,cobertura_mapeo_infraestructura_por_100k,null/number,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,978.697791
+cantones_wgs84.geojson,cobertura_mapeo_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+cantones_wgs84.geojson,cobertura_mapeo_osm.advertencia,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Mide densidad de elementos mapeados en OSM; un cero no demuestra ausencia de infraestructura.
+cantones_wgs84.geojson,cobertura_mapeo_osm.anio_poblacion,integer,no,Poblacion proyectada,habitantes,INEC,2024
+cantones_wgs84.geojson,cobertura_mapeo_osm.elementos_total,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,6065
+cantones_wgs84.geojson,cobertura_mapeo_osm.estado,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
+cantones_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+cantones_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.aceras,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+cantones_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.cruces,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+cantones_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.semaforos_rotondas,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+cantones_wgs84.geojson,cobertura_mapeo_osm.poblacion_referencia,integer/null,si,Poblacion proyectada,habitantes,INEC,619701
+cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.aceras,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4218
+cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.cruces,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1210
+cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.semaforos_rotondas,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,637
+cantones_wgs84.geojson,fallecidos_detallado,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,59
+cantones_wgs84.geojson,fallecidos_detallado.2020.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,59
+cantones_wgs84.geojson,fallecidos_detallado.2020.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,59
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,2
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,22
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,16
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,8
+cantones_wgs84.geojson,fallecidos_detallado.2020.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,11
+cantones_wgs84.geojson,fallecidos_detallado.2020.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+cantones_wgs84.geojson,fallecidos_detallado.2020.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,46
+cantones_wgs84.geojson,fallecidos_detallado.2020.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+cantones_wgs84.geojson,fallecidos_detallado.2020.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,59
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,12
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,33
+cantones_wgs84.geojson,fallecidos_detallado.2020.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+cantones_wgs84.geojson,fallecidos_detallado.2021,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2021.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2021.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,92
+cantones_wgs84.geojson,fallecidos_detallado.2021.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,92
+cantones_wgs84.geojson,fallecidos_detallado.2021.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,92
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,12
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,30
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,27
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,10
+cantones_wgs84.geojson,fallecidos_detallado.2021.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+cantones_wgs84.geojson,fallecidos_detallado.2021.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+cantones_wgs84.geojson,fallecidos_detallado.2021.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2021.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,68
+cantones_wgs84.geojson,fallecidos_detallado.2021.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,24
+cantones_wgs84.geojson,fallecidos_detallado.2021.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,92
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,84
+cantones_wgs84.geojson,fallecidos_detallado.2021.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
+cantones_wgs84.geojson,fallecidos_detallado.2022,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2022.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2022.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2022.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2022.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,3
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,36
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,26
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
+cantones_wgs84.geojson,fallecidos_detallado.2022.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,14
+cantones_wgs84.geojson,fallecidos_detallado.2022.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+cantones_wgs84.geojson,fallecidos_detallado.2022.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2022.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,73
+cantones_wgs84.geojson,fallecidos_detallado.2022.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+cantones_wgs84.geojson,fallecidos_detallado.2022.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,5
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,76
+cantones_wgs84.geojson,fallecidos_detallado.2022.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,5
+cantones_wgs84.geojson,fallecidos_detallado.2023,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2023.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2023.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,97
+cantones_wgs84.geojson,fallecidos_detallado.2023.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,97
+cantones_wgs84.geojson,fallecidos_detallado.2023.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,97
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,6
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,43
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,26
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,17
+cantones_wgs84.geojson,fallecidos_detallado.2023.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,5
+cantones_wgs84.geojson,fallecidos_detallado.2023.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+cantones_wgs84.geojson,fallecidos_detallado.2023.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2023.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,71
+cantones_wgs84.geojson,fallecidos_detallado.2023.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,26
+cantones_wgs84.geojson,fallecidos_detallado.2023.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,97
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,15
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,76
+cantones_wgs84.geojson,fallecidos_detallado.2023.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,6
+cantones_wgs84.geojson,fallecidos_detallado.2024,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2024.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2024.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2024.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2024.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,6
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,30
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,28
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,9
+cantones_wgs84.geojson,fallecidos_detallado.2024.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+cantones_wgs84.geojson,fallecidos_detallado.2024.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+cantones_wgs84.geojson,fallecidos_detallado.2024.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2024.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,64
+cantones_wgs84.geojson,fallecidos_detallado.2024.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,22
+cantones_wgs84.geojson,fallecidos_detallado.2024.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,86
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,14
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,6
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,58
+cantones_wgs84.geojson,fallecidos_detallado.2024.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
 cantones_wgs84.geojson,fallecidos_historico,object,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,
 cantones_wgs84.geojson,fallecidos_historico.2020,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,59
 cantones_wgs84.geojson,fallecidos_historico.2021,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,92
@@ -40,7 +171,7 @@ cantones_wgs84.geojson,fallecidos_historico.2022,integer,no,Fallecidos CIE-10 V0
 cantones_wgs84.geojson,fallecidos_historico.2023,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,97
 cantones_wgs84.geojson,fallecidos_historico.2024,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,86
 cantones_wgs84.geojson,fallecidos_inec_2019,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,53
-cantones_wgs84.geojson,fallecidos_sppat_2016_2021,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,365
+cantones_wgs84.geojson,fallecidos_sppat_2016_2021,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,359
 cantones_wgs84.geojson,inec_patron_horario,null/object,si,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_patron_horario.2019,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_patron_horario.2019.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,24
@@ -337,6 +468,7 @@ cantones_wgs84.geojson,poblacion_por_anio.2032,integer,no,Poblacion proyectada p
 cantones_wgs84.geojson,poblacion_por_anio.2033,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,662795
 cantones_wgs84.geojson,poblacion_por_anio.2034,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,667419
 cantones_wgs84.geojson,poblacion_por_anio.2035,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,671963
+cantones_wgs84.geojson,porcentaje_motocicletas_vehiculos_2024,null/number,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,16.023284
 cantones_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 cantones_wgs84.geojson,siniestros_historico.2019,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1024
 cantones_wgs84.geojson,siniestros_historico.2021,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,622
@@ -344,30 +476,151 @@ cantones_wgs84.geojson,siniestros_historico.2022,integer,no,Siniestros del ano r
 cantones_wgs84.geojson,siniestros_historico.2023,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,975
 cantones_wgs84.geojson,siniestros_historico.2024,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1161
 cantones_wgs84.geojson,siniestros_inec_2019,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1024
-cantones_wgs84.geojson,sppat_fallecidos_por_anio,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2016,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,45
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2017,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2018,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2019,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,72
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2020,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,50
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
-cantones_wgs84.geojson,sppat_por_condicion,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-cantones_wgs84.geojson,sppat_por_condicion.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,7
-cantones_wgs84.geojson,sppat_por_condicion.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,226
-cantones_wgs84.geojson,sppat_por_condicion.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,132
-cantones_wgs84.geojson,sppat_por_sexo,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-cantones_wgs84.geojson,sppat_por_sexo.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,97
-cantones_wgs84.geojson,sppat_por_sexo.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,268
-cantones_wgs84.geojson,sppat_por_tipo_accidente,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-cantones_wgs84.geojson,sppat_por_tipo_accidente.,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
-cantones_wgs84.geojson,sppat_por_tipo_accidente.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,135
-cantones_wgs84.geojson,sppat_por_tipo_accidente.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,7
-cantones_wgs84.geojson,sppat_por_tipo_accidente.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,139
-cantones_wgs84.geojson,sppat_por_tipo_accidente.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
-cantones_wgs84.geojson,sppat_por_tipo_accidente.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,81
+cantones_wgs84.geojson,sppat_por_condicion,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2016.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_condicion.2016.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,28
+cantones_wgs84.geojson,sppat_por_condicion.2016.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,17
+cantones_wgs84.geojson,sppat_por_condicion.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,45
+cantones_wgs84.geojson,sppat_por_condicion.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2017.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2017.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_condicion.2017.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,48
+cantones_wgs84.geojson,sppat_por_condicion.2017.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,26
+cantones_wgs84.geojson,sppat_por_condicion.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_condicion.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2018.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2018.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+cantones_wgs84.geojson,sppat_por_condicion.2018.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,43
+cantones_wgs84.geojson,sppat_por_condicion.2018.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,30
+cantones_wgs84.geojson,sppat_por_condicion.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_condicion.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2019.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2019.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_condicion.2019.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,43
+cantones_wgs84.geojson,sppat_por_condicion.2019.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,28
+cantones_wgs84.geojson,sppat_por_condicion.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,72
+cantones_wgs84.geojson,sppat_por_condicion.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2020.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_condicion.2020.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,33
+cantones_wgs84.geojson,sppat_por_condicion.2020.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,16
+cantones_wgs84.geojson,sppat_por_condicion.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,50
+cantones_wgs84.geojson,sppat_por_condicion.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_condicion.2021.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+cantones_wgs84.geojson,sppat_por_condicion.2021.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,29
+cantones_wgs84.geojson,sppat_por_condicion.2021.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+cantones_wgs84.geojson,sppat_por_condicion.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_condicion.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
+cantones_wgs84.geojson,sppat_por_sexo,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2016.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+cantones_wgs84.geojson,sppat_por_sexo.2016.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,34
+cantones_wgs84.geojson,sppat_por_sexo.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,45
+cantones_wgs84.geojson,sppat_por_sexo.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2017.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2017.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,29
+cantones_wgs84.geojson,sppat_por_sexo.2017.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,46
+cantones_wgs84.geojson,sppat_por_sexo.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_sexo.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2018.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2018.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,17
+cantones_wgs84.geojson,sppat_por_sexo.2018.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,58
+cantones_wgs84.geojson,sppat_por_sexo.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_sexo.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2019.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2019.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+cantones_wgs84.geojson,sppat_por_sexo.2019.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,57
+cantones_wgs84.geojson,sppat_por_sexo.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,72
+cantones_wgs84.geojson,sppat_por_sexo.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2020.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+cantones_wgs84.geojson,sppat_por_sexo.2020.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,39
+cantones_wgs84.geojson,sppat_por_sexo.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,50
+cantones_wgs84.geojson,sppat_por_sexo.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_sexo.2021.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+cantones_wgs84.geojson,sppat_por_sexo.2021.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,31
+cantones_wgs84.geojson,sppat_por_sexo.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_sexo.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
+cantones_wgs84.geojson,sppat_por_tipo_accidente,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,17
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,12
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,45
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,28
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,21
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,23
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,30
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,25
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,4
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,18
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,75
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,26
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,29
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,72
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,17
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,25
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,8
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,50
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,12
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,23
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,5
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+cantones_wgs84.geojson,sppat_por_tipo_accidente.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
 cantones_wgs84.geojson,tasa_fallecidos_100k,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,8.8
 cantones_wgs84.geojson,tasa_fallecidos_por_1000_vehiculos_2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.672853
-cantones_wgs84.geojson,tasa_motociclistas_fallecidos_por_1000_motos_2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,2.294922
+cantones_wgs84.geojson,tasa_motociclistas_fallecidos_por_1000_motos_2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.683594
 cantones_wgs84.geojson,tasa_siniestros_por_1000_vehiculos_2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,9.083512
 cantones_wgs84.geojson,vehiculos_matriculados_2024,object,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,
 cantones_wgs84.geojson,vehiculos_matriculados_2024.estado,string,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,disponible
@@ -384,19 +637,44 @@ cantones_wgs84.geojson,vehiculos_matriculados_2024.por_clase.TANQUERO,integer/nu
 cantones_wgs84.geojson,vehiculos_matriculados_2024.por_clase.TRAILER,integer/null,si,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,620
 cantones_wgs84.geojson,vehiculos_matriculados_2024.por_clase.VOLQUETA,integer/null,si,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,485
 cantones_wgs84.geojson,vehiculos_matriculados_2024.total,integer/null,si,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,127814
-ciclovias_pichincha.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,
-ciclovias_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,residential
-ciclovias_pichincha.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Jerónimo Carrión
-ciclovias_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,24212327
+ciclovias_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+ciclovias_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+ciclovias_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+ciclovias_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,marked
+ciclovias_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,crossing
+ciclovias_ecuador.geojson,cycleway:both,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,shared_lane
+ciclovias_ecuador.geojson,cycleway:left,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+ciclovias_ecuador.geojson,cycleway:right,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+ciclovias_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+ciclovias_ecuador.geojson,footway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,sidewalk
+ciclovias_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,cycleway
+ciclovias_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,roundabout
+ciclovias_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,no
+ciclovias_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,100
+ciclovias_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Avenida Mirador de Turi
+ciclovias_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,209350052
+ciclovias_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+ciclovias_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+ciclovias_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
+ciclovias_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,table
 corredores_redsa.geojson,corridor_key,string,no,Clasificacion interna del corredor REDSA,texto,Fundacion REDSA,simon_bolivar
 corredores_redsa.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,trunk
 corredores_redsa.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Avenida Simón Bolívar
 corredores_redsa.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,24159622
 corredores_redsa.geojson,priority,string,no,Clasificacion interna del corredor REDSA,texto,Fundacion REDSA,Muy Alta
-cruces_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-cruces_pichincha.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,marked
-cruces_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,crossing
-cruces_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,262161398
+cruces_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+cruces_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+cruces_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+cruces_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,traffic_signals
+cruces_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+cruces_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,crossing
+cruces_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,yes
+cruces_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,yes
+cruces_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Miguel Estrella
+cruces_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,679408655
+cruces_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
+cruces_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+cruces_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
 hotspots_cantonales.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
 hotspots_cantonales.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
 hotspots_cantonales.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
@@ -449,13 +727,41 @@ hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2021,null/number,si,Ta
 hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2022,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,14.0391
 hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2023,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,15.7527
 hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,13.8777
-iluminacion_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-iluminacion_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,street_lamp
-iluminacion_pichincha.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,
-iluminacion_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,262185777
-pacificacion_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-pacificacion_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,265758595
-pacificacion_pichincha.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,cushion
+iluminacion_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+iluminacion_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+iluminacion_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+iluminacion_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,marked
+iluminacion_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,shared_lane
+iluminacion_ecuador.geojson,cycleway:both,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no
+iluminacion_ecuador.geojson,cycleway:left,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+iluminacion_ecuador.geojson,cycleway:right,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,lane
+iluminacion_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+iluminacion_ecuador.geojson,footway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,crossing
+iluminacion_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,street_lamp
+iluminacion_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,roundabout
+iluminacion_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,yes
+iluminacion_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,50
+iluminacion_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Cancha de ecuavoly
+iluminacion_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,12289105398
+iluminacion_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
+iluminacion_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+iluminacion_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
+iluminacion_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,table
+pacificacion_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+pacificacion_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+pacificacion_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+pacificacion_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,uncontrolled
+pacificacion_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,crossing
+pacificacion_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+pacificacion_ecuador.geojson,footway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,crossing
+pacificacion_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,crossing
+pacificacion_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,yes
+pacificacion_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,20
+pacificacion_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,ralentisseur ( dos d'âne arrondi )
+pacificacion_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,3490093275
+pacificacion_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
+pacificacion_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+pacificacion_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
 parroquias_wgs84.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,1503
 parroquias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,ARCHIDONA
 parroquias_wgs84.geojson,DPA_DESPAR,string,no,Nombre de parroquia,texto,INEC 2014,HATUN SUMAKU
@@ -699,65 +1005,175 @@ provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.codigos_canto
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,9
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,6
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,8
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,7
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,8
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,7
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,9
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,6
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,9
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,6
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,9
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,6
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.cantones_sin_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,0
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.cantones_total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.codigos_cantones_sin_dato,array,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,parcial
+provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,completo
+provincias_wgs84.geojson,cobertura_mapeo_infraestructura_por_100k,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,745.530666
+provincias_wgs84.geojson,cobertura_mapeo_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+provincias_wgs84.geojson,cobertura_mapeo_osm.advertencia,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Mide densidad de elementos mapeados en OSM; un cero no demuestra ausencia de infraestructura.
+provincias_wgs84.geojson,cobertura_mapeo_osm.anio_poblacion,integer,no,Poblacion proyectada,habitantes,INEC,2024
+provincias_wgs84.geojson,cobertura_mapeo_osm.elementos_total,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,6197
+provincias_wgs84.geojson,cobertura_mapeo_osm.estado,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
+provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.aceras,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.cruces,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.semaforos_rotondas,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+provincias_wgs84.geojson,cobertura_mapeo_osm.poblacion_referencia,integer,no,Poblacion proyectada,habitantes,INEC,831220
+provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.aceras,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4222
+provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.cruces,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1294
+provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.semaforos_rotondas,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,681
 provincias_wgs84.geojson,fallecidos_detallado,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-provincias_wgs84.geojson,fallecidos_detallado.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-provincias_wgs84.geojson,fallecidos_detallado.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,41
-provincias_wgs84.geojson,fallecidos_detallado.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,232
-provincias_wgs84.geojson,fallecidos_detallado.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,175
-provincias_wgs84.geojson,fallecidos_detallado.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,77
-provincias_wgs84.geojson,fallecidos_detallado.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,74
-provincias_wgs84.geojson,fallecidos_detallado.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-provincias_wgs84.geojson,fallecidos_detallado.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,473
-provincias_wgs84.geojson,fallecidos_detallado.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,126
-provincias_wgs84.geojson,fallecidos_detallado.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
-provincias_wgs84.geojson,fallecidos_detallado.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
-provincias_wgs84.geojson,fallecidos_detallado.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,70
-provincias_wgs84.geojson,fallecidos_detallado.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,12
-provincias_wgs84.geojson,fallecidos_detallado.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,464
-provincias_wgs84.geojson,fallecidos_detallado.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,52
+provincias_wgs84.geojson,fallecidos_detallado.2020,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2020.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2020.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,79
+provincias_wgs84.geojson,fallecidos_detallado.2020.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,79
+provincias_wgs84.geojson,fallecidos_detallado.2020.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,79
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,2
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,32
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,19
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,11
+provincias_wgs84.geojson,fallecidos_detallado.2020.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,15
+provincias_wgs84.geojson,fallecidos_detallado.2020.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+provincias_wgs84.geojson,fallecidos_detallado.2020.sexo,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2020.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,66
+provincias_wgs84.geojson,fallecidos_detallado.2020.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+provincias_wgs84.geojson,fallecidos_detallado.2020.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,79
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario,null/object,si,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,18
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,2
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,44
+provincias_wgs84.geojson,fallecidos_detallado.2020.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,15
+provincias_wgs84.geojson,fallecidos_detallado.2021,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2021.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2021.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,138
+provincias_wgs84.geojson,fallecidos_detallado.2021.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,138
+provincias_wgs84.geojson,fallecidos_detallado.2021.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,138
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,19
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,47
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,36
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,19
+provincias_wgs84.geojson,fallecidos_detallado.2021.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,17
+provincias_wgs84.geojson,fallecidos_detallado.2021.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+provincias_wgs84.geojson,fallecidos_detallado.2021.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2021.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,106
+provincias_wgs84.geojson,fallecidos_detallado.2021.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,32
+provincias_wgs84.geojson,fallecidos_detallado.2021.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,138
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,4
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,122
+provincias_wgs84.geojson,fallecidos_detallado.2021.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,12
+provincias_wgs84.geojson,fallecidos_detallado.2022,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2022.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2022.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,137
+provincias_wgs84.geojson,fallecidos_detallado.2022.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,137
+provincias_wgs84.geojson,fallecidos_detallado.2022.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,137
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,4
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,56
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,43
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,13
+provincias_wgs84.geojson,fallecidos_detallado.2022.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,21
+provincias_wgs84.geojson,fallecidos_detallado.2022.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+provincias_wgs84.geojson,fallecidos_detallado.2022.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2022.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,114
+provincias_wgs84.geojson,fallecidos_detallado.2022.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,23
+provincias_wgs84.geojson,fallecidos_detallado.2022.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,137
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,14
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,2
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,113
+provincias_wgs84.geojson,fallecidos_detallado.2022.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,8
+provincias_wgs84.geojson,fallecidos_detallado.2023,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2023.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2023.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,133
+provincias_wgs84.geojson,fallecidos_detallado.2023.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,133
+provincias_wgs84.geojson,fallecidos_detallado.2023.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,133
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,9
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,60
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,35
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,22
+provincias_wgs84.geojson,fallecidos_detallado.2023.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
+provincias_wgs84.geojson,fallecidos_detallado.2023.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+provincias_wgs84.geojson,fallecidos_detallado.2023.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2023.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,103
+provincias_wgs84.geojson,fallecidos_detallado.2023.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,30
+provincias_wgs84.geojson,fallecidos_detallado.2023.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,133
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,0
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,19
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,104
+provincias_wgs84.geojson,fallecidos_detallado.2023.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,9
+provincias_wgs84.geojson,fallecidos_detallado.2024,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2024.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2024.cobertura.edad_conocida,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,112
+provincias_wgs84.geojson,fallecidos_detallado.2024.cobertura.sexo_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,112
+provincias_wgs84.geojson,fallecidos_detallado.2024.cobertura.usuario_conocido,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,112
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad.0-14,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad.15-29,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,37
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad.30-49,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,42
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad.50-64,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,12
+provincias_wgs84.geojson,fallecidos_detallado.2024.edad.65+,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,14
+provincias_wgs84.geojson,fallecidos_detallado.2024.estado,string,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,completo
+provincias_wgs84.geojson,fallecidos_detallado.2024.sexo,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2024.sexo.Hombre,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,84
+provincias_wgs84.geojson,fallecidos_detallado.2024.sexo.Mujer,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,28
+provincias_wgs84.geojson,fallecidos_detallado.2024.total,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,112
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario.ciclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,1
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario.motociclista,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,15
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario.ocupante,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,7
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario.otro,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,81
+provincias_wgs84.geojson,fallecidos_detallado.2024.usuario.peaton,integer,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,8
 provincias_wgs84.geojson,fallecidos_historico,object,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,
-provincias_wgs84.geojson,fallecidos_historico.2020,integer/null,si,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,79
+provincias_wgs84.geojson,fallecidos_historico.2020,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,79
 provincias_wgs84.geojson,fallecidos_historico.2021,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,138
 provincias_wgs84.geojson,fallecidos_historico.2022,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,137
 provincias_wgs84.geojson,fallecidos_historico.2023,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,133
 provincias_wgs84.geojson,fallecidos_historico.2024,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,112
 provincias_wgs84.geojson,fallecidos_inec_2019,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,82
-provincias_wgs84.geojson,fallecidos_sppat_2016_2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,570
+provincias_wgs84.geojson,fallecidos_sppat_2016_2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,563
 provincias_wgs84.geojson,fuente_geometria,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Disolucion de docs/data/cantones_wgs84.geojson por DPA_PROVIN
 provincias_wgs84.geojson,inec_patron_horario,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_patron_horario.2019,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
@@ -1056,43 +1472,165 @@ provincias_wgs84.geojson,poblacion_por_anio.2032,integer,no,Poblacion proyectada
 provincias_wgs84.geojson,poblacion_por_anio.2033,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,874050
 provincias_wgs84.geojson,poblacion_por_anio.2034,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,879038
 provincias_wgs84.geojson,poblacion_por_anio.2035,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,883986
+provincias_wgs84.geojson,porcentaje_motocicletas_vehiculos_2024,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,17.229167
 provincias_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 provincias_wgs84.geojson,siniestros_historico.2019,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1249
 provincias_wgs84.geojson,siniestros_historico.2021,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,828
-provincias_wgs84.geojson,siniestros_historico.2022,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1154
+provincias_wgs84.geojson,siniestros_historico.2022,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1154
 provincias_wgs84.geojson,siniestros_historico.2023,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1197
 provincias_wgs84.geojson,siniestros_historico.2024,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1416
 provincias_wgs84.geojson,siniestros_inec_2019,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1249
 provincias_wgs84.geojson,sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,sppat_fallecidos_por_anio.2016,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
+provincias_wgs84.geojson,sppat_fallecidos_por_anio.2016,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
 provincias_wgs84.geojson,sppat_fallecidos_por_anio.2017,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,117
 provincias_wgs84.geojson,sppat_fallecidos_por_anio.2018,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,132
 provincias_wgs84.geojson,sppat_fallecidos_por_anio.2019,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,113
-provincias_wgs84.geojson,sppat_fallecidos_por_anio.2020,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,70
-provincias_wgs84.geojson,sppat_fallecidos_por_anio.2021,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,67
+provincias_wgs84.geojson,sppat_fallecidos_por_anio.2020,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,70
+provincias_wgs84.geojson,sppat_fallecidos_por_anio.2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,67
 provincias_wgs84.geojson,sppat_por_condicion,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,sppat_por_condicion.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,10
-provincias_wgs84.geojson,sppat_por_condicion.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,394
-provincias_wgs84.geojson,sppat_por_condicion.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,166
+provincias_wgs84.geojson,sppat_por_condicion.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2016.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_condicion.2016.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
+provincias_wgs84.geojson,sppat_por_condicion.2016.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,22
+provincias_wgs84.geojson,sppat_por_condicion.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
+provincias_wgs84.geojson,sppat_por_condicion.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2017.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2017.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_condicion.2017.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,87
+provincias_wgs84.geojson,sppat_por_condicion.2017.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,29
+provincias_wgs84.geojson,sppat_por_condicion.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,117
+provincias_wgs84.geojson,sppat_por_condicion.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2018.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2018.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
+provincias_wgs84.geojson,sppat_por_condicion.2018.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,87
+provincias_wgs84.geojson,sppat_por_condicion.2018.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,42
+provincias_wgs84.geojson,sppat_por_condicion.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,132
+provincias_wgs84.geojson,sppat_por_condicion.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2019.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2019.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_condicion.2019.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,76
+provincias_wgs84.geojson,sppat_por_condicion.2019.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,35
+provincias_wgs84.geojson,sppat_por_condicion.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,113
+provincias_wgs84.geojson,sppat_por_condicion.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2020.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_condicion.2020.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,50
+provincias_wgs84.geojson,sppat_por_condicion.2020.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,19
+provincias_wgs84.geojson,sppat_por_condicion.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,70
+provincias_wgs84.geojson,sppat_por_condicion.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_condicion.2021.categorias.BICICLETA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
+provincias_wgs84.geojson,sppat_por_condicion.2021.categorias.OCUPANTE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,49
+provincias_wgs84.geojson,sppat_por_condicion.2021.categorias.PEATÓN,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,sppat_por_condicion.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_condicion.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,67
 provincias_wgs84.geojson,sppat_por_sexo,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,sppat_por_sexo.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,138
-provincias_wgs84.geojson,sppat_por_sexo.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,432
+provincias_wgs84.geojson,sppat_por_sexo.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2016.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,sppat_por_sexo.2016.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,49
+provincias_wgs84.geojson,sppat_por_sexo.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
+provincias_wgs84.geojson,sppat_por_sexo.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2017.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2017.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,40
+provincias_wgs84.geojson,sppat_por_sexo.2017.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,77
+provincias_wgs84.geojson,sppat_por_sexo.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,117
+provincias_wgs84.geojson,sppat_por_sexo.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2018.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2018.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,33
+provincias_wgs84.geojson,sppat_por_sexo.2018.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,99
+provincias_wgs84.geojson,sppat_por_sexo.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,132
+provincias_wgs84.geojson,sppat_por_sexo.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2019.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2019.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,21
+provincias_wgs84.geojson,sppat_por_sexo.2019.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,92
+provincias_wgs84.geojson,sppat_por_sexo.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,113
+provincias_wgs84.geojson,sppat_por_sexo.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2020.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+provincias_wgs84.geojson,sppat_por_sexo.2020.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,59
+provincias_wgs84.geojson,sppat_por_sexo.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,70
+provincias_wgs84.geojson,sppat_por_sexo.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_sexo.2021.categorias.FEMENINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
+provincias_wgs84.geojson,sppat_por_sexo.2021.categorias.MASCULINO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,52
+provincias_wgs84.geojson,sppat_por_sexo.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_sexo.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,67
 provincias_wgs84.geojson,sppat_por_tipo_accidente,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
-provincias_wgs84.geojson,sppat_por_tipo_accidente.,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
-provincias_wgs84.geojson,sppat_por_tipo_accidente.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,172
-provincias_wgs84.geojson,sppat_por_tipo_accidente.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,12
-provincias_wgs84.geojson,sppat_por_tipo_accidente.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,242
-provincias_wgs84.geojson,sppat_por_tipo_accidente.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
-provincias_wgs84.geojson,sppat_por_tipo_accidente.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,140
-provincias_wgs84.geojson,tasa_fallecidos_100k,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,10.0
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,22
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,22
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,19
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2016.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,31
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,5
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,41
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,40
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2017.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,117
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,43
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,3
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,48
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,4
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,38
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2018.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,132
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,33
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,57
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,19
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2019.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,113
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,21
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,38
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,11
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2020.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,70
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias,null/object,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.ATROPELLO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,17
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.CAÍDA,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,2
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.CHOQUE,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,34
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.DESCONOCIDO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,1
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.categorias.VOLCAMIENTO,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,13
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.estado,string,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,disponible
+provincias_wgs84.geojson,sppat_por_tipo_accidente.2021.total,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,67
+provincias_wgs84.geojson,tasa_fallecidos_100k,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,9.997086
 provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio,object,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,
-provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2020,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,9.57
-provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2021,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.71
-provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2022,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.58
-provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2023,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.06
-provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,13.47
+provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2020,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,9.568914
+provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2021,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.711614
+provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2022,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.581018
+provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2023,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.059466
+provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,13.47417
 provincias_wgs84.geojson,tasa_fallecidos_por_1000_vehiculos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.678028
-provincias_wgs84.geojson,tasa_motociclistas_fallecidos_por_1000_motos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,2.459592
+provincias_wgs84.geojson,tasa_motociclistas_fallecidos_por_1000_motos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.527056
 provincias_wgs84.geojson,tasa_siniestros_por_1000_vehiculos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,8.572207
 provincias_wgs84.geojson,vehiculos_matriculados_2024,object,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,
 provincias_wgs84.geojson,vehiculos_matriculados_2024.estado,string,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,disponible
@@ -1109,11 +1647,41 @@ provincias_wgs84.geojson,vehiculos_matriculados_2024.por_clase.TANQUERO,integer,
 provincias_wgs84.geojson,vehiculos_matriculados_2024.por_clase.TRAILER,integer,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,709
 provincias_wgs84.geojson,vehiculos_matriculados_2024.por_clase.VOLQUETA,integer,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,820
 provincias_wgs84.geojson,vehiculos_matriculados_2024.total,integer,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,165185
-semaforos_rotondas_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-semaforos_rotondas_pichincha.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,traffic_signals
-semaforos_rotondas_pichincha.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,
-semaforos_rotondas_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,261693251
-velocidad_pichincha.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-velocidad_pichincha.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,90
-velocidad_pichincha.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Avenida Simón Bolívar
-velocidad_pichincha.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,24159622
+semaforos_rotondas_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+semaforos_rotondas_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+semaforos_rotondas_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+semaforos_rotondas_ecuador.geojson,crossing,string,no,Valor del tag OSM crossing,texto,OpenStreetMap,traffic_signals
+semaforos_rotondas_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,shared_lane
+semaforos_rotondas_ecuador.geojson,cycleway:both,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no
+semaforos_rotondas_ecuador.geojson,cycleway:right,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,track
+semaforos_rotondas_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+semaforos_rotondas_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,traffic_signals
+semaforos_rotondas_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,roundabout
+semaforos_rotondas_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,yes
+semaforos_rotondas_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,50
+semaforos_rotondas_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Honorato Vázquez
+semaforos_rotondas_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,914484343
+semaforos_rotondas_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
+semaforos_rotondas_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
+semaforos_rotondas_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,no
+semaforos_rotondas_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
+velocidad_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+velocidad_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+velocidad_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+velocidad_ecuador.geojson,cycleway,string,no,Valor del tag OSM cycleway,texto,OpenStreetMap,shared_lane
+velocidad_ecuador.geojson,cycleway:both,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,lane
+velocidad_ecuador.geojson,cycleway:left,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,lane
+velocidad_ecuador.geojson,cycleway:right,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,lane
+velocidad_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
+velocidad_ecuador.geojson,footway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,sidewalk
+velocidad_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,track
+velocidad_ecuador.geojson,junction,string,no,Valor del tag OSM junction,texto,OpenStreetMap,circular
+velocidad_ecuador.geojson,lanes:bus,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+velocidad_ecuador.geojson,lit,string,no,Valor del tag OSM lit,texto,OpenStreetMap,yes
+velocidad_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,30
+velocidad_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,camino a Yacuviñay
+velocidad_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,463529461
+velocidad_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+velocidad_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,centro_representativo_del_tramo
+velocidad_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
+velocidad_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump

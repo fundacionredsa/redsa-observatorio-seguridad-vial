@@ -4,6 +4,24 @@ Archivo generado: `cantones_wgs84.geojson`
 
 Archivo derivado adicional: `provincias_wgs84.geojson`
 
+Metodologias complementarias:
+
+- `vehiculos_metodologia.md`
+- `hotspots_metodologia.md`
+- `temporal_osm_metodologia.md`
+
+Capas OSM nacionales (corte 2026-07-16):
+
+- `ciclovias_ecuador.geojson`
+- `aceras_ecuador.geojson`
+- `cruces_ecuador.geojson`
+- `pacificacion_ecuador.geojson`
+- `semaforos_rotondas_ecuador.geojson`
+- `iluminacion_ecuador.geojson`
+- `velocidad_ecuador.geojson`
+- `brt_metrobus_ecuador.geojson`
+- `osm_cobertura_reporte.json` (conteos y tamanos auditables)
+
 ## Fuente
 
 - Dataset original: Organizacion Territorial Cantonal
@@ -48,6 +66,8 @@ Atributos agregados por suma provincial:
 - `lesionados_inec_2019`
 - `fallecidos_inec_2019`
 - desgloses `sppat_*`, `inec_*` y `fallecidos_detallado`
+- `vehiculos_matriculados_2024` y composicion de flota
+- cobertura de mapeo OSM, cuando las ocho capas nacionales han sido extraidas
 
 La tasa `tasa_fallecidos_100k` se recalcula a nivel provincial con numerador y denominador agregados, no promediando tasas cantonales. Los años con cantones sin dato no se imputan como cero: el archivo declara cobertura por campo y año en `properties.cobertura_datos`, con `estado` igual a `completo`, `parcial` o `sin_dato`.
 
@@ -56,7 +76,7 @@ Validacion de `provincias_wgs84.geojson`:
 - Features salida: 24
 - CRS: `EPSG:4326`
 - Geometrias validas: 24 / 24
-- Tamano salida: 2,253,607 bytes (2.15 MiB)
+- Tamano salida actual: 2.363.997 bytes (2,25 MiB), con agregados estadisticos y cobertura OSM.
 
 ## Validacion
 

@@ -1,0 +1,63 @@
+{
+  "fecha_extraccion": "2026-07-16",
+  "alcance": "Ecuador nacional",
+  "comparacion": "Antes=Pichincha; despues=extraccion nacional actual",
+  "capas": {
+    "iluminacion": {
+      "features": 8191,
+      "bytes": 3042314,
+      "archivo": "iluminacion_ecuador.geojson",
+      "features_antes_pichincha": 1892,
+      "features_despues_nacional": 8191
+    },
+    "cruces": {
+      "features": 18125,
+      "bytes": 6073938,
+      "archivo": "cruces_ecuador.geojson",
+      "features_antes_pichincha": 10205,
+      "features_despues_nacional": 18125
+    },
+    "aceras": {
+      "features": 14879,
+      "bytes": 6332047,
+      "archivo": "aceras_ecuador.geojson",
+      "features_antes_pichincha": 7687,
+      "features_despues_nacional": 14879
+    },
+    "semaforos_rotondas": {
+      "features": 7889,
+      "bytes": 2875986,
+      "archivo": "semaforos_rotondas_ecuador.geojson",
+      "features_antes_pichincha": 3193,
+      "features_despues_nacional": 7889
+    },
+    "velocidad": {
+      "features": 26960,
+      "bytes": 10324251,
+      "archivo": "velocidad_ecuador.geojson",
+      "features_antes_pichincha": 6015,
+      "features_despues_nacional": 26960
+    },
+    "brt_metrobus": {
+      "features": 27,
+      "bytes": 11640,
+      "archivo": "brt_metrobus_ecuador.geojson",
+      "features_antes_pichincha": 11,
+      "features_despues_nacional": 27
+    },
+    "pacificacion": {
+      "features": 1348,
+      "bytes": 440830,
+      "archivo": "pacificacion_ecuador.geojson",
+      "features_antes_pichincha": 227,
+      "features_despues_nacional": 1348
+    },
+    "ciclovias": {
+      "features": 1892,
+      "bytes": 1064613,
+      "archivo": "ciclovias_ecuador.geojson",
+      "features_antes_pichincha": 949,
+      "features_despues_nacional": 1892
+    }
+  }
+}

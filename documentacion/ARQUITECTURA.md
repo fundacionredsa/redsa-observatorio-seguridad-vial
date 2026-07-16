@@ -29,7 +29,8 @@ flowchart LR
     PARR[parroquias_wgs84.geojson]
     PROVG[provincias_wgs84.geojson]
     HOTG[hotspots_cantonales.geojson]
-    OSMG[capas Pichincha GeoJSON]
+    OSMG[capas OSM nacionales GeoJSON]
+    MAPG[Mapillary Pichincha GeoJSON]
     WEB[docs/index.html]
   end
   CONALI --> BASE --> CANT
@@ -44,12 +45,13 @@ flowchart LR
   VEH --> V --> CANT
   V --> PROVG
   OSM --> O --> OSMG
-  MAP --> M --> OSMG
+  MAP --> M --> MAPG
   CANT --> WEB
   PARR --> WEB
   PROVG --> WEB
   HOTG --> WEB
   OSMG --> WEB
+  MAPG --> WEB
   WEB --> PAGES[GitHub Pages]
 ```
 
@@ -80,7 +82,8 @@ flowchart LR
 5. Integrar ESTRA 2024 con `procesar_vehiculos_2024.py`.
 6. Recalcular provincias para propagar cualquier agregado cantonal posterior.
 7. Generar hotspots con `generar_hotspots.py`.
-8. Ejecutar contratos de datos y pruebas Playwright antes del push.
+8. Extraer las capas OSM nacionales y calcular la cobertura de mapeo.
+9. Ejecutar contratos de datos y pruebas Playwright antes del push.
 
 El orquestador `scripts/reproducir_geoportal.ps1` del repositorio de pipelines
 documenta el comando completo y permite ejecutar etapas individualmente.

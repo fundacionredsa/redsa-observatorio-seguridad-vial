@@ -34,14 +34,14 @@ Aplica a `cantones_wgs84.geojson` y, salvo indicacion, a
 | `inec_urbano_rural.{anio}.{zona}` | integer | Eventos por zona urbana/rural | eventos |
 | `inec_patron_horario.{anio}.{franja}` | integer | Eventos por franja horaria | eventos |
 | `fallecidos_historico.{anio}` | integer | Defunciones con CIE-10 V01-V89 | personas, EDG 2020-2024 |
-| `fallecidos_detallado.sexo.{sexo}` | integer | Defunciones por sexo registrado | personas, EDG 2020-2024 |
-| `fallecidos_detallado.edad.{grupo}` | integer | Defunciones por grupo etario | personas, EDG 2020-2024 |
-| `fallecidos_detallado.usuario.{tipo}` | integer | Usuario inferido del rango CIE-10 | personas, EDG 2020-2024 |
+| `fallecidos_detallado.{anio}.sexo.{sexo}` | integer | Defunciones por sexo registrado | personas, EDG 2020-2024 |
+| `fallecidos_detallado.{anio}.edad.{grupo}` | integer | Defunciones por grupo etario | personas, EDG 2020-2024 |
+| `fallecidos_detallado.{anio}.usuario.{tipo}` | integer | Usuario inferido del rango CIE-10 | personas, EDG 2020-2024 |
 | `fallecidos_sppat_2016_2021` | integer/null | Total de fallecidos registrados | personas, SPPAT |
 | `sppat_fallecidos_por_anio.{anio}` | integer | Fallecidos por ano | personas, SPPAT |
-| `sppat_por_condicion.{categoria}` | integer | Fallecidos por condicion vial | personas, SPPAT |
-| `sppat_por_sexo.{categoria}` | integer | Fallecidos por sexo | personas, SPPAT |
-| `sppat_por_tipo_accidente.{categoria}` | integer | Fallecidos por tipo de accidente | personas, SPPAT |
+| `sppat_por_condicion.{anio}.categorias.{categoria}` | integer | Fallecidos por condicion vial | personas, SPPAT |
+| `sppat_por_sexo.{anio}.categorias.{categoria}` | integer | Fallecidos por sexo | personas, SPPAT |
+| `sppat_por_tipo_accidente.{anio}.categorias.{categoria}` | integer | Fallecidos por tipo de accidente | personas, SPPAT |
 | `vehiculos_matriculados_2024.total` | integer/null | Vehiculos por residencia del propietario | vehiculos, ESTRA 2024 |
 | `vehiculos_matriculados_2024.por_clase.{clase}` | integer/null | Vehiculos matriculados por clase | vehiculos |
 | `vehiculos_matriculados_2024.estado` | string | `disponible` o `sin_dato` | bandera de calidad |
@@ -49,7 +49,11 @@ Aplica a `cantones_wgs84.geojson` y, salvo indicacion, a
 | `tasa_fallecidos_100k_por_anio.{anio}` | number/null | Fallecidos EDG / poblacion del ano x 100.000 | solo provincias/hotspots |
 | `tasa_siniestros_por_1000_vehiculos_2024` | number/null | Siniestros 2024 / vehiculos 2024 x 1.000 | por 1.000 vehiculos |
 | `tasa_fallecidos_por_1000_vehiculos_2024` | number/null | Fallecidos EDG 2024 / vehiculos 2024 x 1.000 | por 1.000 vehiculos |
-| `tasa_motociclistas_fallecidos_por_1000_motos_2024` | number/null | Motociclistas EDG 2020-2024 / motos 2024 x 1.000 | indicador exploratorio |
+| `tasa_motociclistas_fallecidos_por_1000_motos_2024` | number/null | Motociclistas EDG 2024 / motos 2024 x 1.000 | por 1.000 motos |
+| `porcentaje_motocicletas_vehiculos_2024` | number/null | Motocicletas / total de vehiculos 2024 x 100 | porcentaje de flota matriculada |
+| `cobertura_mapeo_osm.elementos_total` | integer | Semaforos/rotondas, cruces y aceras mapeados | conteo OSM; no mide existencia fisica |
+| `cobertura_mapeo_osm.por_capa.{capa}` | integer | Conteo deduplicado de la capa intersectada | conteo OSM |
+| `cobertura_mapeo_infraestructura_por_100k` | number/null | Elementos OSM / poblacion 2024 x 100.000 | indicador de cobertura de mapeo |
 | `calidad_tasas_vehiculos_2024.{tasa}` | string | Motivo de disponibilidad/faltante | bandera de calidad |
 | `cobertura_datos.{campo}.{anio}.estado` | string | `completo`, `parcial` o `sin_dato` | solo provincias |
 | `cobertura_datos...cantones_*` | integer/array | Conteos/codigos usados para cobertura | solo provincias |
@@ -99,7 +103,9 @@ interpretarse junto con la vigencia incompleta de la geometria 2014.
 | `junction` | semaforos/rotondas | Tipo de interseccion |
 | `lit` | iluminacion | Iluminacion declarada |
 | `maxspeed` | velocidad | Limite OSM, texto sin normalizar |
-| `lanes_bus` | BRT | Numero/texto del tag de carriles bus |
+| `lanes:bus` | BRT | Numero/texto del tag de carriles bus |
+| `DPA_CANTONES`, `DPA_PROVINCIAS` | todas OSM nacionales | Codigos territoriales intersectados |
+| `representacion` | todas OSM nacionales | Geometria OSM o centro representativo optimizado |
 | `corridor_key` | corredores REDSA | Clave interna del corredor |
 | `priority` | corredores REDSA | Prioridad REDSA (`Muy Alta`/`Alta`) |
 
