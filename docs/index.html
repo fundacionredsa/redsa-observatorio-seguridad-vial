@@ -102,12 +102,11 @@
                 --ui-gap: 10px;
             }
             .ui-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto 1fr;
-                padding: var(--ui-padding);
-                gap: var(--ui-gap);
-                overflow-y: auto;
-                pointer-events: auto;
+                display: block;
+                padding: 0;
+                overflow: visible;
+                pointer-events: none;
+                z-index: 1390;
             }
             .ui-panel {
                 pointer-events: auto !important;
@@ -187,9 +186,28 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                grid-row: 1;
-                grid-column: 1;
-                max-height: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: min(360px, calc(100vw - 32px));
+                height: 100dvh;
+                max-height: 100dvh;
+                overflow-y: auto;
+                z-index: 1400;
+                border-radius: 0 14px 14px 0;
+                padding: 18px;
+                transform: translateX(calc(-100% - 18px));
+                opacity: 0;
+                box-shadow: 20px 0 48px rgba(0, 0, 0, 0.42);
+                transition: transform 0.24s ease, opacity 0.24s ease;
+                scrollbar-gutter: stable;
+                overscroll-behavior: contain;
+            }
+
+            body.mobile-sidebar-open .sidebar {
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
@@ -503,6 +521,13 @@
             cursor: pointer;
         }
 
+        .mobile-nav-toggle,
+        .mobile-sidebar-topbar,
+        .mobile-overlay-backdrop,
+        .mobile-layer-drawer-title {
+            display: none;
+        }
+
         /* Custom Zoom Buttons Container */
         .zoom-control-container {
             position: absolute;
@@ -513,8 +538,180 @@
         }
         
         @media (max-width: 768px) {
+            .mobile-nav-toggle {
+                display: inline-flex;
+                position: fixed;
+                top: 10px;
+                z-index: 1350;
+                min-width: 44px;
+                min-height: 44px;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                padding: 0 12px;
+                border: 1px solid rgba(255, 255, 255, 0.16);
+                border-radius: 10px;
+                background: rgba(15, 23, 42, 0.92);
+                color: #f8fafc;
+                font-family: var(--font-sans);
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.01em;
+                box-shadow: var(--shadow);
+                cursor: pointer;
+                pointer-events: auto;
+            }
+
+            .mobile-nav-toggle:focus-visible,
+            .mobile-sidebar-close:focus-visible,
+            .leaflet-control-layers input:focus-visible,
+            .map-selector-control select:focus-visible,
+            #map-year-slider:focus-visible {
+                outline: 3px solid #38bdf8;
+                outline-offset: 2px;
+            }
+
+            .mobile-sidebar-toggle {
+                left: 10px;
+            }
+
+            .mobile-layers-toggle {
+                right: 58px;
+            }
+
+            body.mobile-sidebar-open .mobile-sidebar-toggle,
+            body.mobile-layers-open .mobile-layers-toggle {
+                background: rgba(14, 165, 233, 0.95);
+                color: #082f49;
+            }
+
+            body.mobile-sidebar-open .mobile-nav-toggle {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .mobile-overlay-backdrop {
+                position: fixed;
+                inset: 0;
+                z-index: 1320;
+                width: 100vw;
+                height: 100dvh;
+                padding: 0;
+                border: 0;
+                background: rgba(2, 6, 23, 0.45);
+                backdrop-filter: blur(1px);
+                -webkit-backdrop-filter: blur(1px);
+                cursor: pointer;
+            }
+
+            body.mobile-sidebar-open .mobile-overlay-backdrop,
+            body.mobile-layers-open .mobile-overlay-backdrop {
+                display: block;
+            }
+
+            .mobile-sidebar-topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin: -4px 0 14px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--border-glass);
+                color: var(--text-primary);
+                font-size: 0.76rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .mobile-sidebar-close {
+                display: inline-flex;
+                width: 44px;
+                height: 44px;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255,255,255,0.16);
+                border-radius: 10px;
+                background: rgba(255,255,255,0.08);
+                color: var(--text-primary);
+                font-size: 1.35rem;
+                line-height: 1;
+                cursor: pointer;
+            }
+
             .zoom-control-container {
                 display: none; /* Hide zoom controls on mobile to save space */
+            }
+
+            .leaflet-control-layers {
+                position: fixed !important;
+                top: 66px !important;
+                right: 10px !important;
+                left: auto !important;
+                z-index: 1400 !important;
+                width: min(340px, calc(100vw - 20px)) !important;
+                max-height: calc(100dvh - 82px) !important;
+                overflow-y: auto !important;
+                padding: 12px !important;
+                transform: translateX(calc(100% + 24px));
+                opacity: 0;
+                pointer-events: none !important;
+                transition: transform 0.24s ease, opacity 0.24s ease;
+                scrollbar-gutter: stable;
+                overscroll-behavior: contain;
+            }
+
+            body.mobile-layers-open .leaflet-control-layers {
+                transform: translateX(0);
+                opacity: 1;
+                pointer-events: auto !important;
+            }
+
+            .mobile-layer-drawer-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                min-height: 44px;
+                margin-bottom: 8px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--border-glass);
+                color: var(--text-primary);
+                font-size: 0.76rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .mobile-layer-close {
+                display: inline-flex;
+                width: 44px;
+                height: 44px;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(255,255,255,0.16);
+                border-radius: 10px;
+                background: rgba(255,255,255,0.08);
+                color: var(--text-primary);
+                font-size: 1.35rem;
+                line-height: 1;
+                cursor: pointer;
+            }
+
+            .leaflet-control-layers-list label {
+                display: flex !important;
+                align-items: center;
+                min-height: 44px;
+                gap: 9px;
+                margin: 0 !important;
+                line-height: 1.25;
+            }
+
+            .leaflet-control-layers-selector {
+                width: 22px;
+                height: 22px;
+                flex: 0 0 22px;
+                margin: 0 !important;
             }
         }
         
@@ -877,9 +1074,24 @@
 
         @media (max-width: 768px) {
             .leaflet-top.leaflet-left .map-selector-control {
-                margin-top: var(--ui-padding);
+                margin-top: 64px;
                 margin-left: var(--ui-padding);
                 width: min(320px, calc(100vw - 20px));
+            }
+
+            .map-selector-control {
+                max-height: calc(100dvh - 86px);
+                overflow-y: auto;
+            }
+
+            .map-selector-control select {
+                min-height: 44px;
+                padding: 10px 8px !important;
+                font-size: 0.82rem !important;
+            }
+
+            #map-year-slider {
+                min-height: 44px;
             }
 
             .perfil-fallecidos-card {
@@ -904,10 +1116,24 @@
         <div id="loader-status" class="loader-subtext">Descargando datos territoriales...</div>
     </div>
 
+    <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
+        <span aria-hidden="true">&#9776;</span>
+        <span>Territorio</span>
+    </button>
+    <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
+        <span aria-hidden="true">&#9638;</span>
+        <span>Capas</span>
+    </button>
+    <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
+
     <!-- Contenedor Principal de la Interfaz -->
     <div class="ui-container">
         <!-- Sidebar / Panel de Control -->
-        <div class="ui-panel sidebar">
+        <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio">
+            <div class="mobile-sidebar-topbar">
+                <span>Territorio</span>
+                <button type="button" class="mobile-sidebar-close" id="mobile-sidebar-close" aria-label="Cerrar informacion del territorio">&times;</button>
+            </div>
             <!-- Marca/Cabecera -->
             <div class="header-brand">
                 <h1>
@@ -1200,6 +1426,68 @@
         let layerControl = null;
         let overlayMaps = {};
         let historicoChart = null;
+
+        const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
+        const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
+        const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
+        const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
+        const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+
+        function setMobilePanel(panel, open) {
+            if (panel === "sidebar") {
+                document.body.classList.toggle("mobile-sidebar-open", open);
+                if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
+                if (open) {
+                    document.body.classList.remove("mobile-layers-open");
+                    if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
+                    mobileSidebarClose?.focus({ preventScroll: true });
+                }
+            }
+            if (panel === "layers") {
+                document.body.classList.toggle("mobile-layers-open", open);
+                if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", String(open));
+                if (open) {
+                    document.body.classList.remove("mobile-sidebar-open");
+                    if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
+                    const closeButton = document.querySelector(".mobile-layer-close");
+                    closeButton?.focus({ preventScroll: true });
+                }
+            }
+        }
+
+        function closeMobilePanels() {
+            setMobilePanel("sidebar", false);
+            setMobilePanel("layers", false);
+        }
+
+        function syncMobileLayerDrawer() {
+            const container = layerControl?.getContainer?.() || document.querySelector(".leaflet-control-layers");
+            if (!container) return;
+            container.id = "mobile-layer-control";
+            if (!container.querySelector(".mobile-layer-drawer-title")) {
+                const header = document.createElement("div");
+                header.className = "mobile-layer-drawer-title";
+                header.innerHTML = `<span>Capas</span><button type="button" class="mobile-layer-close" aria-label="Cerrar capas">&times;</button>`;
+                container.prepend(header);
+                header.querySelector(".mobile-layer-close").addEventListener("click", () => setMobilePanel("layers", false));
+            }
+        }
+
+        mobileSidebarToggle?.addEventListener("click", () => {
+            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
+        });
+        mobileSidebarClose?.addEventListener("click", () => setMobilePanel("sidebar", false));
+        mobileLayersToggle?.addEventListener("click", () => {
+            syncMobileLayerDrawer();
+            setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
+        });
+        mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeMobilePanels();
+        });
+        mobileMediaQuery.addEventListener("change", (event) => {
+            if (!event.matches) closeMobilePanels();
+        });
 
         let selectedVariable = 'normal'; // variable de coropletas seleccionada
         let selectedYear = 2024;
@@ -3148,6 +3436,7 @@
                     position: 'topright',
                     collapsed: false
                 }).addTo(map);
+                syncMobileLayerDrawer();
 
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
@@ -3254,6 +3543,7 @@
                             position: 'topright',
                             collapsed: false
                         }).addTo(map);
+                        syncMobileLayerDrawer();
                         
                         updateLegend();
                     })
@@ -3324,6 +3614,7 @@
                         position: 'topright',
                         collapsed: false
                     }).addTo(map);
+                    syncMobileLayerDrawer();
                     if (preload) startLoad();
                     updateLegend();
                 }
