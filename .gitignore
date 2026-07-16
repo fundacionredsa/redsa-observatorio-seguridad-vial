@@ -220,3 +220,8 @@ __marimo__/
 # Workspace-specific ignores
 scratch/
 .gemini/
+# Evidencia local generada por Playwright
+node_modules/
+playwright-report/
+test-results/
+artifacts/

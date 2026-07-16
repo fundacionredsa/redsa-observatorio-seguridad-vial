@@ -1,0 +1,18 @@
+{
+  "name": "redsa-observatorio-seguridad-vial",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "screenshots": "node scripts/capturar_matriz.mjs",
+    "performance": "node scripts/medir_rendimiento.mjs",
+    "data:dictionary": "python scripts/generar_diccionario_geojson.py",
+    "data:check": "python scripts/verificar_datos_publicados.py",
+    "data:test": "python -m unittest discover -s tests_python -v"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}

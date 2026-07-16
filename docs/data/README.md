@@ -64,7 +64,8 @@ Validacion de `provincias_wgs84.geojson`:
 - Features salida: 224
 - Vertices fuente: 5,990,430
 - Vertices salida: 235,749
-- Tamano salida: 4,901,430 bytes (4.67 MiB)
+- Tamano de la geometria simplificada inicial: 4,901,430 bytes (4.67 MiB)
+- El GeoJSON publicado posteriormente incorpora series y desgloses estadisticos; por eso su tamano actual es mayor y debe consultarse en el manifiesto de cada entrega.
 - Geometrias validas en salida: 224 / 224
 - Huecos internos en la union disuelta: ninguno mayor a ~1 km2
 - Hueco interno maximo aproximado en fuente original: ~0.008 km2

@@ -1,28 +1,56 @@
-# redsa-observatorio-seguridad-vial
-Pipelines de datos y geoportal del Observatorio Ciudadano de Seguridad Vial - Fundación REDSA
+# REDSA Observatorio de Seguridad Vial
 
-## Geoportal
+Geoportal auditable del Observatorio de Seguridad Vial y Movilidad Sostenible de
+Fundacion REDSA. Publica agregados territoriales de fuentes oficiales y capas
+abiertas de movilidad, sin datos personales de victimas.
 
-El geoportal del Observatorio se encuentra en el directorio `/docs`. Está desarrollado utilizando HTML, CSS (Vanilla) y JavaScript puro, sin herramientas de compilación externas, para facilitar su despliegue directo en **GitHub Pages**.
+- Sitio: https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/
+- Estado documentado: 2026-07-16.
+- Documentacion: [guia por rol](documentacion/README.md).
+- Datos: [diccionario](documentacion/DICCIONARIO_DATOS.md),
+  [metodologia](documentacion/METODOLOGIA.md) y
+  [procedencia](documentacion/FUENTES_Y_PROCEDENCIA.md).
+- Ingenieria: [arquitectura](documentacion/ARQUITECTURA.md),
+  [ADR](documentacion/adr/README.md), [despliegue](documentacion/DESPLIEGUE_Y_OPERACION.md)
+  y [problemas conocidos](documentacion/PROBLEMAS_CONOCIDOS.md).
 
-### Características
-- **Biblioteca de mapas**: Leaflet.js (v1.9.4) vía CDN.
-- **Mapa base**: CartoDB Positron, CartoDB Dark Matter y OpenStreetMap.
-- **Capas cargadas**: Límites cantonales de Ecuador (`docs/data/cantones_wgs84.geojson`).
-- **Interactividad**: Hover con resaltado y actualización dinámica de panel lateral de información, popups de consulta al hacer clic en los cantones.
-- **Atribución**: Atribución obligatoria de límites cantonales a INEC/CONALI vía datosabiertos.gob.ec, bajo licencia CC-BY.
+## Inicio local
 
-### Desarrollo y Visualización Local
-Para abrir el geoportal localmente y evitar problemas de CORS al consultar el archivo GeoJSON, inicia un servidor HTTP local en la raíz del repositorio:
-
-```bash
-# Con Python
+```powershell
+git clone https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial.git
+cd redsa-observatorio-seguridad-vial
 python -m http.server 8000
-
-# Con Node.js
-npx http-server -p 8000
 ```
 
-Luego abre en tu navegador:
-`http://localhost:8000/docs/index.html`
+Abra `http://127.0.0.1:8000/docs/`.
 
+## Verificacion
+
+```powershell
+npm ci
+npx playwright install chromium
+python -m unittest discover -s tests_python -v
+python scripts/generar_diccionario_geojson.py
+python scripts/verificar_datos_publicados.py
+npm test
+```
+
+Para conciliar contra las fuentes crudas, configure `REDSA_RAW_DATA_DIR` antes
+de ejecutar el verificador. Sin esa variable se validan contratos y sumas entre
+capas publicadas.
+
+## Estructura
+
+```text
+docs/                 sitio y GeoJSON publicados por GitHub Pages
+documentacion/        metodologia, diccionario, ADR y evidencia
+scripts/              verificadores y captura de matriz visual
+tests/                pruebas Playwright
+tests_python/         contratos de datos sin dependencias externas
+```
+
+## Licencias y privacidad
+
+Codigo: [MIT](LICENSE). Datos/atribuciones: [LICENSE-DATA.md](LICENSE-DATA.md).
+Las capas OSM conservan ODbL y las fuentes oficiales sus condiciones de origen.
+Los repositorios no contienen microdatos EDG, SPPAT o ESTRA ni credenciales.

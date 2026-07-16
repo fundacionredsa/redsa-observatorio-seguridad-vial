@@ -829,7 +829,7 @@
     <div id="loader" class="loader-overlay">
         <div class="spinner"></div>
         <div class="loader-text">Cargando Geoportal...</div>
-        <div id="loader-status" class="loader-subtext">Descargando límites cantonales (4.67 MB)...</div>
+        <div id="loader-status" class="loader-subtext">Descargando datos territoriales...</div>
     </div>
 
     <!-- Contenedor Principal de la Interfaz -->
@@ -1102,7 +1102,7 @@
         legendControlInstance.addTo(map);
 
         // Definir Atribuciones Requeridas
-        const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong>';
+        const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites parroquiales: INEC 2014 (vigencia histórica)';
 
         // Definición de Capas Base (Mapas de fondo)
         const baseMaps = {
@@ -1985,7 +1985,7 @@
 
         // Configuración de aviso de cabecera
         const CABECERA_SUFFIX = "50";
-        const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} sin límite propio en el shapefile oficial CONALI 2022. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
+        const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} en la geometría histórica INEC 2014 disponible para esta capa. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
         
         // Dynamic Containers
         const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -3349,6 +3349,64 @@
                     renderSiniestrosSection(currentProps, this.value);
                     updateInterpretationCard(activeTerritoryLevel === "canton" ? currentProps : null);
                 });
+
+                // API minima y de solo diagnostico para pruebas reejecutables.
+                window.__redsaGeojsonLoadMetrics = {
+                    downloadMs: Number(tDownload) * 1000,
+                    renderMs: Number(tRender) * 1000,
+                    totalMs: Number(tTotal) * 1000,
+                    provinceFeatures: provinceData.features.length,
+                    cantonFeatures: cantonData.features.length
+                };
+                window.__redsaAudit = {
+                    setZoom(zoom) {
+                        map.setView(map.getCenter(), zoom, { animate: false });
+                        syncTerritoryLayerToZoom();
+                        return this.state();
+                    },
+                    selectVariable(variable) {
+                        const select = document.getElementById("map-variable-select");
+                        if (!select || !VARIABLE_CONFIGS[variable]) return false;
+                        select.value = variable;
+                        selectedVariable = variable;
+                        handleVariableChange();
+                        return true;
+                    },
+                    showTerritory(level, code) {
+                        const layer = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
+                        if (!layer) return false;
+                        let found = null;
+                        layer.eachLayer(candidate => {
+                            const props = candidate.feature && candidate.feature.properties;
+                            const candidateCode = level === "province" ? props?.DPA_PROVIN : (level === "parish" ? props?.DPA_PARROQ : props?.DPA_CANTON);
+                            if (!found && (!code || String(candidateCode) === String(code))) found = candidate;
+                        });
+                        if (!found) return false;
+                        updateSidebar(found.feature.properties);
+                        showHoverCard(found.feature.properties, { target: found });
+                        return true;
+                    },
+                    state() {
+                        const layerState = layer => ({
+                            ready: Boolean(layer),
+                            visible: Boolean(layer && map.hasLayer(layer)),
+                            features: layer ? layer.getLayers().length : 0
+                        });
+                        return {
+                            zoom: map.getZoom(),
+                            level: activeTerritoryLevel,
+                            selectedVariable,
+                            effectiveVariable: getEffectiveVariable(activeTerritoryLevel),
+                            bins: [...activeVariableBins.bins],
+                            validValueCount: activeVariableBins.validValueCount,
+                            layers: {
+                                province: layerState(provinceLayer),
+                                canton: layerState(cantonLayer),
+                                parish: layerState(parishLayer)
+                            }
+                        };
+                    }
+                };
 
                 // Ocultar pantalla de carga
                 const loader = document.getElementById("loader");

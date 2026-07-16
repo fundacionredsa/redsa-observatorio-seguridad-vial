@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Validar la primera vista web del geoportal REDSA Observa con la capa `docs/data/cantones_wgs84.geojson`.
+Validar el estado desplegable del geoportal REDSA Observa con sus capas territoriales y estadisticas publicadas.
 
 ## Controles Funcionales
 
@@ -24,10 +24,11 @@ Limites cantonales: INEC/CONALI via datosabiertos.gob.ec, licencia CC-BY
 ## Rendimiento
 
 - Abrir la pagina en navegador con DevTools.
-- En la pestana Network, medir la descarga de `cantones_wgs84.geojson` de 4.67 MiB.
+- En la pestana Network, medir la descarga actual de `cantones_wgs84.geojson` (19,985,385 bytes; 19.06 MiB al 2026-07-16). La geometria simplificada original pesaba 4.67 MiB; el archivo publicado crecio al incorporar series y desgloses estadisticos.
 - Medir y reportar el tiempo real desde apertura de pagina hasta que el mapa termina de renderizar los 224 poligonos.
 - La pagina expone la metrica en `window.__redsaGeojsonLoadMetrics.totalMs` y en el texto visible de estado.
 - Si el tiempo total supera ~3-4 segundos en una conexion normal, reportarlo como hallazgo antes de dar por buena la tarea.
+- En tres corridas aisladas por viewport del 2026-07-16, la mediana de carga integral fue 2.782 ms en escritorio y 2.888 ms en movil. Una corrida movil alcanzo 4.386 ms. La mediana cumple el umbral, pero la variabilidad y los 48,86 MiB decodificados de 13 GeoJSON se registran como deuda de rendimiento.
 
 ## Criterio de Cierre
 

@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-07-16T18:51:38.958649+00:00",
+  "status": "ok",
+  "failures": [],
+  "files": {
+    "cantones_wgs84.geojson": {
+      "features": 224,
+      "expected_features": 224,
+      "bytes": 19985385,
+      "sha256": "c6a7a0d9fbaf5650599da562808f4bb3d50a3f04ffa5b68079b820019d4cfad4"
+    },
+    "provincias_wgs84.geojson": {
+      "features": 24,
+      "expected_features": 24,
+      "bytes": 2267561,
+      "sha256": "180e73f5e832b23272d3e5b91b00d7a993920b46018b18ec20fc6ad1e1638b2a"
+    },
+    "parroquias_wgs84.geojson": {
+      "features": 1040,
+      "expected_features": 1040,
+      "bytes": 5725084,
+      "sha256": "1f5b665b6f87ab6bd64e1d3f8bab1be379c511619a22583d2312f32e28899e5e"
+    },
+    "hotspots_cantonales.geojson": {
+      "features": 224,
+      "expected_features": 224,
+      "bytes": 5089005,
+      "sha256": "eae33128273d42f823c21660d9c3ad508d861999d7c7bfeb1ef781a25ed6fc2f"
+    }
+  },
+  "national_controls": {
+    "fallecidos_historico": {
+      "2020": {
+        "canton_sum": 2578,
+        "province_sum": 2578,
+        "match": true
+      },
+      "2021": {
+        "canton_sum": 3339,
+        "province_sum": 3339,
+        "match": true
+      },
+      "2022": {
+        "canton_sum": 3676,
+        "province_sum": 3676,
+        "match": true
+      },
+      "2023": {
+        "canton_sum": 4068,
+        "province_sum": 4068,
+        "match": true
+      },
+      "2024": {
+        "canton_sum": 4214,
+        "province_sum": 4214,
+        "match": true
+      }
+    },
+    "siniestros_historico": {
+      "2019": {
+        "canton_sum": 24595,
+        "province_sum": 24595,
+        "match": true
+      },
+      "2021": {
+        "canton_sum": 21307,
+        "province_sum": 21307,
+        "match": true
+      },
+      "2022": {
+        "canton_sum": 21705,
+        "province_sum": 21705,
+        "match": true
+      },
+      "2023": {
+        "canton_sum": 20983,
+        "province_sum": 20983,
+        "match": true
+      },
+      "2024": {
+        "canton_sum": 21191,
+        "province_sum": 21191,
+        "match": true
+      }
+    },
+    "vehiculos_matriculados_2024": 3138562
+  },
+  "raw_controls": {
+    "siniestros_2019": {
+      "raw_rows": 24595,
+      "published": 24595,
+      "unresolved": 0
+    },
+    "siniestros_2021": {
+      "raw_rows": 21352,
+      "published": 21307,
+      "unresolved": 45
+    },
+    "siniestros_2022": {
+      "raw_rows": 21739,
+      "published": 21705,
+      "unresolved": 34
+    },
+    "siniestros_2023": {
+      "raw_rows": 20994,
+      "published": 20983,
+      "unresolved": 11
+    },
+    "siniestros_2024": {
+      "raw_rows": 21220,
+      "published": 21191,
+      "unresolved": 29
+    },
+    "edg_2020": {
+      "total_edg": 117030,
+      "v01_v89": 2578,
+      "v89": 1758,
+      "published": 2578,
+      "difference": 0
+    },
+    "edg_2021": {
+      "total_edg": 107648,
+      "v01_v89": 3339,
+      "v89": 2217,
+      "published": 3339,
+      "difference": 0
+    },
+    "edg_2022": {
+      "total_edg": 91954,
+      "v01_v89": 3676,
+      "v89": 2693,
+      "published": 3676,
+      "difference": 0
+    },
+    "edg_2023": {
+      "total_edg": 89877,
+      "v01_v89": 4068,
+      "v89": 3324,
+      "published": 4068,
+      "difference": 0
+    },
+    "edg_2024": {
+      "total_edg": 91803,
+      "v01_v89": 4214,
+      "v89": 3414,
+      "published": 4214,
+      "difference": 0
+    }
+  }
+}

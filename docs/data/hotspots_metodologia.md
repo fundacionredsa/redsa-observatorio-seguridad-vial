@@ -13,9 +13,13 @@ Fecha de generacion: 2026-07-15T18:51:16-05:00
 
 ## Fuentes de referencia local
 
-- SPPAT fallecidos: `G:/Shared drives/03_PROYECTOS/A2026/023_REDSA_ObservatorioSeguridadVial/05_DESARROLLO/01_EN PROCESO/03_DATOS_FUENTES/estadisticas_base/datos_crudos/sppat_fallecidos.csv` (existe)
-- INEC siniestros: `G:/Shared drives/03_PROYECTOS/A2026/023_REDSA_ObservatorioSeguridadVial/05_DESARROLLO/01_EN PROCESO/03_DATOS_FUENTES/estadisticas_base/datos_crudos/inec_siniestros.csv` (existe)
-- EDG 2024: `G:/Shared drives/03_PROYECTOS/A2026/023_REDSA_ObservatorioSeguridadVial/05_DESARROLLO/01_EN PROCESO/03_DATOS_FUENTES/estadisticas_base/datos_crudos/edg_2024.csv` (existe)
+- Directorio configurable: `REDSA_RAW_DATA_DIR`.
+- SPPAT fallecidos: `${REDSA_RAW_DATA_DIR}/sppat_fallecidos.csv`.
+- INEC siniestros: `${REDSA_RAW_DATA_DIR}/inec_siniestros.csv`.
+- EDG 2024: `${REDSA_RAW_DATA_DIR}/edg_2024.csv`.
+
+Las rutas absolutas no se publican en la metodologia; el inventario del paquete
+de auditoria conserva la ubicacion autorizada en Drive y su checksum.
 
 ## Formula
 
