@@ -109,8 +109,15 @@ $pipelineBundle = Join-Path $BundlesDir 'redsa-observatorio-pipelines.bundle'
 if ($LASTEXITCODE -ne 0) { throw 'Fallo al crear el bundle del geoportal.' }
 & git -C $PipelinesRepo bundle create $pipelineBundle --all
 if ($LASTEXITCODE -ne 0) { throw 'Fallo al crear el bundle de pipelines.' }
+$previousErrorPreference = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
 $geoVerify = (& git -C $GeoportalRepo bundle verify $geoBundle 2>&1) -join "`n"
+$geoVerifyExitCode = $LASTEXITCODE
 $pipelineVerify = (& git -C $PipelinesRepo bundle verify $pipelineBundle 2>&1) -join "`n"
+$pipelineVerifyExitCode = $LASTEXITCODE
+$ErrorActionPreference = $previousErrorPreference
+if ($geoVerifyExitCode -ne 0) { throw "Bundle del geoportal invalido:`n$geoVerify" }
+if ($pipelineVerifyExitCode -ne 0) { throw "Bundle de pipelines invalido:`n$pipelineVerify" }
 
 $restore = @"
 # Restaurar los repositorios
