@@ -734,7 +734,7 @@
         .perfil-fallecidos-card {
             display: none;
             position: fixed;
-            bottom: 0;
+            bottom: 12px;
             left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
             right: auto;
             width: var(--perfil-card-width);
@@ -743,9 +743,8 @@
             max-height: var(--perfil-card-max-height);
             overflow-y: auto;
             padding: 14px 18px;
-            border-radius: 8px 8px 0 0;
+            border-radius: 8px;
             border: 1px solid var(--border-glass);
-            border-bottom: 0;
             background: rgba(15, 23, 42, 0.95);
             box-shadow: 0 -10px 30px rgba(0,0,0,0.45);
             overscroll-behavior: contain;
@@ -1943,6 +1942,7 @@
 
             const root = document.documentElement;
             const safetyMargin = 16;
+            const viewportMargin = 12;
             const minUsableWidth = 320;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -1951,7 +1951,7 @@
             const selector = document.querySelector(".map-selector-control");
             const attribution = document.querySelector(".leaflet-control-attribution");
 
-            card.style.bottom = "0px";
+            card.style.bottom = `${viewportMargin}px`;
             card.style.width = "";
 
             const cardLeft = card.getBoundingClientRect().left;
@@ -1965,8 +1965,8 @@
             const attributionRect = attributionVisible ? attribution.getBoundingClientRect() : null;
 
             let bottomOffset = attributionVisible
-                ? Math.max(0, viewportHeight - attributionRect.top + safetyMargin / 2)
-                : safetyMargin / 2;
+                ? Math.max(viewportMargin, viewportHeight - attributionRect.top + viewportMargin)
+                : viewportMargin;
             let rightBoundary = viewportWidth;
 
             if (legendVisible) {
@@ -1998,6 +1998,13 @@
             root.style.setProperty("--perfil-card-width", `${width}px`);
             root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
             card.style.bottom = `${Math.floor(bottomOffset)}px`;
+
+            const renderedRect = card.getBoundingClientRect();
+            const maxPanelBottom = viewportHeight - viewportMargin;
+            if (renderedRect.bottom > maxPanelBottom) {
+                bottomOffset += renderedRect.bottom - maxPanelBottom;
+                card.style.bottom = `${Math.ceil(bottomOffset)}px`;
+            }
         }
 
         // --- LÓGICA DE TARJETA FLOTANTE (HOVER CARD) ---
