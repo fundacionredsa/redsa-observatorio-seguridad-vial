@@ -27,7 +27,9 @@ por Git. Las pruebas levantan su propio servidor local.
 ## GitHub Pages
 
 GitHub Pages debe configurarse para publicar `main` / `docs`. El despliegue no
-requiere build. Antes de hacer push:
+requiere build. `docs/.nojekyll` fuerza la publicacion estatica directa y evita
+que el despliegue dependa del generador Jekyll o de consultas de metadatos de
+GitHub que no forman parte del sitio. Antes de hacer push:
 
 ```powershell
 python scripts/generar_diccionario_geojson.py
