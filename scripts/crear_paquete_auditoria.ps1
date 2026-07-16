@@ -156,7 +156,7 @@ $environment = @(
 )
 $environment | Set-Content -LiteralPath (Join-Path $ManifestDir 'ENTORNO_EJECUCION.txt') -Encoding utf8
 
-$index = @"
+$index = @'
 # Auditoria REDSA Observa 2026-07-16
 
 Este paquete permite auditar, mantener y restaurar el geoportal sin depender de
@@ -193,7 +193,7 @@ visual e identificadores de integridad.
 El paquete fue creado con
 `scripts/crear_paquete_auditoria.ps1` del repo publico. El manifiesto SHA-256
 permite detectar cualquier alteracion posterior.
-"@
+'@
 $index | Set-Content -LiteralPath (Join-Path $OutputRoot 'README.md') -Encoding utf8
 
 $filesBeforeManifest = Get-ChildItem -LiteralPath $OutputRoot -File -Recurse
