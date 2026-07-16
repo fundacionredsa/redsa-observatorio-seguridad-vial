@@ -40,6 +40,22 @@ function Copy-SelectedFiles([string]$Source, [string]$Destination, [string[]]$Na
     }
 }
 
+function Get-RelativePathCompat([string]$BasePath, [string]$TargetPath) {
+    $base = [System.IO.Path]::GetFullPath($BasePath).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+    $target = [System.IO.Path]::GetFullPath($TargetPath)
+    if (-not $target.StartsWith($base, [System.StringComparison]::OrdinalIgnoreCase)) {
+        if ($target.TrimEnd('\', '/') -eq $base.TrimEnd('\', '/')) { return '' }
+        throw "La ruta $target no esta dentro de $base"
+    }
+    return $target.Substring($base.Length)
+}
+
+function Get-TopLevelName([string]$BasePath, [string]$DirectoryPath) {
+    $relative = Get-RelativePathCompat $BasePath $DirectoryPath
+    if ([string]::IsNullOrWhiteSpace($relative)) { return 'RAIZ' }
+    return ($relative -split '[\\/]')[0]
+}
+
 Copy-Item -LiteralPath (Join-Path $GeoportalRepo 'documentacion') -Destination (Join-Path $DocumentationDir 'geoportal') -Recurse
 Copy-SelectedFiles $GeoportalRepo (Join-Path $DocumentationDir 'geoportal_raiz') @(
     'README.md', 'CHANGELOG.md', 'LICENSE', 'LICENSE-DATA.md', 'package.json',
@@ -55,7 +71,7 @@ Copy-Item -LiteralPath (Join-Path $GeoportalRepo 'artifacts\performance') -Desti
 Copy-Item -LiteralPath (Join-Path $GeoportalRepo 'documentacion\evidencia_validacion.json') -Destination $EvidenceDir
 
 $inventory = foreach ($file in Get-ChildItem -LiteralPath $SourceRoot -File -Recurse | Sort-Object FullName) {
-    $relative = [System.IO.Path]::GetRelativePath($SourceRoot, $file.FullName)
+    $relative = Get-RelativePathCompat $SourceRoot $file.FullName
     $lower = $relative.ToLowerInvariant()
     $classification = if ($lower -match 'edg_|sppat|siniestros|vehiculos|estra|\.sav$') {
         'USO_INTERNO_RESTRINGIDO'
@@ -174,7 +190,7 @@ permite detectar cualquier alteracion posterior.
 $index | Set-Content -LiteralPath (Join-Path $OutputRoot 'README.md') -Encoding utf8
 
 $filesBeforeManifest = Get-ChildItem -LiteralPath $OutputRoot -File -Recurse
-$summary = $filesBeforeManifest | Group-Object { [System.IO.Path]::GetRelativePath($OutputRoot, $_.DirectoryName).Split([System.IO.Path]::DirectorySeparatorChar)[0] } | ForEach-Object {
+$summary = $filesBeforeManifest | Group-Object { Get-TopLevelName $OutputRoot $_.DirectoryName } | ForEach-Object {
     $bytes = ($_.Group | Measure-Object Length -Sum).Sum
     "- ``$($_.Name)``: $($_.Count) archivos, $([math]::Round($bytes / 1MB, 2)) MiB"
 }
@@ -183,7 +199,7 @@ $summary = $filesBeforeManifest | Group-Object { [System.IO.Path]::GetRelativePa
 
 $manifest = foreach ($file in Get-ChildItem -LiteralPath $OutputRoot -File -Recurse | Sort-Object FullName) {
     [pscustomobject]@{
-        ruta_relativa = [System.IO.Path]::GetRelativePath($OutputRoot, $file.FullName)
+        ruta_relativa = Get-RelativePathCompat $OutputRoot $file.FullName
         tamano_bytes = $file.Length
         sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
     }
