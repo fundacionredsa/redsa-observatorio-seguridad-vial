@@ -643,6 +643,16 @@
             width: 190px;
         }
 
+        .map-level-note {
+            display: none;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            font-size: 0.62rem;
+            line-height: 1.25;
+        }
+
         .leaflet-top.leaflet-left .map-selector-control {
             margin-top: var(--ui-padding);
             margin-left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
@@ -966,9 +976,15 @@
         }
         
         // --- CONFIGURACIÓN REQUERIDA ---
-        const RUTA_GEOJSON_RELATIVA = "data/cantones_wgs84.geojson";
+        const RUTA_PROVINCIAS_RELATIVA = "data/provincias_wgs84.geojson";
+        const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
+        const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
         const CENTRO_MAPA = [-0.15, -78.48]; // Centrado en Pichincha
         const ZOOM_INICIAL = 9.5;
+        const ZOOM_PROVINCIAS_MAX = 7;
+        const ZOOM_CANTONES_MIN = 8;
+        const ZOOM_CANTONES_MAX = 10;
+        const ZOOM_PARROQUIAS_MIN = 11;
         // -------------------------------
 
         // Inicializar el Mapa
@@ -1030,8 +1046,12 @@
         baseMaps["CartoDB Positron (Claro)"].addTo(map);
 
         // Capa GeoJSON
+        let provinceLayer = null;
+        let provinceData = null;
         let cantonLayer;
+        let cantonData = null;
         let selectedLayer = null;
+        let selectedProvinceLayer = null;
         let layerControl = null;
         let overlayMaps = {};
         let historicoChart = null;
@@ -1039,97 +1059,108 @@
         let selectedVariable = 'normal'; // variable de coropletas seleccionada
         let parishLayer = null;
         let parishData = null;
+        let parishLoadPromise = null;
         let selectedParishLayer = null;
+        let activeTerritoryLevel = null;
         
-        // Estilos para la capa de Cantones (Fase 5: Foco cartográfico en Pichincha y Coropletas)
-        function getCantonStyle(feature, isHovered = false, isSelected = false) {
-            const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
-            
-            if (selectedVariable === 'normal') {
-                // Colores e intensidades normales (Pichincha-enfocado)
-                let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO; // Celeste vs Gris
-                let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.2);
-                let opacity = isHovered ? 1.0 : (isSelected ? 1.0 : (isPichincha ? 0.7 : 0.2));
-                let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
-                let fillOpacity = isHovered ? 0.25 : (isSelected ? 0.20 : (isPichincha ? 0.08 : 0.02));
-                
-                if (isSelected) {
-                    color = "#38bdf8"; // Resaltado de selección celeste muy brillante
-                } else if (isHovered) {
-                    color = isPichincha ? "#38bdf8" : "#cbd5e1";
-                }
-                
-                return {
-                    color: color,
-                    weight: weight,
-                    opacity: opacity,
-                    fillColor: fillColor,
-                    fillOpacity: fillOpacity,
-                    dashArray: ''
-                };
-            } else {
-                // Modo Coropletas - Opacidad plena nacional
-                let val = null;
-                let bins = [];
-                let colors = [];
-                
-                if (selectedVariable === 'siniestros_inec_2019') {
-                    val = feature.properties.siniestros_inec_2019;
-                    bins = [6, 16, 37, 82];
-                    colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]; // Reds
-                } else if (selectedVariable === 'fallecidos_inec_2019') {
-                    val = feature.properties.fallecidos_inec_2019;
-                    bins = [3, 5, 10, 19];
-                    colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]; // Reds
-                } else if (selectedVariable === 'tasa_fallecidos_100k') {
-                    val = feature.properties.tasa_fallecidos_100k;
-                    bins = [8.8, 12.6, 19.7, 29.2];
-                    colors = ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"]; // PuRd
-                } else if (selectedVariable === 'fallecidos_sppat_2016_2021') {
-                    val = feature.properties.fallecidos_sppat_2016_2021;
-                    bins = [7, 19, 47, 112];
-                    colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]; // OrRd
-                }
-                
-                let color = "#cbd5e1"; // border color
-                let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
-                let opacity = 0.8;
-                let fillColor = "#334155"; // default slate-grey for "sin dato"
-                let fillOpacity = 0.65;
-                let dashArray = '';
-                
-                if (val === null || val === undefined || val === 0) {
-                    fillColor = "#1e293b";
-                    fillOpacity = 0.45;
-                    dashArray = '3, 4';
-                    color = "#475569";
-                } else {
-                    let idx = 0;
-                    while (idx < bins.length && val > bins[idx]) {
-                        idx++;
-                    }
-                    fillColor = colors[idx];
-                    color = isSelected ? "#38bdf8" : (isHovered ? "#ffffff" : "#475569");
-                    opacity = (isSelected || isHovered) ? 1.0 : 0.6;
-                }
-                
-                return {
-                    color: color,
-                    weight: weight,
-                    opacity: opacity,
-                    fillColor: fillColor,
-                    fillOpacity: fillOpacity,
-                    dashArray: dashArray
-                };
+        const LEVEL_LABELS = {
+            province: "provincias",
+            canton: "cantones",
+            parish: "parroquias"
+        };
+
+        const VARIABLE_CONFIGS = {
+            normal: {
+                label: "Límites",
+                levels: ["province", "canton", "parish"]
+            },
+            siniestros_inec_2019: {
+                label: "Siniestros INEC 2019",
+                property: "siniestros_inec_2019",
+                levels: ["province", "canton"],
+                bins: [6, 16, 37, 82],
+                colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
+                format: value => value.toString()
+            },
+            fallecidos_inec_2019: {
+                label: "Fallecidos INEC 2019",
+                property: "fallecidos_inec_2019",
+                levels: ["province", "canton"],
+                bins: [3, 5, 10, 19],
+                colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
+                format: value => value.toString()
+            },
+            tasa_fallecidos_100k: {
+                label: "Tasa por 100k (2019)",
+                property: "tasa_fallecidos_100k",
+                levels: ["province", "canton"],
+                bins: [8.8, 12.6, 19.7, 29.2],
+                colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
+                format: value => value.toFixed(1)
+            },
+            fallecidos_sppat_2016_2021: {
+                label: "Fallecidos SPPAT (16-21)",
+                property: "fallecidos_sppat_2016_2021",
+                levels: ["province", "canton"],
+                bins: [7, 19, 47, 112],
+                colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+                format: value => value.toString()
+            },
+            fallecidos_parroquial: {
+                label: "Fallecidos Parroquial (21-24)",
+                property: "fallecidos_2021_2024",
+                levels: ["parish"],
+                bins: [2, 5, 15, 50],
+                colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+                format: value => value.toString()
             }
+        };
+
+        function getTerritoryLevelForZoom(zoom = map.getZoom()) {
+            if (zoom <= ZOOM_PROVINCIAS_MAX) return "province";
+            if (zoom >= ZOOM_PARROQUIAS_MIN) return "parish";
+            return "canton";
         }
 
-        function getParishStyle(feature, isHovered = false, isSelected = false) {
-            const val = feature.properties.fallecidos_2021_2024;
-            const bins = [2, 5, 15, 50];
-            const colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]; // OrRd
-            
-            let color = "#cbd5e1"; // border color
+        function getEffectiveVariable(level = activeTerritoryLevel) {
+            const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+            return config.levels.includes(level) ? selectedVariable : "normal";
+        }
+
+        function getBoundaryStyle(feature, level, isHovered = false, isSelected = false) {
+            const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
+            let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO;
+            let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
+            let baseWeight = level === "province" ? 1.8 : (level === "parish" ? 0.9 : 1.2);
+            let opacity = isPichincha ? 0.75 : (level === "province" ? 0.35 : 0.2);
+            let fillOpacity = isPichincha ? 0.08 : 0.02;
+
+            if (isSelected) {
+                color = "#38bdf8";
+                opacity = 1.0;
+                baseWeight = level === "province" ? 3.2 : 3.0;
+                fillOpacity = 0.20;
+            } else if (isHovered) {
+                color = isPichincha ? "#38bdf8" : "#cbd5e1";
+                opacity = 1.0;
+                baseWeight = level === "province" ? 2.8 : 2.5;
+                fillOpacity = 0.25;
+            }
+
+            return {
+                color: color,
+                weight: baseWeight,
+                opacity: opacity,
+                fillColor: fillColor,
+                fillOpacity: fillOpacity,
+                dashArray: ''
+            };
+        }
+
+        function getChoroplethStyle(feature, variable, isHovered = false, isSelected = false) {
+            const config = VARIABLE_CONFIGS[variable];
+            const val = feature.properties ? feature.properties[config.property] : null;
+            let color = "#cbd5e1";
             let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
             let opacity = 0.8;
             let fillColor = "#334155";
@@ -1143,10 +1174,10 @@
                 color = "#475569";
             } else {
                 let idx = 0;
-                while (idx < bins.length && val > bins[idx]) {
+                while (idx < config.bins.length && val > config.bins[idx]) {
                     idx++;
                 }
-                fillColor = colors[idx];
+                fillColor = config.colors[idx];
                 color = isSelected ? "#38bdf8" : (isHovered ? "#ffffff" : "#475569");
                 opacity = (isSelected || isHovered) ? 1.0 : 0.6;
             }
@@ -1159,6 +1190,89 @@
                 fillOpacity: fillOpacity,
                 dashArray: dashArray
             };
+        }
+
+        function getTerritoryStyle(feature, level, isHovered = false, isSelected = false) {
+            const effectiveVariable = getEffectiveVariable(level);
+            if (effectiveVariable === "normal") {
+                return getBoundaryStyle(feature, level, isHovered, isSelected);
+            }
+            return getChoroplethStyle(feature, effectiveVariable, isHovered, isSelected);
+        }
+
+        function getProvinceStyle(feature, isHovered = false, isSelected = false) {
+            return getTerritoryStyle(feature, "province", isHovered, isSelected);
+        }
+
+        function getCantonStyle(feature, isHovered = false, isSelected = false) {
+            return getTerritoryStyle(feature, "canton", isHovered, isSelected);
+        }
+
+        function getParishStyle(feature, isHovered = false, isSelected = false) {
+            return getTerritoryStyle(feature, "parish", isHovered, isSelected);
+        }
+
+        function onEachProvinceFeature(feature, layer) {
+            if (feature.properties) {
+                const provincia = feature.properties.DPA_DESPRO || "Desconocido";
+                const codProvincia = feature.properties.DPA_PROVIN || "—";
+                const cantones = feature.properties.cantones_incluidos || "—";
+
+                const popupContent = `
+                    <div class="custom-popup">
+                        <h3>${provincia}</h3>
+                        <p><strong>Nivel:</strong> Provincia</p>
+                        <p><strong>Cantones incluidos:</strong> ${cantones}</p>
+                        <div class="dpa-code">Cód. Provincia: ${codProvincia}</div>
+                    </div>
+                `;
+                layer.bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'custom-leaflet-popup'
+                });
+            }
+
+            layer.on({
+                mouseover: highlightProvince,
+                mouseout: resetProvinceHighlight,
+                click: function(e) {
+                    map.fitBounds(e.target.getBounds());
+                    const prevLayer = selectedProvinceLayer;
+                    selectedProvinceLayer = e.target;
+
+                    if (prevLayer && prevLayer !== e.target) {
+                        provinceLayer.resetStyle(prevLayer);
+                    }
+
+                    e.target.setStyle(getProvinceStyle(e.target.feature, false, true));
+                    updateSidebar(e.target.feature.properties);
+                }
+            });
+        }
+
+        function highlightProvince(e) {
+            const layer = e.target;
+            if (layer !== selectedProvinceLayer) {
+                layer.setStyle(getProvinceStyle(layer.feature, true, false));
+            }
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            updateSidebar(layer.feature.properties);
+            showHoverCard(layer.feature.properties, e);
+        }
+
+        function resetProvinceHighlight(e) {
+            const layer = e.target;
+            if (layer !== selectedProvinceLayer) {
+                provinceLayer.resetStyle(layer);
+            }
+            if (selectedProvinceLayer) {
+                updateSidebar(selectedProvinceLayer.feature.properties);
+            } else {
+                updateSidebar(null);
+            }
+            hideHoverCard();
         }
 
         function onEachParishFeature(feature, layer) {
@@ -1248,12 +1362,15 @@
             container.innerHTML = "";
             let hasItems = false;
             
-            // 1. Límites Cantonales o Coropletas
-            if (cantonLayer && map.hasLayer(cantonLayer)) {
+            // 1. Límites territoriales automáticos o coropletas por nivel
+            const currentLevel = activeTerritoryLevel || getTerritoryLevelForZoom();
+            const effectiveVariable = getEffectiveVariable(currentLevel);
+            if (currentLevel) {
                 hasItems = true;
-                if (selectedVariable === 'normal') {
+                if (effectiveVariable === 'normal') {
+                    const levelTitle = `Límites ${LEVEL_LABELS[currentLevel]}:`;
                     container.innerHTML += `
-                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Límites Cantonales:</div>
+                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${levelTitle}</div>
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_CANTON_PICHINCHA}; height: 8px; width: 12px; border-radius: 2px;"></span>
                             <span>Pichincha</span>
@@ -1264,34 +1381,11 @@
                         </div>
                     `;
                 } else {
-                    let title = "";
-                    let bins = [];
-                    let colors = [];
-                    let formatFunc = (v) => v.toString();
-                    
-                    if (selectedVariable === 'fallecidos_parroquial') {
-                        title = "Fallecidos Parroquial (21-24):";
-                        bins = [2, 5, 15, 50];
-                        colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"];
-                    } else if (selectedVariable === 'siniestros_inec_2019') {
-                        title = "Siniestros INEC 2019:";
-                        bins = [6, 16, 37, 82];
-                        colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
-                    } else if (selectedVariable === 'fallecidos_inec_2019') {
-                        title = "Fallecidos INEC 2019:";
-                        bins = [3, 5, 10, 19];
-                        colors = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
-                    } else if (selectedVariable === 'tasa_fallecidos_100k') {
-                        title = "Tasa por 100k (2019):";
-                        bins = [8.8, 12.6, 19.7, 29.2];
-                        colors = ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"];
-                        formatFunc = (v) => v.toFixed(1);
-                    } else if (selectedVariable === 'fallecidos_sppat_2016_2021') {
-                        title = "Fallecidos SPPAT (16-21):";
-                        bins = [7, 19, 47, 112];
-                        colors = ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"];
-                    }
-                    
+                    const config = VARIABLE_CONFIGS[effectiveVariable];
+                    const title = `${config.label}:`;
+                    const bins = config.bins;
+                    const colors = config.colors;
+                    const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${title}</div>
                     `;
@@ -1303,7 +1397,7 @@
                         } else if (i === bins.length) {
                             label = `> ${formatFunc(bins[bins.length - 1])}`;
                         } else {
-                            label = `${formatFunc(bins[i - 1] + (selectedVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
+                            label = `${formatFunc(bins[i - 1] + (effectiveVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
                         }
                         
                         itemsHtml += `
@@ -1472,6 +1566,141 @@
         map.on('overlayadd', updateLegend);
         map.on('overlayremove', updateLegend);
 
+        function updateMapLevelNote(level = activeTerritoryLevel) {
+            const note = document.getElementById("map-level-note");
+            if (!note || !level) return;
+            const requestedConfig = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+            const effectiveVariable = getEffectiveVariable(level);
+            if (selectedVariable !== "normal" && effectiveVariable === "normal") {
+                note.textContent = `"${requestedConfig.label}" no está disponible en ${LEVEL_LABELS[level]}; se muestran solo límites.`;
+                note.style.display = "block";
+            } else {
+                note.textContent = "";
+                note.style.display = "none";
+            }
+        }
+
+        function getLayerForLevel(level) {
+            if (level === "province") return provinceLayer;
+            if (level === "canton") return cantonLayer;
+            if (level === "parish") return parishLayer;
+            return null;
+        }
+
+        function removeLayerIfPresent(layer) {
+            if (layer && map.hasLayer(layer)) {
+                map.removeLayer(layer);
+            }
+        }
+
+        function refreshTerritoryLayerStyles() {
+            if (provinceLayer) {
+                provinceLayer.eachLayer(layer => {
+                    provinceLayer.resetStyle(layer);
+                });
+            }
+            if (cantonLayer) {
+                cantonLayer.eachLayer(layer => {
+                    cantonLayer.resetStyle(layer);
+                });
+            }
+            if (parishLayer) {
+                parishLayer.eachLayer(layer => {
+                    parishLayer.resetStyle(layer);
+                });
+            }
+        }
+
+        function activateTerritoryLevel(level) {
+            const targetLayer = getLayerForLevel(level);
+            if (!targetLayer) return;
+
+            removeLayerIfPresent(provinceLayer);
+            removeLayerIfPresent(cantonLayer);
+            removeLayerIfPresent(parishLayer);
+
+            targetLayer.addTo(map);
+            activeTerritoryLevel = level;
+            window.__redsaActiveTerritoryLevel = level;
+
+            domParroquiaRow.style.display = level === "parish" ? "flex" : "none";
+            domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
+
+            refreshTerritoryLayerStyles();
+            updateMapLevelNote(level);
+            updateLegend();
+            updateSidebar(null);
+            hideHoverCard();
+        }
+
+        function ensureParishLayer() {
+            if (parishLayer) return Promise.resolve(parishLayer);
+            if (parishLoadPromise) return parishLoadPromise;
+
+            const loader = document.getElementById("loader");
+            if (loader) {
+                document.getElementById("loader-status").textContent = "Descargando límites parroquiales (5.46 MB)...";
+                loader.style.display = "flex";
+            }
+            const parishStart = performance.now();
+
+            parishLoadPromise = fetch(RUTA_PARROQUIAS_RELATIVA)
+                .then(response => {
+                    if (!response.ok) throw new Error("No se pudo cargar el geojson parroquial.");
+                    const tDownloadEnd = performance.now();
+                    const tDownload = ((tDownloadEnd - parishStart) / 1000).toFixed(2);
+                    document.getElementById("diag-download").textContent = `${tDownload}s`;
+                    document.getElementById("loader-status").textContent = "Renderizando 1,040 parroquias...";
+                    return response.json();
+                })
+                .then(data => {
+                    const tRenderStart = performance.now();
+                    parishData = data;
+                    parishLayer = L.geoJSON(parishData, {
+                        style: function(feature) {
+                            const isSelected = selectedParishLayer && selectedParishLayer.feature.properties.DPA_PARROQ === feature.properties.DPA_PARROQ;
+                            return getParishStyle(feature, false, isSelected);
+                        },
+                        onEachFeature: onEachParishFeature
+                    });
+
+                    const tRenderEnd = performance.now();
+                    const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
+                    const tTotal = ((tRenderEnd - parishStart) / 1000).toFixed(2);
+                    document.getElementById("diag-render").textContent = `${tRender}s`;
+                    document.getElementById("diag-total").textContent = `${tTotal}s`;
+                    document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
+                    if (loader) loader.style.display = "none";
+                    return parishLayer;
+                })
+                .catch(err => {
+                    parishLoadPromise = null;
+                    console.error(err);
+                    document.getElementById("loader-status").textContent = "Error al cargar parroquias: " + err.message;
+                    setTimeout(() => { if (loader) loader.style.display = "none"; }, 3000);
+                    throw err;
+                });
+
+            return parishLoadPromise;
+        }
+
+        function syncTerritoryLayerToZoom() {
+            const desiredLevel = getTerritoryLevelForZoom();
+            if (desiredLevel === "parish" && !parishLayer) {
+                ensureParishLayer()
+                    .then(() => {
+                        if (getTerritoryLevelForZoom() === "parish") {
+                            activateTerritoryLevel("parish");
+                        } else {
+                            syncTerritoryLayerToZoom();
+                        }
+                    })
+                    .catch(err => console.error("No se pudo sincronizar capa parroquial:", err));
+                return;
+            }
+            activateTerritoryLevel(desiredLevel);
+        }
+
         // Elementos del DOM
         const domCanton = document.getElementById("info-canton");
         const domProvincia = document.getElementById("info-provincia");
@@ -1612,7 +1841,8 @@
             }
             
             // Caso 2: Cantón
-            title.textContent = `${props.DPA_DESCAN} (Cantón)`;
+            const isProvinceProfile = props.nivel_agregacion === "provincia";
+            title.textContent = isProvinceProfile ? `${props.DPA_DESPRO} (Provincia)` : `${props.DPA_DESCAN} (Cantón)`;
             
             const edg = props.fallecidos_detallado;
             let html = `<div class="perfil-card-grid">`;
@@ -1707,7 +1937,7 @@
                         </div>
                     `;
                 }
-                
+
                 const condObj = props.sppat_por_condicion || {};
                 const total_cond = Object.values(condObj).reduce((a,b) => a+b, 0);
                 const tipoObj = props.sppat_por_tipo_accidente || {};
@@ -1948,7 +2178,8 @@
             }
 
             if (!props) {
-                domCanton.textContent = "Pasa el cursor o haz clic en un cantón";
+                const promptLevel = activeTerritoryLevel === "province" ? "una provincia" : (activeTerritoryLevel === "parish" ? "una parroquia" : "un cantón");
+                domCanton.textContent = `Pasa el cursor o haz clic en ${promptLevel}`;
                 domCanton.classList.add("empty");
                 domProvincia.textContent = "—";
                 domProvincia.classList.add("empty");
@@ -1978,15 +2209,22 @@
                 }
                 chartContainer.style.display = "none";
                 chartEmptyMsg.style.display = "block";
-                chartEmptyMsg.textContent = "Pasa el cursor o haz clic en un cantón para ver la tendencia";
+                chartEmptyMsg.textContent = `Pasa el cursor o haz clic en ${promptLevel} para ver la tendencia`;
                 return;
             }
+
+            const isProvinceProps = props.nivel_agregacion === "provincia";
             
-            domCanton.textContent = props.DPA_DESCAN || "Sin Nombre";
+            domCanton.textContent = isProvinceProps ? `${props.DPA_DESPRO} (Provincia)` : (props.DPA_DESCAN || "Sin Nombre");
             domCanton.classList.remove("empty");
             
             domProvincia.textContent = props.DPA_DESPRO || "Sin Nombre";
             domProvincia.classList.remove("empty");
+
+            if (isProvinceProps && domWarningBox) {
+                domWarningBox.textContent = "Agregado provincial derivado de cantones. Algunos años pueden tener cobertura parcial; ver metadatos cobertura_datos en provincias_wgs84.geojson.";
+                domWarningBox.style.display = "block";
+            }
             
             const poblacion = props.poblacion_2024;
             domPoblacion.textContent = formatNumber(poblacion);
@@ -2025,7 +2263,7 @@
                 domTasaFallecidos.classList.add("empty");
             }
             
-            domCodCanton.textContent = props.DPA_CANTON || "—";
+            domCodCanton.textContent = isProvinceProps ? "—" : (props.DPA_CANTON || "—");
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
 
             currentProps = props;
@@ -2276,31 +2514,42 @@
         }
 
         // Iniciar Fetch de datos y medición
-        document.getElementById("loader-status").textContent = "Descargando límites cantonales y estadísticas (4.75 MB)...";
+        document.getElementById("loader-status").textContent = "Descargando límites provinciales y cantonales...";
         
-        fetch(RUTA_GEOJSON_RELATIVA)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("No se pudo cargar el archivo GeoJSON.");
-                }
+        Promise.all([
+            fetch(RUTA_PROVINCIAS_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON provincial.");
+                return response.json();
+            }),
+            fetch(RUTA_CANTONES_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON cantonal.");
+                return response.json();
+            })
+        ])
+            .then(([provinces, cantons]) => {
                 const tDownloadEnd = performance.now();
                 const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
                 document.getElementById("diag-download").textContent = `${tDownload}s`;
-                
-                document.getElementById("loader-status").textContent = "Procesando y renderizando polígonos...";
-                return response.json();
-            })
-            .then(data => {
+                document.getElementById("loader-status").textContent = "Procesando y renderizando límites territoriales...";
                 const tRenderStart = performance.now();
+                provinceData = provinces;
+                cantonData = cantons;
+
+                provinceLayer = L.geoJSON(provinceData, {
+                    style: function(feature) {
+                        const isSelected = selectedProvinceLayer && selectedProvinceLayer.feature.properties.DPA_PROVIN === feature.properties.DPA_PROVIN;
+                        return getProvinceStyle(feature, false, isSelected);
+                    },
+                    onEachFeature: onEachProvinceFeature
+                });
                 
-                // Crear y añadir capa GeoJSON al mapa con estilo dinámico
-                cantonLayer = L.geoJSON(data, {
+                cantonLayer = L.geoJSON(cantonData, {
                     style: function(feature) {
                         const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
                         return getCantonStyle(feature, false, isSelected);
                     },
                     onEachFeature: onEachFeature
-                }).addTo(map);
+                });
 
                 const tRenderEnd = performance.now();
                 const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
@@ -2308,15 +2557,15 @@
                 
                 document.getElementById("diag-render").textContent = `${tRender}s`;
                 document.getElementById("diag-total").textContent = `${tTotal}s`;
-                document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
+                document.getElementById("diag-features").textContent = `${provinces.features ? provinces.features.length : 0} prov. / ${cantons.features ? cantons.features.length : 0} cant.`;
 
-                overlayMaps["Límites Cantonales"] = cantonLayer;
                 layerControl = L.control.layers(baseMaps, overlayMaps, {
                     position: 'topright',
                     collapsed: false
                 }).addTo(map);
 
-                updateLegend();
+                syncTerritoryLayerToZoom();
+                map.on('zoomend', syncTerritoryLayerToZoom);
 
                 // Manejo de Hash Routing en carga inicial y cambios
                 const handleHash = () => {
@@ -2658,12 +2907,15 @@
                                 <option value="fallecidos_sppat_2016_2021">Fallecidos SPPAT (16-21)</option>
                                 <option value="fallecidos_parroquial">Fallecidos Parroquial (INEC 2021-2024)</option>
                             </select>
+                            <div id="map-level-note" class="map-level-note"></div>
                         `;
                         L.DomEvent.disableClickPropagation(div);
                         return div;
                     }
                 });
                 new MapControl().addTo(map);
+                updateMapLevelNote(activeTerritoryLevel);
+                updateLegend();
                 
                 document.addEventListener("change", (e) => {
                     if (e.target && e.target.id === "map-variable-select") {
@@ -2673,103 +2925,7 @@
                 });
 
                 function handleVariableChange() {
-                    if (selectedVariable === 'fallecidos_parroquial') {
-                        if (cantonLayer && map.hasLayer(cantonLayer)) {
-                            map.removeLayer(cantonLayer);
-                        }
-                        
-                        domParroquiaRow.style.display = "flex";
-                        domFallecidosParroquiaRow.style.display = "flex";
-                        
-                        if (parishLayer) {
-                            if (!map.hasLayer(parishLayer)) {
-                                parishLayer.addTo(map);
-                            }
-                            parishLayer.eachLayer(layer => {
-                                parishLayer.resetStyle(layer);
-                            });
-                            updateLegend();
-                            updateSidebar(null);
-                        } else {
-                            const loader = document.getElementById("loader");
-                            if (loader) {
-                                document.getElementById("loader-status").textContent = "Descargando límites parroquiales (5.46 MB)...";
-                                loader.style.display = "flex";
-                            }
-                            
-                            const tStart = performance.now();
-                            
-                            fetch("data/parroquias_wgs84.geojson")
-                                .then(response => {
-                                    if (!response.ok) throw new Error("No se pudo cargar el geojson parroquial.");
-                                    const tDownloadEnd = performance.now();
-                                    const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
-                                    document.getElementById("diag-download").textContent = `${tDownload}s`;
-                                    document.getElementById("loader-status").textContent = "Renderizando 1,040 parroquias...";
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    const tRenderStart = performance.now();
-                                    parishData = data;
-                                    
-                                    parishLayer = L.geoJSON(parishData, {
-                                        style: function(feature) {
-                                            const isSelected = selectedParishLayer && selectedParishLayer.feature.properties.DPA_PARROQ === feature.properties.DPA_PARROQ;
-                                            return getParishStyle(feature, false, isSelected);
-                                        },
-                                        onEachFeature: onEachParishFeature
-                                    });
-                                    
-                                    const tRenderEnd = performance.now();
-                                    const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
-                                    const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
-                                    
-                                    document.getElementById("diag-render").textContent = `${tRender}s`;
-                                    document.getElementById("diag-total").textContent = `${tTotal}s`;
-                                    document.getElementById("diag-features").textContent = data.features ? data.features.length : 0;
-                                    
-                                    if (loader) loader.style.display = "none";
-                                    
-                                    parishLayer.addTo(map);
-                                    
-                                    if (layerControl) {
-                                        layerControl.addOverlay(parishLayer, "Límites Parroquiales");
-                                    }
-                                    
-                                    updateLegend();
-                                    updateSidebar(null);
-                                })
-                                .catch(err => {
-                                    console.error(err);
-                                    document.getElementById("loader-status").textContent = "Error al cargar parroquias: " + err.message;
-                                    setTimeout(() => { if (loader) loader.style.display = "none"; }, 3000);
-                                });
-                        }
-                    } else {
-                        if (parishLayer && map.hasLayer(parishLayer)) {
-                            map.removeLayer(parishLayer);
-                        }
-                        
-                        domParroquiaRow.style.display = "none";
-                        domFallecidosParroquiaRow.style.display = "none";
-                        
-                        if (cantonLayer && !map.hasLayer(cantonLayer)) {
-                            cantonLayer.addTo(map);
-                        }
-                        
-                        if (cantonLayer) {
-                            cantonLayer.eachLayer(layer => {
-                                cantonLayer.resetStyle(layer);
-                            });
-                        }
-                        
-                        updateLegend();
-                        if (selectedLayer) {
-                            updateSidebar(selectedLayer.feature.properties);
-                        } else {
-                            updateSidebar(null);
-                        }
-                    }
+                    syncTerritoryLayerToZoom();
                 }
 
                 // profile-accordion-btn listener removed

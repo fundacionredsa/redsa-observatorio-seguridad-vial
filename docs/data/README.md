@@ -2,6 +2,8 @@
 
 Archivo generado: `cantones_wgs84.geojson`
 
+Archivo derivado adicional: `provincias_wgs84.geojson`
+
 ## Fuente
 
 - Dataset original: Organizacion Territorial Cantonal
@@ -31,6 +33,30 @@ npx --yes mapshaper "<SHAPEFILE_ORIGEN>" encoding=utf8 -filter-fields DPA_CANTON
 - `DPA_DESCAN`
 - `DPA_PROVIN`
 - `DPA_DESPRO`
+
+## Capa Provincial Derivada
+
+`provincias_wgs84.geojson` fue generado disolviendo `cantones_wgs84.geojson` por `DPA_PROVIN`, sin incorporar un shapefile nuevo. La capa contiene 24 provincias oficiales (`01` a `24`) y excluye los grupos no provinciales presentes en la fuente cantonal (`90` e `ISLA`).
+
+Atributos agregados por suma provincial:
+
+- `poblacion_por_anio`
+- `fallecidos_historico`
+- `siniestros_historico`
+- `fallecidos_sppat_2016_2021`
+- `siniestros_inec_2019`
+- `lesionados_inec_2019`
+- `fallecidos_inec_2019`
+- desgloses `sppat_*`, `inec_*` y `fallecidos_detallado`
+
+La tasa `tasa_fallecidos_100k` se recalcula a nivel provincial con numerador y denominador agregados, no promediando tasas cantonales. Los años con cantones sin dato no se imputan como cero: el archivo declara cobertura por campo y año en `properties.cobertura_datos`, con `estado` igual a `completo`, `parcial` o `sin_dato`.
+
+Validacion de `provincias_wgs84.geojson`:
+
+- Features salida: 24
+- CRS: `EPSG:4326`
+- Geometrias validas: 24 / 24
+- Tamano salida: 2,253,607 bytes (2.15 MiB)
 
 ## Validacion
 
