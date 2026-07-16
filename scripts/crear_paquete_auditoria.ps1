@@ -122,25 +122,25 @@ if ($pipelineVerifyExitCode -ne 0) { throw "Bundle de pipelines invalido:`n$pipe
 $restore = @"
 # Restaurar los repositorios
 
-```powershell
+~~~powershell
 git clone redsa-observatorio-seguridad-vial.bundle redsa-observatorio-seguridad-vial
 git clone redsa-observatorio-pipelines.bundle redsa-observatorio-pipelines
-```
+~~~
 
 Los bundles preservan ramas, etiquetas e historial disponible. Verificacion al
 crear esta entrega:
 
 ## Geoportal
 
-```text
+~~~text
 $geoVerify
-```
+~~~
 
 ## Pipelines
 
-```text
+~~~text
 $pipelineVerify
-```
+~~~
 "@
 $restore | Set-Content -LiteralPath (Join-Path $BundlesDir 'RESTAURAR.md') -Encoding utf8
 
@@ -212,6 +212,16 @@ $manifest = foreach ($file in Get-ChildItem -LiteralPath $OutputRoot -File -Recu
     }
 }
 $manifest | Export-Csv -LiteralPath (Join-Path $ManifestDir 'MANIFEST_SHA256.csv') -NoTypeInformation -Encoding utf8
+
+foreach ($requiredOutput in @(
+    (Join-Path $OutputRoot 'README.md'),
+    (Join-Path $BundlesDir 'RESTAURAR.md'),
+    (Join-Path $ManifestDir 'ENTORNO_EJECUCION.txt')
+)) {
+    if (-not (Test-Path -LiteralPath $requiredOutput) -or (Get-Item -LiteralPath $requiredOutput).Length -lt 100) {
+        throw "Archivo de orientacion ausente o vacio: $requiredOutput"
+    }
+}
 
 Write-Host "Paquete creado: $OutputRoot"
 Write-Host "Fuentes inventariadas: $($inventory.Count)"
