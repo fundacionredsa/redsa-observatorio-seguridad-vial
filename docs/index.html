@@ -46,6 +46,8 @@
             --ui-padding: 20px;
             --ui-gap: 20px;
             --floating-panel-z: 1100;
+            --perfil-card-width: 720px;
+            --perfil-card-max-height: min(300px, calc(100vh - 120px));
         }
 
         * {
@@ -600,13 +602,21 @@
 
         /* Horizontal Progress Bars */
         .profile-bar-row {
-            margin-bottom: 8px;
+            margin-bottom: 7px;
         }
         .profile-bar-labels {
             display: flex;
             justify-content: space-between;
+            gap: 8px;
             font-size: 0.72rem;
             color: var(--text-secondary);
+        }
+        .profile-bar-labels span:first-child {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .profile-bar-labels span:last-child {
+            flex-shrink: 0;
         }
         .profile-bar-wrapper {
             width: 100%;
@@ -643,10 +653,11 @@
             position: fixed;
             bottom: 0;
             left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
-            right: 0;
+            right: auto;
+            width: var(--perfil-card-width);
             z-index: var(--floating-panel-z);
             pointer-events: auto;
-            max-height: 300px;
+            max-height: var(--perfil-card-max-height);
             overflow-y: auto;
             padding: 14px 18px;
             border-radius: 8px 8px 0 0;
@@ -654,6 +665,60 @@
             border-bottom: 0;
             background: rgba(15, 23, 42, 0.95);
             box-shadow: 0 -10px 30px rgba(0,0,0,0.45);
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+        }
+
+        .perfil-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px 16px;
+            align-items: start;
+        }
+
+        .perfil-card-section {
+            min-width: 0;
+            padding-right: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .perfil-card-section:last-child {
+            border-right: 0;
+        }
+
+        .profile-card-source-title,
+        .profile-section-title {
+            color: var(--accent-hover);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .profile-card-source-title {
+            grid-column: 1 / -1;
+            font-size: 0.7rem;
+            padding-bottom: 2px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-section-title {
+            font-size: 0.66rem;
+            margin-bottom: 6px;
+        }
+
+        .profile-section-subtitle {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .profile-note {
+            font-size: 0.62rem;
+            color: #fbbf24;
+            line-height: 1.3;
+            margin-top: 10px;
+            border-top: 1px dashed rgba(251,191,36,0.2);
+            padding-top: 6px;
         }
 
         @media (max-width: 768px) {
@@ -666,7 +731,12 @@
             .perfil-fallecidos-card {
                 left: 0;
                 right: 0;
-                max-height: 45vh;
+                width: var(--perfil-card-width);
+                max-height: var(--perfil-card-max-height);
+            }
+
+            .perfil-card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
         }
     </style>
@@ -1395,6 +1465,7 @@
             }
             
             panel.style.display = hasItems ? "block" : "none";
+            updateHoverCardLayout();
         }
 
         // Registrar listeners para actualización de leyenda
@@ -1454,6 +1525,61 @@
             `;
         }
 
+        function isVisibleElement(el) {
+            if (!el) return false;
+            const style = window.getComputedStyle(el);
+            const rect = el.getBoundingClientRect();
+            return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+        }
+
+        function updateHoverCardLayout() {
+            const card = document.getElementById("demographic-hover-card");
+            if (!card || card.style.display === "none") return;
+
+            const root = document.documentElement;
+            const safetyMargin = 16;
+            const minUsableWidth = 320;
+            const compactPreferredWidth = 720;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const legend = document.querySelector(".legend-panel");
+            const selector = document.querySelector(".map-selector-control");
+
+            card.style.bottom = "0px";
+            card.style.width = "";
+
+            const cardLeft = card.getBoundingClientRect().left;
+            const legendVisible = isVisibleElement(legend);
+            const legendRect = legendVisible ? legend.getBoundingClientRect() : null;
+            const selectorVisible = isVisibleElement(selector);
+            const selectorRect = selectorVisible ? selector.getBoundingClientRect() : null;
+
+            let bottomOffset = 0;
+            let reservedLegendWidth = 0;
+
+            if (legendVisible) {
+                const widthBesideLegend = viewportWidth - cardLeft - legendRect.width - safetyMargin;
+                if (widthBesideLegend >= minUsableWidth) {
+                    reservedLegendWidth = legendRect.width + safetyMargin;
+                } else {
+                    bottomOffset = Math.max(0, viewportHeight - legendRect.top + safetyMargin);
+                }
+            }
+
+            const availableWidth = Math.max(
+                180,
+                viewportWidth - cardLeft - reservedLegendWidth - safetyMargin
+            );
+            const width = Math.floor(Math.min(compactPreferredWidth, availableWidth));
+            const selectorBottom = selectorVisible ? selectorRect.bottom : 0;
+            const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
+            const maxHeight = Math.floor(Math.max(140, Math.min(300, availableHeight)));
+
+            root.style.setProperty("--perfil-card-width", `${width}px`);
+            root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
+            card.style.bottom = `${Math.floor(bottomOffset)}px`;
+        }
+
         // --- LÓGICA DE TARJETA FLOTANTE (HOVER CARD) ---
         let hoverCardTimeout = null;
 
@@ -1466,7 +1592,7 @@
             
             if (!card || !body || !title) return;
             
-            // Fixed lower panel; position is controlled by CSS so it does not follow the cursor.
+            // Fixed lower panel; dynamic sizing prevents overlap with map controls.
             card.style.display = "block";
             
             // Caso 1: Parroquia
@@ -1481,6 +1607,7 @@
                     </div>
                 `;
                 body.innerHTML = html;
+                updateHoverCardLayout();
                 return;
             }
             
@@ -1488,10 +1615,10 @@
             title.textContent = `${props.DPA_DESCAN} (Cantón)`;
             
             const edg = props.fallecidos_detallado;
-            let html = "";
+            let html = `<div class="perfil-card-grid">`;
             
             // 1. INEC EDG Profile
-            html += `<div style="font-size: 0.7rem; color: var(--accent-hover); font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; text-transform: uppercase;">INEC EDG (Perfil Demográfico)</div>`;
+            html += `<div class="profile-card-source-title">INEC EDG (Perfil Demográfico)</div>`;
             
             if (edg) {
                 const total_edg = Object.values(edg.sexo).reduce((a,b) => a+b, 0);
@@ -1499,14 +1626,16 @@
                     const m_pct = (edg.sexo.Hombre / total_edg) * 100;
                     const f_pct = (edg.sexo.Mujer / total_edg) * 100;
                     html += `
-                        <div style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 2px;">Género (Total: ${total_edg}):</div>
-                        <div class="gender-bar-wrapper" style="margin-bottom: 6px;">
-                            ${edg.sexo.Hombre > 0 ? `<div class="gender-segment male" style="width: ${m_pct}%;">H: ${m_pct.toFixed(0)}%</div>` : ''}
-                            ${edg.sexo.Mujer > 0 ? `<div class="gender-segment female" style="width: ${f_pct}%;">M: ${f_pct.toFixed(0)}%</div>` : ''}
-                        </div>
+                        <div class="perfil-card-section">
+                            <div class="profile-section-title">Género y usuario vial</div>
+                            <div class="profile-section-subtitle">Género (Total: ${total_edg}):</div>
+                            <div class="gender-bar-wrapper">
+                                ${edg.sexo.Hombre > 0 ? `<div class="gender-segment male" style="width: ${m_pct}%;">H: ${m_pct.toFixed(0)}%</div>` : ''}
+                                ${edg.sexo.Mujer > 0 ? `<div class="gender-segment female" style="width: ${f_pct}%;">M: ${f_pct.toFixed(0)}%</div>` : ''}
+                            </div>
+                            <div class="profile-section-subtitle">Usuario Vial:</div>
                     `;
                     
-                    html += `<div style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 2px;">Usuario Vial:</div>`;
                     const userColors = {
                         peaton: "#eab308",
                         ciclista: "#22c55e",
@@ -1528,8 +1657,12 @@
                             html += defProgressBar(userLabels[k], count, pct, userColors[k]);
                         }
                     });
+                    html += `</div>`;
                     
-                    html += `<div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 6px; margin-bottom: 2px;">Grupos de Edad:</div>`;
+                    html += `
+                        <div class="perfil-card-section">
+                            <div class="profile-section-title">Grupos de edad</div>
+                    `;
                     const ageLabels = {
                         '0-14': "Niños (0-14 años)",
                         '15-29': "Jóvenes (15-29)",
@@ -1544,16 +1677,17 @@
                             html += defProgressBar(ageLabels[k], count, pct, "#cbd5e1");
                         }
                     });
+                    html += `</div>`;
                 } else {
-                    html += `<div style="font-size: 0.68rem; color: var(--text-muted); padding: 4px 0;">Sin registros en INEC EDG</div>`;
+                    html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">Sin registros en INEC EDG</div>`;
                 }
             } else {
-                html += `<div style="font-size: 0.68rem; color: var(--text-muted); padding: 4px 0;">Sin datos demográficos en INEC EDG</div>`;
+                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">Sin datos demográficos en INEC EDG</div>`;
             }
             
             // 2. SPPAT Profile
             const sppat_t = props.fallecidos_sppat_2016_2021;
-            html += `<div style="font-size: 0.7rem; color: var(--accent-hover); font-weight: 700; margin-top: 10px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; text-transform: uppercase;">SPPAT (Reclamaciones 16-21)</div>`;
+            html += `<div class="profile-card-source-title">SPPAT (Reclamaciones 16-21)</div>`;
             
             if (sppat_t && props.sppat_por_sexo) {
                 const s_m_count = props.sppat_por_sexo.MASCULINO || 0;
@@ -1563,52 +1697,63 @@
                     const sm_pct = (s_m_count / s_total_sex) * 100;
                     const sf_pct = (s_f_count / s_total_sex) * 100;
                     html += `
-                        <div style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 2px;">Género (Total: ${s_total_sex}):</div>
-                        <div class="gender-bar-wrapper" style="margin-bottom: 6px;">
-                            ${s_m_count > 0 ? `<div class="gender-segment male" style="width: ${sm_pct}%;">Masc: ${sm_pct.toFixed(0)}%</div>` : ''}
-                            ${s_f_count > 0 ? `<div class="gender-segment female" style="width: ${sf_pct}%;">Fem: ${sf_pct.toFixed(0)}%</div>` : ''}
+                        <div class="perfil-card-section">
+                            <div class="profile-section-title">Género SPPAT</div>
+                            <div class="profile-section-subtitle">Género (Total: ${s_total_sex}):</div>
+                            <div class="gender-bar-wrapper">
+                                ${s_m_count > 0 ? `<div class="gender-segment male" style="width: ${sm_pct}%;">Masc: ${sm_pct.toFixed(0)}%</div>` : ''}
+                                ${s_f_count > 0 ? `<div class="gender-segment female" style="width: ${sf_pct}%;">Fem: ${sf_pct.toFixed(0)}%</div>` : ''}
+                            </div>
                         </div>
                     `;
                 }
                 
                 const condObj = props.sppat_por_condicion || {};
                 const total_cond = Object.values(condObj).reduce((a,b) => a+b, 0);
-                if (total_cond > 0) {
-                    html += `<div style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 2px;">Condición de la Víctima:</div>`;
-                    const condColors = {
-                        "PEATÓN": "#eab308",
-                        "OCUPANTE": "#38bdf8",
-                        "BICICLETA": "#22c55e",
-                        "DESCONOCIDO": "#94a3b8"
-                    };
-                    Object.keys(condObj).forEach(k => {
-                        const count = condObj[k];
-                        const pct = (count / total_cond) * 100;
-                        html += defProgressBar(k, count, pct, condColors[k] || "#94a3b8");
-                    });
-                }
-                
                 const tipoObj = props.sppat_por_tipo_accidente || {};
                 const total_tipo = Object.values(tipoObj).reduce((a,b) => a+b, 0);
-                if (total_tipo > 0) {
-                    html += `<div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 6px; margin-bottom: 2px;">Tipo de Accidente:</div>`;
-                    Object.keys(tipoObj).forEach(k => {
-                        const count = tipoObj[k];
-                        const pct = (count / total_tipo) * 100;
-                        html += defProgressBar(k, count, pct, "#a855f7");
-                    });
+                if (total_cond > 0 || total_tipo > 0) {
+                    html += `
+                        <div class="perfil-card-section">
+                            <div class="profile-section-title">Condición / tipo accidente</div>
+                    `;
+                    if (total_cond > 0) {
+                        html += `<div class="profile-section-subtitle">Condición de la Víctima:</div>`;
+                        const condColors = {
+                            "PEATÓN": "#eab308",
+                            "OCUPANTE": "#38bdf8",
+                            "BICICLETA": "#22c55e",
+                            "DESCONOCIDO": "#94a3b8"
+                        };
+                        Object.keys(condObj).forEach(k => {
+                            const count = condObj[k];
+                            const pct = (count / total_cond) * 100;
+                            html += defProgressBar(k, count, pct, condColors[k] || "#94a3b8");
+                        });
+                    }
+                    if (total_tipo > 0) {
+                        html += `<div class="profile-section-subtitle" style="margin-top: 6px;">Tipo de Accidente:</div>`;
+                        Object.keys(tipoObj).forEach(k => {
+                            const count = tipoObj[k];
+                            const pct = (count / total_tipo) * 100;
+                            html += defProgressBar(k, count, pct, "#a855f7");
+                        });
+                    }
+                    html += `</div>`;
                 }
             } else {
-                html += `<div style="font-size: 0.68rem; color: var(--text-muted); padding: 4px 0;">Sin registros en SPPAT</div>`;
+                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">Sin registros en SPPAT</div>`;
             }
             
             html += `
-                <div style="font-size: 0.62rem; color: #fbbf24; line-height: 1.3; margin-top: 10px; border-top: 1px dashed rgba(251,191,36,0.2); padding-top: 6px;">
+                <div class="profile-note" style="grid-column: 1 / -1;">
                     Dato agregado 2020-2024, desagregación por año pendiente
+                </div>
                 </div>
             `;
             
             body.innerHTML = html;
+            updateHoverCardLayout();
         }
 
         function hideHoverCard() {
@@ -1629,6 +1774,7 @@
                         hoverCard.style.display = "none";
                     }, 300);
                 });
+                window.addEventListener("resize", updateHoverCardLayout);
             }
         });
 
