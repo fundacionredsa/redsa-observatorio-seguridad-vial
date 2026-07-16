@@ -4,6 +4,10 @@ Geoportal auditable del Observatorio de Seguridad Vial y Movilidad Sostenible de
 Fundacion REDSA. Publica agregados territoriales de fuentes oficiales y capas
 abiertas de movilidad, sin datos personales de victimas.
 
+La vista inicial nacional permite buscar un canton, leer su tendencia y
+compararlo con la mediana cantonal. El panel `Datos y capas` conserva las
+variables, anos, infraestructura, metodologia y descargas para uso tecnico.
+
 - Sitio: https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/
 - Estado documentado: 2026-07-16.
 - Documentacion: [guia por rol](documentacion/README.md).
@@ -13,6 +17,7 @@ abiertas de movilidad, sin datos personales de victimas.
 - Ingenieria: [arquitectura](documentacion/ARQUITECTURA.md),
   [ADR](documentacion/adr/README.md), [despliegue](documentacion/DESPLIEGUE_Y_OPERACION.md)
   y [problemas conocidos](documentacion/PROBLEMAS_CONOCIDOS.md).
+- Evidencia visual: [rediseno nacional antes/despues](documentacion/EVIDENCIA_REDISENO_NACIONAL.md).
 
 ## Inicio local
 

@@ -31,7 +31,9 @@ flowchart LR
     HOTG[hotspots_cantonales.geojson]
     OSMG[capas OSM nacionales GeoJSON]
     MAPG[Mapillary Pichincha GeoJSON]
-    WEB[docs/index.html]
+    WEB[docs/index.html / motor cartografico]
+    REG[geoportal-registry.js / variables y capas]
+    UX[geoportal-experience.js / experiencia ciudadana]
   end
   CONALI --> BASE --> CANT
   SIN --> BASE
@@ -52,6 +54,8 @@ flowchart LR
   HOTG --> WEB
   OSMG --> WEB
   MAPG --> WEB
+  REG --> WEB
+  UX --> WEB
   WEB --> PAGES[GitHub Pages]
 ```
 
@@ -72,6 +76,26 @@ flowchart LR
   la frontera hacia el repositorio publico.
 - GitHub Pages sirve archivos estaticos. No hay backend, base de datos ni
   autenticacion en el geoportal actual.
+
+## Arquitectura frontend
+
+La pagina usa divulgacion progresiva: la vista publica responde primero por un
+canton y el panel `Datos y capas` concentra la operacion tecnica. No existe un
+modo de datos alternativo: ambos consumen los mismos GeoJSON y el mismo estado
+temporal.
+
+- `docs/assets/js/geoportal-registry.js` es la fuente declarativa para variables,
+  capas, simbologia, popups y vista inicial.
+- `docs/assets/js/geoportal-experience.js` resuelve busqueda, resumen ciudadano,
+  comparacion, compartir y descarga CSV.
+- `docs/assets/css/geoportal-experience.css` implementa paneles y drawers sobre
+  la base visual heredada.
+- `docs/index.html` conserva Leaflet, la agregacion por zoom, los graficos y los
+  popovers. Ya no se edita para registrar una nueva variable o capa.
+
+La vista inicial encuadra Ecuador continental, muestra siniestros 2024 y deja
+todas las capas de infraestructura apagadas. Los tres niveles territoriales
+siguen cambiando por zoom.
 
 ## Orden reproducible
 

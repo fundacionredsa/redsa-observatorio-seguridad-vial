@@ -15,6 +15,61 @@ test("carga contratos territoriales y atribuciones", async ({ page }) => {
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC 2014");
 });
 
+test("abre como observatorio nacional con siniestros y sin infraestructura", async ({ page }) => {
+  await loadPortal(page);
+  const state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.level).toBe("province");
+  expect(state.selectedVariable).toBe("siniestros_inec_2019");
+  expect(state.selectedYear).toBe(2024);
+  expect(state.variableCount).toBeGreaterThanOrEqual(10);
+  expect(state.infrastructureLayerCount).toBeGreaterThanOrEqual(10);
+  expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+  await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
+  await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
+  await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
+  await expect(page.locator(".legend-panel")).not.toContainText("Resto del país");
+});
+
+test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async ({ page }) => {
+  await loadPortal(page);
+  const search = page.locator("#territory-search-input");
+  await search.fill("Quito — Pichincha");
+  await search.press("Enter");
+  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#citizen-summary")).toContainText("accidentes reportados");
+  await expect(page.locator("#citizen-summary")).toContainText("mediana de los cantones");
+  const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
+  expect(experience.selectedCanton).toBe("1701");
+  await expect(page.locator("#share-view-button")).toBeEnabled();
+  await expect(page.locator("#download-summary-button")).toBeEnabled();
+});
+
+test("modo tecnico conserva variables, capas, metodologia y estado todo apagado", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "El drawer movil se valida en la prueba responsive.");
+  await loadPortal(page);
+  await page.locator("#technical-panel-toggle").click();
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#map-variable-select option")).toHaveCount(10);
+  await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
+  await expect(page.locator("#technical-drawer")).toContainText("Metodología y descargas");
+
+  await page.evaluate(() => {
+    window.__redsaAudit.setOverlay("Ciclovías", true);
+    window.__redsaAudit.setOverlay("Mapillary (cobertura parcial)", true);
+  });
+  await page.locator("#clear-infrastructure-button").click();
+  let state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
+  await page.locator("#clean-map-button").click();
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.selectedVariable).toBe("normal");
+  expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+});
+
 test("cambia una sola capa territorial por zoom", async ({ page }) => {
   await loadPortal(page);
   const province = await page.evaluate(() => window.__redsaAudit.setZoom(6));
@@ -99,7 +154,7 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
 test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await loadPortal(page);
   const description = page.locator("#map-variable-description");
-  await expect(description).toHaveText("Solo muestra los límites administrativos, sin datos de color.");
+  await expect(description).toHaveText("Número de accidentes de tránsito reportados oficialmente en esta zona.");
 
   const descriptions = {
     siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
@@ -131,7 +186,7 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
-  await page.mouse.move(10, 10);
+  await page.locator("#citizen-panel").hover();
   await page.waitForTimeout(400);
   await expect(card).toBeVisible();
   if ((page.viewportSize()?.width || 0) > 768) {
@@ -194,7 +249,7 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
       }
       return {
         sidebar: box(".sidebar"),
-        layers: box(".leaflet-control-layers"),
+        layers: box(".technical-drawer"),
         mapSelector: box(".map-selector-control"),
         sidebarButton: box("#mobile-sidebar-toggle"),
         layersButton: box("#mobile-layers-toggle")
@@ -204,7 +259,7 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
     expect(closed.sidebar.inViewport).toBeFalsy();
     expect(closed.layers.inViewport).toBeFalsy();
     expect(closed.layers.pointerEvents).toBe("none");
-    expect(closed.mapSelector.inViewport).toBeTruthy();
+    expect(closed.mapSelector.inViewport).toBeFalsy();
     expect(closed.sidebarButton.height).toBeGreaterThanOrEqual(44);
     expect(closed.layersButton.height).toBeGreaterThanOrEqual(44);
 
@@ -234,13 +289,13 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
     await page.locator("#mobile-layers-toggle").click();
     await page.waitForTimeout(300);
     const layersOpen = await page.evaluate(() => {
-      const layers = document.querySelector(".leaflet-control-layers").getBoundingClientRect();
-      const close = document.querySelector(".mobile-layer-close").getBoundingClientRect();
+      const layers = document.querySelector(".technical-drawer").getBoundingClientRect();
+      const close = document.querySelector("#technical-drawer-close").getBoundingClientRect();
       return {
         bodyClass: document.body.className,
         layers: { left: layers.left, right: layers.right, top: layers.top, bottom: layers.bottom, width: layers.width, height: layers.height },
         close: { width: close.width, height: close.height },
-        text: document.querySelector(".leaflet-control-layers").innerText
+        text: document.querySelector(".technical-drawer").innerText
       };
     });
     expect(layersOpen.bodyClass).toContain("mobile-layers-open");
@@ -249,7 +304,7 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
     expect(layersOpen.layers.bottom).toBeLessThanOrEqual(height);
     expect(layersOpen.close.width).toBeGreaterThanOrEqual(44);
     expect(layersOpen.close.height).toBeGreaterThanOrEqual(44);
-    expect(layersOpen.text.toUpperCase()).toContain("CAPAS");
+    expect(layersOpen.text.toUpperCase()).toContain("DATOS Y CAPAS");
     expect(layersOpen.text).toContain("Ciclov");
 
     await page.keyboard.press("Escape");
@@ -275,7 +330,7 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
       const selectors = [
         ".mobile-nav-toggle",
         ".mobile-sidebar-close",
-        ".mobile-layer-close",
+        "#technical-drawer-close",
         ".leaflet-control-layers-list label",
         "#map-variable-select",
         "#map-year-slider"

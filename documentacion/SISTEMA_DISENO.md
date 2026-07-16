@@ -17,13 +17,17 @@
 | `--text-muted` | `#94a3b8` | metadatos |
 | `--accent` | `#0ea5e9` | titulos/acciones |
 | `--accent-hover` | `#38bdf8` | enfasis |
-| `--sidebar-width` | 440 px; 380 px <=1024; 0 <=768 | layout |
+| `--public-action` | `#087f8c` | busqueda y acciones ciudadanas |
+| `--public-risk` | `#b8323c` | contexto de siniestralidad |
+| `--citizen-panel-width` | 390 px | vista ciudadana |
+| `--analysis-drawer-width` | 440 px | analisis detallado |
+| `--technical-drawer-width` | 400 px | datos y capas |
 | `--ui-padding` | 20 px; 10 px movil | separacion |
 | `--perfil-card-max-height` | 280 px | panel demografico |
 
 ## Colores cartograficos
 
-- Pichincha: `#0ea5e9`; resto: `#94a3b8`.
+- Limites administrativos nacionales: `#52616b`, sin distincion provincial.
 - Ciclovias: `#22c55e`; aceras: `#ec4899`; cruces: `#eab308`.
 - Pacificacion: `#a855f7`; semaforos/rotondas: `#f97316`.
 - Iluminacion: `#e2e8f0`; velocidad: `#ef4444`; BRT: `#06b6d4`.
@@ -39,9 +43,10 @@
 
 ## Convenciones
 
-- Paneles flotantes con fondo oscuro translucido, borde de 1 px y radio 8-16.
+- Vista ciudadana clara para lectura inmediata; paneles tecnicos oscuros para
+  diferenciar la profundidad analitica.
 - No introducir un color para representar datos sin definir tambien estilo y
   texto de `sin_dato`.
-- Nuevas capas deben registrar color, atribucion, leyenda, popup y estado
-  inicial en el mismo cambio.
+- Nuevas variables y capas se agregan en `geoportal-registry.js`; cada capa debe
+  declarar color, leyenda, popup, cobertura y estado de precarga.
 - Nuevas siglas deben reutilizar `siglaDefinitions` y `.sigla-tooltip-trigger`.

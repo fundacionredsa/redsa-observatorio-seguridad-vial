@@ -6,13 +6,13 @@
     <title>Observatorio de Seguridad Vial y Movilidad Sostenible | Fundación REDSA</title>
     
     <!-- Meta tags SEO -->
-    <meta name="description" content="Observatorio ciudadano de seguridad vial en Ecuador: estadísticas de siniestralidad (SPPAT, INEC), infraestructura ciclista y límites territoriales, con piloto en Pichincha. Datos abiertos, fuentes citadas.">
+    <meta name="description" content="Observatorio ciudadano nacional de seguridad vial en Ecuador: accidentes, fallecidos, tendencias e infraestructura con datos abiertos y fuentes citadas.">
     <meta name="author" content="Fundación REDSA">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Observatorio de Seguridad Vial y Movilidad Sostenible | Fundación REDSA">
-    <meta property="og:description" content="Observatorio ciudadano de seguridad vial en Ecuador: estadísticas de siniestralidad (SPPAT, INEC), infraestructura ciclista y límites territoriales, con piloto en Pichincha. Datos abiertos, fuentes citadas.">
+    <meta property="og:description" content="Observatorio ciudadano nacional de seguridad vial en Ecuador: accidentes, fallecidos, tendencias e infraestructura con datos abiertos y fuentes citadas.">
     <meta property="og:image" content="https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/img/og-cover.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -1135,6 +1135,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css">
 </head>
 <body>
 
@@ -1145,13 +1146,71 @@
         <div id="loader-status" class="loader-subtext">Descargando datos territoriales...</div>
     </div>
 
+    <section class="citizen-panel" id="citizen-panel" aria-label="Explorar la seguridad vial de mi territorio">
+        <div class="citizen-brand">
+            <div class="citizen-brand-copy">
+                <p class="citizen-eyebrow">Fundación REDSA</p>
+                <h1>Observatorio Nacional de Seguridad Vial</h1>
+            </div>
+            <span class="citizen-national-badge">Ecuador</span>
+        </div>
+        <p class="citizen-question">¿Qué tan seguras son las vías donde vives?</p>
+        <form id="territory-search-form" role="search">
+            <label class="citizen-search-label" for="territory-search-input">Busca tu cantón</label>
+            <div class="citizen-search-row">
+                <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
+                <datalist id="territory-search-list"></datalist>
+                <button class="citizen-search-button" type="submit" aria-label="Buscar cantón">&#8981;</button>
+            </div>
+            <div class="citizen-search-status" id="territory-search-status" role="status"></div>
+        </form>
+        <div class="citizen-map-context" aria-live="polite">
+            <strong id="citizen-map-variable">Accidentes de tránsito reportados · 2024</strong>
+            <span id="citizen-map-description">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
+        </div>
+        <div class="citizen-summary" id="citizen-summary" aria-live="polite">
+            <p class="citizen-summary-empty">Busca tu cantón para ver su situación y compararla con el país.</p>
+        </div>
+        <div class="citizen-actions">
+            <button class="citizen-action" id="open-analysis-button" type="button">Ver análisis completo</button>
+            <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
+            <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
+        </div>
+    </section>
+
+    <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="technical-drawer" aria-expanded="false">Datos y capas</button>
+
+    <aside class="technical-drawer" id="technical-drawer" aria-hidden="true" aria-label="Datos, capas y metodología">
+        <div class="drawer-header">
+            <div>
+                <h2>Datos y capas</h2>
+                <p>Variables, años, mapas de fondo e infraestructura para análisis técnico.</p>
+            </div>
+            <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar datos y capas">&times;</button>
+        </div>
+        <div class="technical-section-title">Variable y periodo</div>
+        <div class="technical-controls-slot" id="technical-controls-slot"></div>
+        <div class="technical-actions">
+            <button class="technical-action" id="clear-infrastructure-button" type="button">Apagar infraestructura</button>
+            <button class="technical-action primary" id="clean-map-button" type="button">Dejar solo límites</button>
+        </div>
+        <div class="technical-section-title">Metodología y descargas</div>
+        <nav class="technical-links" aria-label="Metodología y archivos">
+            <a href="data/README.md" target="_blank" rel="noopener">Inventario y fuentes de datos</a>
+            <a href="data/hotspots_metodologia.md" target="_blank" rel="noopener">Metodología de zonas calientes</a>
+            <a href="data/temporal_osm_metodologia.md" target="_blank" rel="noopener">Cobertura temporal y OpenStreetMap</a>
+            <a href="data/vehiculos_metodologia.md" target="_blank" rel="noopener">Vehículos matriculados y limitaciones</a>
+            <a href="data/cantones_wgs84.geojson" download>Descargar datos cantonales GeoJSON</a>
+        </nav>
+    </aside>
+
     <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
         <span aria-hidden="true">&#9776;</span>
-        <span>Territorio</span>
+        <span>Análisis</span>
     </button>
     <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
         <span aria-hidden="true">&#9638;</span>
-        <span>Capas</span>
+        <span>Datos y capas</span>
     </button>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
 
@@ -1160,7 +1219,7 @@
         <!-- Sidebar / Panel de Control -->
         <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio">
             <div class="mobile-sidebar-topbar">
-                <span>Territorio</span>
+                <span>Análisis del territorio</span>
                 <button type="button" class="mobile-sidebar-close" id="mobile-sidebar-close" aria-label="Cerrar informacion del territorio">&times;</button>
             </div>
             <!-- Marca/Cabecera -->
@@ -1169,7 +1228,7 @@
                     Fundación REDSA
                     <span class="highlight">Observatorio de Seguridad Vial y Movilidad Sostenible</span>
                 </h1>
-                <p>Observatorio de seguridad vial con datos oficiales de siniestralidad y movilidad activa. Piloto en la provincia de Pichincha con proyección de expansión nacional.</p>
+                <p>Observatorio nacional con datos oficiales de accidentes de tránsito, personas afectadas, movilidad e infraestructura vial.</p>
             </div>
 
             <!-- Sección Informativa Dinámica -->
@@ -1337,14 +1396,16 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="assets/js/geoportal-registry.js"></script>
+    <script src="assets/js/geoportal-experience.js"></script>
     
     <script>
         // Registrar tiempo inicial exacto
         const tStart = performance.now();
         
         // --- CONSTANTES DE COLOR ---
-        const COLOR_CANTON_PICHINCHA = "#0ea5e9";
-        const COLOR_CANTON_RESTO = "#94a3b8";
+        const COLOR_BOUNDARY = "#52616b";
+        const COLOR_BOUNDARY_HOVER = "#ffffff";
         const COLOR_CICLOVIAS = "#22c55e";
         const COLOR_MAPILLARY = {
             crosswalk: "#eab308", // Amarillo
@@ -1372,12 +1433,14 @@
         }
         
         // --- CONFIGURACIÓN REQUERIDA ---
+        const GEO_CONFIG = window.REDSA_GEO_CONFIG;
+        const INITIAL_VIEW = GEO_CONFIG.initialView;
         const RUTA_PROVINCIAS_RELATIVA = "data/provincias_wgs84.geojson";
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
         const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
-        const CENTRO_MAPA = [-0.15, -78.48]; // Centrado en Pichincha
-        const ZOOM_INICIAL = 9.5;
+        const CENTRO_MAPA = INITIAL_VIEW.center;
+        const ZOOM_INICIAL = INITIAL_VIEW.zoom;
         const ZOOM_PROVINCIAS_MAX = 7;
         const ZOOM_CANTONES_MIN = 8;
         const ZOOM_CANTONES_MAX = 10;
@@ -1392,6 +1455,7 @@
             zoomControl: false,
             attributionControl: true
         });
+        map.fitBounds(INITIAL_VIEW.bounds, { padding: [12, 12], animate: false });
 
         // Reposicionar el control de Zoom
         L.control.zoom({
@@ -1461,10 +1525,16 @@
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+        const technicalPanelToggle = document.getElementById("technical-panel-toggle");
+        const technicalDrawer = document.getElementById("technical-drawer");
+        const technicalDrawerClose = document.getElementById("technical-drawer-close");
+        const technicalControlsSlot = document.getElementById("technical-controls-slot");
+        const territorySidebar = document.getElementById("territory-sidebar");
 
         function setMobilePanel(panel, open) {
             if (panel === "sidebar") {
                 document.body.classList.toggle("mobile-sidebar-open", open);
+                territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open) {
                     document.body.classList.remove("mobile-layers-open");
@@ -1474,12 +1544,13 @@
             }
             if (panel === "layers") {
                 document.body.classList.toggle("mobile-layers-open", open);
+                technicalDrawer?.setAttribute("aria-hidden", String(!open));
                 if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", String(open));
+                if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", String(open));
                 if (open) {
                     document.body.classList.remove("mobile-sidebar-open");
                     if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
-                    const closeButton = document.querySelector(".mobile-layer-close");
-                    closeButton?.focus({ preventScroll: true });
+                    technicalDrawerClose?.focus({ preventScroll: true });
                 }
             }
         }
@@ -1491,15 +1562,14 @@
 
         function syncMobileLayerDrawer() {
             const container = layerControl?.getContainer?.() || document.querySelector(".leaflet-control-layers");
-            if (!container) return;
-            container.id = "mobile-layer-control";
-            if (!container.querySelector(".mobile-layer-drawer-title")) {
-                const header = document.createElement("div");
-                header.className = "mobile-layer-drawer-title";
-                header.innerHTML = `<span>Capas</span><button type="button" class="mobile-layer-close" aria-label="Cerrar capas">&times;</button>`;
-                container.prepend(header);
-                header.querySelector(".mobile-layer-close").addEventListener("click", () => setMobilePanel("layers", false));
+            const selector = document.querySelector(".map-selector-control");
+            if (!technicalControlsSlot) return;
+            if (selector && selector.parentElement !== technicalControlsSlot) technicalControlsSlot.appendChild(selector);
+            if (container && container.parentElement !== technicalControlsSlot) {
+                container.id = "mobile-layer-control";
+                technicalControlsSlot.appendChild(container);
             }
+            if (selector && container) document.body.classList.add("technical-ready");
         }
 
         mobileSidebarToggle?.addEventListener("click", () => {
@@ -1510,6 +1580,29 @@
             syncMobileLayerDrawer();
             setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
         });
+        technicalPanelToggle?.addEventListener("click", () => {
+            syncMobileLayerDrawer();
+            setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
+        });
+        technicalDrawerClose?.addEventListener("click", () => setMobilePanel("layers", false));
+        document.getElementById("clear-infrastructure-button")?.addEventListener("click", () => {
+            Object.values(overlayMaps).forEach(layer => {
+                if (map.hasLayer(layer)) map.removeLayer(layer);
+            });
+            updateLegend();
+        });
+        document.getElementById("clean-map-button")?.addEventListener("click", () => {
+            Object.values(overlayMaps).forEach(layer => {
+                if (map.hasLayer(layer)) map.removeLayer(layer);
+            });
+            const select = document.getElementById("map-variable-select");
+            if (select) {
+                select.value = "normal";
+                select.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            map.fitBounds(INITIAL_VIEW.bounds, { padding: [12, 12], animate: false });
+            updateLegend();
+        });
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") closeMobilePanels();
@@ -1518,8 +1611,8 @@
             if (!event.matches) closeMobilePanels();
         });
 
-        let selectedVariable = 'normal'; // variable de coropletas seleccionada
-        let selectedYear = 2024;
+        let selectedVariable = INITIAL_VIEW.variable;
+        let selectedYear = INITIAL_VIEW.year;
         let parishLayer = null;
         let parishData = null;
         let parishLoadPromise = null;
@@ -1532,129 +1625,8 @@
             parish: "parroquias"
         };
 
-        const VARIABLE_CONFIGS = {
-            normal: {
-                label: "Límites administrativos",
-                description: "Solo muestra los límites administrativos, sin datos de color.",
-                levels: ["province", "canton", "parish"],
-                temporal: { tipo: "foto_unica", anios_disponibles: [] }
-            },
-            siniestros_inec_2019: {
-                label: "Accidentes de tránsito reportados (INEC)",
-                description: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
-                getValue: (props, year) => props.siniestros_historico?.[String(year)],
-                levels: ["province", "canton"],
-                temporal: { tipo: "anual", anios_disponibles: [2019, 2021, 2022, 2023, 2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
-                format: value => value.toString()
-            },
-            fallecidos_inec_2019: {
-                label: "Personas fallecidas por accidentes (registro civil)",
-                description: "Número de personas que murieron por accidentes de tránsito.",
-                getValue: (props, year) => props.fallecidos_historico?.[String(year)],
-                levels: ["province", "canton"],
-                temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
-                format: value => value.toString()
-            },
-            tasa_fallecidos_100k: {
-                label: "Fallecidos por cada 100.000 habitantes",
-                description: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
-                getValue: (props, year) => {
-                    const numerator = props.fallecidos_historico?.[String(year)];
-                    const denominator = props.poblacion_por_anio?.[String(year)];
-                    return Number.isFinite(Number(numerator)) && Number(denominator) > 0
-                        ? Number(numerator) / Number(denominator) * 100000
-                        : null;
-                },
-                levels: ["province", "canton"],
-                temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                continuous: true,
-                colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
-                format: value => value.toFixed(1)
-            },
-            tasa_siniestros_1000_vehiculos_2024: {
-                label: "Accidentes por cada 1.000 vehículos (2024)",
-                description: "Accidentes por cada 1.000 vehículos matriculados: mide el riesgo según la cantidad de vehículos, no solo de personas.",
-                property: "tasa_siniestros_por_1000_vehiculos_2024",
-                levels: ["province", "canton"],
-                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                continuous: true,
-                infoSigla: "VEHICULOS_MATRICULADOS",
-                colors: ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
-                format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-            },
-            tasa_motociclistas_1000_motos_2024: {
-                label: "Motociclistas fallecidos por cada 1.000 motos (2024)",
-                description: "Muertes de motociclistas por cada 1.000 motos matriculadas en la zona.",
-                property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
-                levels: ["province", "canton"],
-                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                continuous: true,
-                infoSigla: "VEHICULOS_MATRICULADOS",
-                colors: ["#ffffcc", "#fed976", "#fd8d3c", "#e31a1c", "#800026"],
-                format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 3, maximumFractionDigits: 3 })
-            },
-            fallecidos_sppat_2016_2021: {
-                label: "Fallecidos según reclamos del seguro (SPPAT)",
-                description: "Fallecidos según reclamos del seguro obligatorio de accidentes de tránsito (2016-2021).",
-                getValue: (props, year) => props.sppat_fallecidos_por_anio?.[String(year)],
-                levels: ["province", "canton"],
-                temporal: { tipo: "anual", anios_disponibles: [2016, 2017, 2018, 2019, 2020, 2021] },
-                dynamicBins: true,
-                zeroIsData: true,
-                colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
-                format: value => value.toString()
-            },
-            fallecidos_parroquial: {
-                label: "Personas fallecidas por parroquia",
-                description: "Fallecidos por accidente de tránsito a nivel de parroquia (2021-2024).",
-                getValue: (props, year) => props.fallecidos_por_anio?.[String(year)],
-                levels: ["parish"],
-                temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
-                format: value => value.toString()
-            },
-            porcentaje_motos_flota_2024: {
-                label: "Porcentaje de vehículos que son motos (2024)",
-                description: "Qué porcentaje de todos los vehículos matriculados en la zona son motocicletas.",
-                property: "porcentaje_motocicletas_vehiculos_2024",
-                levels: ["province", "canton"],
-                temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
-                dynamicBins: true,
-                zeroIsData: true,
-                continuous: true,
-                infoSigla: "VEHICULOS_MATRICULADOS",
-                colors: ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
-                format: value => `${value.toFixed(1)}%`
-            },
-            cobertura_mapeo_osm: {
-                label: "Cobertura del mapeo de infraestructura vial",
-                description: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó.",
-                property: "cobertura_mapeo_infraestructura_por_100k",
-                levels: ["province", "canton"],
-                temporal: { tipo: "foto_unica", anios_disponibles: [2026] },
-                dynamicBins: true,
-                zeroIsData: true,
-                zeroAsNoMapping: true,
-                continuous: true,
-                infoSigla: "COBERTURA_OSM",
-                colors: ["#f7fcf0", "#ccebc5", "#7bccc4", "#2b8cbe", "#084081"],
-                format: value => value.toFixed(1)
-            }
-        };
+        const VARIABLE_CONFIGS = GEO_CONFIG.variables;
+        const INFRASTRUCTURE_LAYER_CONFIGS = GEO_CONFIG.infrastructureLayers;
 
         const TEMPORAL_COVERAGE = Object.fromEntries(
             Object.entries(VARIABLE_CONFIGS).map(([id, config]) => [id, config.temporal])
@@ -1794,12 +1766,11 @@
         }
 
         function getBoundaryStyle(feature, level, isHovered = false, isSelected = false) {
-            const isPichincha = feature.properties && feature.properties.DPA_DESPRO === "PICHINCHA";
-            let color = isPichincha ? COLOR_CANTON_PICHINCHA : COLOR_CANTON_RESTO;
-            let fillColor = isPichincha ? COLOR_CANTON_PICHINCHA : "#64748b";
+            let color = COLOR_BOUNDARY;
+            let fillColor = "#d9e0e5";
             let baseWeight = level === "province" ? 1.8 : (level === "parish" ? 0.9 : 1.2);
-            let opacity = isPichincha ? 0.75 : (level === "province" ? 0.35 : 0.2);
-            let fillOpacity = isPichincha ? 0.08 : 0.02;
+            let opacity = level === "province" ? 0.8 : 0.65;
+            let fillOpacity = 0.06;
 
             if (isSelected) {
                 color = "#38bdf8";
@@ -1807,7 +1778,7 @@
                 baseWeight = level === "province" ? 3.2 : 3.0;
                 fillOpacity = 0.20;
             } else if (isHovered) {
-                color = isPichincha ? "#38bdf8" : "#cbd5e1";
+                color = COLOR_BOUNDARY_HOVER;
                 opacity = 1.0;
                 baseWeight = level === "province" ? 2.8 : 2.5;
                 fillOpacity = 0.25;
@@ -2133,12 +2104,8 @@
                     container.innerHTML += `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${levelTitle}</div>
                         <div class="legend-item" style="padding-left: 8px;">
-                            <span class="legend-color-line" style="background-color: ${COLOR_CANTON_PICHINCHA}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                            <span>Pichincha</span>
-                        </div>
-                        <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                            <span class="legend-color-line" style="background-color: ${COLOR_CANTON_RESTO}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                            <span>Resto del país</span>
+                            <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                            <span>Limites administrativos</span>
                         </div>
                     `;
                 } else {
@@ -2191,161 +2158,31 @@
                 }
             }
             
-            // 2. Ciclovías
-            const cicloviasLayer = overlayMaps["Ciclovías"];
-            if (cicloviasLayer && map.hasLayer(cicloviasLayer)) {
+            let hasActiveOsmLayer = false;
+            INFRASTRUCTURE_LAYER_CONFIGS.forEach(config => {
+                const layer = overlayMaps[config.label];
+                if (!layer || !map.hasLayer(layer)) return;
                 hasItems = true;
+                hasActiveOsmLayer = hasActiveOsmLayer || Boolean(config.osmAudit);
+                const legendItems = (config.legend || []).map(item => {
+                    const shapeClass = item.shape === "circle" ? "legend-color-circle" : "legend-color-line";
+                    return `
+                        <div class="legend-item" style="padding-left:8px;">
+                            <span class="${shapeClass}" style="background-color:${item.color};"></span>
+                            <span>${item.label}</span>
+                        </div>`;
+                }).join("");
                 container.innerHTML += `
-                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Movilidad Activa:</div>
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_CICLOVIAS};"></span>
-                        <span>Ciclovías (OpenStreetMap)</span>
-                    </div>
-                `;
-            }
-            
-            // Corredores REDSA
-            const corredoresLayer = overlayMaps["Corredores Prioritarios Fundación REDSA (Pichincha)"];
-            if (corredoresLayer && map.hasLayer(corredoresLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Corredores Fundación REDSA:</div>
-                    <div class="legend-item" style="padding-left: 8px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_CORREDOR_MUY_ALTA}; height: 6px; width: 14px; border-radius: 1px;"></span>
-                        <span>Prioridad Muy Alta</span>
-                    </div>
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_CORREDOR_ALTA}; height: 6px; width: 14px; border-radius: 1px;"></span>
-                        <span>Prioridad Alta</span>
-                    </div>
-                `;
-            }
-            
-            // 3. Mapillary
-            const mapillaryLayer = overlayMaps["Mapillary (Pichincha)"];
-            if (mapillaryLayer && map.hasLayer(mapillaryLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Infraestructura Vial (Mapillary):</div>
-                    <div class="legend-item" style="padding-left: 8px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.crosswalk};"></span>
-                        <span>Cruce peatonal</span>
-                    </div>
-                    <div class="legend-item" style="padding-left: 8px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.bikeRack};"></span>
-                        <span>Espacio para bicicletas</span>
-                    </div>
-                    <div class="legend-item" style="padding-left: 8px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.regulatory};"></span>
-                        <span>Señal regulatoria</span>
-                    </div>
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_MAPILLARY.warning};"></span>
-                        <span>Señal de advertencia</span>
-                    </div>
-                `;
-            }
-
-            // 4. Aceras
-            const acerasLayer = overlayMaps["Aceras"];
-            if (acerasLayer && map.hasLayer(acerasLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_ACERAS};"></span>
-                        <span>Aceras (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 5. Cruces Peatonales
-            const crucesLayer = overlayMaps["Cruces Peatonales"];
-            if (crucesLayer && map.hasLayer(crucesLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_CRUCES};"></span>
-                        <span>Cruces Peatonales (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 6. Pacificación de Tránsito
-            const pacificacionLayer = overlayMaps["Pacificación de Tránsito"];
-            if (pacificacionLayer && map.hasLayer(pacificacionLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_PACIFICACION};"></span>
-                        <span>Pacificación de Tránsito (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 7. Semáforos y Rotondas
-            const semaforosLayer = overlayMaps["Semáforos y Rotondas"];
-            if (semaforosLayer && map.hasLayer(semaforosLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-circle" style="background-color: ${COLOR_SEMAFOROS_ROTONDAS};"></span>
-                        <span>Semáforos y Rotondas (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 8. Iluminación Vial
-            const iluminacionLayer = overlayMaps["Iluminación Vial"];
-            if (iluminacionLayer && map.hasLayer(iluminacionLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_ILUMINACION};"></span>
-                        <span>Iluminación Vial (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 9. Límites de Velocidad
-            const velocidadLayer = overlayMaps["Límites de Velocidad"];
-            if (velocidadLayer && map.hasLayer(velocidadLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_VELOCIDAD};"></span>
-                        <span>Límites de Velocidad (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            // 10. Carriles BRT/Metrobús
-            const brtLayer = overlayMaps["Carriles BRT/Metrobús"];
-            if (brtLayer && map.hasLayer(brtLayer)) {
-                hasItems = true;
-                container.innerHTML += `
-                    <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                        <span class="legend-color-line" style="background-color: ${COLOR_BRT_METROBUS};"></span>
-                        <span>Carriles BRT/Metrobús (OSM)</span>
-                    </div>
-                `;
-            }
-            
-            const osmNationalLabels = [
-                "Ciclovías", "Aceras", "Cruces Peatonales", "Pacificación de Tránsito",
-                "Semáforos y Rotondas", "Iluminación Vial", "Límites de Velocidad",
-                "Carriles BRT/Metrobús"
-            ];
-            const hasActiveOsmLayer = osmNationalLabels.some(label => {
-                const layer = overlayMaps[label];
-                return layer && map.hasLayer(layer);
+                    <div class="legend-item" style="font-weight:600;margin-top:4px;color:var(--text-primary);font-size:.75rem;text-transform:uppercase;">${config.label}</div>
+                    ${legendItems}`;
             });
+
             if (hasActiveOsmLayer) {
                 container.innerHTML += `
                     <div class="legend-item" style="margin-top:4px;padding-top:6px;border-top:1px dashed rgba(251,191,36,.25);color:#fbbf24;font-size:.67rem;line-height:1.3;align-items:flex-start;">
                         <span class="legend-color-line" style="flex:0 0 auto;background-color:rgba(148,163,184,.18);border:1px dashed #94a3b8;height:10px;width:14px;border-radius:2px;margin-top:2px;"></span>
                         <span>Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.</span>
-                    </div>
-                `;
+                    </div>`;
             }
             panel.style.display = hasItems ? "block" : "none";
             updateHoverCardLayout();
@@ -2413,7 +2250,15 @@
             refreshTerritoryLayerStyles();
             updateMapLevelNote(level);
             updateLegend();
-            updateSidebar(null);
+            const retainedProps = level === "province"
+                ? selectedProvinceLayer?.feature?.properties
+                : (level === "canton" ? selectedLayer?.feature?.properties : selectedParishLayer?.feature?.properties);
+            updateSidebar(retainedProps || null);
+            window.REDSAExperience?.updateMapContext(
+                VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal,
+                selectedYear,
+                LEVEL_LABELS[level]
+            );
         }
 
         function ensureParishLayer() {
@@ -3082,6 +2927,7 @@
                 chartContainer.style.display = "none";
                 chartEmptyMsg.style.display = "block";
                 chartEmptyMsg.textContent = `Pasa el cursor o haz clic en ${promptLevel} para ver la tendencia`;
+                window.REDSAExperience?.updateSummary(null, selectedYear);
                 return;
             }
 
@@ -3348,6 +3194,7 @@
                 chartEmptyMsg.style.display = "block";
                 chartEmptyMsg.textContent = "Sin datos de serie histórica para este cantón";
             }
+            window.REDSAExperience?.updateSummary(props, selectedYear);
         }
 
         // Funciones interactivas para cada feature (Cantón)
@@ -3490,6 +3337,37 @@
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
 
+                function selectCantonLayer(foundLayer, updateHash = true) {
+                    if (!foundLayer) return false;
+                    map.fitBounds(foundLayer.getBounds(), { padding: [24, 24], maxZoom: ZOOM_CANTONES_MAX });
+                    const previousLayer = selectedLayer;
+                    selectedLayer = foundLayer;
+                    if (previousLayer && previousLayer !== foundLayer) cantonLayer.resetStyle(previousLayer);
+                    foundLayer.setStyle(getCantonStyle(foundLayer.feature, false, true));
+                    updateSidebar(foundLayer.feature.properties);
+                    showHoverCard(foundLayer.feature.properties, { target: foundLayer });
+                    if (updateHash) {
+                        const name = foundLayer.feature.properties.DPA_DESCAN;
+                        window.location.hash = "canton=" + encodeURIComponent(name);
+                    }
+                    return true;
+                }
+
+                function selectCantonByCode(code, updateHash = true) {
+                    let foundLayer = null;
+                    cantonLayer.eachLayer(layer => {
+                        if (!foundLayer && String(layer.feature?.properties?.DPA_CANTON) === String(code)) foundLayer = layer;
+                    });
+                    return selectCantonLayer(foundLayer, updateHash);
+                }
+
+                window.REDSAExperience?.init({
+                    cantonFeatures: cantonData.features,
+                    selectCanton: code => selectCantonByCode(code, true),
+                    openAnalysis: () => setMobilePanel("sidebar", true),
+                    getSelectedYear: () => selectedYear
+                });
+
                 // Manejo de Hash Routing en carga inicial y cambios
                 const handleHash = () => {
                     const hash = window.location.hash;
@@ -3504,333 +3382,127 @@
                             }
                         });
                         
-                        if (foundLayer) {
-                            map.fitBounds(foundLayer.getBounds());
-                            const prevLayer = selectedLayer;
-                            selectedLayer = foundLayer;
-                            
-                            if (prevLayer && prevLayer !== foundLayer) {
-                                cantonLayer.resetStyle(prevLayer);
-                            }
-                            
-                            foundLayer.setStyle(getCantonStyle(foundLayer.feature, false, true));
-                            updateSidebar(foundLayer.feature.properties);
-                        }
+                        selectCantonLayer(foundLayer, false);
                     }
                 };
 
                 handleHash();
                 window.addEventListener("hashchange", handleHash);
 
-                loadOSMLayer("data/ciclovias_ecuador.geojson", "Ciclovías", {
-                    attribution: 'Ciclovías: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ODbL',
-                    style: { color: COLOR_CICLOVIAS, weight: 3, opacity: 0.85 },
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties) {
-                            const name = feature.properties.name || "Ciclovía sin nombre";
-                            layer.bindPopup(`<strong>Ciclovía:</strong> ${name}<br><strong>highway:</strong> ${feature.properties.highway || "—"}`);
+                function mapillaryColor(value = "") {
+                    if (value === "crosswalk") return COLOR_MAPILLARY.crosswalk;
+                    if (value === "bicycle-rack") return COLOR_MAPILLARY.bikeRack;
+                    if (value.startsWith("regulatory--")) return COLOR_MAPILLARY.regulatory;
+                    if (value.startsWith("warning--")) return COLOR_MAPILLARY.warning;
+                    return "#94a3b8";
+                }
+
+                function layerOptionsFromConfig(config) {
+                    const options = {
+                        onEachFeature(feature, layer) {
+                            if (feature.properties && config.popup) layer.bindPopup(config.popup(feature.properties));
                         }
+                    };
+                    if (["point", "mixed", "mapillary"].includes(config.render)) {
+                        options.pointToLayer = (feature, latlng) => {
+                            const color = config.render === "mapillary"
+                                ? mapillaryColor(feature.properties?.value)
+                                : config.color;
+                            return L.circleMarker(latlng, {
+                                radius: config.radius || 5,
+                                fillColor: color,
+                                color: config.outlineColor || "#ffffff",
+                                weight: 1,
+                                opacity: 1,
+                                fillOpacity: 0.82
+                            });
+                        };
                     }
-                });
+                    if (["line", "mixed", "priority", "mapillary"].includes(config.render)) {
+                        options.style = feature => {
+                            const isPriority = config.render === "priority" && feature.properties?.priority === "Muy Alta";
+                            const color = config.render === "mapillary"
+                                ? mapillaryColor(feature.properties?.value)
+                                : (isPriority ? config.priorityColor : config.color);
+                            return {
+                                color,
+                                weight: isPriority ? 4 : (config.weight || 3),
+                                opacity: 0.82
+                            };
+                        };
+                    }
+                    return options;
+                }
 
-                // --- CARGAR CAPA DE MAPILLARY (OPCIONAL/FASE 7) ---
-                const RUTA_MAPILLARY = "data/mapillary_pichincha.geojson";
-                fetch(RUTA_MAPILLARY)
-                    .then(res => {
-                        if (!res.ok) throw new Error("No se pudo cargar Mapillary.");
-                        return res.json();
-                    })
-                    .then(mapillaryData => {
-                        const mapillaryLayer = L.geoJSON(mapillaryData, {
-                            attribution: 'Datos de infraestructura vial: Mapillary (CC-BY-SA)',
-                            pointToLayer: function(feature, latlng) {
-                                const val = feature.properties.value;
-                                let color = "#94a3b8"; // Gris por defecto
-                                
-                                if (val === "crosswalk") color = COLOR_MAPILLARY.crosswalk;
-                                else if (val === "bicycle-rack") color = COLOR_MAPILLARY.bikeRack;
-                                else if (val.startsWith("regulatory--")) color = COLOR_MAPILLARY.regulatory;
-                                else if (val.startsWith("warning--")) color = COLOR_MAPILLARY.warning;
-                                
-                                return L.circleMarker(latlng, {
-                                    radius: 6,
-                                    fillColor: color,
-                                    color: "#f8fafc",
-                                    weight: 1.5,
-                                    opacity: 1,
-                                    fillOpacity: 0.8
-                                });
-                            },
-                            style: function(feature) {
-                                const val = feature.properties.value;
-                                let color = "#94a3b8";
-                                if (val === "crosswalk") color = COLOR_MAPILLARY.crosswalk;
-                                else if (val === "bicycle-rack") color = COLOR_MAPILLARY.bikeRack;
-                                else if (val.startsWith("regulatory--")) color = COLOR_MAPILLARY.regulatory;
-                                else if (val.startsWith("warning--")) color = COLOR_MAPILLARY.warning;
-                                return {
-                                    color: color,
-                                    weight: 3,
-                                    opacity: 0.8
-                                };
-                            },
-                            onEachFeature: function(feature, layer) {
-                                if (feature.properties) {
-                                    const val = feature.properties.value || "Desconocido";
-                                    layer.bindPopup(`<strong>Mapillary Feature:</strong> ${val}`);
-                                }
-                            }
-                        });
-                        
-                        overlayMaps["Mapillary (Pichincha)"] = mapillaryLayer;
-                        
-                        if (layerControl) {
-                            map.removeControl(layerControl);
-                        }
-                        
-                        layerControl = L.control.layers(baseMaps, overlayMaps, {
-                            position: 'topright',
-                            collapsed: false
-                        }).addTo(map);
-                        syncMobileLayerDrawer();
-                        
-                        updateLegend();
-                    })
-                    .catch(err => {
-                        console.log("Capa de Mapillary opcional no cargada (esperable si no hay token).");
-                    });
-
-                // --- HELPER PARA CARGAR CAPAS ADICIONALES DE OSM (FASE 8) ---
-                function loadOSMLayer(url, labelName, geojsonOptions, preload = false) {
+                function registerInfrastructureLayer(config) {
                     const placeholder = L.layerGroup();
                     placeholder._redsaLoaded = false;
                     placeholder._redsaFeatureCount = 0;
+                    placeholder._redsaConfigId = config.id;
                     const startLoad = () => {
-                        if (placeholder._redsaLoadPromise) return;
-                        placeholder._redsaLoadPromise = fetch(url)
-                            .then(res => {
-                                if (!res.ok) throw new Error(`No se pudo cargar la capa ${labelName}.`);
-                                return res.json();
+                        if (placeholder._redsaLoadPromise) return placeholder._redsaLoadPromise;
+                        placeholder._redsaLoadPromise = fetch(config.url)
+                            .then(response => {
+                                if (!response.ok) throw new Error(`No se pudo cargar la capa ${config.label}.`);
+                                return response.json();
                             })
                             .then(data => {
-                                const layer = L.geoJSON(data, geojsonOptions);
+                                const layer = L.geoJSON(data, layerOptionsFromConfig(config));
                                 const mappedCantons = new Set(
-                                    (data.features || []).flatMap(feature =>
-                                        feature.properties?.DPA_CANTONES || []
-                                    ).map(String)
+                                    (data.features || []).flatMap(feature => feature.properties?.DPA_CANTONES || []).map(String)
                                 );
-                                const unmappedFeatures = (cantonData?.features || []).filter(feature =>
-                                    !mappedCantons.has(String(feature.properties?.DPA_CANTON))
-                                );
-                                const unmappedMask = L.geoJSON({
-                                    type: "FeatureCollection",
-                                    features: unmappedFeatures
-                                }, {
-                                    interactive: false,
-                                    style: {
-                                        color: "#64748b",
-                                        weight: 0.8,
-                                        opacity: 0.65,
-                                        dashArray: "4 4",
-                                        fillColor: "#94a3b8",
-                                        fillOpacity: 0.12
-                                    }
-                                });
+                                const unmappedFeatures = config.coverageMask
+                                    ? (cantonData?.features || []).filter(feature => !mappedCantons.has(String(feature.properties?.DPA_CANTON)))
+                                    : [];
+                                if (unmappedFeatures.length) {
+                                    placeholder.addLayer(L.geoJSON({ type: "FeatureCollection", features: unmappedFeatures }, {
+                                        interactive: false,
+                                        style: {
+                                            color: "#64748b",
+                                            weight: 0.8,
+                                            opacity: 0.65,
+                                            dashArray: "4 4",
+                                            fillColor: "#94a3b8",
+                                            fillOpacity: 0.12
+                                        }
+                                    }));
+                                }
                                 placeholder._redsaFeatureCount = data.features?.length || 0;
                                 placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
                                 placeholder._redsaLoaded = true;
-                                placeholder.addLayer(unmappedMask);
                                 placeholder.addLayer(layer);
                                 updateLegend();
                                 return layer;
                             })
-                            .catch(err => {
-                                placeholder._redsaLoadError = err.message;
-                                console.warn(`Advertencia al cargar la capa OSM '${labelName}':`, err);
+                            .catch(error => {
+                                placeholder._redsaLoadError = error.message;
+                                console.warn(`Advertencia al cargar '${config.label}':`, error);
                                 updateLegend();
-                                throw err;
+                                throw error;
                             });
+                        return placeholder._redsaLoadPromise;
                     };
                     placeholder.on("add", () => {
                         updateLegend();
                         startLoad();
                     });
                     placeholder.on("remove", updateLegend);
-                    overlayMaps[labelName] = placeholder;
-
-                    if (layerControl) map.removeControl(layerControl);
-                    layerControl = L.control.layers(baseMaps, overlayMaps, {
-                        position: 'topright',
-                        collapsed: false
-                    }).addTo(map);
-                    syncMobileLayerDrawer();
-                    if (preload) startLoad();
-                    updateLegend();
+                    placeholder._redsaStartLoad = startLoad;
+                    overlayMaps[config.label] = placeholder;
+                    return placeholder;
                 }
 
-                // Cargar las 7 Capas Adicionales de OpenStreetMap (Apagadas por defecto)
-                loadOSMLayer("data/aceras_ecuador.geojson", "Aceras", {
-                    style: {
-                        color: COLOR_ACERAS,
-                        weight: 2,
-                        opacity: 0.7
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const name = f.properties.name || "Acera sin nombre";
-                            const hw = f.properties.highway || "footway";
-                            l.bindPopup(`<strong>Acera:</strong> ${name}<br><strong>Tipo:</strong> ${hw}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
+                INFRASTRUCTURE_LAYER_CONFIGS.forEach(registerInfrastructureLayer);
+                if (layerControl) map.removeControl(layerControl);
+                layerControl = L.control.layers(baseMaps, overlayMaps, {
+                    position: "topright",
+                    collapsed: false
+                }).addTo(map);
+                syncMobileLayerDrawer();
+                INFRASTRUCTURE_LAYER_CONFIGS.forEach(config => {
+                    if (config.preload) overlayMaps[config.label]?._redsaStartLoad?.();
                 });
-
-                loadOSMLayer("data/cruces_ecuador.geojson", "Cruces Peatonales", {
-                    pointToLayer: function(f, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 4,
-                            fillColor: COLOR_CRUCES,
-                            color: "#ffffff",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        });
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const type = f.properties.crossing || "cruce";
-                            l.bindPopup(`<strong>Cruce Peatonal:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-
-                loadOSMLayer("data/pacificacion_ecuador.geojson", "Pacificación de Tránsito", {
-                    pointToLayer: function(f, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 5,
-                            fillColor: COLOR_PACIFICACION,
-                            color: "#ffffff",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.85
-                        });
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const cal = f.properties.traffic_calming || "desconocido";
-                            l.bindPopup(`<strong>Pacificación de Tránsito:</strong> ${cal}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-
-                loadOSMLayer("data/semaforos_rotondas_ecuador.geojson", "Semáforos y Rotondas", {
-                    pointToLayer: function(f, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 5,
-                            fillColor: COLOR_SEMAFOROS_ROTONDAS,
-                            color: "#ffffff",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.85
-                        });
-                    },
-                    style: function(f) {
-                        return {
-                            color: COLOR_SEMAFOROS_ROTONDAS,
-                            weight: 3,
-                            opacity: 0.8
-                        };
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const type = f.properties.junction === "roundabout" ? "Rotonda" : "Semáforo";
-                            l.bindPopup(`<strong>Infraestructura:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-
-                loadOSMLayer("data/iluminacion_ecuador.geojson", "Iluminación Vial", {
-                    pointToLayer: function(f, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 3,
-                            fillColor: COLOR_ILUMINACION,
-                            color: "#94a3b8",
-                            weight: 0.8,
-                            opacity: 0.9,
-                            fillOpacity: 0.7
-                        });
-                    },
-                    style: function(f) {
-                        return {
-                            color: COLOR_ILUMINACION,
-                            weight: 1.5,
-                            opacity: 0.6
-                        };
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const type = f.properties.highway === "street_lamp" ? "Lámpara de Alumbrado Público" : "Vía Iluminada (lit=yes)";
-                            l.bindPopup(`<strong>Iluminación:</strong> ${type}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-
-                loadOSMLayer("data/velocidad_ecuador.geojson", "Límites de Velocidad", {
-                    pointToLayer: function(f, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 3,
-                            fillColor: COLOR_VELOCIDAD,
-                            color: "#ffffff",
-                            weight: 0.8,
-                            opacity: 0.9,
-                            fillOpacity: 0.75
-                        });
-                    },
-                    style: {
-                        color: COLOR_VELOCIDAD,
-                        weight: 2.5,
-                        opacity: 0.8
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const speed = f.properties.maxspeed || "No especificado";
-                            const name = f.properties.name || "Tramo sin nombre";
-                            l.bindPopup(`<strong>Etiqueta maxspeed OSM:</strong> ${speed}<br><strong>Vía:</strong> ${name}<br><small>Los tramos nacionales pueden mostrarse por su centro representativo. ${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-
-                loadOSMLayer("data/brt_metrobus_ecuador.geojson", "Carriles BRT/Metrobús", {
-                    style: {
-                        color: COLOR_BRT_METROBUS,
-                        weight: 3,
-                        opacity: 0.85
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const name = f.properties.name || "Carril exclusivo";
-                            const lanes = f.properties["lanes:bus"] || "No especificado";
-                            l.bindPopup(`<strong>Carril Exclusivo BRT/Bus:</strong> ${name}<br><strong>Nº Carriles:</strong> ${lanes}<br><small>${f.properties.attribution}</small>`);
-                        }
-                    }
-                });
-                
-                loadOSMLayer("data/corredores_redsa.geojson", "Corredores Prioritarios Fundación REDSA (Pichincha)", {
-                    style: function(f) {
-                        const isVeryHigh = f.properties && f.properties.priority === "Muy Alta";
-                        return {
-                            color: isVeryHigh ? COLOR_CORREDOR_MUY_ALTA : COLOR_CORREDOR_ALTA,
-                            weight: isVeryHigh ? 4 : 3,
-                            opacity: 0.85
-                        };
-                    },
-                    onEachFeature: function(f, l) {
-                        if (f.properties) {
-                            const name = f.properties.name || "Corredor sin nombre";
-                            const prio = f.properties.priority || "Alta";
-                            l.bindPopup(`<strong>Corredor Fundación REDSA:</strong> ${name}<br><strong>Prioridad:</strong> ${prio}<br><small>OpenStreetMap contributors, ODbL</small>`);
-                        }
-                    }
-                }, true);
+                updateLegend();
 
                 // Initialize Selector Control on Map
                 const MapControl = L.Control.extend({
@@ -3840,7 +3512,7 @@
                         div.innerHTML = `
                             <div style="font-weight: 600; font-size: 0.7rem; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Variables del Mapa</div>
                             <select id="map-variable-select" style="background: rgba(15, 23, 42, 0.85); color: #f8fafc; border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px 6px; font-size: 0.75rem; cursor: pointer; outline: none; width: 100%;">
-                                ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}">${config.label}</option>`).join("")}
+                                ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}" ${id === selectedVariable ? "selected" : ""}>${config.label}</option>`).join("")}
                             </select>
                             <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
                             <div class="timeline-control">
@@ -3858,6 +3530,7 @@
                     }
                 });
                 new MapControl().addTo(map);
+                syncMobileLayerDrawer();
                 updateMapVariableDescription();
                 updateTimelineControl();
                 updateMapLevelNote(activeTerritoryLevel);
@@ -3884,11 +3557,17 @@
                     const description = document.getElementById("map-variable-description");
                     const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
                     if (description) description.textContent = config.description;
+                    window.REDSAExperience?.updateMapContext(
+                        config,
+                        selectedYear,
+                        LEVEL_LABELS[activeTerritoryLevel || getTerritoryLevelForZoom()]
+                    );
                 }
 
                 document.getElementById("map-year-slider").addEventListener("input", function() {
                     selectedYear = Number(this.value);
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateMapVariableDescription();
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
@@ -4041,6 +3720,13 @@
                         else map.removeLayer(layer);
                         return true;
                     },
+                    clearInfrastructure() {
+                        Object.values(overlayMaps).forEach(layer => {
+                            if (map.hasLayer(layer)) map.removeLayer(layer);
+                        });
+                        updateLegend();
+                        return this.state();
+                    },
                     state() {
                         const layerState = layer => ({
                             ready: Boolean(layer),
@@ -4049,9 +3735,13 @@
                         });
                         return {
                             zoom: map.getZoom(),
+                            center: map.getCenter(),
+                            bounds: map.getBounds(),
                             level: activeTerritoryLevel,
                             selectedVariable,
                             selectedYear,
+                            variableCount: Object.keys(VARIABLE_CONFIGS).length,
+                            infrastructureLayerCount: INFRASTRUCTURE_LAYER_CONFIGS.length,
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
                             timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
                             timelineBadge: document.getElementById("timeline-badge")?.textContent,
@@ -4063,13 +3753,9 @@
                                 canton: layerState(cantonLayer),
                                 parish: layerState(parishLayer)
                             },
-                            osmLayers: Object.fromEntries([
-                                "Ciclovías", "Aceras", "Cruces Peatonales", "Pacificación de Tránsito",
-                                "Semáforos y Rotondas", "Iluminación Vial", "Límites de Velocidad",
-                                "Carriles BRT/Metrobús"
-                            ].map(label => {
-                                const layer = overlayMaps[label];
-                                return [label, {
+                            osmLayers: Object.fromEntries(INFRASTRUCTURE_LAYER_CONFIGS.map(config => {
+                                const layer = overlayMaps[config.label];
+                                return [config.label, {
                                     registered: Boolean(layer),
                                     visible: Boolean(layer && map.hasLayer(layer)),
                                     loaded: Boolean(layer?._redsaLoaded),

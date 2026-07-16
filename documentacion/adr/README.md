@@ -10,3 +10,5 @@ reescribir retroactivamente la justificacion historica.
 - [ADR-004](0004-hotspots-getis-ord.md): Gi* y tratamiento de islas.
 - [ADR-005](0005-frontend-estatico-github-pages.md): frontend estatico.
 - [ADR-006](0006-privacidad-y-separacion-de-repositorios.md): privacidad y repos.
+- [ADR-007](0007-experiencia-ciudadana-y-registros-frontend.md): divulgacion
+  progresiva, vista nacional y registros frontend.
