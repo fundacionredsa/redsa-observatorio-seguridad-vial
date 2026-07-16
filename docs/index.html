@@ -1160,7 +1160,7 @@
                 label: "Siniestros INEC 2019",
                 property: "siniestros_inec_2019",
                 levels: ["province", "canton"],
-                bins: [6, 16, 37, 82],
+                dynamicBins: true,
                 colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
                 format: value => value.toString()
             },
@@ -1168,7 +1168,7 @@
                 label: "Fallecidos INEC 2019",
                 property: "fallecidos_inec_2019",
                 levels: ["province", "canton"],
-                bins: [3, 5, 10, 19],
+                dynamicBins: true,
                 colors: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
                 format: value => value.toString()
             },
@@ -1176,7 +1176,8 @@
                 label: "Tasa por 100k (2019)",
                 property: "tasa_fallecidos_100k",
                 levels: ["province", "canton"],
-                bins: [8.8, 12.6, 19.7, 29.2],
+                dynamicBins: true,
+                continuous: true,
                 colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
                 format: value => value.toFixed(1)
             },
@@ -1184,7 +1185,6 @@
                 label: "Tasa de Siniestros por 1,000 Vehículos (2024)",
                 property: "tasa_siniestros_por_1000_vehiculos_2024",
                 levels: ["province", "canton"],
-                binsByLevel: {},
                 dynamicBins: true,
                 zeroIsData: true,
                 continuous: true,
@@ -1196,7 +1196,6 @@
                 label: "Motociclistas Fallecidos por 1,000 Motos (2024)",
                 property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
                 levels: ["province", "canton"],
-                binsByLevel: {},
                 dynamicBins: true,
                 zeroIsData: true,
                 continuous: true,
@@ -1208,7 +1207,7 @@
                 label: "Fallecidos SPPAT (16-21)",
                 property: "fallecidos_sppat_2016_2021",
                 levels: ["province", "canton"],
-                bins: [7, 19, 47, 112],
+                dynamicBins: true,
                 colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
                 format: value => value.toString()
             },
@@ -1216,10 +1215,17 @@
                 label: "Fallecidos Parroquial (21-24)",
                 property: "fallecidos_2021_2024",
                 levels: ["parish"],
-                bins: [2, 5, 15, 50],
+                dynamicBins: true,
                 colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
                 format: value => value.toString()
             }
+        };
+
+        let activeVariableBins = {
+            variable: "normal",
+            level: null,
+            bins: [],
+            validValueCount: 0
         };
 
         function getTerritoryLevelForZoom(zoom = map.getZoom()) {
@@ -1233,46 +1239,66 @@
             return config.levels.includes(level) ? selectedVariable : "normal";
         }
 
-        function calculateQuantileBins(features, property, quantiles = [0.2, 0.4, 0.6, 0.8]) {
+        function calculateQuantileBins(features, config, quantiles = [0.2, 0.4, 0.6, 0.8]) {
             const values = features
-                .map(feature => Number(feature.properties ? feature.properties[property] : null))
-                .filter(value => Number.isFinite(value) && value > 0)
+                .map(feature => feature.properties ? feature.properties[config.property] : null)
+                .filter(value => value !== null && value !== undefined)
+                .map(value => Number(value))
+                .filter(value => Number.isFinite(value) && (config.zeroIsData ? value >= 0 : value > 0))
                 .sort((a, b) => a - b);
-            if (!values.length) return [];
+            if (!values.length) return { bins: [], validValueCount: 0 };
 
-            return [...new Set(quantiles.map(quantile => {
+            const bins = [...new Set(quantiles.map(quantile => {
                 const index = (values.length - 1) * quantile;
                 const lower = Math.floor(index);
                 const upper = Math.ceil(index);
                 const interpolated = lower === upper
                     ? values[lower]
                     : values[lower] + (values[upper] - values[lower]) * (index - lower);
-                return Number(interpolated.toFixed(6));
+                return config.continuous
+                    ? Number(interpolated.toFixed(6))
+                    : Math.floor(interpolated);
             }))];
+            return { bins, validValueCount: values.length };
         }
 
-        function initializeDynamicVariableBins() {
-            const featuresByLevel = {
-                province: provinceData && provinceData.features ? provinceData.features : [],
-                canton: cantonData && cantonData.features ? cantonData.features : []
+        function getFeaturesForLevel(level) {
+            const dataByLevel = {
+                province: provinceData,
+                canton: cantonData,
+                parish: parishData
             };
-            Object.values(VARIABLE_CONFIGS).forEach(config => {
-                if (!config.dynamicBins) return;
-                config.levels.forEach(level => {
-                    if (featuresByLevel[level]) {
-                        config.binsByLevel[level] = calculateQuantileBins(
-                            featuresByLevel[level],
-                            config.property
-                        );
-                    }
-                });
-            });
+            const data = dataByLevel[level];
+            return data && Array.isArray(data.features) ? data.features : [];
         }
 
-        function getVariableBins(config, level) {
-            return config.dynamicBins
-                ? (config.binsByLevel[level] || [])
-                : (config.bins || []);
+        function recalculateActiveVariableBins(variable, level) {
+            const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
+            if (variable === "normal" || !config.levels.includes(level)) {
+                activeVariableBins = { variable: "normal", level, bins: [], validValueCount: 0 };
+            } else {
+                const result = calculateQuantileBins(getFeaturesForLevel(level), config);
+                activeVariableBins = {
+                    variable,
+                    level,
+                    bins: result.bins,
+                    validValueCount: result.validValueCount
+                };
+            }
+            window.__redsaActiveBins = {
+                variable: activeVariableBins.variable,
+                level: activeVariableBins.level,
+                bins: [...activeVariableBins.bins],
+                validValueCount: activeVariableBins.validValueCount
+            };
+            return activeVariableBins.bins;
+        }
+
+        function getVariableBins(variable, level) {
+            if (activeVariableBins.variable !== variable || activeVariableBins.level !== level) {
+                return recalculateActiveVariableBins(variable, level);
+            }
+            return activeVariableBins.bins;
         }
 
         function getBoundaryStyle(feature, level, isHovered = false, isSelected = false) {
@@ -1308,7 +1334,7 @@
         function getChoroplethStyle(feature, variable, level, isHovered = false, isSelected = false) {
             const config = VARIABLE_CONFIGS[variable];
             const val = feature.properties ? feature.properties[config.property] : null;
-            const bins = getVariableBins(config, level);
+            const bins = getVariableBins(variable, level);
             let color = "#cbd5e1";
             let weight = isHovered ? 2.5 : (isSelected ? 3.0 : 1.0);
             let opacity = 0.8;
@@ -1623,14 +1649,14 @@
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
                     const title = `${config.label}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}:`;
-                    const bins = getVariableBins(config, currentLevel);
+                    const bins = getVariableBins(effectiveVariable, currentLevel);
                     const colors = config.colors;
                     const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${title}</div>
                     `;
                     
-                    for (let i = 0; i <= bins.length; i++) {
+                    for (let i = 0; bins.length && i <= bins.length; i++) {
                         let label = "";
                         if (i === 0) {
                             label = `<= ${formatFunc(bins[0])}`;
@@ -1835,22 +1861,12 @@
             }
         }
 
-        function refreshTerritoryLayerStyles() {
-            if (provinceLayer) {
-                provinceLayer.eachLayer(layer => {
-                    provinceLayer.resetStyle(layer);
-                });
-            }
-            if (cantonLayer) {
-                cantonLayer.eachLayer(layer => {
-                    cantonLayer.resetStyle(layer);
-                });
-            }
-            if (parishLayer) {
-                parishLayer.eachLayer(layer => {
-                    parishLayer.resetStyle(layer);
-                });
-            }
+        function refreshTerritoryLayerStyles(level = activeTerritoryLevel) {
+            const layerGroup = getLayerForLevel(level);
+            if (!layerGroup) return;
+            layerGroup.eachLayer(layer => {
+                layerGroup.resetStyle(layer);
+            });
         }
 
         function activateTerritoryLevel(level) {
@@ -1861,9 +1877,10 @@
             removeLayerIfPresent(cantonLayer);
             removeLayerIfPresent(parishLayer);
 
-            targetLayer.addTo(map);
             activeTerritoryLevel = level;
             window.__redsaActiveTerritoryLevel = level;
+            recalculateActiveVariableBins(selectedVariable, level);
+            targetLayer.addTo(map);
 
             domParroquiaRow.style.display = level === "parish" ? "flex" : "none";
             domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
@@ -1897,6 +1914,7 @@
                 .then(data => {
                     const tRenderStart = performance.now();
                     parishData = data;
+                    recalculateActiveVariableBins(selectedVariable, "parish");
                     parishLayer = L.geoJSON(parishData, {
                         style: function(feature) {
                             const isSelected = selectedParishLayer && selectedParishLayer.feature.properties.DPA_PARROQ === feature.properties.DPA_PARROQ;
@@ -2836,7 +2854,6 @@
                 hotspotData = hotspots;
                 mergeHotspotsIntoCantons(cantonData, hotspotData);
                 nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
-                initializeDynamicVariableBins();
 
                 provinceLayer = L.geoJSON(provinceData, {
                     style: function(feature) {
@@ -3230,7 +3247,11 @@
                 });
 
                 function handleVariableChange() {
-                    syncTerritoryLayerToZoom();
+                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    recalculateActiveVariableBins(selectedVariable, level);
+                    refreshTerritoryLayerStyles(level);
+                    updateMapLevelNote(level);
+                    updateLegend();
                 }
 
                 // profile-accordion-btn listener removed
