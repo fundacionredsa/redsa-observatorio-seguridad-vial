@@ -47,7 +47,7 @@
             --ui-gap: 20px;
             --floating-panel-z: 1100;
             --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
-            --perfil-card-max-height: calc(100vh - 120px);
+            --perfil-card-max-height: 140px;
         }
 
         * {
@@ -1358,7 +1358,6 @@
             } else {
                 updateSidebar(null);
             }
-            hideHoverCard();
         }
 
         function onEachParishFeature(feature, layer) {
@@ -1424,7 +1423,6 @@
             } else {
                 updateSidebar(null);
             }
-            hideHoverCard();
         }
 
         function getCantonProps(cantonCode) {
@@ -1809,7 +1807,6 @@
             updateMapLevelNote(level);
             updateLegend();
             updateSidebar(null);
-            hideHoverCard();
         }
 
         function ensureParishLayer() {
@@ -1988,7 +1985,7 @@
             const width = Math.floor(availableWidth);
             const selectorBottom = selectorVisible ? selectorRect.bottom : 0;
             const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
-            const maxHeight = Math.floor(Math.max(160, availableHeight));
+            const maxHeight = Math.floor(Math.max(100, Math.min(140, availableHeight)));
 
             root.style.setProperty("--perfil-card-width", `${width}px`);
             root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
@@ -1996,11 +1993,8 @@
         }
 
         // --- LÓGICA DE TARJETA FLOTANTE (HOVER CARD) ---
-        let hoverCardTimeout = null;
 
         function showHoverCard(props, e) {
-            if (hoverCardTimeout) clearTimeout(hoverCardTimeout);
-            
             const card = document.getElementById("demographic-hover-card");
             const body = document.getElementById("hover-card-body");
             const title = document.getElementById("hover-card-title");
@@ -2172,24 +2166,10 @@
             updateHoverCardLayout();
         }
 
-        function hideHoverCard() {
-            hoverCardTimeout = setTimeout(() => {
-                document.getElementById("demographic-hover-card").style.display = "none";
-            }, 300);
-        }
-
-        // Setup hover card mouse listeners
+        // Setup hover card resize listener
         document.addEventListener("DOMContentLoaded", () => {
             const hoverCard = document.getElementById("demographic-hover-card");
             if (hoverCard) {
-                hoverCard.addEventListener("mouseover", () => {
-                    if (hoverCardTimeout) clearTimeout(hoverCardTimeout);
-                });
-                hoverCard.addEventListener("mouseout", () => {
-                    hoverCardTimeout = setTimeout(() => {
-                        hoverCard.style.display = "none";
-                    }, 300);
-                });
                 window.addEventListener("resize", updateHoverCardLayout);
             }
         });
@@ -2699,7 +2679,6 @@
             } else {
                 updateSidebar(null);
             }
-            hideHoverCard();
         }
 
         // Iniciar Fetch de datos y medición
