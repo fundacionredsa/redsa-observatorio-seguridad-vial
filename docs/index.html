@@ -47,7 +47,7 @@
             --ui-gap: 20px;
             --floating-panel-z: 1100;
             --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
-            --perfil-card-max-height: 140px;
+            --perfil-card-max-height: 280px;
         }
 
         * {
@@ -872,19 +872,13 @@
                         <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Tasa de Siniestros <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>, <span id="info-tasa-siniestros-year">sin dato</span>)</span></div>
+                        <div id="info-tasa-siniestros" class="detail-value empty">Sin dato</div>
+                    </div>
                     <div class="detail-row" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
                         <span>DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span> <span id="dpa-label-prefix">Cantón / Prov</span>:</span>
                         <span style="font-family: monospace; font-weight: bold;"><span id="info-cod-parroquia-span" style="display: none;"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
-                    </div>
-
-                    <!-- SECCIÓN 1B: INTERPRETACIÓN ESTADÍSTICA -->
-                    <div id="interpretation-card" class="interpretation-card">
-                        <div class="interpretation-header">
-                            <div class="interpretation-title">Interpretación</div>
-                            <div id="interpretation-badge" class="interpretation-badge">—</div>
-                        </div>
-                        <div id="interpretation-text" class="interpretation-text">—</div>
-                        <div id="interpretation-share" class="interpretation-share">—</div>
                     </div>
 
                     <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
@@ -1880,6 +1874,8 @@
         const domCanton = document.getElementById("info-canton");
         const domProvincia = document.getElementById("info-provincia");
         const domPoblacion = document.getElementById("info-poblacion");
+        const domTasaSiniestros = document.getElementById("info-tasa-siniestros");
+        const domTasaSiniestrosYear = document.getElementById("info-tasa-siniestros-year");
         const domFallecidosSppat = document.getElementById("info-fallecidos-sppat");
         const domSiniestrosInec = document.getElementById("info-siniestros-inec");
         const domLesionadosInec = document.getElementById("info-lesionados-inec");
@@ -1912,6 +1908,29 @@
         function formatNumber(val) {
             if (val === null || val === undefined) return "Dato no disponible a este nivel";
             return Number(val).toLocaleString('de-DE');
+        }
+
+        function getLatestSiniestrosRate(props) {
+            const siniestros = props && props.siniestros_historico;
+            const poblacion = props && props.poblacion_por_anio;
+            if (!siniestros || !poblacion) return null;
+
+            const years = Object.keys(siniestros)
+                .filter(year => Object.prototype.hasOwnProperty.call(poblacion, year))
+                .sort((a, b) => Number(b) - Number(a));
+
+            for (const year of years) {
+                const total = Number(siniestros[year]);
+                const population = Number(poblacion[year]);
+                if (Number.isFinite(total) && Number.isFinite(population) && population > 0) {
+                    return { year, value: total / population * 100000 };
+                }
+            }
+            return null;
+        }
+
+        function siglaInfoIcon(sigla) {
+            return `<span class="sigla-tooltip-trigger" data-sigla="${sigla}">ⓘ</span>`;
         }
 
         // Helper to render dynamic progress bar
@@ -1951,6 +1970,10 @@
             const selector = document.querySelector(".map-selector-control");
             const attribution = document.querySelector(".leaflet-control-attribution");
 
+            root.style.removeProperty("--perfil-card-max-height");
+            const configuredMaxHeight = parseFloat(
+                window.getComputedStyle(root).getPropertyValue("--perfil-card-max-height")
+            );
             card.style.bottom = `${viewportMargin}px`;
             card.style.width = "";
 
@@ -1993,7 +2016,7 @@
             const width = Math.floor(availableWidth);
             const selectorBottom = selectorVisible ? selectorRect.bottom : 0;
             const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
-            const maxHeight = Math.floor(Math.max(100, Math.min(140, availableHeight)));
+            const maxHeight = Math.floor(Math.max(100, Math.min(configuredMaxHeight, availableHeight)));
 
             root.style.setProperty("--perfil-card-width", `${width}px`);
             root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
@@ -2043,7 +2066,7 @@
             let html = `<div class="perfil-card-grid">`;
             
             // 1. INEC EDG Profile
-            html += `<div class="profile-card-source-title">INEC EDG (Perfil Demográfico)</div>`;
+            html += `<div class="profile-card-source-title">INEC ${siglaInfoIcon("INEC")} EDG ${siglaInfoIcon("EDG")} (Perfil Demográfico, CIE-10 ${siglaInfoIcon("CIE-10")} V01-V89)</div>`;
             
             if (edg) {
                 const total_edg = Object.values(edg.sexo).reduce((a,b) => a+b, 0);
@@ -2112,7 +2135,7 @@
             
             // 2. SPPAT Profile
             const sppat_t = props.fallecidos_sppat_2016_2021;
-            html += `<div class="profile-card-source-title">SPPAT (Reclamaciones 16-21)</div>`;
+            html += `<div class="profile-card-source-title">SPPAT ${siglaInfoIcon("SPPAT")} (Reclamaciones 16-21)</div>`;
             
             if (sppat_t && props.sppat_por_sexo) {
                 const s_m_count = props.sppat_por_sexo.MASCULINO || 0;
@@ -2123,7 +2146,7 @@
                     const sf_pct = (s_f_count / s_total_sex) * 100;
                     html += `
                         <div class="perfil-card-section">
-                            <div class="profile-section-title">Género SPPAT</div>
+                            <div class="profile-section-title">Género SPPAT ${siglaInfoIcon("SPPAT")}</div>
                             <div class="profile-section-subtitle">Género (Total: ${s_total_sex}):</div>
                             <div class="gender-bar-wrapper">
                                 ${s_m_count > 0 ? `<div class="gender-segment male" style="width: ${sm_pct}%;">Masc: ${sm_pct.toFixed(0)}%</div>` : ''}
@@ -2367,6 +2390,9 @@
                 domProvincia.classList.add("empty");
                 domPoblacion.textContent = "Dato no disponible a este nivel";
                 domPoblacion.classList.add("empty");
+                domTasaSiniestros.textContent = "Sin dato";
+                domTasaSiniestros.classList.add("empty");
+                domTasaSiniestrosYear.textContent = "sin dato";
                 domFallecidosSppat.textContent = "—";
                 domFallecidosSppat.classList.add("empty");
                 domSiniestrosInec.textContent = "—";
@@ -2415,6 +2441,20 @@
             else {
                 domPoblacion.textContent = "Dato no disponible a este nivel";
                 domPoblacion.classList.add("empty");
+            }
+
+            const latestSiniestrosRate = getLatestSiniestrosRate(parishProps || props);
+            if (latestSiniestrosRate) {
+                domTasaSiniestros.textContent = latestSiniestrosRate.value.toLocaleString('de-DE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) + " por 100,000 hab.";
+                domTasaSiniestros.classList.remove("empty");
+                domTasaSiniestrosYear.textContent = latestSiniestrosRate.year;
+            } else {
+                domTasaSiniestros.textContent = "Sin dato";
+                domTasaSiniestros.classList.add("empty");
+                domTasaSiniestrosYear.textContent = "sin dato";
             }
             
             domFallecidosSppat.textContent = formatNumber(props.fallecidos_sppat_2016_2021);
