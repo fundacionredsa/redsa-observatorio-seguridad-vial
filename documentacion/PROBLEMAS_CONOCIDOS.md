@@ -16,8 +16,8 @@
 
 ## Prioridad media
 
-4. **Mapillary vacio.** Cero features; requiere token y corrida validada. No debe
-   mostrarse como cobertura disponible.
+4. **Mapillary vacio.** Cero features; requiere token y corrida validada. Fue
+   retirado del control publico de capas y no se muestra como cobertura disponible.
 5. **Serie INEC incompleta.** Falta 2020 y no se incorporaron 2017/2018. ANDA
    exige aceptar terminos; la gestion esta pendiente.
 6. **Perfil EDG sin desagregacion anual.** `fallecidos_detallado` acumula

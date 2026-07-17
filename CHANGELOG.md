@@ -18,6 +18,11 @@ incluidos errores relevantes corregidos durante el desarrollo.
 - Experiencia movil recuperada con sidebar y panel tecnico operables, leyenda
   colapsable, mapa util y una unica estrategia CSS responsive.
 
+### Changed
+
+- Corredores priorizados por REDSA y Mapillary dejan de mostrarse en el control
+  publico de capas mientras no aporten informacion validada al geoportal.
+
 ## [0.4.0] - 2026-07-16
 
 ### Added

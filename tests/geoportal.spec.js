@@ -22,7 +22,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.selectedVariable).toBe("siniestros_inec_2019");
   expect(state.selectedYear).toBe(2024);
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
-  expect(state.infrastructureLayerCount).toBeGreaterThanOrEqual(10);
+  expect(state.infrastructureLayerCount).toBe(8);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
   await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
   await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
@@ -52,12 +52,14 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await page.locator("#technical-panel-toggle").click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#map-variable-select option")).toHaveCount(10);
-  await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
+  await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(8);
+  await expect(page.locator("#technical-drawer")).not.toContainText("Corredores priorizados por REDSA");
+  await expect(page.locator("#technical-drawer")).not.toContainText("Mapillary");
   await expect(page.locator("#technical-drawer")).toContainText("Metodología y descargas");
 
   await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
-    window.__redsaAudit.setOverlay("Mapillary (cobertura parcial)", true);
+    window.__redsaAudit.setOverlay("Aceras", true);
   });
   await page.locator("#clear-infrastructure-button").click();
   let state = await page.evaluate(() => window.__redsaAudit.state());

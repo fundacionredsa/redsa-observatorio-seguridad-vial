@@ -5,12 +5,6 @@
         const COLOR_BOUNDARY = "#52616b";
         const COLOR_BOUNDARY_HOVER = "#ffffff";
         const COLOR_CICLOVIAS = "#22c55e";
-        const COLOR_MAPILLARY = {
-            crosswalk: "#eab308", // Amarillo
-            bikeRack: "#22c55e",  // Verde
-            regulatory: "#ef4444", // Rojo
-            warning: "#f97316"    // Naranja
-        };
         const COLOR_ACERAS = "#ec4899"; // Rosa
         const COLOR_CRUCES = "#eab308"; // Amarillo
         const COLOR_PACIFICACION = "#a855f7"; // Púrpura
@@ -18,9 +12,6 @@
         const COLOR_ILUMINACION = "#e2e8f0"; // Plateado/Blanco
         const COLOR_VELOCIDAD = "#ef4444"; // Rojo
         const COLOR_BRT_METROBUS = "#06b6d4"; // Cyan
-        const COLOR_CORREDOR_MUY_ALTA = "#f43f5e"; // Rosa/Rojo vibrante
-        const COLOR_CORREDOR_ALTA = "#fb923c"; // Naranja vibrante
-
         // Activar panel de diagnóstico si ?debug=true
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('debug') === 'true') {

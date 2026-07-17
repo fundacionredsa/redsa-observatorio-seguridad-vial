@@ -161,28 +161,17 @@
                 handleHash();
                 window.addEventListener("hashchange", handleHash);
 
-                function mapillaryColor(value = "") {
-                    if (value === "crosswalk") return COLOR_MAPILLARY.crosswalk;
-                    if (value === "bicycle-rack") return COLOR_MAPILLARY.bikeRack;
-                    if (value.startsWith("regulatory--")) return COLOR_MAPILLARY.regulatory;
-                    if (value.startsWith("warning--")) return COLOR_MAPILLARY.warning;
-                    return "#94a3b8";
-                }
-
                 function layerOptionsFromConfig(config) {
                     const options = {
                         onEachFeature(feature, layer) {
                             if (feature.properties && config.popup) layer.bindPopup(config.popup(feature.properties));
                         }
                     };
-                    if (["point", "mixed", "mapillary"].includes(config.render)) {
+                    if (["point", "mixed"].includes(config.render)) {
                         options.pointToLayer = (feature, latlng) => {
-                            const color = config.render === "mapillary"
-                                ? mapillaryColor(feature.properties?.value)
-                                : config.color;
                             return L.circleMarker(latlng, {
                                 radius: config.radius || 5,
-                                fillColor: color,
+                                fillColor: config.color,
                                 color: config.outlineColor || "#ffffff",
                                 weight: 1,
                                 opacity: 1,
@@ -190,15 +179,11 @@
                             });
                         };
                     }
-                    if (["line", "mixed", "priority", "mapillary"].includes(config.render)) {
-                        options.style = feature => {
-                            const isPriority = config.render === "priority" && feature.properties?.priority === "Muy Alta";
-                            const color = config.render === "mapillary"
-                                ? mapillaryColor(feature.properties?.value)
-                                : (isPriority ? config.priorityColor : config.color);
+                    if (["line", "mixed"].includes(config.render)) {
+                        options.style = () => {
                             return {
-                                color,
-                                weight: isPriority ? 4 : (config.weight || 3),
+                                color: config.color,
+                                weight: config.weight || 3,
                                 opacity: 0.82
                             };
                         };

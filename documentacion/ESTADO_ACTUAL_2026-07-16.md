@@ -24,8 +24,8 @@
 | Iluminacion | 1.892 | Disponible |
 | Limites de velocidad | 6.015 | Disponible |
 | BRT/Metrobus-Q | 11 | Disponible |
-| Corredores REDSA | 1.000 | Disponible |
-| Mapillary | 0 | No disponible; archivo vacio explicito |
+| Corredores REDSA | 1.000 | Conservado como insumo; no expuesto en el geoportal |
+| Mapillary | 0 | No disponible y no expuesto en el geoportal |
 
 ## Variables del mapa
 

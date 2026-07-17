@@ -223,35 +223,6 @@
             osmAudit: true,
             popup: props => `<strong>Carril exclusivo de bus:</strong> ${props.name || "Carril sin nombre"}<br><strong>Número de carriles:</strong> ${props["lanes:bus"] || "No especificado"}<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
             legend: [{ shape: "line", color: "#06b6d4", label: "Carriles BRT o Metrobús" }]
-        },
-        {
-            id: "corredores_redsa",
-            label: "Corredores priorizados por REDSA",
-            url: "data/corredores_redsa.geojson",
-            render: "priority",
-            color: "#fb923c",
-            priorityColor: "#f43f5e",
-            coverageMask: false,
-            preload: true,
-            popup: props => `<strong>Corredor priorizado por REDSA:</strong> ${props.name || "Corredor sin nombre"}<br><strong>Prioridad:</strong> ${props.priority || "Alta"}<br><small>OpenStreetMap contributors, ODbL</small>`,
-            legend: [
-                { shape: "line", color: "#f43f5e", label: "Prioridad muy alta" },
-                { shape: "line", color: "#fb923c", label: "Prioridad alta" }
-            ]
-        },
-        {
-            id: "mapillary",
-            label: "Mapillary (cobertura parcial)",
-            url: "data/mapillary_pichincha.geojson",
-            render: "mapillary",
-            coverageMask: false,
-            popup: props => `<strong>Elemento identificado en imágenes Mapillary:</strong> ${props.value || "Sin clasificación"}`,
-            legend: [
-                { shape: "circle", color: "#eab308", label: "Cruce peatonal" },
-                { shape: "circle", color: "#22c55e", label: "Espacio para bicicletas" },
-                { shape: "circle", color: "#ef4444", label: "Señal regulatoria" },
-                { shape: "circle", color: "#f97316", label: "Señal de advertencia" }
-            ]
         }
     ];
 
