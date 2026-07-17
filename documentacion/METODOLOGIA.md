@@ -93,6 +93,19 @@ y una matriz Queen de vecinos. `esda.G_Local` usa 999 permutaciones, semilla 42,
 `star=1.0`, pesos estandarizados por fila y alfa 0,05. Local Moran se conserva
 como diagnostico complementario.
 
+## Clasificación Dinámica y Simbolización
+
+El geoportal no utiliza cortes fijos ni un único método estadístico para las variables continuas. Al seleccionar una variable (como *Siniestros INEC* o *Fallecidos por 100k*), cambiar de año, o hacer zoom a un nivel territorial distinto (ej. de Provincias a Cantones), el sistema evalúa dinámicamente tres métodos:
+
+1. **Rupturas Naturales (Jenks / ckmeans)**: Minimiza la varianza dentro de las clases y la maximiza entre clases. Óptimo para distribuciones asimétricas (ej. conteos absolutos de siniestros, que suelen concentrarse en pocas ciudades).
+2. **Intervalos Iguales**: Divide el rango de los datos en segmentos de igual tamaño.
+3. **Cuantiles**: Distribuye la misma cantidad de territorios en cada clase.
+
+Para cada método, el sistema calcula el **Goodness of Variance Fit (GVF)**:
+`GVF = 1 - (Varianza intra-clase / Varianza total)`
+
+El método con el GVF más alto es seleccionado automáticamente (con una leve preferencia hacia Jenks sobre Cuantiles en caso de empate). Además, los cortes matemáticos se redondean a números "limpios" (*pretty breaks*) para la leyenda (ej. mostrar `150` en lugar de `147.2`) sin alterar el umbral real utilizado para colorear el mapa. Las variables categóricas (como coberturas u hotspots) no se someten a este proceso y mantienen su paleta fija.
+
 - `caliente`: Gi* positivo y p <= 0,05.
 - `frio`: Gi* negativo y p <= 0,05.
 - `no_significativo`: p > 0,05.

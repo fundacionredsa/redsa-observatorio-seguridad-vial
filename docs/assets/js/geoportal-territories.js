@@ -232,8 +232,16 @@ function onEachProvinceFeature(feature, layer) {
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
                     const temporalLabel = config.temporal?.tipo === "anual" ? ` · ${selectedYear}` : "";
-                    const title = `${config.label}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}:`;
+                    
+                    let classificationInfo = "";
+                    if (activeVariableBins.method && activeVariableBins.method !== "Sin datos") {
+                        const gvfText = activeVariableBins.gvf !== undefined ? ` Ajuste estadístico GVF: ${activeVariableBins.gvf.toFixed(2)} sobre los datos disponibles para este nivel y año.` : "";
+                        classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}`)}`;
+                    }
+                    
+                    const title = `${config.label}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
+                    const displayBins = activeVariableBins.displayBins || bins;
                     const colors = config.colors;
                     const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
@@ -243,15 +251,14 @@ function onEachProvinceFeature(feature, layer) {
                     for (let i = 0; bins.length && i <= bins.length; i++) {
                         let label = "";
                         if (i === 0) {
-                            label = `<= ${formatFunc(bins[0])}`;
+                            label = `<= ${formatFunc(displayBins[0])}`;
                         } else if (i === bins.length) {
-                            label = `> ${formatFunc(bins[bins.length - 1])}`;
+                            label = `> ${formatFunc(displayBins[displayBins.length - 1])}`;
                         } else {
                             label = config.continuous
-                                ? `> ${formatFunc(bins[i - 1])} - <= ${formatFunc(bins[i])}`
-                                : `${formatFunc(bins[i - 1] + (effectiveVariable === 'tasa_fallecidos_100k' ? 0.1 : 1))} - ${formatFunc(bins[i])}`;
+                                ? `${formatFunc(displayBins[i - 1])} a ${formatFunc(displayBins[i])}`
+                                : `${formatFunc(displayBins[i - 1] + 1)} a ${formatFunc(displayBins[i])}`;
                         }
-
                         itemsHtml += `
                             <div class="legend-item" style="padding-left: 8px;">
                                 <span class="legend-color-line" style="background-color: ${colors[i]}; height: 10px; width: 14px; border-radius: 2px; opacity: 0.75; border: 1px solid rgba(255,255,255,0.15)"></span>

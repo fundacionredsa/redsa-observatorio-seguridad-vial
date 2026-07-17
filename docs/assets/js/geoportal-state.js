@@ -348,7 +348,7 @@
             return config.levels.includes(level) ? selectedVariable : "normal";
         }
 
-        function calculateQuantileBins(features, config, variable, quantiles = [0.2, 0.4, 0.6, 0.8]) {
+        function calculateOptimalBins(features, config, variable, kColors = 5) {
             const values = features
                 .map(feature => getVariableValue(feature.properties, variable, selectedYear))
                 .filter(value => value !== null && value !== undefined)
@@ -357,20 +357,85 @@
                     config.zeroAsNoMapping ? value > 0 : (config.zeroIsData ? value >= 0 : value > 0)
                 ))
                 .sort((a, b) => a - b);
-            if (!values.length) return { bins: [], validValueCount: 0 };
+                
+            if (!values.length) return { bins: [], displayBins: [], method: 'Sin datos', gvf: 0, validValueCount: 0 };
 
-            const bins = [...new Set(quantiles.map(quantile => {
-                const index = (values.length - 1) * quantile;
-                const lower = Math.floor(index);
-                const upper = Math.ceil(index);
-                const interpolated = lower === upper
-                    ? values[lower]
-                    : values[lower] + (values[upper] - values[lower]) * (index - lower);
-                return config.continuous
-                    ? Number(interpolated.toFixed(6))
-                    : Math.floor(interpolated);
-            }))];
-            return { bins, validValueCount: values.length };
+            const uniqueValues = [...new Set(values)].sort((a,b) => a-b);
+            const k = Math.min(kColors, uniqueValues.length);
+            const numBreaks = Math.max(1, k - 1);
+            
+            if (numBreaks === 1 || values.length <= kColors || uniqueValues.length <= kColors) {
+                const bins = uniqueValues.slice(0, numBreaks);
+                return { bins, displayBins: [...bins], method: 'Valores Únicos', gvf: 1.0, validValueCount: values.length };
+            }
+
+            const sdam = ss.variance(values) * values.length;
+            const getGvf = (breaks) => {
+                let sdcm = 0;
+                let classValues = [];
+                let bIdx = 0;
+                for (let v of values) {
+                    if (bIdx < breaks.length && v > breaks[bIdx]) {
+                        if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
+                        classValues = [];
+                        while(bIdx < breaks.length && v > breaks[bIdx]) bIdx++;
+                    }
+                    classValues.push(v);
+                }
+                if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
+                return sdam === 0 ? 1 : 1 - (sdcm / sdam);
+            };
+
+            const quantiles = [];
+            for (let i = 1; i <= numBreaks; i++) quantiles.push(ss.quantile(values, i / k));
+            const gvfQuantiles = getGvf(quantiles);
+
+            const min = values[0];
+            const max = values[values.length - 1];
+            const step = (max - min) / k;
+            const equalIntervals = [];
+            for (let i = 1; i <= numBreaks; i++) equalIntervals.push(min + i * step);
+            const gvfEqual = getGvf(equalIntervals);
+
+            const clusters = ss.ckmeans(values, k);
+            const jenks = clusters.slice(0, numBreaks).map(c => Math.max(...c));
+            const gvfJenks = getGvf(jenks);
+
+            let bestBins = jenks;
+            let bestMethod = 'Rupturas Naturales (Jenks)';
+            let bestGvf = gvfJenks;
+
+            if (gvfEqual > bestGvf) {
+                bestBins = equalIntervals;
+                bestMethod = 'Intervalos Iguales';
+                bestGvf = gvfEqual;
+            }
+            if (gvfQuantiles > bestGvf + 0.01) {
+                bestBins = quantiles;
+                bestMethod = 'Cuantiles';
+                bestGvf = gvfQuantiles;
+            }
+            
+            const displayBins = bestBins.map(val => {
+                if (val === 0) return 0;
+                const mag = Math.pow(10, Math.floor(Math.log10(Math.abs(val))));
+                let factor = 1;
+                if (mag >= 100) factor = mag / 10;
+                else if (mag >= 10) factor = 5;
+                else if (mag >= 1) factor = 1;
+                else factor = mag;
+                
+                let rounded = Math.round(val / factor) * factor;
+                return config.continuous ? Number(rounded.toFixed(3)) : Math.floor(rounded);
+            });
+
+            return { 
+                bins: bestBins.map(b => config.continuous ? Number(b.toFixed(6)) : Math.floor(b)), 
+                displayBins, 
+                method: bestMethod, 
+                gvf: bestGvf, 
+                validValueCount: values.length 
+            };
         }
 
         function getFeaturesForLevel(level) {
@@ -386,14 +451,17 @@
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
             if (variable === "normal" || !config.levels.includes(level)) {
-                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], validValueCount: 0 };
+                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0 };
             } else {
-                const result = calculateQuantileBins(getFeaturesForLevel(level), config, variable);
+                const result = calculateOptimalBins(getFeaturesForLevel(level), config, variable);
                 activeVariableBins = {
                     variable,
                     level,
                     year: selectedYear,
                     bins: result.bins,
+                    displayBins: result.displayBins,
+                    method: result.method,
+                    gvf: result.gvf,
                     validValueCount: result.validValueCount
                 };
             }
@@ -402,6 +470,9 @@
                 level: activeVariableBins.level,
                 year: activeVariableBins.year,
                 bins: [...activeVariableBins.bins],
+                displayBins: [...(activeVariableBins.displayBins || [])],
+                method: activeVariableBins.method,
+                gvf: activeVariableBins.gvf,
                 validValueCount: activeVariableBins.validValueCount
             };
             return activeVariableBins.bins;
