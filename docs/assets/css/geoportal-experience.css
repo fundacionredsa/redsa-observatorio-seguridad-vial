@@ -500,78 +500,6 @@ body:not(.technical-ready) .leaflet-control-layers {
     outline-offset: 2px;
 }
 
-@media (max-width: 768px) {
-    .citizen-panel {
-        top: 66px;
-        left: 10px;
-        width: calc(100vw - 20px);
-        max-height: calc(100dvh - 142px);
-        padding: 13px 14px 12px;
-    }
-
-    .citizen-panel h1 {
-        font-size: 1.05rem;
-    }
-
-    .citizen-question {
-        margin: 9px 0 8px;
-        font-size: 0.9rem;
-    }
-
-    .citizen-summary-metrics {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .citizen-actions {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .citizen-panel:not(.has-selection) .citizen-summary,
-    .citizen-panel:not(.has-selection) #share-view-button,
-    .citizen-panel:not(.has-selection) #download-summary-button {
-        display: none;
-    }
-
-    .citizen-panel:not(.has-selection) .citizen-actions {
-        grid-template-columns: 1fr;
-    }
-
-    .citizen-action:last-child {
-        grid-column: 1 / -1;
-    }
-
-    .technical-toggle {
-        display: none;
-    }
-
-    .technical-drawer {
-        width: min(360px, calc(100vw - 28px));
-        padding: 12px;
-    }
-
-    .sidebar {
-        width: min(var(--analysis-drawer-width), calc(100vw - 28px));
-    }
-
-    .mobile-nav-toggle {
-        z-index: var(--z-mobile-navigation);
-    }
-
-    .leaflet-top.leaflet-right .leaflet-control-zoom {
-        margin-top: 72px;
-    }
-
-    .legend-panel {
-        width: min(210px, calc(100vw - 20px));
-        max-height: 180px;
-        font-size: 0.68rem;
-    }
-
-    .perfil-fallecidos-card {
-        left: var(--perfil-card-left);
-    }
-}
-
 .territory-level-control {
     margin-top: 10px;
     padding-top: 9px;
@@ -669,36 +597,4 @@ body:not(.technical-ready) .leaflet-control-layers {
     font-size: 1.15rem;
     line-height: 1;
     cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    body.mobile-sidebar-open .perfil-fallecidos-card,
-    body.mobile-layers-open .perfil-fallecidos-card {
-        visibility: hidden;
-    }
-
-    body.profile-selection-active .citizen-panel {
-        visibility: hidden;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .territory-level-segments button {
-        min-height: 44px;
-    }
-
-    .profile-card-close {
-        width: 44px;
-        height: 44px;
-    }
-}
-
-@media (max-width: 370px) {
-    .citizen-national-badge {
-        display: none;
-    }
-
-    .citizen-panel {
-        max-height: calc(100dvh - 128px);
-    }
 }

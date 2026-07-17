@@ -11,6 +11,12 @@ incluidos errores relevantes corregidos durante el desarrollo.
 - Documentacion auditable, diccionario de datos, ADR, pruebas automatizadas y
   licencias explicitas.
 - Inventario de problemas abiertos y evidencia reproducible de validacion.
+- Pruebas tactiles permanentes en telefono compacto, telefono estandar y tablet.
+
+### Fixed
+
+- Experiencia movil recuperada con sidebar y panel tecnico operables, leyenda
+  colapsable, mapa util y una unica estrategia CSS responsive.
 
 ## [0.4.0] - 2026-07-16
 

@@ -163,30 +163,3 @@ h1 {
   color: var(--ink);
   font-weight: 700;
 }
-
-@media (max-width: 720px) {
-  .panel {
-    top: 10px;
-    left: 10px;
-    width: calc(100vw - 20px);
-    padding: 12px;
-  }
-
-  .metric-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    margin: 12px 0;
-  }
-
-  .metric-grid div {
-    padding: 8px;
-  }
-
-  h1 {
-    font-size: 1.08rem;
-  }
-
-  .leaflet-control-attribution {
-    font-size: 10px;
-  }
-}

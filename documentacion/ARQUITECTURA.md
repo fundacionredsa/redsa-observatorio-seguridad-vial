@@ -103,14 +103,18 @@ temporal.
 - `docs/assets/js/geoportal-panels.js` renderiza sidebar, perfil y graficos.
 - `docs/assets/js/geoportal-app.js` inicializa datos, infraestructura, controles
   y la API diagnostica usada por Playwright.
-- `docs/assets/css/geoportal-core.css` y `geoportal-experience.css` son las dos
-  hojas de estilo de produccion; comparten una unica escala de tokens `--z-*`.
+- `docs/assets/css/geoportal-core.css` y `geoportal-experience.css` definen la
+  experiencia desktop; `geoportal-mobile.css`, cargado al final, concentra todas
+  las reglas para `max-width: 768px`. Comparten una unica escala `--z-*`.
 - `docs/index.html` es el esqueleto semantico y carga los archivos estaticos en
-  orden. No contiene CSS ni el motor JavaScript inline.
+  orden con una version comun para invalidar cache. No contiene CSS ni el motor
+  JavaScript inline.
 
 La vista inicial encuadra Ecuador continental, muestra siniestros 2024 y deja
 todas las capas de infraestructura apagadas. El modo Auto cambia el nivel por
 zoom con histeresis; el usuario puede fijar cualquiera de los tres niveles.
+En movil, sidebar y panel tecnico son overlays, la leyenda inicia colapsada y la
+seleccion territorial se realiza por toque con el mismo estado persistente.
 
 ## Orden reproducible
 

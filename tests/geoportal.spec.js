@@ -333,18 +333,22 @@ test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", asyn
   await expect(page.locator(".legend-panel")).toContainText("no que la infraestructura no exista");
 });
 
-test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, testInfo) => {
+test("mobile conserva una superficie de mapa util en telefono y tablet", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Validacion especifica del breakpoint movil.");
 
-  async function assertMobileLayout(width, height) {
-    await page.setViewportSize({ width, height });
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 360, height: 740 },
+    { width: 768, height: 1024 }
+  ]) {
+    await page.setViewportSize(viewport);
     await loadPortal(page);
 
-    const closed = await page.evaluate(() => {
-      function box(selector) {
-        const el = document.querySelector(selector);
-        const rect = el.getBoundingClientRect();
-        const styles = getComputedStyle(el);
+    const geometry = await page.evaluate(() => {
+      const box = selector => {
+        const element = document.querySelector(selector);
+        const rect = element.getBoundingClientRect();
+        const styles = getComputedStyle(element);
         return {
           left: rect.left,
           right: rect.right,
@@ -352,111 +356,162 @@ test("mobile muestra sidebar y capas como drawers accesibles", async ({ page }, 
           bottom: rect.bottom,
           width: rect.width,
           height: rect.height,
-          opacity: Number(styles.opacity),
+          display: styles.display,
           pointerEvents: styles.pointerEvents,
           inViewport: rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight
         };
-      }
+      };
+      const citizen = box("#citizen-panel");
+      const legend = box(".legend-panel");
       return {
-        sidebar: box(".sidebar"),
-        layers: box(".technical-drawer"),
-        mapSelector: box(".map-selector-control"),
+        viewport: { width: innerWidth, height: innerHeight },
+        map: box("#map"),
+        citizen,
+        legend,
+        freeMapBand: legend.top - citizen.bottom,
+        sidebar: box("#territory-sidebar"),
+        layers: box("#technical-drawer"),
         sidebarButton: box("#mobile-sidebar-toggle"),
-        layersButton: box("#mobile-layers-toggle")
+        layersButton: box("#mobile-layers-toggle"),
+        legendButton: box("#mobile-legend-toggle")
       };
     });
 
-    expect(closed.sidebar.inViewport).toBeFalsy();
-    expect(closed.layers.inViewport).toBeFalsy();
-    expect(closed.layers.pointerEvents).toBe("none");
-    expect(closed.mapSelector.inViewport).toBeFalsy();
-    expect(closed.sidebarButton.height).toBeGreaterThanOrEqual(44);
-    expect(closed.layersButton.height).toBeGreaterThanOrEqual(44);
-
-    await page.locator("#mobile-sidebar-toggle").click();
-    await page.waitForTimeout(300);
-    const sidebarOpen = await page.evaluate(() => {
-      const sidebar = document.querySelector(".sidebar").getBoundingClientRect();
-      const close = document.querySelector("#mobile-sidebar-close").getBoundingClientRect();
-      return {
-        bodyClass: document.body.className,
-        sidebar: { left: sidebar.left, right: sidebar.right, top: sidebar.top, bottom: sidebar.bottom, width: sidebar.width, height: sidebar.height },
-        close: { width: close.width, height: close.height },
-        text: document.querySelector(".sidebar").innerText
-      };
-    });
-    expect(sidebarOpen.bodyClass).toContain("mobile-sidebar-open");
-    expect(sidebarOpen.sidebar.left).toBeGreaterThanOrEqual(0);
-    expect(sidebarOpen.sidebar.right).toBeLessThanOrEqual(width);
-    expect(sidebarOpen.sidebar.bottom).toBeLessThanOrEqual(height);
-    expect(sidebarOpen.close.width).toBeGreaterThanOrEqual(44);
-    expect(sidebarOpen.close.height).toBeGreaterThanOrEqual(44);
-    expect(sidebarOpen.text.toUpperCase()).toContain("INFORMACI");
-
-    await page.locator("#mobile-overlay-backdrop").click({ position: { x: width - 8, y: height - 8 } });
-    await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);
-
-    await page.locator("#mobile-layers-toggle").click();
-    await page.waitForTimeout(300);
-    const layersOpen = await page.evaluate(() => {
-      const layers = document.querySelector(".technical-drawer").getBoundingClientRect();
-      const close = document.querySelector("#technical-drawer-close").getBoundingClientRect();
-      return {
-        bodyClass: document.body.className,
-        layers: { left: layers.left, right: layers.right, top: layers.top, bottom: layers.bottom, width: layers.width, height: layers.height },
-        close: { width: close.width, height: close.height },
-        text: document.querySelector(".technical-drawer").innerText
-      };
-    });
-    expect(layersOpen.bodyClass).toContain("mobile-layers-open");
-    expect(layersOpen.layers.left).toBeGreaterThanOrEqual(0);
-    expect(layersOpen.layers.right).toBeLessThanOrEqual(width);
-    expect(layersOpen.layers.bottom).toBeLessThanOrEqual(height);
-    expect(layersOpen.close.width).toBeGreaterThanOrEqual(44);
-    expect(layersOpen.close.height).toBeGreaterThanOrEqual(44);
-    expect(layersOpen.text.toUpperCase()).toContain("DATOS Y CAPAS");
-    expect(layersOpen.text).toContain("Ciclov");
-
-    await page.keyboard.press("Escape");
-    await expect(page.locator("body")).not.toHaveClass(/mobile-layers-open/);
-
-    await page.evaluate(() => {
-      window.__redsaAudit.setZoom(9);
-      window.__redsaAudit.showTerritory("canton", "1701");
-    });
-    const profile = await page.evaluate(() => {
-      const card = document.querySelector(".perfil-fallecidos-card").getBoundingClientRect();
-      const legend = document.querySelector(".legend-panel").getBoundingClientRect();
-      return {
-        card: { top: card.top, bottom: card.bottom, left: card.left, right: card.right, width: card.width, height: card.height },
-        legend: { top: legend.top, bottom: legend.bottom, left: legend.left, right: legend.right },
-        intersects: !(card.right <= legend.left || card.left >= legend.right || card.bottom <= legend.top || card.top >= legend.bottom)
-      };
-    });
-    expect(profile.card.bottom).toBeLessThanOrEqual(height - 10);
-    expect(profile.intersects).toBeFalsy();
-
-    const tooSmall = await page.evaluate(() => {
-      const selectors = [
-        ".mobile-nav-toggle",
-        ".mobile-sidebar-close",
-        "#technical-drawer-close",
-        ".leaflet-control-layers-list label",
-        "#map-variable-select",
-        "#map-year-slider"
-      ];
-      return selectors.flatMap(selector => Array.from(document.querySelectorAll(selector)).map(el => {
-        const rect = el.getBoundingClientRect();
-        const styles = getComputedStyle(el);
-        const visible = styles.display !== "none" && styles.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
-        return visible && (rect.width < 44 || rect.height < 44)
-          ? { selector, width: rect.width, height: rect.height, text: (el.innerText || el.value || el.getAttribute("aria-label") || "").slice(0, 40) }
-          : null;
-      }).filter(Boolean));
-    });
-    expect(tooSmall).toEqual([]);
+    expect(geometry.map.width).toBe(viewport.width);
+    expect(geometry.map.height).toBe(viewport.height);
+    expect(geometry.freeMapBand).toBeGreaterThanOrEqual(Math.min(300, viewport.height * 0.3));
+    expect(geometry.legend.height).toBeLessThanOrEqual(52);
+    expect(geometry.sidebar.inViewport).toBeFalsy();
+    expect(geometry.layers.inViewport).toBeFalsy();
+    expect(geometry.layers.pointerEvents).toBe("none");
+    expect(geometry.sidebarButton.height).toBeGreaterThanOrEqual(44);
+    expect(geometry.layersButton.height).toBeGreaterThanOrEqual(44);
+    expect(geometry.legendButton.height).toBeGreaterThanOrEqual(44);
   }
+});
 
-  await assertMobileLayout(390, 844);
-  await assertMobileLayout(360, 740);
+test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "Flujo tactil real del proyecto movil.");
+  const width = 390;
+  const height = 844;
+  await page.setViewportSize({ width, height });
+  await loadPortal(page);
+
+  await page.locator("#mobile-sidebar-toggle").tap();
+  await expect(page.locator("body")).toHaveClass(/mobile-sidebar-open/);
+  await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(0);
+  const sidebar = await page.evaluate(() => {
+    const element = document.querySelector("#territory-sidebar");
+    const rect = element.getBoundingClientRect();
+    const close = document.querySelector("#mobile-sidebar-close").getBoundingClientRect();
+    return {
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      close: { width: close.width, height: close.height }
+    };
+  });
+  expect(sidebar.left).toBeGreaterThanOrEqual(0);
+  expect(sidebar.right).toBeLessThanOrEqual(width);
+  expect(sidebar.bottom).toBeLessThanOrEqual(height);
+  expect(sidebar.scrollWidth).toBeLessThanOrEqual(sidebar.clientWidth + 1);
+  expect(sidebar.close.width).toBeGreaterThanOrEqual(44);
+  expect(sidebar.close.height).toBeGreaterThanOrEqual(44);
+
+  await page.locator("#mobile-overlay-backdrop").tap({ position: { x: width - 6, y: height - 6 } });
+  await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);
+
+  await page.locator("#mobile-layers-toggle").tap();
+  await expect(page.locator("body")).toHaveClass(/mobile-layers-open/);
+  await expect.poll(() => page.locator("#technical-drawer").evaluate(element => element.getBoundingClientRect().right)).toBeLessThanOrEqual(width);
+  const technical = await page.evaluate(() => {
+    const box = selector => {
+      const element = document.querySelector(selector);
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+    };
+    return {
+      drawer: box("#technical-drawer"),
+      selector: box(".map-selector-control"),
+      slider: box("#map-year-slider"),
+      level: box("#territory-level-control")
+    };
+  });
+  expect(technical.drawer.left).toBeGreaterThanOrEqual(0);
+  expect(technical.drawer.right).toBeLessThanOrEqual(width);
+  expect(technical.drawer.bottom).toBeLessThanOrEqual(height);
+  expect(technical.selector.bottom).toBeLessThanOrEqual(height);
+  expect(technical.slider.height).toBeGreaterThanOrEqual(44);
+  expect(technical.slider.bottom).toBeLessThanOrEqual(height);
+  expect(technical.level.bottom).toBeLessThanOrEqual(height);
+
+  const tooSmall = await page.evaluate(() => {
+    const selectors = [
+      ".mobile-nav-toggle",
+      ".mobile-sidebar-close",
+      "#technical-drawer-close",
+      ".leaflet-control-layers-list label",
+      "#map-variable-select",
+      "#map-year-slider",
+      ".territory-level-segments button",
+      "#mobile-legend-toggle"
+    ];
+    return selectors.flatMap(selector => Array.from(document.querySelectorAll(selector)).map(element => {
+      const rect = element.getBoundingClientRect();
+      const styles = getComputedStyle(element);
+      const visible = styles.display !== "none" && styles.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+      return visible && (rect.width < 44 || rect.height < 44)
+        ? { selector, width: rect.width, height: rect.height }
+        : null;
+    }).filter(Boolean));
+  });
+  expect(tooSmall).toEqual([]);
+
+  const sliderBox = await page.locator("#map-year-slider").boundingBox();
+  expect(sliderBox).not.toBeNull();
+  await page.touchscreen.tap(sliderBox.x + sliderBox.width * 0.6, sliderBox.y + sliderBox.height / 2);
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
+
+  await page.locator("#technical-drawer-close").tap();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-layers-open/);
+  await page.waitForFunction(() => document.querySelector("#technical-drawer").getBoundingClientRect().left >= innerWidth - 1);
+
+  const tapPoint = await page.evaluate(() => window.__redsaAudit.prepareTerritoryTap("canton", "1701"));
+  expect(tapPoint).not.toBeNull();
+  await page.touchscreen.tap(tapPoint.x, tapPoint.y);
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({ level: "canton", code: "1701" });
+  await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  await expect(page.locator("#hover-card-period")).toHaveText("2022");
+
+  const selected = await page.evaluate(() => {
+    const box = selector => {
+      const element = document.querySelector(selector);
+      const rect = element.getBoundingClientRect();
+      const styles = getComputedStyle(element);
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, visibility: styles.visibility };
+    };
+    const card = box("#demographic-hover-card");
+    const legend = box(".legend-panel");
+    const intersects = !(card.right <= legend.left || card.left >= legend.right || card.bottom <= legend.top || card.top >= legend.bottom);
+    return { card, legend, intersects };
+  });
+  expect(selected.card.top).toBeGreaterThanOrEqual(0);
+  expect(selected.card.bottom).toBeLessThanOrEqual(height - 10);
+  expect(selected.intersects).toBeFalsy();
+
+  await page.locator("#mobile-legend-toggle").tap();
+  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#legend-content")).toBeVisible();
+  await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "hidden");
+  const openLegend = await page.locator(".legend-panel").boundingBox();
+  expect(openLegend).not.toBeNull();
+  expect(openLegend.y).toBeGreaterThanOrEqual(0);
+  expect(openLegend.y + openLegend.height).toBeLessThanOrEqual(height);
+
+  await page.locator("#mobile-legend-toggle").tap();
+  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "visible");
 });

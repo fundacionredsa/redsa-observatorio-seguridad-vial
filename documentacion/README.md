@@ -13,7 +13,8 @@ Estado documentado: **2026-07-16**.
 - Diseno: [componentes](UI_COMPONENTES.md),
   [sistema visual](SISTEMA_DISENO.md),
   [rediseño nacional](EVIDENCIA_REDISENO_NACIONAL.md) e
-  [interaccion territorial](EVIDENCIA_INTERACCION_PROFESIONAL.md).
+  [interaccion territorial](EVIDENCIA_INTERACCION_PROFESIONAL.md) y
+  [recuperacion movil](EVIDENCIA_RECUPERACION_MOVIL.md).
 - Gestion: [problemas conocidos](PROBLEMAS_CONOCIDOS.md),
   [changelog](../CHANGELOG.md) y licencias de [codigo](../LICENSE) y
   [datos](../LICENSE-DATA.md).

@@ -98,3 +98,26 @@ La validacion posterior a la refactorizacion D1-D5 produjo estos resultados:
 La evidencia visual y las mediciones reproducibles estan en
 `documentacion/evidencia_visual/interaccion_profesional/` y
 `documentacion/EVIDENCIA_INTERACCION_PROFESIONAL.md`.
+
+## Recuperacion movil (2026-07-16)
+
+- `npm run data:dictionary`: 1.686 campos observados y diccionario regenerado.
+- `npm run data:check`: aprobado; hashes y conteos de los GeoJSON sin cambios.
+- `npm run data:test`: 10/10 contratos aprobados.
+- Playwright: 30 pruebas aprobadas, 4 omitidas intencionalmente por proyecto de
+  viewport y 0 fallos. La suite incluye siempre 390x844, 360x740 y 768x1024.
+- En 390x844, la franja vertical libre entre panel ciudadano y leyenda aumento
+  de 177 px a 429 px; la leyenda cerrada disminuyo de 180 px a 46 px.
+- En 360x740, la franja libre aumento de 73 px a 332 px.
+- El flujo tactil real abre/cierra ambos drawers, mueve el ano a 2022, selecciona
+  el canton `1701`, conserva el perfil y abre/cierra la leyenda sin colisiones.
+- Perfil movil `x=12..378`, `y=471..751`; leyenda cerrada `y=766..812`.
+- La comparacion desktop controlada de la vista inicial produjo 0 de 1.049.088
+  pixeles distintos. La seleccion conserva perfil `x=426..1050`, `y=460..740`
+  y leyenda `x=1066..1356`.
+- `git diff -- docs/data` permanece vacio: el cambio es exclusivamente de UI,
+  pruebas, versionado de assets y documentacion.
+
+La causa, decision responsive, capturas antes/despues y mediciones completas se
+encuentran en `documentacion/EVIDENCIA_RECUPERACION_MOVIL.md`, ADR-009 y
+`documentacion/evidencia_visual/recuperacion_movil/`.

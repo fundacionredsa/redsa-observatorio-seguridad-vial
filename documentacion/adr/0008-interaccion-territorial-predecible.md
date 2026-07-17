@@ -44,6 +44,9 @@ esqueleto HTML y carga, en orden:
 Los estilos viven en `geoportal-core.css` y `geoportal-experience.css`. No queda
 un bloque `<style>` ni un script principal inline en `index.html`.
 
+La estrategia responsive movil se consolido posteriormente en ADR-009 y agrega
+`geoportal-mobile.css` como unica fuente de reglas para `max-width: 768px`.
+
 ## Verificacion y consecuencias
 
 Playwright cubre que un clic cantonal no salte a parroquias, que hover no cambie

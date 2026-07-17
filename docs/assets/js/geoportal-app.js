@@ -487,6 +487,39 @@
                         syncTerritoryLayerToZoom();
                         return this.state();
                     },
+                    prepareTerritoryTap(level, code) {
+                        const found = this.findTerritoryLayer(level, code);
+                        if (!found) return null;
+                        const zoomByLevel = { province: 6, canton: 9, parish: 12 };
+                        let center = found.getBounds().getCenter();
+                        map.setView(center, zoomByLevel[level], { animate: false });
+                        syncTerritoryLayerToZoom();
+                        if (map.hasLayer(getLayerForLevel(level)) && found.getCenter) {
+                            center = found.getCenter();
+                            map.setView(center, zoomByLevel[level], { animate: false });
+                        }
+
+                        const mapRect = map.getContainer().getBoundingClientRect();
+                        const citizen = document.getElementById("citizen-panel");
+                        const legend = document.querySelector(".legend-panel");
+                        const citizenRect = citizen && isVisibleElement(citizen) ? citizen.getBoundingClientRect() : null;
+                        const legendRect = legend && isVisibleElement(legend) ? legend.getBoundingClientRect() : null;
+                        const freeTop = Math.max(76, citizenRect ? citizenRect.bottom + 20 : 76);
+                        const freeBottom = Math.min(
+                            mapRect.bottom - 70,
+                            legendRect ? legendRect.top - 20 : mapRect.bottom - 70
+                        );
+                        const targetY = Math.max(freeTop, Math.min((freeTop + freeBottom) / 2, freeBottom));
+                        const currentPoint = map.latLngToContainerPoint(center);
+                        map.panBy([0, currentPoint.y - (targetY - mapRect.top)], { animate: false });
+                        const tapPoint = map.latLngToContainerPoint(center);
+                        return {
+                            x: mapRect.left + tapPoint.x,
+                            y: mapRect.top + tapPoint.y,
+                            level,
+                            code: String(code)
+                        };
+                    },
                     setTerritoryLevelMode(mode) {
                         return setTerritoryLevelMode(mode) ? this.state() : false;
                     },

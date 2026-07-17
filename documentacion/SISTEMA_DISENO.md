@@ -44,10 +44,14 @@ esa escala sin un ADR que documente la excepcion.
 
 ## Breakpoints
 
-- `<=1024px`: sidebar 380 px.
-- `<=768px`: layout de una columna, controles compactos, sidebar-width 0 y
-  panel demografico a todo el ancho disponible. Al seleccionar una unidad, el
-  perfil toma prioridad y el panel ciudadano se oculta hasta cerrar la seleccion.
+- `<=1024px`: ajuste intermedio desktop/tablet horizontal en
+  `geoportal-core.css`.
+- `<=768px`: telefono y tablet vertical; drawers superpuestos, panel ciudadano
+  compacto, leyenda colapsable y objetivos tactiles de 44 px.
+- `<=370px`: ajustes de telefono compacto sin retirar datos ni advertencias.
+
+Las dos reglas moviles viven solo en `geoportal-mobile.css`, cargado al final.
+No se agregan media queries equivalentes a otras hojas de estilo.
 
 ## Convenciones
 

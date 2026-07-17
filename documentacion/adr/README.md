@@ -14,3 +14,5 @@ reescribir retroactivamente la justificacion historica.
   progresiva, vista nacional y registros frontend.
 - [ADR-008](0008-interaccion-territorial-predecible.md): seleccion persistente,
   nivel territorial controlable y frontend modular.
+- [ADR-009](0009-responsive-movil-consolidado.md): estrategia responsive unica,
+  flujo tactil y cobertura movil permanente.

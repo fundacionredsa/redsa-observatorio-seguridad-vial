@@ -15,7 +15,7 @@ referenciados; no deben editarse esperando afectar produccion.
 | Linea de tiempo | `#map-year-slider` | Estado anual unico del geoportal | coberturas declaradas |
 | Nivel territorial | `#territory-level-control` | Auto o nivel manual persistente | estado territorial global |
 | Control de capas | `.leaflet-control-layers` | Basemap y overlays independientes; permite apagar todo | `REDSA_GEO_CONFIG.infrastructureLayers` |
-| Leyenda | `.legend-panel` | Umbrales y simbologia dinamica | bins activos y overlays visibles |
+| Leyenda | `.legend-panel` | Umbrales dinamicos; colapsable en movil | bins activos y overlays visibles |
 | Perfil demografico | `.perfil-fallecidos-card` | Unidad seleccionada por clic; panel fijo y cerrable | EDG y SPPAT agregados |
 | Grafico de tendencia | `#historico-chart` | Siniestros y fallecidos por ano | Chart.js |
 | Popovers de siglas | `.sigla-tooltip-trigger`, `.sigla-popover` | Glosario reutilizable | diccionario JS `siglaDefinitions` |
@@ -35,6 +35,9 @@ referenciados; no deben editarse esperando afectar produccion.
 - Los checkboxes de movilidad son independientes del nivel territorial.
 - `Escape`, backdrop o cierre explicito cierran los drawers sin cambiar el mapa;
   la X del perfil limpia la seleccion sin alterar variable, ano o capas.
+- En movil, un toque sobre una geometria crea la seleccion persistente. La
+  leyenda puede abrirse y cerrarse sin perderla; drawers y leyenda completa no
+  compiten simultaneamente con el perfil.
 
 ## Accesibilidad conocida
 
@@ -43,3 +46,6 @@ los cambios de resumen usan `aria-live` y los objetivos tactiles moviles miden a
 menos 44 px. Los popovers funcionan por clic y el mapa conserva controles
 estandar Leaflet. Falta una auditoria WCAG formal y navegacion completa por
 teclado de los poligonos.
+
+Las reglas moviles viven exclusivamente en `geoportal-mobile.css`; Playwright
+comprueba su geometria en telefono compacto, telefono estandar y tablet vertical.

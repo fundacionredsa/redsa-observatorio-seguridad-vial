@@ -71,8 +71,14 @@
                 L.DomEvent.disableScrollPropagation(div);
 
                 div.innerHTML = `
-                    <div class="legend-title">Leyenda</div>
-                    <div id="legend-items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <button class="mobile-legend-toggle" id="mobile-legend-toggle" type="button" aria-expanded="false" aria-controls="legend-content">
+                        <span>Leyenda</span>
+                        <span class="mobile-legend-state">Mostrar</span>
+                    </button>
+                    <div class="legend-content" id="legend-content">
+                        <div class="legend-title">Leyenda</div>
+                        <div id="legend-items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
                 `;
                 return div;
             }
@@ -128,11 +134,24 @@
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
         const technicalControlsSlot = document.getElementById("technical-controls-slot");
         const territorySidebar = document.getElementById("territory-sidebar");
+        const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
+        const legendPanel = document.querySelector(".legend-panel");
 
         territorySidebar?.addEventListener("transitionend", () => updateProfileCardLayout());
         technicalDrawer?.addEventListener("transitionend", () => updateProfileCardLayout());
 
+        function setMobileLegend(open) {
+            const shouldOpen = Boolean(open && mobileMediaQuery.matches);
+            legendPanel?.classList.toggle("mobile-legend-open", shouldOpen);
+            document.body.classList.toggle("mobile-legend-open", shouldOpen);
+            mobileLegendToggle?.setAttribute("aria-expanded", String(shouldOpen));
+            const stateLabel = mobileLegendToggle?.querySelector(".mobile-legend-state");
+            if (stateLabel) stateLabel.textContent = shouldOpen ? "Ocultar" : "Mostrar";
+            window.requestAnimationFrame(updateProfileCardLayout);
+        }
+
         function setMobilePanel(panel, open) {
+            if (open) setMobileLegend(false);
             if (panel === "sidebar") {
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
@@ -210,11 +229,20 @@
             updateLegend();
         });
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
+        mobileLegendToggle?.addEventListener("click", () => {
+            setMobileLegend(!legendPanel?.classList.contains("mobile-legend-open"));
+        });
         document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") closeMobilePanels();
+            if (event.key === "Escape") {
+                closeMobilePanels();
+                setMobileLegend(false);
+            }
         });
         mobileMediaQuery.addEventListener("change", (event) => {
-            if (!event.matches) closeMobilePanels();
+            if (!event.matches) {
+                closeMobilePanels();
+                setMobileLegend(false);
+            }
         });
 
         let selectedVariable = INITIAL_VIEW.variable;
@@ -531,6 +559,7 @@
 
         function selectTerritoryLayer(level, layer, options = {}) {
             if (!layer?.feature?.properties) return false;
+            setMobileLegend(false);
             const { fitBounds = true, updateHash = true } = options;
             const previousSelection = selectedTerritory;
             if (previousSelection?.layer && previousSelection.layer !== layer) {
