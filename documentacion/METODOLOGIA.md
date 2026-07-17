@@ -40,12 +40,7 @@ se resuelve canton/provincia a DPA y se agregan:
 - fallecidos, lesionados y victimas informados;
 - clase, causa, zona urbana/rural y patron horario.
 
-Cobertura publicada: 2019 y 2021-2024. No se interpola 2020. En 2021-2024 hay
-119 filas que no resolvieron a canton: 47 son nombres parenteticos recuperables
-(`BOLIVAR (MANABI/CARCHI)`, `OLMEDO (MANABI/LOJA)`) y 72 son localidades que
-no identifican un canton de forma inequivoca (`EL PIEDRERO`, `MATILDE ESTHER`,
-`SANTA ROSA DE AGUA CLARA`). La capa actual omite las 119; ver problemas
-conocidos antes de comparar el total nacional publicado con el archivo crudo.
+Cobertura publicada: 2017-2024. Los años 2017, 2018 y 2020 se integraron a partir de las Encuestas de Transporte (EDT/ANET) descargadas del catálogo ANDA del INEC (Catálogos 704, 786 y 894, respectivamente, descargados el 17/07/2026). En 2021-2024 hay 119 filas que no resolvieron a canton: 47 son nombres parenteticos recuperables (`BOLIVAR (MANABI/CARCHI)`, `OLMEDO (MANABI/LOJA)`) y 72 son localidades que no identifican un canton de forma inequivoca (`EL PIEDRERO`, `MATILDE ESTHER`, `SANTA ROSA DE AGUA CLARA`). La capa actual omite las 119; ver problemas conocidos antes de comparar el total nacional publicado con el archivo crudo.
 
 ## Fallecidos EDG y CIE-10
 
