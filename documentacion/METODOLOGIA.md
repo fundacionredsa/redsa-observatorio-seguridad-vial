@@ -66,10 +66,7 @@ con variantes territoriales auditables. El resultado publicado coincide con
 los 15.297 registros V01-V89 de esos cuatro anos. Para 2020 hay 2.578 casos
 adicionales, tambien completamente agregados.
 
-V89 concentra 11.648 de 15.297 fallecidos 2021-2024 (76,1%). En DMQ,
-`otro` representa 2.180 de 2.205 (98,87%). Esta diferencia esta verificada en
-el agregado, pero su causa institucional no esta explicada; no debe
-interpretarse como estructura real de usuarios viales.
+V89 concentra 11.648 de 15.297 fallecidos 2021-2024 (76,1%). Existe una dependencia empírica severa al código V892 en 2024 que varía drásticamente por cantón (DMQ 99.01% vs Guayaquil 91.58% vs Cuenca 67.44%). Esta alta tasa de "vehículo no especificado" está verificada en el microdato, pero su causa institucional de registro no está explicada; no debe interpretarse como estructura real de usuarios viales, sino como una limitación de la fuente o un "sin dato" de facto.
 
 ## SPPAT
 

@@ -279,21 +279,44 @@
                         ciclista: "#22c55e",
                         motociclista: "#f97316",
                         ocupante: "#38bdf8",
-                        otro: "#94a3b8"
+                        otro: "#94a3b8",
+                        sin_dato: "#64748b"
                     };
                     const userLabels = {
                         peaton: "Peatón",
                         ciclista: "Ciclista",
                         motociclista: "Motociclista",
                         ocupante: "Ocupante",
-                        otro: "Otros / Sin dato"
+                        otro: "Otros / veh. no especificado (V80-V89)",
+                        sin_dato: "Sin dato de usuario vial"
                     };
+
+                    const total_sin_dato = edg.cobertura ? (total_edg - edg.cobertura.usuario_conocido) : 0;
+                    const total_otro = Math.max(0, (edg.usuario.otro || 0) - total_sin_dato);
+                    
+                    const userCounts = {
+                        peaton: edg.usuario.peaton || 0,
+                        ciclista: edg.usuario.ciclista || 0,
+                        motociclista: edg.usuario.motociclista || 0,
+                        ocupante: edg.usuario.ocupante || 0,
+                        otro: total_otro,
+                        sin_dato: total_sin_dato
+                    };
+
                     Object.keys(userLabels).forEach(k => {
-                        const count = edg.usuario[k];
+                        const count = userCounts[k];
+                        if (count === 0 && (k === "sin_dato" || k === "otro")) return;
+
                         const pct = (count / total_edg) * 100;
                         const trend = ["2020", "2021", "2022", "2023", "2024"].map(year => {
                             const annual = edgSeries[year];
-                            return annual && annual.estado !== "sin_dato" ? annual.usuario?.[k] : null;
+                            if (!annual || annual.estado === "sin_dato") return null;
+                            const ann_total = annual.total || 0;
+                            const ann_conocido = annual.cobertura ? annual.cobertura.usuario_conocido : ann_total;
+                            const ann_sin_dato = ann_total - ann_conocido;
+                            if (k === "sin_dato") return ann_sin_dato;
+                            if (k === "otro") return Math.max(0, (annual.usuario?.otro || 0) - ann_sin_dato);
+                            return annual.usuario?.[k] || 0;
                         });
                         html += defProgressBar(
                             userLabels[k],

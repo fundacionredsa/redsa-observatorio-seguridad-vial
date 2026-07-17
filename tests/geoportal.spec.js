@@ -250,6 +250,7 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí? (2024)");
   await expect(page.locator(".profile-card-source-detail").first()).toContainText("según registro civil");
   await expect(page.locator(".profile-card-source-detail").first()).toContainText("Los iconos ⓘ explican los códigos técnicos");
+  await expect(page.locator(".perfil-card-section").locator("text=Otros / veh. no especificado (V80-V89)")).toBeVisible();
 });
 
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
