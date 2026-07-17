@@ -12,6 +12,10 @@ incluidos errores relevantes corregidos durante el desarrollo.
   licencias explicitas.
 - Inventario de problemas abiertos y evidencia reproducible de validacion.
 - Pruebas tactiles permanentes en telefono compacto, telefono estandar y tablet.
+- Ranking nacional comparable de cantones, sincronizado con la variable y el
+  ano activos, con busqueda y exclusion explicita de unidades sin dato.
+- Secciones institucionales sobre confianza, apertura y citacion con fecha de
+  consulta generada en el navegador.
 
 ### Fixed
 

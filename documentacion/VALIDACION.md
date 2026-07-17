@@ -121,3 +121,26 @@ La evidencia visual y las mediciones reproducibles estan en
 La causa, decision responsive, capturas antes/despues y mediciones completas se
 encuentran en `documentacion/EVIDENCIA_RECUPERACION_MOVIL.md`, ADR-009 y
 `documentacion/evidencia_visual/recuperacion_movil/`.
+
+## Ranking nacional y transparencia (2026-07-17)
+
+- El ranking reutiliza el registro canonico de variables y el ano global, sin
+  cambiar ningun GeoJSON ni contrato de datos.
+- Para Siniestros INEC 2024 mostro 212 cantones comparables y excluyo 12 sin
+  dato; la suma vuelve al universo completo de 224 cantones.
+- La busqueda de Distrito Metropolitano de Quito conservo su posicion nacional
+  2 de 212 mientras mostraba una unica fila resaltada.
+- El dialogo midio `1040 x 720 px` en 1366x768 y `390 x 844 px` en 390x844,
+  ambos completamente dentro del viewport.
+- Las pruebas verifican orden y exclusion para Siniestros INEC 2024 y Tasa de
+  fallecidos por 100.000 habitantes 2021, ademas de busqueda y experiencia
+  movil accesible.
+- `npm run data:dictionary`: 1.686 campos observados.
+- `npm run data:check`: estado `ok`; conteos y hashes de datos conservados.
+- `npm run data:test`: 10/10 contratos aprobados.
+- Playwright: 32 pruebas aprobadas, 6 omitidas intencionalmente por proyecto de
+  viewport y 0 fallos.
+
+La evidencia reproducible se encuentra en
+`documentacion/EVIDENCIA_RANKING_INSTITUCIONAL.md` y
+`documentacion/evidencia_visual/ranking_institucional/`.

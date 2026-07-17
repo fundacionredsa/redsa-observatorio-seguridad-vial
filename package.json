@@ -1,6 +1,6 @@
 {
   "name": "redsa-observatorio-seguridad-vial",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "screenshots": "node scripts/capturar_matriz.mjs",
     "screenshots:interaction": "node scripts/capturar_interaccion_profesional.mjs",
     "screenshots:mobile": "node scripts/capturar_recuperacion_movil.mjs",
+    "screenshots:institutional": "node scripts/capturar_institucional.mjs",
     "performance": "node scripts/medir_rendimiento.mjs",
     "data:dictionary": "python scripts/generar_diccionario_geojson.py",
     "data:check": "python scripts/verificar_datos_publicados.py",

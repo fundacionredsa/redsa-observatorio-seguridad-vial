@@ -34,6 +34,7 @@ flowchart LR
     WEB[docs/index.html / esqueleto]
     REG[geoportal-registry.js / variables y capas]
     UX[geoportal-experience.js / experiencia ciudadana]
+    INST[geoportal-institutional.js / ranking y transparencia]
     STATE[geoportal-state.js / estado y seleccion]
     TERR[geoportal-territories.js / niveles]
     PAN[geoportal-panels.js / paneles]
@@ -60,6 +61,7 @@ flowchart LR
   MAPG --> WEB
   REG --> WEB
   UX --> WEB
+  INST --> WEB
   STATE --> WEB
   TERR --> WEB
   PAN --> WEB
@@ -96,6 +98,9 @@ temporal.
   capas, simbologia, popups y vista inicial.
 - `docs/assets/js/geoportal-experience.js` resuelve busqueda, resumen ciudadano,
   comparacion, compartir y descarga CSV.
+- `docs/assets/js/geoportal-institutional.js` ofrece el ranking cantonal
+  sincronizado con el estado global y las vistas de confianza y citacion. Lee
+  el mismo registro de variables y no mantiene una copia de sus descripciones.
 - `docs/assets/js/geoportal-state.js` concentra mapa, estado, simbologia y
   seleccion territorial persistente.
 - `docs/assets/js/geoportal-territories.js` controla provincias, cantones,
@@ -115,6 +120,9 @@ todas las capas de infraestructura apagadas. El modo Auto cambia el nivel por
 zoom con histeresis; el usuario puede fijar cualquiera de los tres niveles.
 En movil, sidebar y panel tecnico son overlays, la leyenda inicia colapsada y la
 seleccion territorial se realiza por toque con el mismo estado persistente.
+El modal institucional es una vista bajo demanda: no ocupa el mapa ni el
+sidebar, conserva la posicion nacional de cada canton al filtrar y excluye del
+ranking valores `sin_dato` sin convertirlos en cero.
 
 ## Orden reproducible
 

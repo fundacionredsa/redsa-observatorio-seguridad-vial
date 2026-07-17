@@ -139,6 +139,12 @@
                     openAnalysis: () => setMobilePanel("sidebar", true),
                     getSelectedYear: () => selectedYear
                 });
+                window.REDSAInstitutional?.init({
+                    cantonFeatures: cantonData.features,
+                    variables: VARIABLE_CONFIGS,
+                    getState: () => ({ selectedVariable, selectedYear }),
+                    getVariableValue: (properties, variable, year) => getVariableValue(properties, variable, year)
+                });
 
                 // Manejo de Hash Routing en carga inicial y cambios
                 const handleHash = () => {
@@ -319,6 +325,7 @@
                     refreshTerritoryLayerStyles(level);
                     updateMapLevelNote(level);
                     updateLegend();
+                    window.REDSAInstitutional?.refresh();
                 }
 
                 function updateMapVariableDescription() {
@@ -343,6 +350,7 @@
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                    window.REDSAInstitutional?.refresh();
                 });
 
                 document.addEventListener("click", (e) => {

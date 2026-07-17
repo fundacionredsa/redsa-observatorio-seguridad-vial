@@ -1,7 +1,7 @@
 # Documentacion del Observatorio REDSA
 
 Este es el punto de entrada para auditar, mantener o ampliar el geoportal.
-Estado documentado: **2026-07-16**.
+Estado documentado: **2026-07-17**.
 
 ## Ruta recomendada por rol
 
@@ -14,7 +14,8 @@ Estado documentado: **2026-07-16**.
   [sistema visual](SISTEMA_DISENO.md),
   [rediseño nacional](EVIDENCIA_REDISENO_NACIONAL.md) e
   [interaccion territorial](EVIDENCIA_INTERACCION_PROFESIONAL.md) y
-  [recuperacion movil](EVIDENCIA_RECUPERACION_MOVIL.md).
+  [recuperacion movil](EVIDENCIA_RECUPERACION_MOVIL.md) y
+  [ranking institucional](EVIDENCIA_RANKING_INSTITUCIONAL.md).
 - Gestion: [problemas conocidos](PROBLEMAS_CONOCIDOS.md),
   [changelog](../CHANGELOG.md) y licencias de [codigo](../LICENSE) y
   [datos](../LICENSE-DATA.md).

@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-07-17T18:25:44.181Z",
+  "captures": {
+    "rankingDesktop": {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "dialog": {
+        "left": 163,
+        "right": 1203,
+        "top": 24,
+        "bottom": 744,
+        "width": 1040,
+        "height": 720
+      },
+      "table": {
+        "left": 182,
+        "right": 1184,
+        "top": 319.203125,
+        "bottom": 749.203125,
+        "width": 1002,
+        "height": 430
+      },
+      "activeTab": "ranking",
+      "variable": "siniestros_inec_2019",
+      "year": 2024,
+      "totalCount": 224,
+      "validCount": 212,
+      "excludedCount": 12,
+      "displayedCount": 212
+    },
+    "trustDesktop": {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "dialog": {
+        "left": 163,
+        "right": 1203,
+        "top": 24,
+        "bottom": 744,
+        "width": 1040,
+        "height": 720
+      },
+      "table": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "activeTab": "trust",
+      "variable": "siniestros_inec_2019",
+      "year": 2024,
+      "totalCount": 224,
+      "validCount": 212,
+      "excludedCount": 12,
+      "displayedCount": 212
+    },
+    "rankingMobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "dialog": {
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "bottom": 844,
+        "width": 390,
+        "height": 844
+      },
+      "table": {
+        "left": 12,
+        "right": 378,
+        "top": 382.625,
+        "bottom": 483.625,
+        "width": 366,
+        "height": 101
+      },
+      "activeTab": "ranking",
+      "variable": "siniestros_inec_2019",
+      "year": 2024,
+      "totalCount": 224,
+      "validCount": 212,
+      "excludedCount": 12,
+      "displayedCount": 1
+    },
+    "citationMobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "dialog": {
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "bottom": 844,
+        "width": 390,
+        "height": 844
+      },
+      "table": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "activeTab": "citation",
+      "variable": "siniestros_inec_2019",
+      "year": 2024,
+      "totalCount": 224,
+      "validCount": 212,
+      "excludedCount": 12,
+      "displayedCount": 1
+    }
+  }
+}

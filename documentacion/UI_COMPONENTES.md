@@ -22,6 +22,9 @@ referenciados; no deben editarse esperando afectar produccion.
 | Loader | `#loader` | Estado de descarga/render | metricas de carga |
 | Diagnostico | `.diagnostic-panel` | Features, zoom, tiempo | oculto por defecto |
 | Atribucion | `.leaflet-control-attribution` | Creditos legales | Leaflet/basemaps/capas |
+| Acceso institucional | `#open-institutional-button` | Abre ranking, confianza y citacion sin ocupar permanentemente el mapa | estado global del geoportal |
+| Modal institucional | `#institutional-modal` | Vista accesible bajo demanda con pestanas y cierre por X, backdrop o Escape | registro de variables y textos institucionales |
+| Ranking nacional | `#national-ranking-table` | Ordena cantones, excluye `sin_dato` y permite buscar la posicion nacional | propiedades cantonales y variable/ano activos |
 
 ## Estado y eventos
 
@@ -38,6 +41,11 @@ referenciados; no deben editarse esperando afectar produccion.
 - En movil, un toque sobre una geometria crea la seleccion persistente. La
   leyenda puede abrirse y cerrarse sin perderla; drawers y leyenda completa no
   compiten simultaneamente con el perfil.
+- El ranking escucha los cambios de variable y ano del estado global. Las
+  variables fijas conservan su periodo declarado y las no disponibles a nivel
+  cantonal muestran una indisponibilidad explicita en lugar de una tabla falsa.
+- La busqueda del ranking filtra filas visibles, resalta coincidencias y conserva
+  la posicion calculada sobre el conjunto nacional completo con dato valido.
 
 ## Accesibilidad conocida
 
@@ -46,6 +54,10 @@ los cambios de resumen usan `aria-live` y los objetivos tactiles moviles miden a
 menos 44 px. Los popovers funcionan por clic y el mapa conserva controles
 estandar Leaflet. Falta una auditoria WCAG formal y navegacion completa por
 teclado de los poligonos.
+
+El modal institucional implementa pestanas con roles ARIA, trampa de foco,
+navegacion de pestanas por flechas y cierre con `Escape`. En movil ocupa el
+viewport completo y mantiene objetivos tactiles de al menos 44 px.
 
 Las reglas moviles viven exclusivamente en `geoportal-mobile.css`; Playwright
 comprueba su geometria en telefono compacto, telefono estandar y tablet vertical.

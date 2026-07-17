@@ -252,6 +252,83 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await expect(page.locator(".profile-card-source-detail").first()).toContainText("Los iconos ⓘ explican los códigos técnicos");
 });
 
+test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La logica completa del ranking se valida una vez en desktop.");
+  await loadPortal(page);
+  await page.locator("#open-institutional-button").click();
+  await expect(page.locator("#institutional-modal")).toBeVisible();
+
+  const assertDescendingRanking = async expectedVariable => {
+    const ranking = await page.evaluate(() => window.__redsaInstitutionalAudit.state());
+    expect(ranking.variable).toBe(expectedVariable);
+    expect(ranking.totalCount).toBe(224);
+    expect(ranking.validCount + ranking.excludedCount).toBe(224);
+    expect(ranking.validCount).toBeGreaterThan(0);
+    expect(ranking.excludedCount).toBeGreaterThan(0);
+    expect(ranking.rows.every(row => Number.isFinite(row.value))).toBeTruthy();
+    expect(ranking.rows.every((row, index) => index === 0 || ranking.rows[index - 1].value >= row.value)).toBeTruthy();
+    await expect(page.locator("#ranking-table-body tr")).toHaveCount(ranking.validCount);
+    await expect(page.locator("#ranking-table-body")).not.toContainText("Sin dato");
+    await expect(page.locator("#ranking-variable-description")).toHaveText(await page.locator("#map-variable-description").textContent());
+    return ranking;
+  };
+
+  const accidents = await assertDescendingRanking("siniestros_inec_2019");
+  expect(accidents.year).toBe(2024);
+  await expect(page.locator("#ranking-coverage")).toContainText(`${accidents.excludedCount} cantones sin dato`);
+
+  await page.locator("#ranking-search-input").fill("Distrito Metropolitano de Quito");
+  await expect(page.locator("#ranking-table-body tr")).toHaveCount(1);
+  await expect(page.locator("#ranking-table-body tr")).toHaveClass(/is-highlighted/);
+  await expect(page.locator("#ranking-table-body")).toContainText("DISTRITO METROPOLITANO DE QUITO");
+  await expect(page.locator("#ranking-search-status")).toContainText("posición nacional");
+
+  await page.locator("#ranking-search-input").fill("");
+  await page.locator('[data-ranking-sort="canton"]').click();
+  const alphabetical = await page.evaluate(() => window.__redsaInstitutionalAudit.state().displayedRows.map(row => row.canton));
+  expect(alphabetical).toEqual([...alphabetical].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" })));
+
+  await page.locator('[data-ranking-sort="value"]').click();
+  await page.evaluate(() => {
+    window.__redsaAudit.selectVariable("tasa_fallecidos_100k");
+    window.__redsaAudit.selectYear(2021);
+  });
+  await expect(page.locator("#ranking-period")).toHaveText("Año 2021");
+  const fatalityRate = await assertDescendingRanking("tasa_fallecidos_100k");
+  expect(fatalityRate.year).toBe(2021);
+});
+
+test("modal institucional es usable en movil y publica confianza y cita dinamica", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "Geometria y lectura movil del modal institucional.");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadPortal(page);
+  await page.locator("#open-institutional-button").tap();
+
+  const geometry = await page.locator(".institutional-dialog").boundingBox();
+  expect(geometry).not.toBeNull();
+  expect(geometry.x).toBeGreaterThanOrEqual(0);
+  expect(geometry.y).toBeGreaterThanOrEqual(0);
+  expect(geometry.x + geometry.width).toBeLessThanOrEqual(390);
+  expect(geometry.y + geometry.height).toBeLessThanOrEqual(844);
+  await expect(page.locator("#ranking-table-body tr")).not.toHaveCount(0);
+
+  for (const selector of ["#institutional-modal-close", "#institutional-tab-ranking", "#institutional-tab-trust", "#institutional-tab-citation", "#ranking-search-input"]) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  await page.locator("#institutional-tab-trust").tap();
+  await expect(page.locator("#institutional-panel-trust")).toContainText("Independencia institucional");
+  await expect(page.locator("#institutional-panel-trust")).toContainText("224 cantones");
+  await expect(page.locator("#institutional-panel-trust a")).toHaveAttribute("href", "https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial");
+
+  await page.locator("#institutional-tab-citation").tap();
+  await expect(page.locator("#institutional-panel-citation")).toContainText("Fundación REDSA (2026)");
+  await expect(page.locator("#citation-current-date")).toHaveText(/^\d{1,2} de \p{L}+ de 20\d{2}$/u);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#institutional-modal")).toBeHidden();
+});
+
 test("panel demografico permanece visible y dentro del viewport", async ({ page }) => {
   await loadPortal(page);
   await page.evaluate(() => {

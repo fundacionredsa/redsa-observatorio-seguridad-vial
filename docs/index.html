@@ -29,9 +29,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.5.2">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.5.2">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.5.2">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.6.0">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.6.0">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.6.0">
 </head>
 <body>
 
@@ -72,6 +72,7 @@
             <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
             <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
         </div>
+        <button class="institutional-entry" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal">Ver ranking nacional</button>
     </section>
 
     <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="technical-drawer" aria-expanded="false">Datos y capas</button>
@@ -109,6 +110,83 @@
         <span>Datos y capas</span>
     </button>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
+
+    <div class="institutional-modal" id="institutional-modal" role="dialog" aria-modal="true" aria-labelledby="institutional-modal-title" aria-hidden="true" hidden>
+        <div class="institutional-dialog">
+            <header class="institutional-header">
+                <div>
+                    <p class="institutional-eyebrow">Observatorio REDSA</p>
+                    <h2 id="institutional-modal-title">Ranking nacional y transparencia</h2>
+                </div>
+                <button class="institutional-close" id="institutional-modal-close" type="button" aria-label="Cerrar ranking y transparencia">&times;</button>
+            </header>
+
+            <div class="institutional-tabs" role="tablist" aria-label="Ranking y transparencia">
+                <button id="institutional-tab-ranking" role="tab" type="button" aria-selected="true" aria-controls="institutional-panel-ranking" data-institutional-tab="ranking">Ranking nacional</button>
+                <button id="institutional-tab-trust" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-trust" data-institutional-tab="trust" tabindex="-1">Por qué confiar</button>
+                <button id="institutional-tab-citation" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-citation" data-institutional-tab="citation" tabindex="-1">Cómo citar</button>
+            </div>
+
+            <section class="institutional-panel ranking-panel" id="institutional-panel-ranking" role="tabpanel" aria-labelledby="institutional-tab-ranking" data-institutional-panel="ranking">
+                <div class="ranking-heading">
+                    <div>
+                        <h3 id="ranking-variable-title">Ranking nacional</h3>
+                        <p id="ranking-variable-description"></p>
+                    </div>
+                    <span class="ranking-period" id="ranking-period"></span>
+                </div>
+                <p class="ranking-coverage" id="ranking-coverage" aria-live="polite"></p>
+                <div class="ranking-search-wrap">
+                    <label for="ranking-search-input">Busca tu cantón</label>
+                    <input id="ranking-search-input" type="search" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
+                    <p id="ranking-search-status" role="status" aria-live="polite"></p>
+                </div>
+                <div class="ranking-table-wrap" id="ranking-table-wrap">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th scope="col"><button type="button" data-ranking-sort="rank" aria-label="Ordenar por posición">Posición</button></th>
+                                <th scope="col"><button type="button" data-ranking-sort="canton">Cantón</button></th>
+                                <th scope="col"><button type="button" data-ranking-sort="province">Provincia</button></th>
+                                <th scope="col" class="ranking-value-column"><button type="button" data-ranking-sort="value" aria-label="Ordenar por valor">Valor</button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="ranking-empty" id="ranking-empty" hidden></div>
+            </section>
+
+            <section class="institutional-panel institutional-reading" id="institutional-panel-trust" role="tabpanel" aria-labelledby="institutional-tab-trust" data-institutional-panel="trust" hidden>
+                <h3>¿Por qué confiar en estos datos?</h3>
+                <p>Este observatorio no reemplaza a las fuentes oficiales (INEC, ANT, AMT): las audita, las cruza entre sí y hace visible dónde coinciden y dónde no. Tres cosas nos distinguen:</p>
+                <div class="trust-principles">
+                    <article>
+                        <h4>Independencia institucional</h4>
+                        <p>No dependemos de ninguna administración municipal ni ciclo electoral. Los datos se muestran igual sin importar qué gobierno esté en turno.</p>
+                    </article>
+                    <article>
+                        <h4>Alcance nacional y comparable</h4>
+                        <p>Es el único lugar donde se pueden comparar los 224 cantones del país entre sí, no solo ver una ciudad de forma aislada.</p>
+                    </article>
+                    <article>
+                        <h4>Honestidad sobre lo que no sabemos</h4>
+                        <p>Cuando un dato falta o es de baja calidad, lo decimos explícitamente (ver "sin dato" en cada capa): nunca lo mostramos como cero ni lo escondemos.</p>
+                    </article>
+                </div>
+                <p class="institutional-open-note">Todo el código, la metodología y los datos de este observatorio son <a href="https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial" target="_blank" rel="noopener">abiertos y auditables</a>.</p>
+            </section>
+
+            <section class="institutional-panel institutional-reading" id="institutional-panel-citation" role="tabpanel" aria-labelledby="institutional-tab-citation" data-institutional-panel="citation" hidden>
+                <h3>Cómo citar estos datos</h3>
+                <blockquote class="citation-block">
+                    Fundación REDSA (2026). <cite>Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible</cite>. Disponible en:
+                    <a href="https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/">https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/</a>.
+                    Consultado el <span id="citation-current-date"></span>.
+                </blockquote>
+            </section>
+        </div>
+    </div>
 
     <!-- Contenedor Principal de la Interfaz -->
     <div class="ui-container">
@@ -292,12 +370,13 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="assets/js/geoportal-registry.js?v=0.5.2"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.5.2"></script>
-    <script src="assets/js/geoportal-state.js?v=0.5.2"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.5.2"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.5.2"></script>
-    <script src="assets/js/geoportal-app.js?v=0.5.2"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-state.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-app.js?v=0.6.0"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">
