@@ -419,7 +419,10 @@
                     const trigger = e.target.closest(".sigla-tooltip-trigger");
                     if (trigger) {
                         const sigla = trigger.getAttribute("data-sigla");
-                        if (siglaDefinitions[sigla]) {
+                        const customText = trigger.getAttribute("data-custom-text");
+                        if (customText) {
+                            showPopover(trigger, `<strong>${sigla}:</strong> ${customText}`);
+                        } else if (siglaDefinitions[sigla]) {
                             showPopover(trigger, `<strong>${sigla}:</strong> ${siglaDefinitions[sigla]}`);
                         }
                     }
@@ -437,11 +440,13 @@
                     if (trigger) {
                         e.stopPropagation();
                         const sigla = trigger.getAttribute("data-sigla");
-                        if (siglaDefinitions[sigla]) {
+                        const customText = trigger.getAttribute("data-custom-text");
+                        if (customText || siglaDefinitions[sigla]) {
                             if (activeTrigger === trigger && popover.style.display === "block") {
                                 hidePopover();
                             } else {
-                                showPopover(trigger, `<strong>${sigla}:</strong> ${siglaDefinitions[sigla]}`);
+                                const text = customText ? customText : siglaDefinitions[sigla];
+                                showPopover(trigger, `<strong>${sigla}:</strong> ${text}`);
                             }
                         }
                     } else if (e.target.closest("#sigla-popover") === null) {

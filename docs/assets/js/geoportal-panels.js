@@ -51,7 +51,11 @@
                 : null;
         }
 
-        function siglaInfoIcon(sigla) {
+        function siglaInfoIcon(sigla, customText = null) {
+            if (customText) {
+                const encodedText = customText.replace(/"/g, '&quot;');
+                return `<span class="sigla-tooltip-trigger" data-sigla="${sigla}" data-custom-text="${encodedText}">ⓘ</span>`;
+            }
             return `<span class="sigla-tooltip-trigger" data-sigla="${sigla}">ⓘ</span>`;
         }
 
