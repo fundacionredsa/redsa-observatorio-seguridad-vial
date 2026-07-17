@@ -73,3 +73,28 @@ El archivo completo de mediciones es
 una copia junto con las capturas. Las duraciones totales que imprime el runner de
 Playwright incluyen arranque y aserciones y no deben confundirse con la metrica
 de carga de la pagina.
+
+## Interaccion territorial profesional (2026-07-16)
+
+La validacion posterior a la refactorizacion D1-D5 produjo estos resultados:
+
+- `npm run data:check`: aprobado; 224 cantones, 24 provincias y 1.040
+  parroquias, sin cambios en los hashes de los GeoJSON publicados.
+- `npm run data:test`: 10/10 contratos aprobados.
+- Playwright Chromium: 29 pruebas aprobadas, 3 omitidas de forma intencional
+  por perfil de viewport y 0 fallos, en escritorio y movil.
+- El clic inicial en una unidad fija la seleccion sin abrir el popup historico
+  ni cambiar de nivel; un segundo clic conserva el acceso al popup existente.
+- El hover no modifica el sidebar ni el perfil demografico; la seleccion
+  persiste durante el scroll y tiene cierre explicito.
+- En 1366x768, el panel de perfil quedo en `x=426..1050` y la leyenda en
+  `x=1066..1356`; con el sidebar abierto, el perfil inicia en `x=456` y el
+  sidebar termina en `x=440`.
+- En 390x844, el perfil quedo en `y=308..588` y la leyenda en
+  `y=603,6..783,6`; no hay interseccion.
+- `git diff -- docs/data` no reporto cambios: esta mision no modifico datos ni
+  contratos territoriales.
+
+La evidencia visual y las mediciones reproducibles estan en
+`documentacion/evidencia_visual/interaccion_profesional/` y
+`documentacion/EVIDENCIA_INTERACCION_PROFESIONAL.md`.

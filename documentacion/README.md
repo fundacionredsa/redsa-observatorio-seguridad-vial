@@ -11,7 +11,9 @@ Estado documentado: **2026-07-16**.
 - Desarrollo: [arquitectura](ARQUITECTURA.md),
   [despliegue](DESPLIEGUE_Y_OPERACION.md), ADR y pruebas en `tests/`.
 - Diseno: [componentes](UI_COMPONENTES.md),
-  [sistema visual](SISTEMA_DISENO.md) y matriz de capturas del paquete de Drive.
+  [sistema visual](SISTEMA_DISENO.md),
+  [rediseño nacional](EVIDENCIA_REDISENO_NACIONAL.md) e
+  [interaccion territorial](EVIDENCIA_INTERACCION_PROFESIONAL.md).
 - Gestion: [problemas conocidos](PROBLEMAS_CONOCIDOS.md),
   [changelog](../CHANGELOG.md) y licencias de [codigo](../LICENSE) y
   [datos](../LICENSE-DATA.md).

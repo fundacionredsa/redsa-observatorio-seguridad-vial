@@ -62,3 +62,5 @@ logica cartografica historica; una modularizacion posterior puede extraer el
 motor territorial, pero las extensiones de variables y capas ya no dependen de
 editar ese monolito.
 
+Actualizacion 2026-07-16: ADR-008 completo esa modularizacion y reemplazo el
+modelo de hover por seleccion persistente mediante clic.

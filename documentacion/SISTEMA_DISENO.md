@@ -25,6 +25,13 @@
 | `--ui-padding` | 20 px; 10 px movil | separacion |
 | `--perfil-card-max-height` | 280 px | panel demografico |
 
+## Escala de apilamiento
+
+Todos los componentes usan tokens declarados en `geoportal-core.css`: mapa,
+controles, perfil, paneles publicos, navegacion movil, backdrop, drawers, popover
+y modal. No se admiten valores numericos de `z-index` ni `!important` fuera de
+esa escala sin un ADR que documente la excepcion.
+
 ## Colores cartograficos
 
 - Limites administrativos nacionales: `#52616b`, sin distincion provincial.
@@ -39,7 +46,8 @@
 
 - `<=1024px`: sidebar 380 px.
 - `<=768px`: layout de una columna, controles compactos, sidebar-width 0 y
-  panel demografico a todo el ancho disponible.
+  panel demografico a todo el ancho disponible. Al seleccionar una unidad, el
+  perfil toma prioridad y el panel ciudadano se oculta hasta cerrar la seleccion.
 
 ## Convenciones
 

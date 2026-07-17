@@ -12,3 +12,5 @@ reescribir retroactivamente la justificacion historica.
 - [ADR-006](0006-privacidad-y-separacion-de-repositorios.md): privacidad y repos.
 - [ADR-007](0007-experiencia-ciudadana-y-registros-frontend.md): divulgacion
   progresiva, vista nacional y registros frontend.
+- [ADR-008](0008-interaccion-territorial-predecible.md): seleccion persistente,
+  nivel territorial controlable y frontend modular.

@@ -1,6 +1,6 @@
 # ADR-002: Niveles territoriales por zoom
 
-- Estado: Aceptada
+- Estado: Reemplazada parcialmente por ADR-008
 - Fecha: 2026-07-15
 
 ## Contexto

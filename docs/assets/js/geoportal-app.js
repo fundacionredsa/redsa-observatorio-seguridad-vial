@@ -1,0 +1,602 @@
+// Funciones interactivas para cada feature (Cantón)
+        function onEachFeature(feature, layer) {
+            // Popup al hacer clic
+            if (feature.properties) {
+                const canton = feature.properties.DPA_DESCAN || "Desconocido";
+                const provincia = feature.properties.DPA_DESPRO || "Desconocido";
+                const codCanton = feature.properties.DPA_CANTON || "—";
+                const codProvincia = feature.properties.DPA_PROVIN || "—";
+
+                const popupContent = `
+                    <div class="custom-popup">
+                        <h3>${canton}</h3>
+                        <p><strong>Provincia:</strong> ${provincia}</p>
+                        <div class="dpa-code">Cód. Cantón: ${codCanton} | Cód. Prov: ${codProvincia}</div>
+                    </div>
+                `;
+                layer.bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'custom-leaflet-popup'
+                });
+                preservePopupForSecondClick(layer);
+            }
+
+            // Eventos de Mouse
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: function(e) {
+                    handleTerritoryClick("canton", e);
+                }
+            });
+            layer.bindTooltip(() => getTerritoryTooltipContent(layer.feature, "canton"), {
+                sticky: true,
+                direction: "top",
+                className: "territory-hover-tooltip"
+            });
+        }
+
+        // Resaltado al pasar el mouse
+        function highlightFeature(e) {
+            const layer = e.target;
+            if (layer !== selectedLayer) {
+                layer.setStyle(getCantonStyle(layer.feature, true, false));
+            }
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+
+        }
+
+        // Restaurar estilo normal al quitar el mouse
+        function resetHighlight(e) {
+            const layer = e.target;
+            if (layer !== selectedLayer) {
+                cantonLayer.resetStyle(layer);
+            }
+
+        }
+
+        // Iniciar Fetch de datos y medición
+        document.getElementById("loader-status").textContent = "Descargando límites provinciales y cantonales...";
+
+        Promise.all([
+            fetch(RUTA_PROVINCIAS_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON provincial.");
+                return response.json();
+            }),
+            fetch(RUTA_CANTONES_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON cantonal.");
+                return response.json();
+            }),
+            fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
+                return response.json();
+            })
+        ])
+            .then(([provinces, cantons, hotspots]) => {
+                const tDownloadEnd = performance.now();
+                const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
+                document.getElementById("diag-download").textContent = `${tDownload}s`;
+                document.getElementById("loader-status").textContent = "Procesando y renderizando límites territoriales...";
+                const tRenderStart = performance.now();
+                provinceData = provinces;
+                cantonData = cantons;
+                hotspotData = hotspots;
+                mergeHotspotsIntoCantons(cantonData, hotspotData);
+                nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
+
+                provinceLayer = L.geoJSON(provinceData, {
+                    style: function(feature) {
+                        const isSelected = selectedProvinceLayer && selectedProvinceLayer.feature.properties.DPA_PROVIN === feature.properties.DPA_PROVIN;
+                        return getProvinceStyle(feature, false, isSelected);
+                    },
+                    onEachFeature: onEachProvinceFeature
+                });
+
+                cantonLayer = L.geoJSON(cantonData, {
+                    style: function(feature) {
+                        const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
+                        return getCantonStyle(feature, false, isSelected);
+                    },
+                    onEachFeature: onEachFeature
+                });
+
+                const tRenderEnd = performance.now();
+                const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
+                const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
+
+                document.getElementById("diag-render").textContent = `${tRender}s`;
+                document.getElementById("diag-total").textContent = `${tTotal}s`;
+                document.getElementById("diag-features").textContent = `${provinces.features ? provinces.features.length : 0} prov. / ${cantons.features ? cantons.features.length : 0} cant.`;
+
+                layerControl = L.control.layers(baseMaps, overlayMaps, {
+                    position: 'topright',
+                    collapsed: false
+                }).addTo(map);
+                syncMobileLayerDrawer();
+
+                syncTerritoryLayerToZoom();
+                map.on('zoomend', syncTerritoryLayerToZoom);
+
+                function selectCantonLayer(foundLayer, updateHash = true) {
+                    if (!foundLayer) return false;
+                    return selectTerritoryLayer("canton", foundLayer, { fitBounds: true, updateHash });
+                }
+
+                function selectCantonByCode(code, updateHash = true) {
+                    let foundLayer = null;
+                    cantonLayer.eachLayer(layer => {
+                        if (!foundLayer && String(layer.feature?.properties?.DPA_CANTON) === String(code)) foundLayer = layer;
+                    });
+                    return selectCantonLayer(foundLayer, updateHash);
+                }
+
+                window.REDSAExperience?.init({
+                    cantonFeatures: cantonData.features,
+                    selectCanton: code => selectCantonByCode(code, true),
+                    openAnalysis: () => setMobilePanel("sidebar", true),
+                    getSelectedYear: () => selectedYear
+                });
+
+                // Manejo de Hash Routing en carga inicial y cambios
+                const handleHash = () => {
+                    const hash = window.location.hash;
+                    if (hash && hash.startsWith("#canton=")) {
+                        const cantonName = decodeURIComponent(hash.substring(8)).trim().toUpperCase();
+                        let foundLayer = null;
+
+                        cantonLayer.eachLayer(layer => {
+                            if (layer.feature && layer.feature.properties &&
+                                layer.feature.properties.DPA_DESCAN.trim().toUpperCase() === cantonName) {
+                                foundLayer = layer;
+                            }
+                        });
+
+                        selectCantonLayer(foundLayer, false);
+                    }
+                };
+
+                handleHash();
+                window.addEventListener("hashchange", handleHash);
+
+                function mapillaryColor(value = "") {
+                    if (value === "crosswalk") return COLOR_MAPILLARY.crosswalk;
+                    if (value === "bicycle-rack") return COLOR_MAPILLARY.bikeRack;
+                    if (value.startsWith("regulatory--")) return COLOR_MAPILLARY.regulatory;
+                    if (value.startsWith("warning--")) return COLOR_MAPILLARY.warning;
+                    return "#94a3b8";
+                }
+
+                function layerOptionsFromConfig(config) {
+                    const options = {
+                        onEachFeature(feature, layer) {
+                            if (feature.properties && config.popup) layer.bindPopup(config.popup(feature.properties));
+                        }
+                    };
+                    if (["point", "mixed", "mapillary"].includes(config.render)) {
+                        options.pointToLayer = (feature, latlng) => {
+                            const color = config.render === "mapillary"
+                                ? mapillaryColor(feature.properties?.value)
+                                : config.color;
+                            return L.circleMarker(latlng, {
+                                radius: config.radius || 5,
+                                fillColor: color,
+                                color: config.outlineColor || "#ffffff",
+                                weight: 1,
+                                opacity: 1,
+                                fillOpacity: 0.82
+                            });
+                        };
+                    }
+                    if (["line", "mixed", "priority", "mapillary"].includes(config.render)) {
+                        options.style = feature => {
+                            const isPriority = config.render === "priority" && feature.properties?.priority === "Muy Alta";
+                            const color = config.render === "mapillary"
+                                ? mapillaryColor(feature.properties?.value)
+                                : (isPriority ? config.priorityColor : config.color);
+                            return {
+                                color,
+                                weight: isPriority ? 4 : (config.weight || 3),
+                                opacity: 0.82
+                            };
+                        };
+                    }
+                    return options;
+                }
+
+                function registerInfrastructureLayer(config) {
+                    const placeholder = L.layerGroup();
+                    placeholder._redsaLoaded = false;
+                    placeholder._redsaFeatureCount = 0;
+                    placeholder._redsaConfigId = config.id;
+                    const startLoad = () => {
+                        if (placeholder._redsaLoadPromise) return placeholder._redsaLoadPromise;
+                        placeholder._redsaLoadPromise = fetch(config.url)
+                            .then(response => {
+                                if (!response.ok) throw new Error(`No se pudo cargar la capa ${config.label}.`);
+                                return response.json();
+                            })
+                            .then(data => {
+                                const layer = L.geoJSON(data, layerOptionsFromConfig(config));
+                                const mappedCantons = new Set(
+                                    (data.features || []).flatMap(feature => feature.properties?.DPA_CANTONES || []).map(String)
+                                );
+                                const unmappedFeatures = config.coverageMask
+                                    ? (cantonData?.features || []).filter(feature => !mappedCantons.has(String(feature.properties?.DPA_CANTON)))
+                                    : [];
+                                if (unmappedFeatures.length) {
+                                    placeholder.addLayer(L.geoJSON({ type: "FeatureCollection", features: unmappedFeatures }, {
+                                        interactive: false,
+                                        style: {
+                                            color: "#64748b",
+                                            weight: 0.8,
+                                            opacity: 0.65,
+                                            dashArray: "4 4",
+                                            fillColor: "#94a3b8",
+                                            fillOpacity: 0.12
+                                        }
+                                    }));
+                                }
+                                placeholder._redsaFeatureCount = data.features?.length || 0;
+                                placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
+                                placeholder._redsaLoaded = true;
+                                placeholder.addLayer(layer);
+                                updateLegend();
+                                return layer;
+                            })
+                            .catch(error => {
+                                placeholder._redsaLoadError = error.message;
+                                console.warn(`Advertencia al cargar '${config.label}':`, error);
+                                updateLegend();
+                                throw error;
+                            });
+                        return placeholder._redsaLoadPromise;
+                    };
+                    placeholder.on("add", () => {
+                        updateLegend();
+                        startLoad();
+                    });
+                    placeholder.on("remove", updateLegend);
+                    placeholder._redsaStartLoad = startLoad;
+                    overlayMaps[config.label] = placeholder;
+                    return placeholder;
+                }
+
+                INFRASTRUCTURE_LAYER_CONFIGS.forEach(registerInfrastructureLayer);
+                if (layerControl) map.removeControl(layerControl);
+                layerControl = L.control.layers(baseMaps, overlayMaps, {
+                    position: "topright",
+                    collapsed: false
+                }).addTo(map);
+                syncMobileLayerDrawer();
+                INFRASTRUCTURE_LAYER_CONFIGS.forEach(config => {
+                    if (config.preload) overlayMaps[config.label]?._redsaStartLoad?.();
+                });
+                updateLegend();
+
+                // Initialize Selector Control on Map
+                const MapControl = L.Control.extend({
+                    options: { position: 'topleft' },
+                    onAdd: function(map) {
+                        const div = L.DomUtil.create('div', 'map-selector-control glass');
+                        div.innerHTML = `
+                            <div style="font-weight: 600; font-size: 0.7rem; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Variables del Mapa</div>
+                            <select id="map-variable-select" style="background: rgba(15, 23, 42, 0.85); color: #f8fafc; border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px 6px; font-size: 0.75rem; cursor: pointer; outline: none; width: 100%;">
+                                ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}" ${id === selectedVariable ? "selected" : ""}>${config.label}</option>`).join("")}
+                            </select>
+                            <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
+                            <div class="timeline-control">
+                                <div class="timeline-header">
+                                    <span>Línea de tiempo global</span>
+                                    <span id="timeline-badge" class="timeline-badge">2024</span>
+                                </div>
+                                <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año del geoportal">
+                                <div id="timeline-marks" class="timeline-marks"></div>
+                            </div>
+                            <div id="territory-level-control" class="territory-level-control" aria-label="Nivel territorial visible">
+                                <div class="territory-level-label">Nivel territorial</div>
+                                <div class="territory-level-segments" role="group" aria-label="Cambiar nivel territorial">
+                                    <button type="button" data-level-mode="auto" aria-pressed="true">Auto</button>
+                                    <button type="button" data-level-mode="province" aria-pressed="false">Provincias</button>
+                                    <button type="button" data-level-mode="canton" aria-pressed="false">Cantones</button>
+                                    <button type="button" data-level-mode="parish" aria-pressed="false">Parroquias</button>
+                                </div>
+                                <div id="territory-level-status" class="territory-level-status" aria-live="polite"></div>
+                            </div>
+                            <div id="map-level-note" class="map-level-note"></div>
+                        `;
+                        L.DomEvent.disableClickPropagation(div);
+                        return div;
+                    }
+                });
+                new MapControl().addTo(map);
+                syncMobileLayerDrawer();
+                updateMapVariableDescription();
+                updateTimelineControl();
+                updateMapLevelNote(activeTerritoryLevel);
+                updateTerritoryLevelControl();
+                updateLegend();
+
+                document.addEventListener("change", (e) => {
+                    if (e.target && e.target.id === "map-variable-select") {
+                        selectedVariable = e.target.value;
+                        handleVariableChange();
+                    }
+                });
+
+                function handleVariableChange() {
+                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateMapVariableDescription();
+                    updateTimelineControl();
+                    recalculateActiveVariableBins(selectedVariable, level);
+                    refreshTerritoryLayerStyles(level);
+                    updateMapLevelNote(level);
+                    updateLegend();
+                }
+
+                function updateMapVariableDescription() {
+                    const description = document.getElementById("map-variable-description");
+                    const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+                    if (description) description.textContent = config.description;
+                    window.REDSAExperience?.updateMapContext(
+                        config,
+                        selectedYear,
+                        LEVEL_LABELS[activeTerritoryLevel || getTerritoryLevelForZoom()]
+                    );
+                }
+
+                document.getElementById("map-year-slider").addEventListener("input", function() {
+                    selectedYear = Number(this.value);
+                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateMapVariableDescription();
+                    updateTimelineControl();
+                    recalculateActiveVariableBins(selectedVariable, level);
+                    refreshTerritoryLayerStyles(level);
+                    updateMapLevelNote(level);
+                    updateLegend();
+                    if (currentProps) updateSidebar(currentProps);
+                    if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                });
+
+                document.addEventListener("click", (e) => {
+                    const levelButton = e.target.closest("[data-level-mode]");
+                    if (levelButton) setTerritoryLevelMode(levelButton.dataset.levelMode);
+                });
+
+                // profile-accordion-btn listener removed
+
+                // Glossary Accordion Toggler
+                document.getElementById("glossary-accordion-btn").addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    const content = document.getElementById("glossary-accordion-content");
+                    content.classList.toggle("active");
+                });
+
+                // Siglas Custom Tooltips & Popovers
+                const siglaDefinitions = {
+                    "EDG": "Registro Estadístico de Defunciones Generales, INEC — registro civil de muertes clasificadas por causa (CIE-10).",
+                    "SPPAT": "Servicio Público para Pago de Accidentes de Tránsito — reclamaciones de seguro procesadas y pagadas.",
+                    "INEC": "Instituto Nacional de Estadística y Censos de Ecuador.",
+                    "CIE-10": "Clasificación Internacional de Enfermedades, 10ª revisión — estándar usado para causas de muerte por tránsito (códigos V01 a V89).",
+                    "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador.",
+                    "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.",
+                    "COBERTURA_OSM": "Cobertura de mapeo OSM: densidad de semáforos/rotondas, cruces y aceras registrados. Un cero significa sin elementos mapeados, no ausencia comprobada de infraestructura."
+                };
+
+                const popover = document.createElement("div");
+                popover.id = "sigla-popover";
+                popover.className = "sigla-popover";
+                document.body.appendChild(popover);
+
+                let activeTrigger = null;
+
+                function showPopover(trigger, text) {
+                    popover.innerHTML = text;
+                    popover.style.display = "block";
+
+                    const triggerRect = trigger.getBoundingClientRect();
+                    const popoverRect = popover.getBoundingClientRect();
+
+                    let top = triggerRect.top + window.scrollY - popoverRect.height - 8;
+                    let left = triggerRect.left + window.scrollX + (triggerRect.width / 2) - (popoverRect.width / 2);
+
+                    if (left < 10) left = 10;
+                    if (left + popoverRect.width > window.innerWidth - 10) {
+                        left = window.innerWidth - popoverRect.width - 10;
+                    }
+                    if (top < 10) {
+                        top = triggerRect.bottom + window.scrollY + 8;
+                    }
+
+                    popover.style.top = top + "px";
+                    popover.style.left = left + "px";
+                    popover.style.opacity = "1";
+                    activeTrigger = trigger;
+                }
+
+                function hidePopover() {
+                    popover.style.display = "none";
+                    popover.style.opacity = "0";
+                    activeTrigger = null;
+                }
+
+                document.addEventListener("mouseover", (e) => {
+                    const trigger = e.target.closest(".sigla-tooltip-trigger");
+                    if (trigger) {
+                        const sigla = trigger.getAttribute("data-sigla");
+                        if (siglaDefinitions[sigla]) {
+                            showPopover(trigger, `<strong>${sigla}:</strong> ${siglaDefinitions[sigla]}`);
+                        }
+                    }
+                });
+
+                document.addEventListener("mouseout", (e) => {
+                    const trigger = e.target.closest(".sigla-tooltip-trigger");
+                    if (trigger && activeTrigger === trigger) {
+                        hidePopover();
+                    }
+                });
+
+                document.addEventListener("click", (e) => {
+                    const trigger = e.target.closest(".sigla-tooltip-trigger");
+                    if (trigger) {
+                        e.stopPropagation();
+                        const sigla = trigger.getAttribute("data-sigla");
+                        if (siglaDefinitions[sigla]) {
+                            if (activeTrigger === trigger && popover.style.display === "block") {
+                                hidePopover();
+                            } else {
+                                showPopover(trigger, `<strong>${sigla}:</strong> ${siglaDefinitions[sigla]}`);
+                            }
+                        }
+                    } else if (e.target.closest("#sigla-popover") === null) {
+                        hidePopover();
+                    }
+                });
+
+                // API minima y de solo diagnostico para pruebas reejecutables.
+                window.__redsaGeojsonLoadMetrics = {
+                    downloadMs: Number(tDownload) * 1000,
+                    renderMs: Number(tRender) * 1000,
+                    totalMs: Number(tTotal) * 1000,
+                    provinceFeatures: provinceData.features.length,
+                    cantonFeatures: cantonData.features.length
+                };
+                window.__redsaAudit = {
+                    findTerritoryLayer(level, code) {
+                        const group = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
+                        if (!group) return null;
+                        let found = null;
+                        group.eachLayer(candidate => {
+                            const props = candidate.feature?.properties;
+                            const candidateCode = level === "province" ? props?.DPA_PROVIN : (level === "parish" ? props?.DPA_PARROQ : props?.DPA_CANTON);
+                            if (!found && String(candidateCode) === String(code)) found = candidate;
+                        });
+                        return found;
+                    },
+                    fireTerritoryEvent(level, code, eventName) {
+                        const found = this.findTerritoryLayer(level, code);
+                        if (!found || !["click", "mouseover", "mouseout"].includes(eventName)) return false;
+                        found.fire(eventName, { target: found });
+                        return this.state();
+                    },
+                    setZoom(zoom) {
+                        map.setView(map.getCenter(), zoom, { animate: false });
+                        syncTerritoryLayerToZoom();
+                        return this.state();
+                    },
+                    setTerritoryLevelMode(mode) {
+                        return setTerritoryLevelMode(mode) ? this.state() : false;
+                    },
+                    selectVariable(variable) {
+                        const select = document.getElementById("map-variable-select");
+                        if (!select || !VARIABLE_CONFIGS[variable]) return false;
+                        select.value = variable;
+                        selectedVariable = variable;
+                        handleVariableChange();
+                        return true;
+                    },
+                    selectYear(year) {
+                        const numericYear = Number(year);
+                        const slider = document.getElementById("map-year-slider");
+                        if (!ALL_TIMELINE_YEARS.includes(numericYear) || !slider || slider.disabled) return false;
+                        selectedYear = numericYear;
+                        slider.value = String(numericYear);
+                        slider.dispatchEvent(new Event("input", { bubbles: true }));
+                        return true;
+                    },
+                    showTerritory(level, code) {
+                        const layer = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
+                        if (!layer) return false;
+                        let found = null;
+                        layer.eachLayer(candidate => {
+                            const props = candidate.feature && candidate.feature.properties;
+                            const candidateCode = level === "province" ? props?.DPA_PROVIN : (level === "parish" ? props?.DPA_PARROQ : props?.DPA_CANTON);
+                            if (!found && (!code || String(candidateCode) === String(code))) found = candidate;
+                        });
+                        if (!found) return false;
+                        return selectTerritoryLayer(level, found, { fitBounds: false, updateHash: false });
+                    },
+                    clearSelection() {
+                        clearTerritorySelection();
+                        return this.state();
+                    },
+                    setOverlay(label, visible = true) {
+                        const layer = overlayMaps[label];
+                        if (!layer) return false;
+                        if (visible) map.addLayer(layer);
+                        else map.removeLayer(layer);
+                        return true;
+                    },
+                    clearInfrastructure() {
+                        Object.values(overlayMaps).forEach(layer => {
+                            if (map.hasLayer(layer)) map.removeLayer(layer);
+                        });
+                        updateLegend();
+                        return this.state();
+                    },
+                    state() {
+                        const layerState = layer => ({
+                            ready: Boolean(layer),
+                            visible: Boolean(layer && map.hasLayer(layer)),
+                            features: layer ? layer.getLayers().length : 0
+                        });
+                        return {
+                            zoom: map.getZoom(),
+                            center: map.getCenter(),
+                            bounds: map.getBounds(),
+                            level: activeTerritoryLevel,
+                            territoryLevelMode,
+                            selectedTerritory: selectedTerritory ? {
+                                level: selectedTerritory.level,
+                                code: selectedTerritory.level === "province"
+                                    ? selectedTerritory.props.DPA_PROVIN
+                                    : (selectedTerritory.level === "canton"
+                                        ? selectedTerritory.props.DPA_CANTON
+                                        : selectedTerritory.props.DPA_PARROQ)
+                            } : null,
+                            selectedVariable,
+                            selectedYear,
+                            variableCount: Object.keys(VARIABLE_CONFIGS).length,
+                            infrastructureLayerCount: INFRASTRUCTURE_LAYER_CONFIGS.length,
+                            temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
+                            timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
+                            timelineBadge: document.getElementById("timeline-badge")?.textContent,
+                            effectiveVariable: getEffectiveVariable(activeTerritoryLevel),
+                            bins: [...activeVariableBins.bins],
+                            validValueCount: activeVariableBins.validValueCount,
+                            layers: {
+                                province: layerState(provinceLayer),
+                                canton: layerState(cantonLayer),
+                                parish: layerState(parishLayer)
+                            },
+                            osmLayers: Object.fromEntries(INFRASTRUCTURE_LAYER_CONFIGS.map(config => {
+                                const layer = overlayMaps[config.label];
+                                return [config.label, {
+                                    registered: Boolean(layer),
+                                    visible: Boolean(layer && map.hasLayer(layer)),
+                                    loaded: Boolean(layer?._redsaLoaded),
+                                    features: layer?._redsaFeatureCount || 0,
+                                    unmappedCantons: layer?._redsaUnmappedCantonCount ?? null,
+                                    error: layer?._redsaLoadError || null
+                                }];
+                            }))
+                        };
+                    }
+                };
+
+                // Ocultar pantalla de carga
+                const loader = document.getElementById("loader");
+                loader.style.opacity = 0;
+                setTimeout(() => {
+                    loader.style.display = "none";
+                }, 500);
+            })
+            .catch(error => {
+                console.error("Error al inicializar el geoportal:", error);
+                document.getElementById("loader-status").innerHTML = `<span style="color: #ef4444; font-weight: bold;">Error: ${error.message}</span>`;
+                document.getElementById("diag-download").textContent = "Error";
+                document.getElementById("diag-download").style.color = "#ef4444";
+            });

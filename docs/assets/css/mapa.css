@@ -41,12 +41,12 @@ body {
 }
 
 .map {
-  z-index: 1;
+  z-index: var(--z-map, 1);
 }
 
 .panel {
   position: absolute;
-  z-index: 500;
+  z-index: var(--z-map-controls, 1000);
   top: 16px;
   left: 16px;
   width: min(360px, calc(100vw - 32px));

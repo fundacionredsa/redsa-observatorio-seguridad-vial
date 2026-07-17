@@ -31,9 +31,13 @@ flowchart LR
     HOTG[hotspots_cantonales.geojson]
     OSMG[capas OSM nacionales GeoJSON]
     MAPG[Mapillary Pichincha GeoJSON]
-    WEB[docs/index.html / motor cartografico]
+    WEB[docs/index.html / esqueleto]
     REG[geoportal-registry.js / variables y capas]
     UX[geoportal-experience.js / experiencia ciudadana]
+    STATE[geoportal-state.js / estado y seleccion]
+    TERR[geoportal-territories.js / niveles]
+    PAN[geoportal-panels.js / paneles]
+    APP[geoportal-app.js / inicializacion]
   end
   CONALI --> BASE --> CANT
   SIN --> BASE
@@ -56,6 +60,10 @@ flowchart LR
   MAPG --> WEB
   REG --> WEB
   UX --> WEB
+  STATE --> WEB
+  TERR --> WEB
+  PAN --> WEB
+  APP --> WEB
   WEB --> PAGES[GitHub Pages]
 ```
 
@@ -88,14 +96,21 @@ temporal.
   capas, simbologia, popups y vista inicial.
 - `docs/assets/js/geoportal-experience.js` resuelve busqueda, resumen ciudadano,
   comparacion, compartir y descarga CSV.
-- `docs/assets/css/geoportal-experience.css` implementa paneles y drawers sobre
-  la base visual heredada.
-- `docs/index.html` conserva Leaflet, la agregacion por zoom, los graficos y los
-  popovers. Ya no se edita para registrar una nueva variable o capa.
+- `docs/assets/js/geoportal-state.js` concentra mapa, estado, simbologia y
+  seleccion territorial persistente.
+- `docs/assets/js/geoportal-territories.js` controla provincias, cantones,
+  parroquias, Auto e histeresis por zoom.
+- `docs/assets/js/geoportal-panels.js` renderiza sidebar, perfil y graficos.
+- `docs/assets/js/geoportal-app.js` inicializa datos, infraestructura, controles
+  y la API diagnostica usada por Playwright.
+- `docs/assets/css/geoportal-core.css` y `geoportal-experience.css` son las dos
+  hojas de estilo de produccion; comparten una unica escala de tokens `--z-*`.
+- `docs/index.html` es el esqueleto semantico y carga los archivos estaticos en
+  orden. No contiene CSS ni el motor JavaScript inline.
 
 La vista inicial encuadra Ecuador continental, muestra siniestros 2024 y deja
-todas las capas de infraestructura apagadas. Los tres niveles territoriales
-siguen cambiando por zoom.
+todas las capas de infraestructura apagadas. El modo Auto cambia el nivel por
+zoom con histeresis; el usuario puede fijar cualquiera de los tres niveles.
 
 ## Orden reproducible
 

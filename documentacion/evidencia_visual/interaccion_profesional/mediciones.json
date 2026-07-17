@@ -1,0 +1,695 @@
+{
+  "desktopSelection": {
+    "card": {
+      "left": 426,
+      "right": 1050,
+      "top": 460,
+      "bottom": 740,
+      "width": 624,
+      "height": 280
+    },
+    "legend": {
+      "left": 1066,
+      "right": 1356,
+      "top": 449.46875,
+      "bottom": 741.203125,
+      "width": 290,
+      "height": 291.734375
+    },
+    "obstacle": null,
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "state": {
+      "zoom": 10,
+      "center": {
+        "lat": -0.1566544933060577,
+        "lng": -78.556395
+      },
+      "bounds": {
+        "_southWest": {
+          "lat": -0.6838826866130199,
+          "lng": -79.49432373046876
+        },
+        "_northEast": {
+          "lat": 0.37078598613715136,
+          "lng": -77.61840820312501
+        }
+      },
+      "level": "canton",
+      "territoryLevelMode": "auto",
+      "selectedTerritory": {
+        "level": "canton",
+        "code": "1701"
+      },
+      "selectedVariable": "siniestros_inec_2019",
+      "selectedYear": 2024,
+      "variableCount": 10,
+      "infrastructureLayerCount": 10,
+      "temporalCoverage": {
+        "tipo": "anual",
+        "anios_disponibles": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "timelineDisabled": false,
+      "timelineBadge": "2024",
+      "effectiveVariable": "siniestros_inec_2019",
+      "bins": [
+        3,
+        10,
+        22,
+        61
+      ],
+      "validValueCount": 212,
+      "layers": {
+        "province": {
+          "ready": true,
+          "visible": false,
+          "features": 24
+        },
+        "canton": {
+          "ready": true,
+          "visible": true,
+          "features": 224
+        },
+        "parish": {
+          "ready": false,
+          "visible": false,
+          "features": 0
+        }
+      },
+      "osmLayers": {
+        "Ciclovías": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Aceras": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Cruces Peatonales": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Pacificación de Tránsito": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Semáforos y Rotondas": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Iluminación Vial": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Límites de Velocidad": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Carriles BRT/Metrobús": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Corredores priorizados por REDSA": {
+          "registered": true,
+          "visible": false,
+          "loaded": true,
+          "features": 1000,
+          "unmappedCantons": 0,
+          "error": null
+        },
+        "Mapillary (cobertura parcial)": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        }
+      }
+    }
+  },
+  "desktopSidebar": {
+    "card": {
+      "left": 456,
+      "right": 1050,
+      "top": 464,
+      "bottom": 744,
+      "width": 594,
+      "height": 280
+    },
+    "legend": {
+      "left": 1066,
+      "right": 1356,
+      "top": 453.46875,
+      "bottom": 745.203125,
+      "width": 290,
+      "height": 291.734375
+    },
+    "obstacle": {
+      "left": 0,
+      "right": 440,
+      "top": 0,
+      "bottom": 768,
+      "width": 440,
+      "height": 768
+    },
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "state": {
+      "zoom": 10,
+      "center": {
+        "lat": -0.1566544933060577,
+        "lng": -78.556395
+      },
+      "bounds": {
+        "_southWest": {
+          "lat": -0.6838826866130199,
+          "lng": -79.49432373046876
+        },
+        "_northEast": {
+          "lat": 0.37078598613715136,
+          "lng": -77.61840820312501
+        }
+      },
+      "level": "canton",
+      "territoryLevelMode": "auto",
+      "selectedTerritory": {
+        "level": "canton",
+        "code": "1701"
+      },
+      "selectedVariable": "siniestros_inec_2019",
+      "selectedYear": 2024,
+      "variableCount": 10,
+      "infrastructureLayerCount": 10,
+      "temporalCoverage": {
+        "tipo": "anual",
+        "anios_disponibles": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "timelineDisabled": false,
+      "timelineBadge": "2024",
+      "effectiveVariable": "siniestros_inec_2019",
+      "bins": [
+        3,
+        10,
+        22,
+        61
+      ],
+      "validValueCount": 212,
+      "layers": {
+        "province": {
+          "ready": true,
+          "visible": false,
+          "features": 24
+        },
+        "canton": {
+          "ready": true,
+          "visible": true,
+          "features": 224
+        },
+        "parish": {
+          "ready": false,
+          "visible": false,
+          "features": 0
+        }
+      },
+      "osmLayers": {
+        "Ciclovías": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Aceras": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Cruces Peatonales": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Pacificación de Tránsito": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Semáforos y Rotondas": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Iluminación Vial": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Límites de Velocidad": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Carriles BRT/Metrobús": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Corredores priorizados por REDSA": {
+          "registered": true,
+          "visible": false,
+          "loaded": true,
+          "features": 1000,
+          "unmappedCantons": 0,
+          "error": null
+        },
+        "Mapillary (cobertura parcial)": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        }
+      }
+    },
+    "intersects": false
+  },
+  "desktopTechnical": {
+    "card": {
+      "left": 426,
+      "right": 950,
+      "top": 644,
+      "bottom": 744,
+      "width": 524,
+      "height": 100
+    },
+    "legend": {
+      "left": 1066,
+      "right": 1356,
+      "top": 453.46875,
+      "bottom": 745.203125,
+      "width": 290,
+      "height": 291.734375
+    },
+    "obstacle": {
+      "left": 966,
+      "right": 1366,
+      "top": 0,
+      "bottom": 768,
+      "width": 400,
+      "height": 768
+    },
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "state": {
+      "zoom": 10,
+      "center": {
+        "lat": -0.1566544933060577,
+        "lng": -78.556395
+      },
+      "bounds": {
+        "_southWest": {
+          "lat": -0.6838826866130199,
+          "lng": -79.49432373046876
+        },
+        "_northEast": {
+          "lat": 0.37078598613715136,
+          "lng": -77.61840820312501
+        }
+      },
+      "level": "canton",
+      "territoryLevelMode": "auto",
+      "selectedTerritory": {
+        "level": "canton",
+        "code": "1701"
+      },
+      "selectedVariable": "siniestros_inec_2019",
+      "selectedYear": 2024,
+      "variableCount": 10,
+      "infrastructureLayerCount": 10,
+      "temporalCoverage": {
+        "tipo": "anual",
+        "anios_disponibles": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "timelineDisabled": false,
+      "timelineBadge": "2024",
+      "effectiveVariable": "siniestros_inec_2019",
+      "bins": [
+        3,
+        10,
+        22,
+        61
+      ],
+      "validValueCount": 212,
+      "layers": {
+        "province": {
+          "ready": true,
+          "visible": false,
+          "features": 24
+        },
+        "canton": {
+          "ready": true,
+          "visible": true,
+          "features": 224
+        },
+        "parish": {
+          "ready": false,
+          "visible": false,
+          "features": 0
+        }
+      },
+      "osmLayers": {
+        "Ciclovías": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Aceras": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Cruces Peatonales": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Pacificación de Tránsito": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Semáforos y Rotondas": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Iluminación Vial": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Límites de Velocidad": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Carriles BRT/Metrobús": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Corredores priorizados por REDSA": {
+          "registered": true,
+          "visible": false,
+          "loaded": true,
+          "features": 1000,
+          "unmappedCantons": 0,
+          "error": null
+        },
+        "Mapillary (cobertura parcial)": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        }
+      }
+    },
+    "intersects": false
+  },
+  "mobileSelection": {
+    "card": {
+      "left": 12,
+      "right": 378,
+      "top": 308,
+      "bottom": 588,
+      "width": 366,
+      "height": 280
+    },
+    "legend": {
+      "left": 160,
+      "right": 380,
+      "top": 603.609375,
+      "bottom": 783.609375,
+      "width": 220,
+      "height": 180
+    },
+    "obstacle": null,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "state": {
+      "zoom": 9,
+      "center": {
+        "lat": -0.16521182183805,
+        "lng": -78.5554611328125
+      },
+      "bounds": {
+        "_southWest": {
+          "lat": -1.3241517785613224,
+          "lng": -79.09104462890626
+        },
+        "_northEast": {
+          "lat": 0.9937957322014298,
+          "lng": -78.01987763671876
+        }
+      },
+      "level": "canton",
+      "territoryLevelMode": "auto",
+      "selectedTerritory": {
+        "level": "canton",
+        "code": "1701"
+      },
+      "selectedVariable": "siniestros_inec_2019",
+      "selectedYear": 2024,
+      "variableCount": 10,
+      "infrastructureLayerCount": 10,
+      "temporalCoverage": {
+        "tipo": "anual",
+        "anios_disponibles": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "timelineDisabled": false,
+      "timelineBadge": "2024",
+      "effectiveVariable": "siniestros_inec_2019",
+      "bins": [
+        3,
+        10,
+        22,
+        61
+      ],
+      "validValueCount": 212,
+      "layers": {
+        "province": {
+          "ready": true,
+          "visible": false,
+          "features": 24
+        },
+        "canton": {
+          "ready": true,
+          "visible": true,
+          "features": 224
+        },
+        "parish": {
+          "ready": false,
+          "visible": false,
+          "features": 0
+        }
+      },
+      "osmLayers": {
+        "Ciclovías": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Aceras": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Cruces Peatonales": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Pacificación de Tránsito": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Semáforos y Rotondas": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Iluminación Vial": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Límites de Velocidad": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Carriles BRT/Metrobús": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        },
+        "Corredores priorizados por REDSA": {
+          "registered": true,
+          "visible": false,
+          "loaded": true,
+          "features": 1000,
+          "unmappedCantons": 0,
+          "error": null
+        },
+        "Mapillary (cobertura parcial)": {
+          "registered": true,
+          "visible": false,
+          "loaded": false,
+          "features": 0,
+          "unmappedCantons": null,
+          "error": null
+        }
+      }
+    },
+    "legendIntersects": false
+  }
+}

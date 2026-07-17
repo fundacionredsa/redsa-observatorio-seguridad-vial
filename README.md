@@ -17,7 +17,8 @@ variables, anos, infraestructura, metodologia y descargas para uso tecnico.
 - Ingenieria: [arquitectura](documentacion/ARQUITECTURA.md),
   [ADR](documentacion/adr/README.md), [despliegue](documentacion/DESPLIEGUE_Y_OPERACION.md)
   y [problemas conocidos](documentacion/PROBLEMAS_CONOCIDOS.md).
-- Evidencia visual: [rediseno nacional antes/despues](documentacion/EVIDENCIA_REDISENO_NACIONAL.md).
+- Evidencia visual: [rediseno nacional antes/despues](documentacion/EVIDENCIA_REDISENO_NACIONAL.md)
+  e [interaccion territorial](documentacion/EVIDENCIA_INTERACCION_PROFESIONAL.md).
 
 ## Inicio local
 

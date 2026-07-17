@@ -91,6 +91,79 @@ test("cambia una sola capa territorial por zoom", async ({ page }) => {
   expect(parish.layers.canton.visible).toBeFalsy();
 });
 
+test("clic en canton fija la seleccion sin saltar a parroquias", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.setZoom(9));
+  const afterClick = await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click"));
+  expect(afterClick).toBeTruthy();
+  await page.waitForTimeout(450);
+
+  const state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.territoryLevelMode).toBe("auto");
+  expect(state.level).toBe("canton");
+  expect(state.zoom).toBeLessThanOrEqual(10);
+  expect(state.selectedTerritory).toEqual({ level: "canton", code: "1701" });
+  await expect(page.locator("#hover-card-title")).toContainText("QUITO");
+  await expect(page.locator(".leaflet-popup")).toHaveCount(0);
+
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click"));
+  await expect(page.locator(".leaflet-popup")).toBeVisible();
+});
+
+test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.setZoom(9);
+    window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click");
+  });
+  const card = page.locator("#demographic-hover-card");
+  await expect(card).toBeVisible();
+  const selectedTitle = await page.locator("#hover-card-title").textContent();
+
+  await page.evaluate(() => {
+    window.__redsaAudit.fireTerritoryEvent("canton", "1702", "mouseover");
+    window.__redsaAudit.fireTerritoryEvent("canton", "1702", "mouseout");
+  });
+  await expect(page.locator("#hover-card-title")).toHaveText(selectedTitle || "");
+
+  const scrollState = await card.evaluate(element => {
+    element.scrollTop = Math.max(1, element.scrollHeight - element.clientHeight);
+    return { top: element.scrollTop, height: element.clientHeight, scrollHeight: element.scrollHeight };
+  });
+  expect(scrollState.scrollHeight).toBeGreaterThan(scrollState.height);
+  expect(scrollState.top).toBeGreaterThan(0);
+
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1703", "mouseover"));
+  await expect(page.locator("#hover-card-title")).toHaveText(selectedTitle || "");
+  expect((await page.evaluate(() => window.__redsaAudit.state())).selectedTerritory.code).toBe("1701");
+
+  await page.locator("#profile-card-close").click();
+  await expect(card).toBeHidden();
+  expect((await page.evaluate(() => window.__redsaAudit.state())).selectedTerritory).toBeNull();
+});
+
+test("control territorial permite fijar nivel y volver a modo automatico", async ({ page }) => {
+  await loadPortal(page);
+  const fixed = await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+  expect(fixed.territoryLevelMode).toBe("canton");
+  expect(fixed.level).toBe("canton");
+  await expect(page.locator('[data-level-mode="canton"]')).toHaveAttribute("aria-pressed", "true");
+
+  const afterZoom = await page.evaluate(() => window.__redsaAudit.setZoom(12));
+  expect(afterZoom.level).toBe("canton");
+  expect(afterZoom.territoryLevelMode).toBe("canton");
+
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("auto"));
+  await page.waitForFunction(() => {
+    const state = window.__redsaAudit.state();
+    return state.level === "parish" && state.layers.parish.ready;
+  }, null, { timeout: 90_000 });
+  const automatic = await page.evaluate(() => window.__redsaAudit.state());
+  expect(automatic.level).toBe("parish");
+  expect(automatic.territoryLevelMode).toBe("auto");
+  await expect(page.locator('[data-level-mode="auto"]')).toHaveAttribute("aria-pressed", "true");
+});
+
 test("recalcula bins por nivel y cae a limites cuando no aplica", async ({ page }) => {
   await loadPortal(page);
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_sppat_2016_2021"));
@@ -186,14 +259,13 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
-  await page.locator("#citizen-panel").hover();
+  const stableTarget = (page.viewportSize()?.width || 0) > 768
+    ? page.locator("#citizen-panel")
+    : page.locator("#mobile-sidebar-toggle");
+  await stableTarget.hover();
   await page.waitForTimeout(400);
   await expect(card).toBeVisible();
-  if ((page.viewportSize()?.width || 0) > 768) {
-    expect(await card.locator("#hover-card-title").textContent()).toBe(before);
-  } else {
-    expect((await card.locator("#hover-card-title").textContent()) || "").not.toHaveLength(0);
-  }
+  expect(await card.locator("#hover-card-title").textContent()).toBe(before);
 
   const boxes = await page.evaluate(() => {
     const cardRect = document.querySelector(".perfil-fallecidos-card").getBoundingClientRect();
@@ -206,6 +278,44 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
   await expect(card.locator("#hover-card-title")).not.toHaveText(before || "");
+});
+
+test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Geometria de drawers desktop.");
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.setZoom(9);
+    window.__redsaAudit.showTerritory("canton", "1701");
+  });
+
+  async function assertNoOverlap(obstacleSelector) {
+    await page.waitForTimeout(280);
+    const geometry = await page.evaluate(selector => {
+      const box = element => {
+        const rect = document.querySelector(element).getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+      };
+      const card = box("#demographic-hover-card");
+      const obstacle = box(selector);
+      const legend = box(".legend-panel");
+      const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+      return { card, obstacle, legend, obstacleIntersection: intersects(card, obstacle), legendIntersection: intersects(card, legend), viewport: { width: innerWidth, height: innerHeight } };
+    }, obstacleSelector);
+    expect(geometry.obstacleIntersection).toBeFalsy();
+    expect(geometry.legendIntersection).toBeFalsy();
+    expect(geometry.card.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.card.right).toBeLessThanOrEqual(geometry.viewport.width);
+    expect(geometry.card.bottom).toBeLessThanOrEqual(geometry.viewport.height - 10);
+  }
+
+  await page.locator("#open-analysis-button").click();
+  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
+  await assertNoOverlap("#territory-sidebar");
+  await page.locator("#mobile-sidebar-close").click();
+
+  await page.locator("#technical-panel-toggle").click();
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await assertNoOverlap("#technical-drawer");
 });
 
 test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }) => {
