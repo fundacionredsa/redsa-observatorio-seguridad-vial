@@ -595,3 +595,39 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "visible");
 });
+
+
+test("Legend classification tooltips and adaptive color palettes verify correctly", async ({ page }) => {
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.__redsaAudit !== undefined);
+
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
+  await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
+  await page.waitForFunction(() => window.__redsaActiveBins && window.__redsaActiveBins.variable === "fallecidos_parroquial");
+
+  const mobileLegendToggle = page.locator("#mobile-legend-toggle");
+  if (await mobileLegendToggle.isVisible()) {
+      await mobileLegendToggle.click();
+  }
+
+  const infoIcon = page.locator('.legend-panel .sigla-tooltip-trigger').first();
+  await expect(infoIcon).toBeVisible();
+
+  await infoIcon.hover();
+  await infoIcon.hover();
+
+  const popover = page.locator('.sigla-popover');
+  await expect(popover).toBeVisible();
+  
+  const popoverText = await popover.textContent();
+  expect(popoverText).toMatch(/Clasificaci.n:/);
+  expect(popoverText).toMatch(/GVF:/);
+
+  await page.mouse.click(10, 10);
+  await expect(popover).not.toBeVisible();
+  
+  const activeBins = await page.evaluate(() => window.__redsaActiveBins);
+  expect(activeBins.colors.length).toBeGreaterThanOrEqual(3);
+  expect(activeBins.logScaled).toBeDefined();
+});
+

@@ -95,16 +95,19 @@ como diagnostico complementario.
 
 ## Clasificación Dinámica y Simbolización
 
-El geoportal no utiliza cortes fijos ni un único método estadístico para las variables continuas. Al seleccionar una variable (como *Siniestros INEC* o *Fallecidos por 100k*), cambiar de año, o hacer zoom a un nivel territorial distinto (ej. de Provincias a Cantones), el sistema evalúa dinámicamente tres métodos:
+El geoportal no utiliza cortes fijos ni un único método estadístico para las variables continuas. Al seleccionar una variable, cambiar de año, o hacer zoom a un nivel territorial distinto, el sistema evalúa dinámicamente varios parámetros matemáticos para encontrar la representación visual más óptima:
 
-1. **Rupturas Naturales (Jenks / ckmeans)**: Minimiza la varianza dentro de las clases y la maximiza entre clases. Óptimo para distribuciones asimétricas (ej. conteos absolutos de siniestros, que suelen concentrarse en pocas ciudades).
-2. **Intervalos Iguales**: Divide el rango de los datos en segmentos de igual tamaño.
-3. **Cuantiles**: Distribuye la misma cantidad de territorios en cada clase.
+1. **Transformación Logarítmica**: Se identifica automáticamente el sesgo en los datos. Si más del 70% de las unidades territoriales se concentran en el rango basal inicial (ej. un comportamiento de ley de potencia extremo), los datos se transforman con una función logarítmica (ln(x+1)) antes de clasificarse, mitigando la opacidad visual de un mapa "plano".
+2. **K Adaptativo (Número de clases)**: El número de intervalos no es fijo. El algoritmo itera entre 5 y 7 clases (`k`). Incrementa de clases únicamente si la nueva partición representa una mejora significativa de la varianza estadística del conjunto (`ΔGVF > 0.02`).
+3. **Selección del Método Matemático**:
+    - **Rupturas Naturales (Jenks / ckmeans)**: Minimiza la varianza dentro de las clases y la maximiza entre clases. Óptimo para distribuciones asimétricas (el preferido por defecto).
+    - **Intervalos Iguales**: Divide el rango de los datos en segmentos de igual tamaño.
+    - **Cuantiles**: Distribuye la misma cantidad de territorios en cada clase.
+4. **Goodness of Variance Fit (GVF)**:
+   `GVF = 1 - (Varianza intra-clase / Varianza total)`
+   El método con el GVF más alto gana automáticamente.
 
-Para cada método, el sistema calcula el **Goodness of Variance Fit (GVF)**:
-`GVF = 1 - (Varianza intra-clase / Varianza total)`
-
-El método con el GVF más alto es seleccionado automáticamente (con una leve preferencia hacia Jenks sobre Cuantiles en caso de empate). Además, los cortes matemáticos se redondean a números "limpios" (*pretty breaks*) para la leyenda (ej. mostrar `150` en lugar de `147.2`) sin alterar el umbral real utilizado para colorear el mapa. Las variables categóricas (como coberturas u hotspots) no se someten a este proceso y mantienen su paleta fija.
+Las paletas de colores aplicadas se derivan del estándar cartográfico **ColorBrewer**, agrupando variables por familias semánticas: las fatalidades usan `Reds` o `OrRd`, los siniestros usan `Oranges`, las tasas de riesgo relativo usan `Purples` y la infraestructura usa gamas de azules/verdes. Esto garantiza legibilidad y daltonismo-friendly en variaciones cromáticas y de luminancia.
 
 - `caliente`: Gi* positivo y p <= 0,05.
 - `frio`: Gi* negativo y p <= 0,05.

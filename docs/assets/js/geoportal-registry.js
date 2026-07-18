@@ -14,7 +14,7 @@
             temporal: { tipo: "anual", anios_disponibles: [2019, 2021, 2022, 2023, 2024] },
             dynamicBins: true,
             zeroIsData: true,
-            colors: ["#fff1e6", "#fdd0b5", "#f79072", "#d94b4b", "#8f1d2c"],
+            colorFamily: "Oranges",
             format: value => value.toString()
         },
         fallecidos_inec_2019: {
@@ -25,7 +25,7 @@
             temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
             dynamicBins: true,
             zeroIsData: true,
-            colors: ["#fff1e6", "#fdd0b5", "#f79072", "#d94b4b", "#8f1d2c"],
+            colorFamily: "Reds",
             format: value => value.toString()
         },
         tasa_fallecidos_100k: {
@@ -43,7 +43,7 @@
             dynamicBins: true,
             zeroIsData: true,
             continuous: true,
-            colors: ["#f1eef6", "#d7b5d8", "#df65b0", "#dd1c77", "#980043"],
+            colorFamily: "Purples",
             format: value => value.toFixed(1)
         },
         tasa_siniestros_1000_vehiculos_2024: {
@@ -56,7 +56,7 @@
             zeroIsData: true,
             continuous: true,
             infoSigla: "VEHICULOS_MATRICULADOS",
-            colors: ["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"],
+            colorFamily: "Purples",
             format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         },
         tasa_motociclistas_1000_motos_2024: {
@@ -69,7 +69,7 @@
             zeroIsData: true,
             continuous: true,
             infoSigla: "VEHICULOS_MATRICULADOS",
-            colors: ["#ffffcc", "#fed976", "#fd8d3c", "#e31a1c", "#800026"],
+            colorFamily: "YlOrBr",
             format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 3, maximumFractionDigits: 3 })
         },
         fallecidos_sppat_2016_2021: {
@@ -80,7 +80,7 @@
             temporal: { tipo: "anual", anios_disponibles: [2016, 2017, 2018, 2019, 2020, 2021] },
             dynamicBins: true,
             zeroIsData: true,
-            colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+            colorFamily: "OrRd",
             format: value => value.toString()
         },
         fallecidos_parroquial: {
@@ -91,7 +91,7 @@
             temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
             dynamicBins: true,
             zeroIsData: true,
-            colors: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+            colorFamily: "Reds",
             format: value => value.toString()
         },
         porcentaje_motos_flota_2024: {
@@ -104,7 +104,7 @@
             zeroIsData: true,
             continuous: true,
             infoSigla: "VEHICULOS_MATRICULADOS",
-            colors: ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
+            colorFamily: "Blues",
             format: value => `${value.toFixed(1)}%`
         },
         cobertura_mapeo_osm: {
@@ -118,7 +118,7 @@
             zeroAsNoMapping: true,
             continuous: true,
             infoSigla: "COBERTURA_OSM",
-            colors: ["#f7fcf0", "#ccebc5", "#7bccc4", "#2b8cbe", "#084081"],
+            colorFamily: "Greens",
             format: value => value.toFixed(1)
         }
     };

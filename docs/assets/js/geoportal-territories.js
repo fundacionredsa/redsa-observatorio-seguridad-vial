@@ -239,10 +239,12 @@ function onEachProvinceFeature(feature, layer) {
                         classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}`)}`;
                     }
                     
-                    const title = `${config.label}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
+                    let logScaleText = activeVariableBins.logScaled ? " <span style='color:var(--primary-color); font-weight:700;'>(escala logarítmica)</span>" : "";
+                    const levelContext = LEVEL_LABELS[currentLevel] ? ` (Nivel: ${LEVEL_LABELS[currentLevel].charAt(0).toUpperCase() + LEVEL_LABELS[currentLevel].slice(1)})` : "";
+                    const title = `${config.label}${levelContext}${temporalLabel}${logScaleText}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const displayBins = activeVariableBins.displayBins || bins;
-                    const colors = config.colors;
+                    const colors = activeVariableBins.colors && activeVariableBins.colors.length > 0 ? activeVariableBins.colors : config.colors;
                     const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${title}</div>

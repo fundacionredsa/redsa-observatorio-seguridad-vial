@@ -1,6 +1,65 @@
 // Registrar tiempo inicial exacto
         const tStart = performance.now();
 
+        // --- CONSTANTES MATEMATICAS Y UMBRALES ---
+        const UMBRAL_CONCENTRACION_BIN = 0.70; // Activar log-transform si bin 0 concentra > 70%
+        const UMBRAL_MEJORA_GVF = 0.02; // Mejoría mínima de GVF para aumentar de clases
+        const MIN_CLASSES = 5;
+        const MAX_CLASSES = 7;
+
+        // --- PALETAS SEMANTICAS (ColorBrewer) ---
+        const COLORBREWER = {
+            "Reds": {
+                3: ["#fee0d2", "#fc9272", "#de2d26"],
+                4: ["#fee5d9", "#fcae91", "#fb6a4a", "#cb181d"],
+                5: ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
+                6: ["#fee5d9", "#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15"],
+                7: ["#fee5d9", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d"]
+            },
+            "OrRd": {
+                3: ["#fee8c8", "#fdbb84", "#e34a33"],
+                4: ["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"],
+                5: ["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"],
+                6: ["#fef0d9", "#fdd49e", "#fdbb84", "#fc8d59", "#e34a33", "#b30000"],
+                7: ["#fef0d9", "#fdd49e", "#fdbb84", "#fc8d59", "#ef6548", "#d7301f", "#990000"]
+            },
+            "Oranges": {
+                3: ["#fee6ce", "#fdae6b", "#e6550d"],
+                4: ["#feedde", "#fdbe85", "#fd8d3c", "#d94701"],
+                5: ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"],
+                6: ["#feedde", "#fdd0a2", "#fdae6b", "#fd8d3c", "#e6550d", "#a63603"],
+                7: ["#feedde", "#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d94801", "#8c2d04"]
+            },
+            "Purples": {
+                3: ["#efedf5", "#bcbddc", "#756bb1"],
+                4: ["#f2f0f7", "#cbc9e2", "#9e9ac8", "#6a51a3"],
+                5: ["#f2f0f7", "#cbc9e2", "#9e9ac8", "#756bb1", "#54278f"],
+                6: ["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"],
+                7: ["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#807dba", "#6a51a3", "#4a1486"]
+            },
+            "YlOrBr": {
+                3: ["#fff7bc", "#fec44f", "#d95f0e"],
+                4: ["#ffffd4", "#fed98e", "#fe9929", "#cc4c02"],
+                5: ["#ffffd4", "#fed98e", "#fe9929", "#d95f0e", "#993404"],
+                6: ["#ffffd4", "#fee391", "#fec44f", "#fe9929", "#d95f0e", "#993404"],
+                7: ["#ffffd4", "#fee391", "#fec44f", "#fe9929", "#ec7014", "#cc4c02", "#8c2d04"]
+            },
+            "Blues": {
+                3: ["#deebf7", "#9ecae1", "#3182bd"],
+                4: ["#eff3ff", "#bdd7e7", "#6baed6", "#2171b5"],
+                5: ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"],
+                6: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
+                7: ["#eff3ff", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#084594"]
+            },
+            "Greens": {
+                3: ["#e5f5e0", "#a1d99b", "#31a354"],
+                4: ["#edf8e9", "#bae4b3", "#74c476", "#238b45"],
+                5: ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
+                6: ["#edf8e9", "#c7e9c0", "#a1d99b", "#74c476", "#31a354", "#006d2c"],
+                7: ["#edf8e9", "#c7e9c0", "#a1d99b", "#74c476", "#41ab5d", "#238b45", "#005a32"]
+            }
+        };
+
         // --- CONSTANTES DE COLOR ---
         const COLOR_BOUNDARY = "#52616b";
         const COLOR_BOUNDARY_HOVER = "#ffffff";
@@ -348,7 +407,18 @@
             return config.levels.includes(level) ? selectedVariable : "normal";
         }
 
-        function calculateOptimalBins(features, config, variable, kColors = 5) {
+        function getVariableColorPalette(config, numClasses) {
+            const family = config.colorFamily || "Reds";
+            if (COLORBREWER[family] && COLORBREWER[family][numClasses]) {
+                return COLORBREWER[family][numClasses];
+            }
+            if (numClasses < 3 && COLORBREWER[family] && COLORBREWER[family][3]) {
+                return COLORBREWER[family][3].slice(0, numClasses);
+            }
+            return ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
+        }
+
+        function calculateOptimalBins(features, config, variable) {
             const values = features
                 .map(feature => getVariableValue(feature.properties, variable, selectedYear))
                 .filter(value => value !== null && value !== undefined)
@@ -358,23 +428,33 @@
                 ))
                 .sort((a, b) => a - b);
                 
-            if (!values.length) return { bins: [], displayBins: [], method: 'Sin datos', gvf: 0, validValueCount: 0 };
+            if (!values.length) return { bins: [], displayBins: [], method: 'Sin datos', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
 
             const uniqueValues = [...new Set(values)].sort((a,b) => a-b);
-            const k = Math.min(kColors, uniqueValues.length);
-            const numBreaks = Math.max(1, k - 1);
             
-            if (numBreaks === 1 || values.length <= kColors || uniqueValues.length <= kColors) {
+            if (uniqueValues.length <= MAX_CLASSES) {
+                const k = uniqueValues.length;
+                const numBreaks = Math.max(1, k - 1);
                 const bins = uniqueValues.slice(0, numBreaks);
-                return { bins, displayBins: [...bins], method: 'Valores Únicos', gvf: 1.0, validValueCount: values.length };
+                const colors = getVariableColorPalette(config, Math.max(3, k)).slice(0, k);
+                return { 
+                    bins, 
+                    displayBins: [...bins], 
+                    method: 'Valores Únicos', 
+                    gvf: 1.0, 
+                    validValueCount: values.length, 
+                    colors, 
+                    logScaled: false 
+                };
             }
 
-            const sdam = ss.variance(values) * values.length;
-            const getGvf = (breaks) => {
+            const getGvf = (vals, breaks) => {
+                const sdam = ss.variance(vals) * vals.length;
+                if (sdam === 0) return 1;
                 let sdcm = 0;
                 let classValues = [];
                 let bIdx = 0;
-                for (let v of values) {
+                for (let v of vals) {
                     if (bIdx < breaks.length && v > breaks[bIdx]) {
                         if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
                         classValues = [];
@@ -383,40 +463,97 @@
                     classValues.push(v);
                 }
                 if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
-                return sdam === 0 ? 1 : 1 - (sdcm / sdam);
+                return 1 - (sdcm / sdam);
             };
 
-            const quantiles = [];
-            for (let i = 1; i <= numBreaks; i++) quantiles.push(ss.quantile(values, i / k));
-            const gvfQuantiles = getGvf(quantiles);
-
-            const min = values[0];
-            const max = values[values.length - 1];
-            const step = (max - min) / k;
-            const equalIntervals = [];
-            for (let i = 1; i <= numBreaks; i++) equalIntervals.push(min + i * step);
-            const gvfEqual = getGvf(equalIntervals);
-
-            const clusters = ss.ckmeans(values, k);
-            const jenks = clusters.slice(0, numBreaks).map(c => Math.max(...c));
-            const gvfJenks = getGvf(jenks);
-
-            let bestBins = jenks;
-            let bestMethod = 'Rupturas Naturales (Jenks)';
-            let bestGvf = gvfJenks;
-
-            if (gvfEqual > bestGvf) {
-                bestBins = equalIntervals;
-                bestMethod = 'Intervalos Iguales';
-                bestGvf = gvfEqual;
-            }
-            if (gvfQuantiles > bestGvf + 0.01) {
-                bestBins = quantiles;
-                bestMethod = 'Cuantiles';
-                bestGvf = gvfQuantiles;
-            }
+            // 1. Primer pase: calcular bins óptimos sobre valores crudos
+            let bestK = MIN_CLASSES;
+            let bestGvf = 0;
+            let bestBreaks = [];
             
-            const displayBins = bestBins.map(val => {
+            for (let k = MIN_CLASSES; k <= MAX_CLASSES; k++) {
+                const clusters = ss.ckmeans(values, k);
+                const breaks = clusters.slice(0, k - 1).map(c => Math.max(...c));
+                const currentGvf = getGvf(values, breaks);
+                
+                if (k === MIN_CLASSES) {
+                    bestK = k;
+                    bestGvf = currentGvf;
+                    bestBreaks = breaks;
+                } else if (currentGvf - bestGvf > UMBRAL_MEJORA_GVF) {
+                    bestK = k;
+                    bestGvf = currentGvf;
+                    bestBreaks = breaks;
+                } else {
+                    break;
+                }
+            }
+
+            // 2. Verificar si el primer bin de la clasificación cruda concentra > UMBRAL_CONCENTRACION_BIN (70%) de unidades
+            let logScaled = false;
+            let finalBreaks = bestBreaks;
+            let reportedGvf = bestGvf;
+            let bestMethod = 'Rupturas Naturales (Jenks)';
+
+            const firstBreak = bestBreaks[0];
+            const firstBinCount = values.filter(v => v <= firstBreak).length;
+            
+            if (firstBinCount / values.length > UMBRAL_CONCENTRACION_BIN) {
+                logScaled = true;
+                const logValues = values.map(v => Math.log(v + 1));
+                
+                // Recalcular sobre Math.log(valor + 1)
+                bestK = MIN_CLASSES;
+                bestGvf = 0;
+                bestBreaks = [];
+                for (let k = MIN_CLASSES; k <= MAX_CLASSES; k++) {
+                    const clusters = ss.ckmeans(logValues, k);
+                    const breaks = clusters.slice(0, k - 1).map(c => Math.max(...c));
+                    const currentGvf = getGvf(logValues, breaks);
+                    
+                    if (k === MIN_CLASSES) {
+                        bestK = k;
+                        bestGvf = currentGvf;
+                        bestBreaks = breaks;
+                    } else if (currentGvf - bestGvf > UMBRAL_MEJORA_GVF) {
+                        bestK = k;
+                        bestGvf = currentGvf;
+                        bestBreaks = breaks;
+                    } else {
+                        break;
+                    }
+                }
+                
+                // Des-transformar cortes
+                finalBreaks = bestBreaks.map(v => Math.exp(v) - 1);
+                reportedGvf = bestGvf;
+            } else {
+                // Si no se usó log, evaluar si intervalos iguales o cuantiles son mejores
+                const numBreaks = bestK - 1;
+                const quantiles = [];
+                for (let i = 1; i <= numBreaks; i++) quantiles.push(ss.quantile(values, i / bestK));
+                const gvfQuantiles = getGvf(values, quantiles);
+
+                const min = values[0];
+                const max = values[values.length - 1];
+                const step = (max - min) / bestK;
+                const equalIntervals = [];
+                for (let i = 1; i <= numBreaks; i++) equalIntervals.push(min + i * step);
+                const gvfEqual = getGvf(values, equalIntervals);
+
+                if (gvfEqual > reportedGvf) {
+                    finalBreaks = equalIntervals;
+                    bestMethod = 'Intervalos Iguales';
+                    reportedGvf = gvfEqual;
+                }
+                if (gvfQuantiles > reportedGvf + 0.01) {
+                    finalBreaks = quantiles;
+                    bestMethod = 'Cuantiles';
+                    reportedGvf = gvfQuantiles;
+                }
+            }
+
+            const displayBins = finalBreaks.map(val => {
                 if (val === 0) return 0;
                 const mag = Math.pow(10, Math.floor(Math.log10(Math.abs(val))));
                 let factor = 1;
@@ -429,12 +566,16 @@
                 return config.continuous ? Number(rounded.toFixed(3)) : Math.floor(rounded);
             });
 
+            const colors = getVariableColorPalette(config, bestK);
+
             return { 
-                bins: bestBins.map(b => config.continuous ? Number(b.toFixed(6)) : Math.floor(b)), 
+                bins: finalBreaks.map(b => config.continuous ? Number(b.toFixed(6)) : Math.floor(b)), 
                 displayBins, 
                 method: bestMethod, 
-                gvf: bestGvf, 
-                validValueCount: values.length 
+                gvf: reportedGvf, 
+                validValueCount: values.length, 
+                colors, 
+                logScaled 
             };
         }
 
@@ -451,7 +592,7 @@
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
             if (variable === "normal" || !config.levels.includes(level)) {
-                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0 };
+                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
             } else {
                 const result = calculateOptimalBins(getFeaturesForLevel(level), config, variable);
                 activeVariableBins = {
@@ -462,7 +603,9 @@
                     displayBins: result.displayBins,
                     method: result.method,
                     gvf: result.gvf,
-                    validValueCount: result.validValueCount
+                    validValueCount: result.validValueCount,
+                    colors: result.colors,
+                    logScaled: result.logScaled
                 };
             }
             window.__redsaActiveBins = {
@@ -473,7 +616,9 @@
                 displayBins: [...(activeVariableBins.displayBins || [])],
                 method: activeVariableBins.method,
                 gvf: activeVariableBins.gvf,
-                validValueCount: activeVariableBins.validValueCount
+                validValueCount: activeVariableBins.validValueCount,
+                colors: activeVariableBins.colors,
+                logScaled: activeVariableBins.logScaled
             };
             return activeVariableBins.bins;
         }
@@ -544,7 +689,7 @@
                 while (idx < bins.length && val > bins[idx]) {
                     idx++;
                 }
-                fillColor = config.colors[idx];
+                fillColor = (activeVariableBins.colors && activeVariableBins.colors[idx]) ? activeVariableBins.colors[idx] : getVariableColorPalette(config, bins.length + 1)[idx];
                 color = isSelected ? "#38bdf8" : (isHovered ? "#ffffff" : "#475569");
                 opacity = (isSelected || isHovered) ? 1.0 : 0.6;
             }
