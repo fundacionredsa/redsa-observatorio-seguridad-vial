@@ -161,6 +161,39 @@
         // Agregar mapa base por defecto (Positron)
         baseMaps["CartoDB Positron (Claro)"].addTo(map);
 
+        // Control de opacidad personalizado
+        const OpacityControl = L.Control.extend({
+            options: { position: 'topright' },
+            onAdd: function (map) {
+                const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control opacity-control');
+                div.style.padding = '10px';
+                div.style.background = 'var(--bg-panel, rgba(255, 255, 255, 0.95))';
+                div.style.border = '1px solid var(--border-color, #ccc)';
+                div.style.borderRadius = '4px';
+                div.style.backdropFilter = 'blur(10px)';
+                div.innerHTML = `
+                    <label for="opacity-slider" style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px; color: var(--text-color, #333); text-transform: uppercase; letter-spacing: 0.5px;">Opacidad de Capa</label>
+                    <input type="range" id="opacity-slider" min="0" max="100" value="100" style="width: 120px; cursor: pointer;">
+                `;
+                L.DomEvent.disableClickPropagation(div);
+                L.DomEvent.disableScrollPropagation(div);
+                
+                setTimeout(() => {
+                    const slider = document.getElementById('opacity-slider');
+                    if (slider) {
+                        slider.addEventListener('input', (e) => {
+                            const val = e.target.value / 100;
+                            const pane = map.getPane('overlayPane');
+                            if (pane) pane.style.opacity = val;
+                        });
+                    }
+                }, 100);
+
+                return div;
+            }
+        });
+        map.addControl(new OpacityControl());
+
         // Capa GeoJSON
         let provinceLayer = null;
         let provinceData = null;
@@ -173,6 +206,8 @@
         let layerControl = null;
         let overlayMaps = {};
         let historicoChart = null;
+
+        layerControl = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
 
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
