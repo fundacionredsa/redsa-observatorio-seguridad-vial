@@ -72,6 +72,7 @@
         <div class="citizen-actions">
             <button class="citizen-action" id="open-analysis-button" type="button">Ver análisis completo</button>
             <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
+            <button class="citizen-action" id="btn-catalog" type="button"><i class="fa-solid fa-database"></i> Catálogo de Datos</button>
             <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
             <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
         </div>
@@ -188,6 +189,34 @@
                     Consultado el <span id="citation-current-date"></span>.
                 </blockquote>
             </section>
+        </div>
+    </div>
+
+    <div class="institutional-modal" id="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-modal-title" aria-hidden="true" hidden>
+        <div class="institutional-dialog">
+            <header class="institutional-header">
+                <div>
+                    <p class="institutional-eyebrow">Diccionario de Variables</p>
+                    <h2 id="catalog-modal-title">Catálogo de Datos del Observatorio</h2>
+                </div>
+                <button class="modal-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
+            </header>
+            <div class="institutional-content">
+                <div class="catalog-filters" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="catalog-search" placeholder="Buscar variable..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
+                    <select id="catalog-category-filter" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; background: white;">
+                        <option value="todas">Todas las categorías</option>
+                    </select>
+                </div>
+                
+                <div id="catalog-summary-stats" style="margin-bottom: 20px; padding: 15px; background: #f7f9fa; border-radius: 8px; border: 1px solid #e1e8ed; font-size: 14px;">
+                    <!-- Stats will be populated here -->
+                </div>
+
+                <div id="catalog-results" style="display: grid; gap: 15px;">
+                    <!-- Variables will be populated here -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -384,6 +413,7 @@
     <script src="assets/js/geoportal-panels.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-institutional.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-tour.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-app.js?v=0.6.0"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">

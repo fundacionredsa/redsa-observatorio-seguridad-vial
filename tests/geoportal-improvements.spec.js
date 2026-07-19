@@ -57,4 +57,31 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
         });
     });
+
+    test.describe('Block C: Data Catalog', () => {
+        test('catalog modal opens and displays variables', async ({ page }) => {
+            const btnCatalog = page.locator('#btn-catalog');
+            await expect(btnCatalog).toBeVisible();
+            await btnCatalog.click();
+
+            const modal = page.locator('#catalog-modal');
+            await expect(modal).toBeVisible();
+
+            // Wait for fetch to complete and render
+            const results = modal.locator('#catalog-results > div');
+            await expect(results).toHaveCount(9, { timeout: 10000 });
+
+            // Test search filter
+            const searchInput = modal.locator('#catalog-search');
+            await searchInput.fill('INEC');
+            
+            // Should filter out some, let's just check it updates
+            await expect(results).not.toHaveCount(9, { timeout: 5000 });
+            await expect(results.first()).toBeVisible();
+
+            const closeBtn = modal.locator('#catalog-modal-close');
+            await closeBtn.click();
+            await expect(modal).toBeHidden();
+        });
+    });
 });
