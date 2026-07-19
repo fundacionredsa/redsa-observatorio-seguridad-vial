@@ -8,6 +8,7 @@
         },
         siniestros_inec_2019: {
             label: "Accidentes de tránsito reportados (INEC)",
+            fuente: "INEC",
             description: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
             getValue: (props, year) => props.siniestros_historico?.[String(year)],
             levels: ["province", "canton"],
@@ -19,6 +20,7 @@
         },
         fallecidos_inec_2019: {
             label: "Personas fallecidas por accidentes (registro civil)",
+            fuente: "Registro Civil",
             description: "Número de personas que murieron por accidentes de tránsito.",
             getValue: (props, year) => props.fallecidos_historico?.[String(year)],
             levels: ["province", "canton"],
@@ -74,6 +76,7 @@
         },
         fallecidos_sppat_2016_2021: {
             label: "Fallecidos según reclamos del seguro (SPPAT)",
+            fuente: "SPPAT",
             description: "Fallecidos según reclamos del seguro obligatorio de accidentes de tránsito (2016-2021).",
             getValue: (props, year) => props.sppat_fallecidos_por_anio?.[String(year)],
             levels: ["province", "canton"],

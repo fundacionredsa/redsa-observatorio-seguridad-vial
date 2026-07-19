@@ -1,0 +1,148 @@
+{
+  "resumen_transparencia": {
+    "pct_variables_con_fuente_documentada": 33.3,
+    "pct_cobertura_sin_dato_declarado": 75.0,
+    "vars_total": 9,
+    "vars_con_fuente": 3,
+    "vars_con_faltantes": 4,
+    "vars_declarando_sin_dato": 3
+  },
+  "variables": [
+    {
+      "id": "siniestros_inec_2019",
+      "label": "Accidentes de trÃ¡nsito reportados (INEC)",
+      "categoria": "Siniestralidad",
+      "fuente": "INEC",
+      "anios_disponibles": [
+        2019,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "fallecidos_inec_2019",
+      "label": "Personas fallecidas por accidentes (registro civil)",
+      "categoria": "Mortalidad",
+      "fuente": "Registro Civil",
+      "anios_disponibles": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "tasa_fallecidos_100k",
+      "label": "Fallecidos por cada 100.000 habitantes",
+      "categoria": "Indicadores Relativos",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "tasa_siniestros_1000_vehiculos_2024",
+      "label": "Accidentes por cada 1.000 vehÃ­culos (2024)",
+      "categoria": "Indicadores Relativos",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "tasa_motociclistas_1000_motos_2024",
+      "label": "Motociclistas fallecidos por cada 1.000 motos (2024)",
+      "categoria": "Indicadores Relativos",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "fallecidos_sppat_2016_2021",
+      "label": "Fallecidos segÃºn reclamos del seguro (SPPAT)",
+      "categoria": "Mortalidad",
+      "fuente": "SPPAT",
+      "anios_disponibles": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "fallecidos_parroquial",
+      "label": "Personas fallecidas por parroquia",
+      "categoria": "Mortalidad",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "parish"
+      ]
+    },
+    {
+      "id": "porcentaje_motos_flota_2024",
+      "label": "Porcentaje de vehÃ­culos que son motos (2024)",
+      "categoria": "Indicadores Relativos",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2024
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    },
+    {
+      "id": "cobertura_mapeo_osm",
+      "label": "Cobertura del mapeo de infraestructura vial",
+      "categoria": "Otras Variables",
+      "fuente": "fuente_pendiente_confirmar",
+      "anios_disponibles": [
+        2026
+      ],
+      "nivel_territorial_disponible": [
+        "province",
+        "canton"
+      ]
+    }
+  ]
+}
