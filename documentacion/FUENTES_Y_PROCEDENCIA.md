@@ -37,4 +37,5 @@ permiten demostrar que un archivo auditado no cambio silenciosamente.
 ## Dependencias de Terceros (Frontend)
 
 - **simple-statistics**: v7.8.3, vendorizado localmente en `docs/assets/js/vendor/`. Licencia **ISC** (compatible con MIT). Se utiliza para clasificación espacial dinámica de variables continuas usando `ckmeans` (Goodness of Variance Fit).
+- **driver.js**: Biblioteca para crear el recorrido guiado interactivo. Obtenida de [driver.js](https://driverjs.com/). Licencia MIT.
 - **ColorBrewer**: Estándar de esquemas de color para cartografía, implementado como diccionario en el código fuente. Licencia **Apache 2.0**.

@@ -23,6 +23,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="assets/css/driver.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     
     <!-- Chart.js CDN -->
@@ -69,6 +71,7 @@
         </div>
         <div class="citizen-actions">
             <button class="citizen-action" id="open-analysis-button" type="button">Ver análisis completo</button>
+            <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
             <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
             <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
         </div>
@@ -371,14 +374,16 @@
     <!-- Third-party libraries -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="assets/js/vendor/simple-statistics.min.js"></script>
+    <script src="assets/js/vendor/driver.min.js"></script>
 
-    <!-- Geoportal modules -->
+    <!-- App Modularizada -->
     <script src="assets/js/geoportal-registry.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-experience.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-state.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-territories.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-panels.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-institutional.js?v=0.6.0"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.6.0"></script>
     <script src="assets/js/geoportal-app.js?v=0.6.0"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
