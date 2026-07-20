@@ -631,3 +631,49 @@
                 document.getElementById("diag-download").textContent = "Error";
                 document.getElementById("diag-download").style.color = "#ef4444";
             });
+
+        // --- TEMA CLARO / OSCURO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnTheme = document.getElementById('btn-theme-toggle');
+            if (btnTheme) {
+                // Leer preferencia
+                const isLight = localStorage.getItem('redsa_light_theme') === 'true';
+                if (isLight) {
+                    document.body.classList.add('light-theme');
+                    btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i> Modo Oscuro';
+                }
+                
+                btnTheme.addEventListener('click', () => {
+                    document.body.classList.toggle('light-theme');
+                    const currentlyLight = document.body.classList.contains('light-theme');
+                    localStorage.setItem('redsa_light_theme', currentlyLight);
+                    btnTheme.innerHTML = currentlyLight 
+                        ? '<i class="fa-solid fa-moon"></i> Modo Oscuro' 
+                        : '<i class="fa-solid fa-sun"></i> Modo Claro';
+                });
+            }
+        });
+
+        // --- COORDENADAS DEL CURSOR ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const mapInstance = window.geoportalMap;
+                if (mapInstance) {
+                    mapInstance.on('mousemove', (e) => {
+                        if (window.innerWidth <= 768) return;
+                        const coordDiv = document.getElementById('cursor-coordinates');
+                        if (coordDiv) {
+                            coordDiv.style.display = 'block';
+                            const latEl = document.getElementById('coord-lat');
+                            const lngEl = document.getElementById('coord-lng');
+                            if (latEl) latEl.textContent = e.latlng.lat.toFixed(4);
+                            if (lngEl) lngEl.textContent = e.latlng.lng.toFixed(4);
+                        }
+                    });
+                    mapInstance.on('mouseout', () => {
+                        const coordDiv = document.getElementById('cursor-coordinates');
+                        if (coordDiv) coordDiv.style.display = 'none';
+                    });
+                }
+            }, 2000);
+        });

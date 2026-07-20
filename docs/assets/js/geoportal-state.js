@@ -103,6 +103,7 @@
             zoomControl: false,
             attributionControl: true
         });
+        window.geoportalMap = map;
         map.fitBounds(INITIAL_VIEW.bounds, { padding: [12, 12], animate: false });
 
         // Reposicionar el control de Zoom

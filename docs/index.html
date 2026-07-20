@@ -73,6 +73,7 @@
             <button class="citizen-action" id="open-analysis-button" type="button">Ver análisis completo</button>
             <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
             <button class="citizen-action" id="btn-catalog" type="button"><i class="fa-solid fa-database"></i> Catálogo de Datos</button>
+            <button class="citizen-action" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro"><i class="fa-solid fa-sun"></i> Modo Claro</button>
             <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
             <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
         </div>
@@ -218,6 +219,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Coordenadas del Cursor -->
+    <div id="cursor-coordinates" class="glass" style="display: none; position: absolute; bottom: 20px; right: 20px; z-index: 1000; padding: 8px 12px; border-radius: 6px; font-size: 12px; pointer-events: none; color: var(--text-primary); transition: opacity 0.2s;">
+        Lat: <span id="coord-lat">--</span> | Lng: <span id="coord-lng">--</span>
     </div>
 
     <!-- Contenedor Principal de la Interfaz -->

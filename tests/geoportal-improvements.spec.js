@@ -109,4 +109,46 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(layerControl).toBeVisible();
         });
     });
+
+    test.describe('Block E: UI Theme & Coordinates', () => {
+        test('theme toggle changes body class and localstorage', async ({ page }) => {
+            const btnTheme = page.locator('#btn-theme-toggle');
+            await expect(btnTheme).toBeVisible();
+
+            // Default should be dark (no light-theme class)
+            await expect(page.locator('body')).not.toHaveClass(/light-theme/);
+
+            // Click toggle
+            await btnTheme.click();
+            await expect(page.locator('body')).toHaveClass(/light-theme/);
+
+            // Check localStorage
+            const isLight = await page.evaluate(() => localStorage.getItem('redsa_light_theme'));
+            expect(isLight).toBe('true');
+
+            // Click again
+            await btnTheme.click();
+            await expect(page.locator('body')).not.toHaveClass(/light-theme/);
+        });
+
+        test('cursor coordinates display on mousemove', async ({ page, isMobile }) => {
+            test.skip(isMobile, 'Cursor coordinates are only displayed on desktop viewport.');
+            // Need a viewport > 768px (default in playwright desktop is usually 1280x720)
+            const mapContainer = page.locator('#map');
+            await expect(mapContainer).toBeVisible();
+
+            // Hover over map
+            await mapContainer.hover();
+            await page.mouse.move(500, 500);
+
+            // Give the coordinate tracker a moment (there is a setTimeout(..., 2000) for initialization)
+            await page.waitForTimeout(2500);
+            await page.mouse.move(510, 510);
+
+            const coordDiv = page.locator('#cursor-coordinates');
+            await expect(coordDiv).toBeVisible();
+            await expect(coordDiv.locator('#coord-lat')).not.toHaveText('--');
+            await expect(coordDiv.locator('#coord-lng')).not.toHaveText('--');
+        });
+    });
 });

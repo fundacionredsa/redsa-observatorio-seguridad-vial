@@ -28,6 +28,17 @@
             --perfil-card-max-height: 280px;
         }
 
+        body.light-theme {
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            --bg-glass-hover: rgba(240, 240, 240, 0.95);
+            --border-glass: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -39,7 +50,7 @@
             width: 100%;
             font-family: var(--font-sans);
             overflow: hidden;
-            background-color: #0f172a;
+            background-color: var(--bg-glass);
         }
 
         #map {
