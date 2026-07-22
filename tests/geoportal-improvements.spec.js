@@ -6,7 +6,17 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
     test.beforeEach(async ({ page }) => {
         page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
         page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
-        await page.addInitScript(() => localStorage.removeItem('redsa_catalog_downloads_device_v1'));
+        const counts = new Map();
+        await page.route('https://countapi.mileshilliard.com/api/v1/**', async route => {
+            const parts = new URL(route.request().url()).pathname.split('/').filter(Boolean);
+            const operation = parts.at(-2);
+            const key = decodeURIComponent(parts.at(-1));
+            const current = counts.get(key) || 0;
+            if (operation === 'hit') counts.set(key, current + 1);
+            const value = counts.get(key) || 0;
+            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ key, value }) });
+        });
+        await page.addInitScript(() => { window.__REDSA_GLOBAL_COUNTER_ENABLED__ = true; });
         await page.goto('./', { waitUntil: "domcontentloaded" });
         await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 10_000 });
         
@@ -69,6 +79,23 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
+                if (expectedTitle === 'Leyenda adaptativa') {
+                    const geometry = await page.evaluate(() => {
+                        const legendElement = document.querySelector('.legend-panel');
+                        const targetElement = document.querySelector('#legend-tour-target');
+                        const legend = legendElement?.getBoundingClientRect();
+                        const target = targetElement?.getBoundingClientRect();
+                        const box = rect => rect && ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
+                        return {
+                            legend: box(legend),
+                            target: box(target),
+                            targetIsActive: targetElement?.classList.contains('driver-active-element'),
+                            activeCount: document.querySelectorAll('.driver-active-element').length
+                        };
+                    });
+                    expect(geometry.targetIsActive, JSON.stringify(geometry)).toBeTruthy();
+                    expect(geometry.target, JSON.stringify(geometry)).toEqual(geometry.legend);
+                }
             }
         });
     });
@@ -88,7 +115,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             await expect(results.first().locator('.catalog-download')).toHaveCount(3);
-            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas en este dispositivo: 0.');
+            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas históricas registradas: 0.');
+            await expect(modal.locator('#catalog-global-download-total')).toHaveText('Descargas históricas registradas en todo el catálogo: 0.');
+            await expect(modal).toContainText('registra descargas, no personas únicas');
 
             const geojsonDownload = page.waitForEvent('download');
             await results.first().locator('button.catalog-download').first().click();
@@ -101,7 +130,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(payload.metadata.referencias.length).toBeGreaterThan(0);
             expect(payload.metadata.responsable_tratamiento).toBe('Fundación REDSA');
             expect(payload.metadata.cita_sugerida).toContain('Fundación REDSA');
-            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas en este dispositivo: 1.');
+            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas históricas registradas: 1.');
+            await expect(modal.locator('#catalog-global-download-total')).toHaveText('Descargas históricas registradas en todo el catálogo: 1.');
 
             const content = modal.locator('#catalog-results');
             const scrollMetrics = await content.evaluate(element => ({

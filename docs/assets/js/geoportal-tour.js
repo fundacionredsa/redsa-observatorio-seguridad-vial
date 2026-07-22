@@ -7,9 +7,25 @@
             return;
         }
 
-        const technicalTourTarget = window.matchMedia("(max-width: 820px)").matches
-            ? "#technical-panel-toggle"
-            : "#technical-drawer";
+        const isMobile = window.matchMedia("(max-width: 820px)").matches;
+        const variableTourTarget = isMobile ? "#mobile-layers-toggle" : "#variable-controls-slot";
+        const infrastructureTourTarget = isMobile ? "#technical-panel-toggle" : "#infrastructure-disclosure";
+        const legend = document.querySelector(".legend-panel");
+        const legendRect = legend?.getBoundingClientRect();
+        const legendTourTarget = document.createElement("div");
+        legendTourTarget.id = "legend-tour-target";
+        legendTourTarget.setAttribute("aria-hidden", "true");
+        if (legendRect) {
+            Object.assign(legendTourTarget.style, {
+                position: "fixed",
+                left: `${legendRect.left}px`,
+                top: `${legendRect.top}px`,
+                width: `${legendRect.width}px`,
+                height: `${legendRect.height}px`,
+                pointerEvents: "none"
+            });
+        }
+        document.body.appendChild(legendTourTarget);
         const driverObj = window.driver.js.driver({
             showProgress: true,
             allowClose: true,
@@ -21,6 +37,7 @@
             progressText: '{{current}} de {{total}}',
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
+            onDestroyed: () => legendTourTarget.remove(),
             onDestroyStarted: () => {
                 if (!driverObj.hasNextStep() || confirm("¿Seguro que deseas omitir el resto del tour?")) {
                     localStorage.setItem(TOUR_FLAG_KEY, "true");
@@ -53,7 +70,7 @@
                     }
                 },
                 {
-                    element: technicalTourTarget,
+                    element: variableTourTarget,
                     popover: {
                         title: 'Variables, años y nivel territorial',
                         description: 'En “Datos y capas” puedes elegir qué fenómeno representar, mover la línea de tiempo y cambiar entre provincias, cantones y parroquias. “Sin dato” nunca se interpreta como cero.',
@@ -62,7 +79,7 @@
                     }
                 },
                 {
-                    element: technicalTourTarget,
+                    element: infrastructureTourTarget,
                     popover: {
                         title: 'Capas de infraestructura y mapas base',
                         description: 'En el mismo panel puedes desplegar “Infraestructura vial” y activar varias capas a la vez. El control de capas del mapa permite escoger el mapa base.',
@@ -71,7 +88,7 @@
                     }
                 },
                 {
-                    element: '.leaflet-bottom.leaflet-right', // Legend area
+                    element: '#legend-tour-target',
                     popover: {
                         title: 'Leyenda adaptativa',
                         description: 'La leyenda cambia según la variable, el año y el nivel territorial. También declara cuando no existen datos y su ícono informativo explica la clasificación.',

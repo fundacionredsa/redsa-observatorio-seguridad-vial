@@ -58,6 +58,38 @@
             .sort((a, b) => a - b);
     }
 
+    function latestAvailable(series, requestedYear = Infinity) {
+        const entries = Object.entries(series || {})
+            .map(([year, value]) => ({ year: Number(year), value: finiteNumber(value) }))
+            .filter(entry => Number.isFinite(entry.year) && entry.value !== null && entry.year <= Number(requestedYear))
+            .sort((a, b) => b.year - a.year);
+        return entries[0] || null;
+    }
+
+    function latestDetailedAvailable(series, requestedYear = Infinity) {
+        const entries = Object.entries(series || {})
+            .map(([year, value]) => ({ year: Number(year), value }))
+            .filter(entry => Number.isFinite(entry.year)
+                && entry.year <= Number(requestedYear)
+                && entry.value?.estado !== "sin_dato"
+                && (Number(entry.value?.total) > 0 || Object.keys(entry.value?.categorias || {}).length > 0))
+            .sort((a, b) => b.year - a.year);
+        return entries[0] || null;
+    }
+
+    function periodLabel(requestedYear, availableYear, latestOfficialYear) {
+        if (!Number.isFinite(availableYear)) return `Periodo ${requestedYear}: sin dato disponible en la fuente oficial`;
+        const latest = availableYear === latestOfficialYear ? " · último disponible en fuentes oficiales" : "";
+        if (availableYear === requestedYear) return `Periodo ${availableYear}${latest}`;
+        return `Periodo ${requestedYear}: sin dato disponible · se muestra ${availableYear}${latest}`;
+    }
+
+    function metricPeriodLabel(requestedYear, availableYear, source) {
+        if (!Number.isFinite(availableYear)) return `${requestedYear}: sin dato\nFuente: ${source}`;
+        if (availableYear === requestedYear) return `Periodo ${availableYear}\nÚltimo oficial · ${source}`;
+        return `${requestedYear}: sin dato\nÚltimo oficial: ${availableYear} · ${source}`;
+    }
+
     function availableAccidentYears(props) {
         return Object.entries(props?.siniestros_historico || {})
             .filter(([, value]) => Number.isFinite(Number(value)))
@@ -331,10 +363,14 @@
         const trendYears = completeTimelineYears(props, year);
         const accidentCoverage = coverageYears(props.siniestros_historico);
         const deathCoverage = coverageYears(props.fallecidos_historico);
-        const accidents = finiteNumber(props.siniestros_historico?.[String(year)]);
-        const deaths = finiteNumber(props.fallecidos_historico?.[String(year)]);
-        const population = finiteNumber(props.poblacion_por_anio?.[String(year)]);
-        const rate = rateForFeature(props, year);
+        const latestAccident = latestAvailable(props.siniestros_historico);
+        const latestDeath = latestAvailable(props.fallecidos_historico);
+        const selectedAccidents = finiteNumber(props.siniestros_historico?.[String(year)]);
+        const selectedDeaths = finiteNumber(props.fallecidos_historico?.[String(year)]);
+        const accidentPeriod = selectedAccidents !== null ? { year, value: selectedAccidents } : latestAccident;
+        const deathPeriod = selectedDeaths !== null ? { year, value: selectedDeaths } : latestDeath;
+        const population = finiteNumber(props.poblacion_por_anio?.[String(accidentPeriod?.year)]);
+        const rate = accidentPeriod ? rateForFeature(props, accidentPeriod.year) : null;
         const historicalTotal = sumSeries(props.siniestros_historico);
         const historicalDeaths = sumSeries(props.fallecidos_historico);
         pdf.setFillColor(7, 93, 102);
@@ -349,12 +385,12 @@
         pdf.setFontSize(8.5);
         pdf.text("Iniciativa independiente de la sociedad civil impulsada por Fundación REDSA", margin, 27);
         y = 42;
-        addParagraph(`${name} · ${level} · ${props.DPA_DESPRO || "Ecuador"} · año seleccionado ${year || "sin dato"}`, { bold: true, size: 12, color: ink });
+        addParagraph(`${name} · ${level} · ${props.DPA_DESPRO || "Ecuador"} · período consultado ${year || "sin dato"}`, { bold: true, size: 12, color: ink });
 
         const metrics = [
-            [`Accidentes ${year}\nFuente: INEC-ESTRA`, accidents !== null ? formatNumber(accidents) : "Sin dato"],
+            [`Accidentes\n${metricPeriodLabel(year, accidentPeriod?.year, "INEC-ESTRA")}`, accidentPeriod ? formatNumber(accidentPeriod.value) : "Sin dato"],
             [`Accidentes históricos\nINEC-ESTRA: ${formatYearCoverage(accidentCoverage)}`, formatNumber(historicalTotal)],
-            [`Fallecidos ${year}\nFuente: INEC-EDG`, deaths !== null ? formatNumber(deaths) : "Sin dato"],
+            [`Fallecidos\n${metricPeriodLabel(year, deathPeriod?.year, "INEC-EDG")}`, deathPeriod ? formatNumber(deathPeriod.value) : "Sin dato"],
             [`Fallecidos históricos\nINEC-EDG: ${formatYearCoverage(deathCoverage)}`, formatNumber(historicalDeaths)]
         ];
         const metricWidth = (contentWidth - 9) / 4;
@@ -375,7 +411,7 @@
         y += 24;
         const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
         const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
-        addParagraph(`Contexto del año consultado: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con INEC-ESTRA e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con INEC-ESTRA e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
 
         const selectedCode = String(props.DPA_CANTON || "");
         const selectedProvinceCode = String(props.DPA_PROVIN || selectedCode.slice(0, 2));
@@ -392,10 +428,10 @@
         ];
         if (referenceRows.length > 1) {
             addSection("Contexto territorial comparable");
-            addParagraph(`Comparación del mismo año (${year}) y de los acumulados disponibles. Accidentes: INEC-ESTRA. Fallecidos: INEC-EDG.`, { size: 8 });
+            addParagraph(`Comparación del período consultado (${year}) y de los acumulados disponibles. Si ese año no tiene dato, se muestra el último oficial con su año entre paréntesis. Accidentes: INEC-ESTRA. Fallecidos: INEC-EDG.`, { size: 8 });
             ensureSpace(10 + referenceRows.length * 8);
             const widths = [47, 30, 34, 34, 37];
-            const headings = ["Territorio", `Accid. ${year}`, "Accid. histórico", `Fallec. ${year}`, "Fallec. histórico"];
+            const headings = ["Territorio", "Accid. período", "Accid. histórico", "Fallec. período", "Fallec. histórico"];
             pdf.setFillColor(7, 93, 102); pdf.rect(margin, y, contentWidth, 8, "F");
             pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(6.7);
             let referenceX = margin;
@@ -404,16 +440,24 @@
             referenceRows.forEach((reference, index) => {
                 if (index % 2 === 0) { pdf.setFillColor(241, 245, 249); pdf.rect(margin, y, contentWidth, 8, "F"); }
                 const referenceName = reference.data.DPA_DESPAR || reference.data.DPA_DESCAN || reference.data.DPA_DESPRO || reference.label;
+                const referenceAccidents = finiteNumber(reference.data.siniestros_historico?.[String(year)]) !== null
+                    ? { year, value: finiteNumber(reference.data.siniestros_historico?.[String(year)]) }
+                    : latestAvailable(reference.data.siniestros_historico);
+                const referenceDeaths = finiteNumber(reference.data.fallecidos_historico?.[String(year)]) !== null
+                    ? { year, value: finiteNumber(reference.data.fallecidos_historico?.[String(year)]) }
+                    : latestAvailable(reference.data.fallecidos_historico);
                 const row = [
                     `${reference.label}: ${referenceName}`,
-                    finiteNumber(reference.data.siniestros_historico?.[String(year)]),
+                    referenceAccidents ? `${formatNumber(referenceAccidents.value)} (${referenceAccidents.year})` : null,
                     sumSeries(reference.data.siniestros_historico),
-                    finiteNumber(reference.data.fallecidos_historico?.[String(year)]),
+                    referenceDeaths ? `${formatNumber(referenceDeaths.value)} (${referenceDeaths.year})` : null,
                     sumSeries(reference.data.fallecidos_historico)
                 ];
                 referenceX = margin;
                 row.forEach((value, column) => {
-                    const display = column === 0 ? String(value) : (value === null ? "Sin dato" : formatNumber(value));
+                    const display = column === 0 || typeof value === "string"
+                        ? String(value)
+                        : (value === null ? "Sin dato" : formatNumber(value));
                     pdf.setTextColor(...ink); pdf.setFont("helvetica", column === 0 ? "bold" : "normal"); pdf.setFontSize(6.7);
                     pdf.text(pdf.splitTextToSize(display, widths[column] - 3), referenceX + 1.5, y + 5);
                     referenceX += widths[column];
@@ -478,12 +522,17 @@
         const missingDeathYears = trendYears.filter(candidate => finiteNumber(props.fallecidos_historico?.[String(candidate)]) === null);
         addParagraph(`Sin dato INEC-ESTRA: ${missingAccidentYears.length ? missingAccidentYears.join(", ") : "ningún año de la serie"}. Sin dato INEC-EDG: ${missingDeathYears.length ? missingDeathYears.join(", ") : "ningún año de la serie"}.`, { size: 7.5 });
 
-        const edg = props.fallecidos_detallado?.[String(year)];
+        const latestEdg = latestDetailedAvailable(props.fallecidos_detallado);
+        const selectedEdg = props.fallecidos_detallado?.[String(year)];
+        const edgPeriod = selectedEdg?.estado !== "sin_dato" && Number(selectedEdg?.total) > 0
+            ? { year, value: selectedEdg }
+            : latestEdg;
+        const edg = edgPeriod?.value;
         ensureSpace(edg && edg.estado !== "sin_dato" && Number(edg.total) > 0 ? 123 : 28);
-        addSection(`Perfil de personas fallecidas (${year || "sin dato"})`);
+        addSection("Perfil de personas fallecidas");
         if (edg && edg.estado !== "sin_dato" && Number(edg.total) > 0) {
             const total = Number(edg.total);
-            addParagraph(`Fuente: Registro Estadístico de Defunciones Generales (INEC-EDG), causas CIE-10 V01-V89. Año consultado: ${formatNumber(total)} personas fallecidas. Acumulado territorial EDG ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)}.`, { size: 8.5 });
+            addParagraph(`${periodLabel(year, edgPeriod.year, latestEdg?.year)}: ${formatNumber(total)} personas fallecidas. Fuente: Registro Estadístico de Defunciones Generales (INEC-EDG), causas CIE-10 V01-V89. Acumulado territorial EDG ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)}.`, { size: 8.5 });
             const male = Number(edg.sexo?.Hombre) || 0;
             const female = Number(edg.sexo?.Mujer) || 0;
             const knownSex = Math.max(1, male + female);
@@ -507,13 +556,19 @@
             const rightEnd = drawBarList("Grupos de edad", ageEntries, margin + 96, 86, [8, 145, 178]);
             y = Math.max(leftEnd, rightEnd) + 2;
         } else {
-            addParagraph(`Sin datos demográficos INEC-EDG disponibles para ${year}. Acumulado territorial disponible ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)} personas fallecidas.`, { color: ink });
+            addParagraph(`Periodo ${year}: sin datos demográficos INEC-EDG disponibles. Tampoco existe un último perfil oficial recuperable para este territorio. Acumulado territorial disponible ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)} personas fallecidas.`, { color: ink });
         }
 
-        addSection(`Reclamaciones del seguro - SPPAT (${year || "sin dato"})`);
-        const sppatSex = props.sppat_por_sexo?.[String(year)];
-        const sppatCondition = props.sppat_por_condicion?.[String(year)];
-        const sppatType = props.sppat_por_tipo_accidente?.[String(year)];
+        const latestSppat = latestDetailedAvailable(props.sppat_por_sexo);
+        const selectedSppat = props.sppat_por_sexo?.[String(year)];
+        const sppatPeriod = selectedSppat?.estado === "disponible"
+            ? { year, value: selectedSppat }
+            : latestSppat;
+        const sppatYear = sppatPeriod?.year;
+        addSection("Reclamaciones del seguro - SPPAT");
+        const sppatSex = sppatPeriod?.value;
+        const sppatCondition = props.sppat_por_condicion?.[String(sppatYear)];
+        const sppatType = props.sppat_por_tipo_accidente?.[String(sppatYear)];
         if (sppatSex?.estado === "disponible") {
             const toEntries = entry => {
                 const categories = entry?.categorias || {};
@@ -524,14 +579,14 @@
             const conditionEntries = toEntries(sppatCondition);
             const typeEntries = toEntries(sppatType);
             ensureSpace(12 + Math.max(sexEntries.length, conditionEntries.length, typeEntries.length) * 8);
-            addParagraph("Fuente: Servicio Público para Pago de Accidentes de Tránsito (SPPAT), reclamaciones procesadas. No deben sumarse con INEC-EDG porque son registros y metodologías diferentes.", { size: 8.5 });
+            addParagraph(`${periodLabel(year, sppatYear, latestSppat?.year)}. Fuente: Servicio Público para Pago de Accidentes de Tránsito (SPPAT), reclamaciones procesadas. No deben sumarse con INEC-EDG porque son registros y metodologías diferentes.`, { size: 8.5 });
             const columnWidth = 55;
             const sexEnd = drawBarList("Sexo registrado", sexEntries, margin, columnWidth, [14, 165, 233]);
             const conditionEnd = drawBarList("Condición", conditionEntries, margin + 63, columnWidth, [8, 145, 178]);
             const typeEnd = drawBarList("Tipo de accidente", typeEntries, margin + 126, columnWidth, [168, 85, 247]);
             y = Math.max(sexEnd, conditionEnd, typeEnd) + 2;
         } else {
-            addParagraph(`Sin detalle SPPAT disponible para ${year}. La cobertura publicada de esta fuente corresponde a 2016-2021; la ausencia posterior no significa cero reclamaciones.`, { color: ink });
+            addParagraph(`Periodo ${year}: sin detalle SPPAT disponible. La cobertura publicada corresponde a 2016-2021 y no existe un último registro territorial recuperable; la ausencia posterior no significa cero reclamaciones.`, { color: ink });
         }
 
         ensureSpace(25 + trendYears.length * 7);
@@ -590,6 +645,12 @@
             timelineEndYear: trendYears.at(-1),
             sourcesBySection: true,
             historicalComparison: true,
+            latestOfficialFallbacks: {
+                accidents: accidentPeriod?.year || null,
+                deaths: deathPeriod?.year || null,
+                demographicProfile: edgPeriod?.year || null,
+                sppat: sppatYear || null
+            },
             territorialReferenceCount: referenceRows.length
         };
         return pdf;

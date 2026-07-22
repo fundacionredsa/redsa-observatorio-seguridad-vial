@@ -60,3 +60,4 @@ tests_python/         contratos de datos sin dependencias externas
 Codigo: [MIT](LICENSE). Datos/atribuciones: [LICENSE-DATA.md](LICENSE-DATA.md).
 Las capas OSM conservan ODbL y las fuentes oficiales sus condiciones de origen.
 Los repositorios no contienen microdatos EDG, SPPAT o ESTRA ni credenciales.
+El portal usa Google Analytics para métricas agregadas y una instancia pública de CountAPI para mostrar un conteo global orientativo de descargas del catálogo. El contador registra eventos desde su publicación, no identifica personas ni equivale a usuarios únicos.

@@ -37,7 +37,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
   ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
   expect(versionedAssets.length).toBeGreaterThan(5);
-  expect(versionedAssets.every(url => url.includes("v=0.9.2"))).toBeTruthy();
+  expect(versionedAssets.every(url => url.includes("v=0.9.3"))).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -64,6 +64,7 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
   test.skip(testInfo.project.name !== "desktop", "La generación binaria se prueba una vez.");
   await loadPortal(page);
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1701"));
+  await page.evaluate(() => window.__redsaAudit.selectYear(2026));
   await expect(page.locator("#download-summary-button")).toBeEnabled();
   const downloadPromise = page.waitForEvent("download", { timeout: 60_000 });
   await page.locator("#download-summary-button").click();
@@ -79,10 +80,16 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
     vectorTrend: true,
     structuredProfile: true,
     contactIncluded: true,
-    selectedYear: 2024,
+    selectedYear: 2026,
     timelineEndYear: 2026,
     sourcesBySection: true,
     historicalComparison: true,
+    latestOfficialFallbacks: {
+      accidents: 2024,
+      deaths: 2024,
+      demographicProfile: 2024,
+      sppat: 2021
+    },
     territorialReferenceCount: 2
   });
   expect(pdfAudit.pageCount).toBeGreaterThanOrEqual(2);

@@ -5,53 +5,96 @@
         canton: "data/cantones_wgs84.geojson",
         parish: "data/parroquias_wgs84.geojson"
     };
-    const DOWNLOAD_STORAGE_KEY = "redsa_catalog_downloads_device_v1";
+    const GLOBAL_COUNTER = {
+        productionHost: "fundacionredsa.github.io",
+        keyPrefix: "fundacionredsa_observatorio_seguridad_vial_v1_",
+        totalKey: "catalogo_total",
+        endpoint: "https://countapi.mileshilliard.com/api/v1"
+    };
     let catalogData = null;
+    const globalCounts = new Map();
 
-    function readDownloadCounts() {
-        try {
-            return JSON.parse(localStorage.getItem(DOWNLOAD_STORAGE_KEY) || "{}") || {};
-        } catch (_) {
-            return {};
-        }
+    function globalCounterEnabled() {
+        return window.location.hostname === GLOBAL_COUNTER.productionHost
+            || window.__REDSA_GLOBAL_COUNTER_ENABLED__ === true;
     }
 
-    function variableDownloadCount(variableId) {
-        const counts = readDownloadCounts();
-        return Object.entries(counts)
-            .filter(([key]) => key.startsWith(`${variableId}:`))
-            .reduce((total, [, value]) => total + (Number(value) || 0), 0);
+    function counterUrl(key, increment = false) {
+        const operation = increment ? "hit" : "get";
+        return `${GLOBAL_COUNTER.endpoint}/${operation}/${encodeURIComponent(`${GLOBAL_COUNTER.keyPrefix}${key}`)}`;
     }
 
-    function totalDeviceDownloads() {
-        return Object.values(readDownloadCounts()).reduce((total, value) => total + (Number(value) || 0), 0);
+    async function requestCounter(key, increment = false) {
+        if (!globalCounterEnabled()) return null;
+        const response = await fetch(counterUrl(key, increment), { mode: "cors", cache: "no-store" });
+        if (!increment && response.status === 404) return 0;
+        if (!response.ok) throw new Error(`Contador global no disponible (${response.status})`);
+        const payload = await response.json();
+        const value = Number(payload.value);
+        return Number.isFinite(value) ? value : null;
     }
 
-    function updateDownloadCounters(variableId = null) {
+    function updateDownloadCounters(variableId = null, unavailable = false) {
         document.querySelectorAll("[data-catalog-download-count]").forEach(node => {
             const id = node.dataset.catalogDownloadCount;
             if (!variableId || variableId === id) {
-                const count = variableDownloadCount(id);
-                node.textContent = `Descargas en este dispositivo: ${count}.`;
+                const count = globalCounts.get(id);
+                node.textContent = Number.isFinite(count)
+                    ? `Descargas históricas registradas: ${count}.`
+                    : (unavailable ? "Conteo histórico no disponible temporalmente." : "Consultando descargas históricas…");
             }
         });
-        const total = document.getElementById("catalog-device-download-total");
-        if (total) total.textContent = `Descargas del catálogo registradas en este dispositivo: ${totalDeviceDownloads()}.`;
+        const total = document.getElementById("catalog-global-download-total");
+        if (total) {
+            const count = globalCounts.get(GLOBAL_COUNTER.totalKey);
+            total.textContent = Number.isFinite(count)
+                ? `Descargas históricas registradas en todo el catálogo: ${count}.`
+                : (unavailable ? "Conteo histórico global no disponible temporalmente." : "Consultando descargas históricas globales…");
+        }
     }
 
-    function recordDownload(variable, format, level = "all") {
-        const counts = readDownloadCounts();
-        const key = `${variable.id}:${format}:${level}`;
-        counts[key] = (Number(counts[key]) || 0) + 1;
-        try {
-            localStorage.setItem(DOWNLOAD_STORAGE_KEY, JSON.stringify(counts));
-        } catch (_) {
-            // La descarga sigue funcionando aunque el navegador bloquee almacenamiento local.
+    async function refreshGlobalCounters(variables) {
+        if (!globalCounterEnabled()) {
+            updateDownloadCounters(null, true);
+            return;
         }
-        updateDownloadCounters(variable.id);
+        try {
+            const entries = await Promise.all([
+                [GLOBAL_COUNTER.totalKey, requestCounter(GLOBAL_COUNTER.totalKey)],
+                ...variables.map(variable => [variable.id, requestCounter(variable.id)])
+            ].map(async ([key, promise]) => [key, await promise]));
+            entries.forEach(([key, value]) => globalCounts.set(key, value));
+            updateDownloadCounters();
+        } catch (error) {
+            console.warn(error);
+            updateDownloadCounters(null, true);
+        }
+    }
+
+    async function recordDownload(variable, format, level = "all") {
+        if (typeof window.gtag === "function") {
+            window.gtag("event", "catalog_download", {
+                variable_id: variable.id,
+                file_format: format,
+                territorial_level: level
+            });
+        }
         window.dispatchEvent(new CustomEvent("redsa:catalog-download", {
             detail: { variableId: variable.id, format, level, timestamp: new Date().toISOString() }
         }));
+        try {
+            const [variableCount, totalCount] = await Promise.all([
+                requestCounter(variable.id, true),
+                requestCounter(GLOBAL_COUNTER.totalKey, true)
+            ]);
+            if (Number.isFinite(variableCount)) globalCounts.set(variable.id, variableCount);
+            if (Number.isFinite(totalCount)) globalCounts.set(GLOBAL_COUNTER.totalKey, totalCount);
+            updateDownloadCounters(variable.id);
+            updateDownloadCounters();
+        } catch (error) {
+            console.warn(error);
+            updateDownloadCounters(variable.id, true);
+        }
     }
 
     async function loadCatalog() {
@@ -78,8 +121,8 @@
         addText(container, "p", `${stats.pct_variables_con_fuente_documentada}% de las variables tienen su fuente documentada explícitamente.`);
         addText(container, "p", `${stats.pct_cobertura_sin_dato_declarado}% declaran “sin dato” cuando falta información, en lugar de imputar o dejar en blanco.`);
         const count = addText(container, "p", "", "catalog-device-count");
-        count.id = "catalog-device-download-total";
-        addText(container, "p", "Este conteo es local y no identifica usuarios. GitHub Pages no dispone de un contador global persistente sin incorporar un servicio externo.", "catalog-device-note");
+        count.id = "catalog-global-download-total";
+        addText(container, "p", "El conteo público es global y orientativo desde la publicación de esta función: registra descargas, no personas únicas, y no requiere identificar al usuario.", "catalog-device-note");
         updateDownloadCounters();
     }
 
@@ -242,7 +285,7 @@
         });
         const count = addText(downloads, "p", "", "catalog-download-count");
         count.dataset.catalogDownloadCount = variable.id;
-        count.textContent = `Descargas en este dispositivo: ${variableDownloadCount(variable.id)}.`;
+        count.textContent = "Consultando descargas históricas…";
         article.appendChild(downloads);
         return article;
     }
@@ -286,6 +329,7 @@
                     });
                 }
                 renderCatalog(data.variables, searchInput.value, catSelect.value);
+                refreshGlobalCounters(data.variables);
             } catch (error) {
                 console.error(error);
                 addText(document.getElementById("catalog-results"), "p", "No se pudo cargar el catálogo.", "catalog-empty");
