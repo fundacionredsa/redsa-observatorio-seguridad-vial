@@ -111,12 +111,6 @@
                 document.getElementById("diag-total").textContent = `${tTotal}s`;
                 document.getElementById("diag-features").textContent = `${provinces.features ? provinces.features.length : 0} prov. / ${cantons.features ? cantons.features.length : 0} cant.`;
 
-                layerControl = L.control.layers(baseMaps, overlayMaps, {
-                    position: 'topright',
-                    collapsed: false
-                }).addTo(map);
-                syncMobileLayerDrawer();
-
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
 
@@ -142,7 +136,7 @@
                 window.REDSAInstitutional?.init({
                     cantonFeatures: cantonData.features,
                     variables: VARIABLE_CONFIGS,
-                    getState: () => ({ selectedVariable, selectedYear }),
+                    getState: () => ({ selectedVariable, selectedYear, selectedPeriodMode }),
                     getVariableValue: (properties, variable, year) => getVariableValue(properties, variable, year)
                 });
 
@@ -257,7 +251,7 @@
 
                 INFRASTRUCTURE_LAYER_CONFIGS.forEach(registerInfrastructureLayer);
                 if (layerControl) map.removeControl(layerControl);
-                layerControl = L.control.layers(baseMaps, overlayMaps, {
+                layerControl = L.control.layers({}, overlayMaps, {
                     position: "topright",
                     collapsed: false
                 }).addTo(map);
@@ -278,6 +272,14 @@
                                 ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}" ${id === selectedVariable ? "selected" : ""}>${config.label}</option>`).join("")}
                             </select>
                             <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
+                            <div class="period-mode-control" aria-label="Periodo mostrado">
+                                <div class="period-mode-label">Periodo mostrado</div>
+                                <div class="period-mode-segments" role="group" aria-label="Cambiar entre año y acumulado histórico">
+                                    <button type="button" data-period-mode="year" class="active" aria-pressed="true">Año seleccionado</button>
+                                    <button type="button" data-period-mode="accumulated" aria-pressed="false">Acumulado histórico</button>
+                                </div>
+                                <div id="period-mode-note" class="period-mode-note" aria-live="polite"></div>
+                            </div>
                             <div class="timeline-control">
                                 <div class="timeline-header">
                                     <span>Línea de tiempo global</span>
@@ -305,6 +307,7 @@
                 new MapControl().addTo(map);
                 syncMobileLayerDrawer();
                 updateMapVariableDescription();
+                updatePeriodModeControl();
                 updateTimelineControl();
                 updateMapLevelNote(activeTerritoryLevel);
                 updateTerritoryLevelControl();
@@ -320,6 +323,7 @@
                 function handleVariableChange() {
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
+                    updatePeriodModeControl();
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
@@ -334,10 +338,25 @@
                     if (description) description.textContent = config.description;
                     window.REDSAExperience?.updateMapContext(
                         config,
-                        selectedYear,
+                        getActivePeriodLabel(config),
                         LEVEL_LABELS[activeTerritoryLevel || getTerritoryLevelForZoom()]
                     );
                 }
+
+                document.addEventListener("click", (event) => {
+                    const periodButton = event.target.closest("[data-period-mode]");
+                    if (!periodButton || periodButton.disabled) return;
+                    selectedPeriodMode = periodButton.dataset.periodMode;
+                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    updateMapVariableDescription();
+                    updatePeriodModeControl();
+                    updateTimelineControl();
+                    recalculateActiveVariableBins(selectedVariable, level);
+                    refreshTerritoryLayerStyles(level);
+                    updateMapLevelNote(level);
+                    updateLegend();
+                    window.REDSAInstitutional?.refresh();
+                });
 
                 document.getElementById("map-year-slider").addEventListener("input", function() {
                     selectedYear = Number(this.value);
@@ -605,6 +624,7 @@
                             selectedLayerReferenceCount: [selectedProvinceLayer, selectedLayer, selectedParishLayer].filter(Boolean).length,
                             selectedVariable,
                             selectedYear,
+                            selectedPeriodMode,
                             variableCount: Object.keys(VARIABLE_CONFIGS).length,
                             infrastructureLayerCount: INFRASTRUCTURE_LAYER_CONFIGS.length,
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
@@ -652,7 +672,8 @@
             const btnTheme = document.getElementById('btn-theme-toggle');
             if (btnTheme) {
                 // Leer preferencia
-                const isLight = localStorage.getItem('redsa_light_theme') === 'true';
+                const savedTheme = localStorage.getItem('redsa_light_theme');
+                const isLight = savedTheme === null ? true : savedTheme === 'true';
                 if (isLight) {
                     document.body.classList.add('light-theme');
                     btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i> Modo Oscuro';

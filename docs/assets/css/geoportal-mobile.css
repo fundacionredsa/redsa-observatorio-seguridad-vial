@@ -374,7 +374,7 @@
         order: 0;
     }
 
-    .technical-controls-slot .leaflet-control-layers {
+    .infrastructure-disclosure {
         order: 1;
     }
 
@@ -396,6 +396,8 @@
 
     .map-selector-control select,
     #map-year-slider,
+    .period-mode-segments button,
+    .detail-period-segments button,
     .territory-level-segments button {
         min-height: 44px;
     }

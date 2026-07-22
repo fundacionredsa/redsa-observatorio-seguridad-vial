@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.7.4">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.7.4">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.7.4">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.8.4">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.8.4">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.8.4">
 </head>
 <body>
 
@@ -86,15 +86,20 @@
         <div class="drawer-header">
             <div>
                 <h2>Datos y capas</h2>
-                <p>Variables, años, mapas de fondo e infraestructura para análisis técnico.</p>
+                <p>Variables, periodos e infraestructura para análisis técnico.</p>
             </div>
             <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar datos y capas">&times;</button>
         </div>
-        <div class="technical-section-title">Variable y periodo</div>
-        <div class="technical-controls-slot" id="technical-controls-slot"></div>
-        <div class="technical-actions">
-            <button class="technical-action" id="clear-infrastructure-button" type="button">Apagar infraestructura</button>
-            <button class="technical-action primary" id="clean-map-button" type="button">Dejar solo límites</button>
+        <div class="technical-controls-slot" id="technical-controls-slot">
+            <div class="variable-controls-slot" id="variable-controls-slot"></div>
+            <details class="infrastructure-disclosure" id="infrastructure-disclosure">
+                <summary>
+                    <span>Infraestructura vial</span>
+                    <small>Selección múltiple</small>
+                </summary>
+                <p class="infrastructure-help">Activa una o varias capas. El menú permanece abierto mientras haces tu selección.</p>
+                <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
+            </details>
         </div>
         <div class="technical-section-title">Metodología y descargas</div>
         <nav class="technical-links" aria-label="Metodología y archivos">
@@ -246,6 +251,14 @@
             <!-- Sección Informativa Dinámica -->
             <div class="info-section">
                 <div class="section-title">Información del Territorio</div>
+                <div class="detail-period-control" aria-label="Periodo de los datos del territorio">
+                    <span class="detail-period-label">Datos mostrados</span>
+                    <div class="detail-period-segments" role="group" aria-label="Mostrar un año o el acumulado histórico">
+                        <button type="button" data-detail-period-mode="year" class="active" aria-pressed="true">Año seleccionado</button>
+                        <button type="button" data-detail-period-mode="accumulated" aria-pressed="false">Acumulado histórico</button>
+                    </div>
+                    <div class="detail-period-note" data-detail-period-note aria-live="polite">Conteos del año marcado en la línea de tiempo.</div>
+                </div>
                 
                 <div class="canton-details">
                     <!-- SECCIÓN 1: IDENTIFICACIÓN -->
@@ -412,20 +425,24 @@
     <script src="assets/js/vendor/driver.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-registry.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-state.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.7.4"></script>
-    <script src="assets/js/geoportal-app.js?v=0.7.4"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-state.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.8.4"></script>
+    <script src="assets/js/geoportal-app.js?v=0.8.4"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">
             <span id="hover-card-title">Perfil de Fallecidos</span>
             <span class="profile-card-header-actions">
+                <span class="detail-period-segments profile-period-segments" role="group" aria-label="Periodo del perfil de fallecidos">
+                    <button type="button" data-detail-period-mode="year" class="active" aria-pressed="true">Año</button>
+                    <button type="button" data-detail-period-mode="accumulated" aria-pressed="false">Acumulado</button>
+                </span>
                 <span id="hover-card-period" class="profile-card-period">2024</span>
                 <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
             </span>

@@ -39,6 +39,80 @@
             return Number(val).toLocaleString('de-DE');
         }
 
+        function availableYears(series) {
+            return Object.keys(series || {})
+                .filter(year => /^\d{4}$/.test(year) && series[year] !== null && series[year] !== undefined)
+                .sort((a, b) => Number(a) - Number(b));
+        }
+
+        function formatPeriodYears(years) {
+            if (!years.length) return "sin datos";
+            return years.length === 1 ? years[0] : `${years[0]}–${years[years.length - 1]}`;
+        }
+
+        function sumAnnualSeries(series, years = availableYears(series)) {
+            const values = years
+                .map(year => Number(series?.[year]))
+                .filter(Number.isFinite);
+            return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
+        }
+
+        function mergeCategorySeries(series, years) {
+            const categories = {};
+            let total = 0;
+            let found = false;
+            years.forEach(year => {
+                const entry = series?.[year];
+                if (!entry || entry.estado === "sin_dato") return;
+                Object.entries(entry.categorias || {}).forEach(([key, value]) => {
+                    const numeric = Number(value);
+                    if (!Number.isFinite(numeric)) return;
+                    categories[key] = (categories[key] || 0) + numeric;
+                    total += numeric;
+                    found = true;
+                });
+            });
+            return found ? { estado: "disponible", total, categorias: categories } : null;
+        }
+
+        function mergeEdgSeries(series, years) {
+            const merged = {
+                estado: "completo",
+                total: 0,
+                sexo: {},
+                edad: {},
+                usuario: {},
+                cobertura: { edad_conocida: 0, sexo_conocido: 0, usuario_conocido: 0 }
+            };
+            let found = false;
+            years.forEach(year => {
+                const entry = series?.[year];
+                if (!entry || entry.estado === "sin_dato") return;
+                found = true;
+                merged.total += Number(entry.total) || 0;
+                ["sexo", "edad", "usuario", "cobertura"].forEach(group => {
+                    Object.entries(entry[group] || {}).forEach(([key, value]) => {
+                        const numeric = Number(value);
+                        if (Number.isFinite(numeric)) merged[group][key] = (merged[group][key] || 0) + numeric;
+                    });
+                });
+            });
+            return found ? merged : null;
+        }
+
+        function updateDetailPeriodControls() {
+            document.querySelectorAll("[data-detail-period-mode]").forEach(button => {
+                const active = button.dataset.detailPeriodMode === selectedDetailPeriodMode;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+            document.querySelectorAll("[data-detail-period-note]").forEach(note => {
+                note.textContent = selectedDetailPeriodMode === "accumulated"
+                    ? "Suma solo conteos compatibles y muestra el periodo real de cada fuente. Las tasas anuales no se suman."
+                    : "Conteos del año marcado en la línea de tiempo.";
+            });
+        }
+
         function getSiniestrosRate(props, year) {
             const siniestros = props && props.siniestros_historico;
             const poblacion = props && props.poblacion_por_anio;
@@ -122,7 +196,7 @@
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             const legend = document.querySelector(".legend-panel");
-            const layerSelector = document.querySelector(".leaflet-control-layers");
+            const layerSelector = document.querySelector(".basemap-control");
             const selector = document.querySelector(".map-selector-control");
             const attribution = document.querySelector(".leaflet-control-attribution");
             const sidebar = document.querySelector(".sidebar");
@@ -183,7 +257,11 @@
             }
 
             if (rightBoundary - leftBoundary < minUsableWidth) {
-                rightBoundary = Math.min(viewportWidth, technicalDrawerBoundary);
+                rightBoundary = Math.min(
+                    viewportWidth,
+                    technicalDrawerBoundary,
+                    layerSelectorVisible ? layerSelectorRect.left : viewportWidth
+                );
                 if (legendVisible) {
                     bottomOffset = Math.max(
                         bottomOffset,
@@ -229,7 +307,7 @@
             if (!card || !body || !title) return;
             currentProfileProps = props;
             const periodBadge = document.getElementById("hover-card-period");
-            if (periodBadge) periodBadge.textContent = String(selectedYear);
+            if (periodBadge) periodBadge.textContent = selectedDetailPeriodMode === "accumulated" ? "Acumulado" : String(selectedYear);
 
             // Fixed lower panel; dynamic sizing prevents overlap with map controls.
             card.style.display = "block";
@@ -238,9 +316,16 @@
             // Caso 1: Parroquia
             if (props.DPA_PARROQ) {
                 title.textContent = `${props.DPA_DESPAR} (Parroquia)`;
+                const parishYears = selectedDetailPeriodMode === "accumulated"
+                    ? availableYears(props.fallecidos_por_anio)
+                    : [String(selectedYear)].filter(year => props.fallecidos_por_anio?.[year] !== undefined);
+                const parishPeriod = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(parishYears) : String(selectedYear);
+                const parishFatalities = selectedDetailPeriodMode === "accumulated"
+                    ? sumAnnualSeries(props.fallecidos_por_anio, parishYears)
+                    : props.fallecidos_por_anio?.[String(selectedYear)];
                 let html = `
                     <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; padding: 6px 0;">
-                        <strong>Personas fallecidas en esta parroquia (${selectedYear}):</strong> ${props.fallecidos_por_anio?.[String(selectedYear)] ?? "Sin dato"}
+                        <strong>Personas fallecidas en esta parroquia (${parishPeriod}):</strong> ${parishFatalities ?? "Sin dato"}
                     </div>
                     <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.35; margin-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px;">
                         No hay datos de edad, sexo o forma de desplazamiento disponibles para esta parroquia.
@@ -248,6 +333,8 @@
                 `;
                 body.innerHTML = html;
                 updateProfileCardLayout();
+                window.requestAnimationFrame(updateProfileCardLayout);
+                window.setTimeout(updateProfileCardLayout, 120);
                 return;
             }
 
@@ -256,13 +343,19 @@
             title.textContent = isProvinceProfile ? `${props.DPA_DESPRO} (Provincia)` : `${props.DPA_DESCAN} (Cantón)`;
 
             const edgSeries = props.fallecidos_detallado || {};
-            const edg = edgSeries[String(selectedYear)];
+            const edgYears = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(edgSeries)
+                : [String(selectedYear)].filter(year => edgSeries[year]);
+            const edgPeriod = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(edgYears) : String(selectedYear);
+            const edg = selectedDetailPeriodMode === "accumulated"
+                ? mergeEdgSeries(edgSeries, edgYears)
+                : edgSeries[String(selectedYear)];
             let html = `<div class="perfil-card-grid">`;
 
             // 1. Perfil de personas fallecidas según el registro civil
             html += `
                 <div class="profile-card-source-title">
-                    <span class="profile-card-citizen-title">¿Quiénes fallecieron en siniestros de tránsito aquí? (${selectedYear})</span>
+                    <span class="profile-card-citizen-title">¿Quiénes fallecieron en siniestros de tránsito aquí? (${edgPeriod})</span>
                     <span class="profile-card-source-detail">Personas fallecidas en accidentes de tránsito, según registro civil (INEC ${siglaInfoIcon("INEC")}). Los iconos ⓘ explican los códigos técnicos: EDG ${siglaInfoIcon("EDG")} y CIE-10 ${siglaInfoIcon("CIE-10")} V01-V89.</span>
                 </div>
             `;
@@ -365,13 +458,19 @@
 
             // 2. Reclamaciones del seguro obligatorio
             const yearKey = String(selectedYear);
-            const sppat_t = props.sppat_fallecidos_por_anio?.[yearKey];
-            const sppatSexoEntry = props.sppat_por_sexo?.[yearKey];
-            const sppatCondEntry = props.sppat_por_condicion?.[yearKey];
-            const sppatTipoEntry = props.sppat_por_tipo_accidente?.[yearKey];
+            const sppatYears = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(props.sppat_fallecidos_por_anio)
+                : [yearKey].filter(year => props.sppat_fallecidos_por_anio?.[year] !== undefined);
+            const sppatPeriod = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(sppatYears) : String(selectedYear);
+            const sppat_t = selectedDetailPeriodMode === "accumulated"
+                ? sumAnnualSeries(props.sppat_fallecidos_por_anio, sppatYears)
+                : props.sppat_fallecidos_por_anio?.[yearKey];
+            const sppatSexoEntry = selectedDetailPeriodMode === "accumulated" ? mergeCategorySeries(props.sppat_por_sexo, sppatYears) : props.sppat_por_sexo?.[yearKey];
+            const sppatCondEntry = selectedDetailPeriodMode === "accumulated" ? mergeCategorySeries(props.sppat_por_condicion, sppatYears) : props.sppat_por_condicion?.[yearKey];
+            const sppatTipoEntry = selectedDetailPeriodMode === "accumulated" ? mergeCategorySeries(props.sppat_por_tipo_accidente, sppatYears) : props.sppat_por_tipo_accidente?.[yearKey];
             html += `
                 <div class="profile-card-source-title">
-                    <span class="profile-card-citizen-title">Fallecidos registrados en reclamaciones del seguro (${selectedYear})</span>
+                    <span class="profile-card-citizen-title">Fallecidos registrados en reclamaciones del seguro (${sppatPeriod})</span>
                     <span class="profile-card-source-detail">Fuente: Servicio Público para Pago de Accidentes de Tránsito (SPPAT ${siglaInfoIcon("SPPAT")}).</span>
                 </div>
             `;
@@ -430,18 +529,22 @@
                     html += `</div>`;
                 }
             } else {
-                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">No hay detalle por sexo, forma de desplazamiento o tipo de accidente en las reclamaciones de ${selectedYear}.</div>`;
+                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">No hay detalle por sexo, forma de desplazamiento o tipo de accidente en las reclamaciones de ${sppatPeriod}.</div>`;
             }
 
             html += `
                 <div class="profile-note" style="grid-column: 1 / -1;">
-                    Cada año muestra únicamente los registros disponibles. Los años faltantes no se completan con estimaciones.
+                    ${selectedDetailPeriodMode === "accumulated"
+                        ? "El acumulado suma únicamente los años disponibles indicados en cada fuente. Los años faltantes no se completan con estimaciones."
+                        : "Cada año muestra únicamente los registros disponibles. Los años faltantes no se completan con estimaciones."}
                 </div>
                 </div>
             `;
 
             body.innerHTML = html;
             updateProfileCardLayout();
+            window.requestAnimationFrame(updateProfileCardLayout);
+            window.setTimeout(updateProfileCardLayout, 120);
         }
 
         // Ajustar la tarjeta seleccionada al cambiar el viewport
@@ -455,6 +558,17 @@
 
         let currentProps = null;
         let currentProfileProps = null;
+
+        document.addEventListener("click", event => {
+            const button = event.target.closest("[data-detail-period-mode]");
+            if (!button) return;
+            selectedDetailPeriodMode = button.dataset.detailPeriodMode;
+            updateDetailPeriodControls();
+            if (currentProps) updateSidebar(currentProps);
+            if (currentProfileProps) showProfileCard(currentProfileProps, null);
+        });
+
+        updateDetailPeriodControls();
 
         function renderSiniestrosSection(props, yearVal) {
             const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -476,9 +590,9 @@
             }
 
             const yearKey = String(yearVal);
-            const yearsToProcess = props.siniestros_historico[yearKey] !== undefined
-                ? [yearKey]
-                : [];
+            const yearsToProcess = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(props.siniestros_historico)
+                : (props.siniestros_historico[yearKey] !== undefined ? [yearKey] : []);
 
             if (yearsToProcess.length === 0) {
                 inecDetailedStats.style.display = "none";
@@ -702,8 +816,14 @@
                 domPoblacion.classList.add("empty");
             }
 
-            const selectedSiniestrosRate = getSiniestrosRate(parishProps || props, selectedYear);
-            if (selectedSiniestrosRate) {
+            const selectedSiniestrosRate = selectedDetailPeriodMode === "year"
+                ? getSiniestrosRate(parishProps || props, selectedYear)
+                : null;
+            if (selectedDetailPeriodMode === "accumulated") {
+                domTasaSiniestros.textContent = "No aplica al acumulado";
+                domTasaSiniestros.classList.add("empty");
+                domTasaSiniestrosYear.textContent = "indicador anual";
+            } else if (selectedSiniestrosRate) {
                 domTasaSiniestros.textContent = selectedSiniestrosRate.value.toLocaleString('de-DE', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -716,10 +836,15 @@
                 domTasaSiniestrosYear.textContent = "sin dato";
             }
 
-            const sppatAnnual = props.sppat_fallecidos_por_anio?.[yearKey];
-            document.getElementById("sppat-sidebar-year").textContent = yearKey;
-            domFallecidosSppat.textContent = sppatAnnual === undefined ? "Sin dato" : formatNumber(sppatAnnual);
-            if (sppatAnnual !== undefined) domFallecidosSppat.classList.remove("empty");
+            const sppatYears = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(props.sppat_fallecidos_por_anio)
+                : [yearKey].filter(year => props.sppat_fallecidos_por_anio?.[year] !== undefined);
+            const sppatValue = selectedDetailPeriodMode === "accumulated"
+                ? sumAnnualSeries(props.sppat_fallecidos_por_anio, sppatYears)
+                : props.sppat_fallecidos_por_anio?.[yearKey];
+            document.getElementById("sppat-sidebar-year").textContent = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(sppatYears) : yearKey;
+            domFallecidosSppat.textContent = sppatValue === undefined || sppatValue === null ? "Sin dato" : formatNumber(sppatValue);
+            if (sppatValue !== undefined && sppatValue !== null) domFallecidosSppat.classList.remove("empty");
             else domFallecidosSppat.classList.add("empty");
 
             domSiniestrosInec.textContent = formatNumber(props.siniestros_inec_2019);
@@ -730,10 +855,15 @@
             if (props.lesionados_inec_2019 !== null) domLesionadosInec.classList.remove("empty");
             else domLesionadosInec.classList.add("empty");
 
-            const edgAnnual = props.fallecidos_historico?.[yearKey];
-            document.getElementById("edg-sidebar-year").textContent = yearKey;
-            domFallecidosInec.textContent = edgAnnual === undefined ? "Sin dato" : formatNumber(edgAnnual);
-            if (edgAnnual !== undefined) domFallecidosInec.classList.remove("empty");
+            const edgYears = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(props.fallecidos_historico)
+                : [yearKey].filter(year => props.fallecidos_historico?.[year] !== undefined);
+            const edgValue = selectedDetailPeriodMode === "accumulated"
+                ? sumAnnualSeries(props.fallecidos_historico, edgYears)
+                : props.fallecidos_historico?.[yearKey];
+            document.getElementById("edg-sidebar-year").textContent = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(edgYears) : yearKey;
+            domFallecidosInec.textContent = edgValue === undefined || edgValue === null ? "Sin dato" : formatNumber(edgValue);
+            if (edgValue !== undefined && edgValue !== null) domFallecidosInec.classList.remove("empty");
             else domFallecidosInec.classList.add("empty");
 
             const vehiculos2024 = props.vehiculos_matriculados_2024?.total;
@@ -741,9 +871,14 @@
             if (vehiculos2024 !== null && vehiculos2024 !== undefined) domMatriculadosProv.classList.remove("empty");
             else domMatriculadosProv.classList.add("empty");
 
-            const tasa = getVariableValue(props, "tasa_fallecidos_100k", selectedYear);
-            document.getElementById("tasa-fallecidos-year").textContent = yearKey;
-            if (tasa !== null && tasa !== undefined) {
+            const tasa = selectedDetailPeriodMode === "year"
+                ? getVariableValue(props, "tasa_fallecidos_100k", selectedYear)
+                : null;
+            document.getElementById("tasa-fallecidos-year").textContent = selectedDetailPeriodMode === "accumulated" ? "indicador anual" : yearKey;
+            if (selectedDetailPeriodMode === "accumulated") {
+                domTasaFallecidos.textContent = "No aplica al acumulado";
+                domTasaFallecidos.classList.add("empty");
+            } else if (tasa !== null && tasa !== undefined) {
                 domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " por cada 100.000 habitantes";
                 domTasaFallecidos.classList.remove("empty");
             } else {
@@ -755,7 +890,10 @@
             domCodProvincia.textContent = props.DPA_PROVIN || "—";
 
             currentProps = props;
-            document.getElementById("siniestros-section-year").textContent = yearKey;
+            const inecYears = selectedDetailPeriodMode === "accumulated"
+                ? availableYears(props.siniestros_historico)
+                : [yearKey].filter(year => props.siniestros_historico?.[year] !== undefined);
+            document.getElementById("siniestros-section-year").textContent = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(inecYears) : yearKey;
             renderSiniestrosSection(props, selectedYear);
             updateInterpretationCard(parishProps ? null : props);
 

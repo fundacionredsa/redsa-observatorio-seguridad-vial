@@ -231,7 +231,7 @@ function onEachProvinceFeature(feature, layer) {
                     `;
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
-                    const temporalLabel = config.temporal?.tipo === "anual" ? ` · ${selectedYear}` : "";
+                    const temporalLabel = config.temporal?.tipo === "anual" ? ` · ${getActivePeriodLabel(config)}` : "";
                     
                     let classificationInfo = "";
                     if (activeVariableBins.method && activeVariableBins.method !== "Sin datos") {
@@ -333,7 +333,7 @@ function onEachProvinceFeature(feature, layer) {
             if (selectedVariable !== "normal" && effectiveVariable === "normal") {
                 note.textContent = `"${requestedConfig.label}" no está disponible en ${LEVEL_LABELS[level]}; se muestran solo límites.`;
                 note.style.display = "block";
-            } else if (coverage?.tipo === "anual" && !coverage.anios_disponibles.includes(selectedYear)) {
+            } else if (selectedPeriodMode !== "accumulated" && coverage?.tipo === "anual" && !coverage.anios_disponibles.includes(selectedYear)) {
                 note.textContent = `Sin cobertura de "${requestedConfig.label}" en ${selectedYear}; se muestra sin dato, sin sustituir otro año.`;
                 note.style.display = "block";
             } else {

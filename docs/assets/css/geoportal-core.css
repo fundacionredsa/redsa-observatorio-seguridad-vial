@@ -625,6 +625,115 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .period-mode-control {
+            margin-top: 9px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .period-mode-label {
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .period-mode-segments {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .period-mode-segments button {
+            min-height: 34px;
+            padding: 5px 7px;
+            border: 1px solid var(--border-glass);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font: inherit;
+            font-size: 0.62rem;
+            cursor: pointer;
+        }
+
+        .period-mode-segments button.active {
+            border-color: #38bdf8;
+            background: rgba(14, 165, 233, 0.2);
+            color: #f8fafc;
+        }
+
+        .period-mode-segments button:disabled {
+            cursor: not-allowed;
+            opacity: 0.42;
+        }
+
+        .period-mode-note {
+            min-height: 1.8em;
+            margin-top: 5px;
+            color: var(--text-secondary);
+            font-size: 0.58rem;
+            line-height: 1.35;
+        }
+
+        .detail-period-control {
+            margin: 8px 0 12px;
+            padding: 9px;
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .detail-period-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .detail-period-segments {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .detail-period-segments button {
+            min-height: 34px;
+            padding: 5px 7px;
+            border: 1px solid var(--border-glass);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font: inherit;
+            font-size: 0.62rem;
+            cursor: pointer;
+        }
+
+        .detail-period-segments button.active {
+            border-color: #38bdf8;
+            background: rgba(14, 165, 233, 0.2);
+            color: var(--text-primary);
+        }
+
+        .detail-period-note {
+            margin-top: 6px;
+            color: var(--text-muted);
+            font-size: 0.59rem;
+            line-height: 1.35;
+        }
+
+        .profile-period-segments {
+            display: inline-grid;
+            width: 170px;
+        }
+
+        .profile-period-segments button {
+            min-height: 28px;
+            padding: 3px 5px;
+        }
+
         .timeline-header {
             display: flex;
             align-items: center;

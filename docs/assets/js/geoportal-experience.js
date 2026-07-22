@@ -116,7 +116,7 @@
         const title = document.getElementById("citizen-map-variable");
         const description = document.getElementById("citizen-map-description");
         if (!title || !description || !config) return;
-        const yearLabel = config.temporal?.tipo === "anual" ? ` · ${year}` : "";
+        const yearLabel = config.temporal?.tipo === "anual" && year ? ` · ${year}` : "";
         const level = levelLabel ? ` · ${levelLabel}` : "";
         title.textContent = `${config.label}${yearLabel}${level}`;
         description.textContent = config.description;

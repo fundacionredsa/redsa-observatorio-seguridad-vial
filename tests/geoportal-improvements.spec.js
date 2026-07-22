@@ -144,11 +144,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const btnTheme = page.locator('#btn-theme-toggle');
             await expect(btnTheme).toBeVisible();
 
-            // Default should be dark (no light-theme class)
-            await expect(page.locator('body')).not.toHaveClass(/light-theme/);
-
-            // Click toggle
-            await btnTheme.click();
+            // Default is light for public readability.
             await expect(page.locator('body')).toHaveClass(/light-theme/);
 
             await page.evaluate(() => {
@@ -174,14 +170,16 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 expect(Math.max(...textRgb)).toBeLessThan(100);
             }
 
-            // Check localStorage
-            const isLight = await page.evaluate(() => localStorage.getItem('redsa_light_theme'));
-            expect(isLight).toBe('true');
-
-            // Click again
+            // First click changes to dark and persists the choice.
             await page.evaluate(() => window.__redsaAudit.clearSelection());
             await btnTheme.click();
             await expect(page.locator('body')).not.toHaveClass(/light-theme/);
+            expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('false');
+
+            // Second click returns to the default light theme.
+            await btnTheme.click();
+            await expect(page.locator('body')).toHaveClass(/light-theme/);
+            expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('true');
         });
 
         test('cursor coordinates display on mousemove', async ({ page, isMobile }) => {

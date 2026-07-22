@@ -156,6 +156,11 @@
             "OpenStreetMap (Estándar)": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' + attributionCantonales,
                 maxZoom: 19
+            }),
+            "Sentinel-2 Satélite (2025)": L.tileLayer('https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2025_3857/default/g/{z}/{y}/{x}.jpg', {
+                attribution: '<a href="https://cloudless.eox.at/">EOxCloudless</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2025)' + attributionCantonales,
+                maxNativeZoom: 14,
+                maxZoom: 20
             })
         };
 
@@ -205,10 +210,14 @@
         let selectedLayer = null;
         let selectedProvinceLayer = null;
         let layerControl = null;
+        const baseLayerControl = L.control.layers(baseMaps, {}, {
+            position: 'topright',
+            collapsed: true
+        }).addTo(map);
+        baseLayerControl.getContainer()?.classList.add("basemap-control");
+        baseLayerControl.getContainer()?.setAttribute("aria-label", "Seleccionar mapa base");
         let overlayMaps = {};
         let historicoChart = null;
-
-        layerControl = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
 
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
@@ -219,6 +228,8 @@
         const technicalDrawer = document.getElementById("technical-drawer");
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
         const technicalControlsSlot = document.getElementById("technical-controls-slot");
+        const variableControlsSlot = document.getElementById("variable-controls-slot");
+        const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
         const territorySidebar = document.getElementById("territory-sidebar");
         const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
         const legendPanel = document.querySelector(".legend-panel");
@@ -281,13 +292,15 @@
         }
 
         function syncMobileLayerDrawer() {
-            const container = layerControl?.getContainer?.() || document.querySelector(".leaflet-control-layers");
+            const container = layerControl?.getContainer?.();
             const selector = document.querySelector(".map-selector-control");
             if (!technicalControlsSlot) return;
-            if (selector && selector.parentElement !== technicalControlsSlot) technicalControlsSlot.appendChild(selector);
-            if (container && container.parentElement !== technicalControlsSlot) {
+            if (selector && variableControlsSlot && selector.parentElement !== variableControlsSlot) {
+                variableControlsSlot.appendChild(selector);
+            }
+            if (container && infrastructureControlsSlot && container.parentElement !== infrastructureControlsSlot) {
                 container.id = "mobile-layer-control";
-                technicalControlsSlot.appendChild(container);
+                infrastructureControlsSlot.appendChild(container);
             }
             if (selector && container) document.body.classList.add("technical-ready");
         }
@@ -314,24 +327,6 @@
                 return;
             }
             setDesktopTechnicalPanel(true);
-        });
-        document.getElementById("clear-infrastructure-button")?.addEventListener("click", () => {
-            Object.values(overlayMaps).forEach(layer => {
-                if (map.hasLayer(layer)) map.removeLayer(layer);
-            });
-            updateLegend();
-        });
-        document.getElementById("clean-map-button")?.addEventListener("click", () => {
-            Object.values(overlayMaps).forEach(layer => {
-                if (map.hasLayer(layer)) map.removeLayer(layer);
-            });
-            const select = document.getElementById("map-variable-select");
-            if (select) {
-                select.value = "normal";
-                select.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-            map.fitBounds(INITIAL_VIEW.bounds, { padding: [12, 12], animate: false });
-            updateLegend();
         });
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
         mobileLegendToggle?.addEventListener("click", () => {
@@ -362,6 +357,8 @@
 
         let selectedVariable = INITIAL_VIEW.variable;
         let selectedYear = INITIAL_VIEW.year;
+        let selectedPeriodMode = "year";
+        let selectedDetailPeriodMode = "year";
         let parishLayer = null;
         let parishData = null;
         let parishLoadPromise = null;
@@ -393,15 +390,76 @@
             (_, index) => TIMELINE_MIN_YEAR + index
         );
 
-        function getVariableValue(properties, variable, year = selectedYear) {
-            const config = VARIABLE_CONFIGS[variable];
-            if (!config || !properties) return null;
+        function getSingleYearVariableValue(properties, config, year) {
             if (config.temporal?.tipo === "anual" && !config.temporal.anios_disponibles.includes(Number(year))) {
                 return null;
             }
             return config.getValue
                 ? config.getValue(properties, year)
                 : properties[config.property];
+        }
+
+        function supportsHistoricalAccumulation(config) {
+            return config?.temporal?.tipo === "anual" && config.aggregation === "sum";
+        }
+
+        function getVariableValue(properties, variable, year = selectedYear) {
+            const config = VARIABLE_CONFIGS[variable];
+            if (!config || !properties) return null;
+            if (selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
+                const values = config.temporal.anios_disponibles
+                    .map(coveredYear => getSingleYearVariableValue(properties, config, coveredYear))
+                    .filter(value => value !== null && value !== undefined && Number.isFinite(Number(value)))
+                    .map(Number);
+                return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
+            }
+            return getSingleYearVariableValue(properties, config, year);
+        }
+
+        function formatCoveredYears(years = []) {
+            const sorted = [...new Set(years.map(Number).filter(Number.isFinite))].sort((a, b) => a - b);
+            if (!sorted.length) return "sin periodo declarado";
+            const ranges = [];
+            let start = sorted[0];
+            let end = sorted[0];
+            for (let index = 1; index <= sorted.length; index += 1) {
+                if (sorted[index] === end + 1) {
+                    end = sorted[index];
+                    continue;
+                }
+                ranges.push(start === end ? String(start) : `${start}–${end}`);
+                start = sorted[index];
+                end = sorted[index];
+            }
+            return ranges.join(", ");
+        }
+
+        function getActivePeriodLabel(config = VARIABLE_CONFIGS[selectedVariable]) {
+            if (selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
+                return `Acumulado ${formatCoveredYears(config.temporal.anios_disponibles)}`;
+            }
+            return config?.temporal?.tipo === "anual" ? String(selectedYear) : "";
+        }
+
+        function updatePeriodModeControl() {
+            const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+            const supported = supportsHistoricalAccumulation(config);
+            if (!supported && selectedPeriodMode === "accumulated") selectedPeriodMode = "year";
+            document.querySelectorAll("[data-period-mode]").forEach(button => {
+                const mode = button.dataset.periodMode;
+                const active = mode === selectedPeriodMode;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+                button.disabled = mode === "accumulated" && !supported;
+            });
+            const note = document.getElementById("period-mode-note");
+            if (note) {
+                note.textContent = supported
+                    ? (selectedPeriodMode === "accumulated"
+                        ? `Suma de los años disponibles: ${formatCoveredYears(config.temporal.anios_disponibles)}.`
+                        : "Muestra únicamente el año marcado en la línea de tiempo.")
+                    : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
+            }
         }
 
         function getFatalitiesCoverageWarning(properties, year = selectedYear) {
@@ -419,10 +477,13 @@
             if (!slider || !badge || !marks) return;
 
             const isAnnual = coverage.tipo === "anual";
-            slider.disabled = !isAnnual;
+            const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+            slider.disabled = !isAnnual || accumulated;
             slider.value = String(selectedYear);
-            badge.className = `timeline-badge${isAnnual ? "" : " fixed"}`;
-            badge.textContent = isAnnual
+            badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
+            badge.textContent = accumulated
+                ? "Acumulado"
+                : isAnnual
                 ? String(selectedYear)
                 : (coverage.anios_disponibles.length
                     ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
@@ -670,13 +731,14 @@
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
             if (variable === "normal" || !config.levels.includes(level)) {
-                activeVariableBins = { variable: "normal", level, year: selectedYear, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
+                activeVariableBins = { variable: "normal", level, year: selectedYear, periodMode: selectedPeriodMode, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
             } else {
                 const result = calculateOptimalBins(getFeaturesForLevel(level), config, variable);
                 activeVariableBins = {
                     variable,
                     level,
                     year: selectedYear,
+                    periodMode: selectedPeriodMode,
                     bins: result.bins,
                     displayBins: result.displayBins,
                     method: result.method,
@@ -690,6 +752,7 @@
                 variable: activeVariableBins.variable,
                 level: activeVariableBins.level,
                 year: activeVariableBins.year,
+                periodMode: activeVariableBins.periodMode,
                 bins: [...activeVariableBins.bins],
                 displayBins: [...(activeVariableBins.displayBins || [])],
                 method: activeVariableBins.method,
@@ -706,6 +769,7 @@
                 activeVariableBins.variable !== variable
                 || activeVariableBins.level !== level
                 || activeVariableBins.year !== selectedYear
+                || activeVariableBins.periodMode !== selectedPeriodMode
             ) {
                 return recalculateActiveVariableBins(variable, level);
             }

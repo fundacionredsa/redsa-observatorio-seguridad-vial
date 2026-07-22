@@ -61,6 +61,12 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#map-variable-select option")).toHaveCount(10);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(8);
+  await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Sentinel-2" })).toHaveCount(1);
+  await expect(page.locator("#infrastructure-disclosure")).not.toHaveAttribute("open", "");
+  await expect(page.locator("#clear-infrastructure-button")).toHaveCount(0);
+  await expect(page.locator("#clean-map-button")).toHaveCount(0);
   await expect(page.locator("#technical-drawer")).not.toContainText("Corredores priorizados por REDSA");
   await expect(page.locator("#technical-drawer")).not.toContainText("Mapillary");
   await expect(page.locator("#technical-drawer")).toContainText("Metodología y descargas");
@@ -86,15 +92,40 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
     window.__redsaAudit.setOverlay("Ciclovías", true);
     window.__redsaAudit.setOverlay("Aceras", true);
   });
-  await page.locator("#clear-infrastructure-button").click();
   let state = await page.evaluate(() => window.__redsaAudit.state());
-  expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+  expect(Object.values(state.osmLayers).filter(layer => layer.visible)).toHaveLength(2);
 
-  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await page.locator("#clean-map-button").click();
+  await page.evaluate(() => {
+    window.__redsaAudit.clearInfrastructure();
+    window.__redsaAudit.selectVariable("normal");
+  });
   state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.selectedVariable).toBe("normal");
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+});
+
+test("paneles alternan entre anio y acumulados con cobertura explicita", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La lectura detallada se valida una vez en desktop.");
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.setTerritoryLevelMode("canton");
+    window.__redsaAudit.showTerritory("canton", "1701");
+  });
+  await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  await page.locator(".profile-period-segments [data-detail-period-mode='accumulated']").click();
+
+  await expect(page.locator("#edg-sidebar-year")).toHaveText("2020–2024");
+  await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
+  await expect(page.locator("#siniestros-section-year")).toContainText("2017–2024");
+  await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
+  await expect(page.locator("#hover-card-period")).toHaveText("Acumulado");
+  await expect(page.locator("#hover-card-body")).toContainText("(2020–2024)");
+  await expect(page.locator("#hover-card-body")).toContainText("(2016–2021)");
+
+  const controls = await page.locator("[data-detail-period-mode='accumulated']").evaluateAll(buttons =>
+    buttons.map(button => button.getAttribute("aria-pressed"))
+  );
+  expect(controls.every(value => value === "true")).toBeTruthy();
 });
 
 test("cambia una sola capa territorial por zoom", async ({ page }) => {

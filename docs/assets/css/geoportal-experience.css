@@ -709,6 +709,63 @@ body.technical-drawer-open .technical-drawer {
     gap: 10px;
 }
 
+.variable-controls-slot,
+.infrastructure-controls-slot {
+    min-width: 0;
+}
+
+.infrastructure-disclosure {
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.infrastructure-disclosure summary {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 11px;
+    color: #f8fafc;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+}
+
+.infrastructure-disclosure summary::-webkit-details-marker {
+    display: none;
+}
+
+.infrastructure-disclosure summary::after {
+    content: "+";
+    flex: 0 0 auto;
+    font-size: 1rem;
+}
+
+.infrastructure-disclosure[open] summary::after {
+    content: "−";
+}
+
+.infrastructure-disclosure summary small {
+    margin-left: auto;
+    color: #b8c3cc;
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+.infrastructure-help {
+    margin: 0 11px 8px;
+    color: #b8c3cc;
+    font-size: 0.62rem;
+    line-height: 1.35;
+}
+
+.infrastructure-controls-slot {
+    padding: 0 8px 8px;
+}
+
 .technical-controls-slot .map-selector-control,
 .technical-controls-slot .leaflet-control-layers {
     position: static;
@@ -936,12 +993,53 @@ body.light-theme .profile-section-title {
 
 body.light-theme .technical-controls-slot .map-selector-control,
 body.light-theme .technical-controls-slot .leaflet-control-layers,
+body.light-theme .infrastructure-disclosure,
 body.light-theme .territory-level-segments button,
 body.light-theme .technical-links a,
 body.light-theme .technical-action {
     border-color: #cbd5e1;
     background: #f8fafc;
     color: #1e293b;
+}
+
+body.light-theme .infrastructure-disclosure summary {
+    color: #1e293b;
+}
+
+body.light-theme .infrastructure-disclosure summary small,
+body.light-theme .infrastructure-help,
+body.light-theme .period-mode-label,
+body.light-theme .period-mode-note {
+    color: #52606b;
+}
+
+body.light-theme .period-mode-segments button {
+    border-color: #cbd5e1;
+    background: #fff;
+    color: #334155;
+}
+
+body.light-theme .period-mode-segments button.active {
+    border-color: #087f8c;
+    background: #dff4f6;
+    color: #075d66;
+}
+
+body.light-theme .detail-period-control {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+body.light-theme .detail-period-segments button {
+    border-color: #cbd5e1;
+    background: #fff;
+    color: #334155;
+}
+
+body.light-theme .detail-period-segments button.active {
+    border-color: #087f8c;
+    background: #dff4f6;
+    color: #075d66;
 }
 
 body.light-theme .map-selector-control select {
@@ -1001,7 +1099,7 @@ body.light-theme .timeline-badge {
 }
 
 body:not(.technical-ready) .map-selector-control,
-body:not(.technical-ready) .leaflet-control-layers {
+body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     visibility: hidden;
 }
 

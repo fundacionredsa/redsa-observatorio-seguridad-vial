@@ -13,6 +13,7 @@
         totalCount: 0,
         variable: null,
         year: null,
+        periodMode: "year",
         returnFocus: null
     };
 
@@ -46,8 +47,11 @@
         return state.context?.getState?.() || { selectedVariable: "normal", selectedYear: null };
     }
 
-    function formatPeriod(config, year) {
+    function formatPeriod(config, year, periodMode = "year") {
         const coverage = config?.temporal || {};
+        if (periodMode === "accumulated" && config?.aggregation === "sum") {
+            return `Acumulado · ${(coverage.anios_disponibles || []).join(", ")}`;
+        }
         if (coverage.tipo === "anual") return `Año ${year}`;
         const years = coverage.anios_disponibles || [];
         return years.length ? `Dato fijo · ${years.join("–")}` : "Dato fijo";
@@ -149,6 +153,7 @@
         const features = state.context.cantonFeatures || [];
         state.variable = selection.selectedVariable;
         state.year = Number(selection.selectedYear);
+        state.periodMode = selection.selectedPeriodMode || "year";
         state.totalCount = features.length;
 
         if (!config || selection.selectedVariable === "normal" || !config.levels?.includes("canton")) {
@@ -184,14 +189,14 @@
         state.excludedCount = state.totalCount - validRows.length;
         elements.title.textContent = config.label;
         elements.description.textContent = config.description;
-        elements.period.textContent = formatPeriod(config, state.year);
+        elements.period.textContent = formatPeriod(config, state.year, state.periodMode);
         elements.coverage.textContent = `${validRows.length} cantones con dato comparable. ${state.excludedCount} cantones sin dato fueron excluidos del ranking; no se trataron como cero.`;
         elements.searchWrap.hidden = false;
         elements.tableWrap.hidden = !validRows.length;
         elements.empty.hidden = Boolean(validRows.length);
         elements.empty.textContent = validRows.length
             ? ""
-            : `No hay datos cantonales para ${formatPeriod(config, state.year).toLowerCase()}. No se sustituyeron con cero ni con otro año.`;
+            : `No hay datos cantonales para ${formatPeriod(config, state.year, state.periodMode).toLowerCase()}. No se sustituyeron con cero ni con otro año.`;
         renderRows();
     }
 
