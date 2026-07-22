@@ -55,11 +55,31 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await loadPortal(page);
   await page.locator("#technical-panel-toggle").click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
+  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#map-variable-select option")).toHaveCount(10);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(8);
   await expect(page.locator("#technical-drawer")).not.toContainText("Corredores priorizados por REDSA");
   await expect(page.locator("#technical-drawer")).not.toContainText("Mapillary");
   await expect(page.locator("#technical-drawer")).toContainText("Metodología y descargas");
+
+  const persistentLayout = await page.evaluate(() => {
+    const rect = selector => {
+      const box = document.querySelector(selector).getBoundingClientRect();
+      return { left: box.left, right: box.right, top: box.top, bottom: box.bottom };
+    };
+    const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+    const drawer = rect("#technical-drawer");
+    const legend = rect(".legend-panel");
+    return { drawer, legend, intersects: intersects(drawer, legend) };
+  });
+  expect(persistentLayout.intersects).toBeFalsy();
+
+  await page.locator("#map-variable-select").selectOption("fallecidos_inec_2019");
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
 
   await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
@@ -385,8 +405,8 @@ test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page 
       const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
       return { card, obstacle, legend, obstacleIntersection: intersects(card, obstacle), legendIntersection: intersects(card, legend), viewport: { width: innerWidth, height: innerHeight } };
     }, obstacleSelector);
-    expect(geometry.obstacleIntersection).toBeFalsy();
-    expect(geometry.legendIntersection).toBeFalsy();
+    expect(geometry.obstacleIntersection, JSON.stringify(geometry)).toBeFalsy();
+    expect(geometry.legendIntersection, JSON.stringify(geometry)).toBeFalsy();
     expect(geometry.card.left).toBeGreaterThanOrEqual(0);
     expect(geometry.card.right).toBeLessThanOrEqual(geometry.viewport.width);
     expect(geometry.card.bottom).toBeLessThanOrEqual(geometry.viewport.height - 10);

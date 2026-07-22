@@ -149,7 +149,8 @@
             const sidebarRect = sidebarVisible ? sidebar.getBoundingClientRect() : null;
             const citizenPanelVisible = isVisibleElement(citizenPanel);
             const citizenPanelRect = citizenPanelVisible ? citizenPanel.getBoundingClientRect() : null;
-            const technicalDrawerRequestedOpen = document.body.classList.contains("mobile-layers-open");
+            const technicalDrawerRequestedOpen = document.body.classList.contains("mobile-layers-open")
+                || document.body.classList.contains("technical-drawer-open");
             const technicalDrawerVisible = technicalDrawerRequestedOpen || isVisibleElement(technicalDrawer);
             const technicalDrawerRect = technicalDrawerVisible ? technicalDrawer.getBoundingClientRect() : null;
 
@@ -158,6 +159,7 @@
                 : viewportMargin;
             let leftBoundary = viewportMargin;
             let rightBoundary = viewportWidth;
+            let technicalDrawerBoundary = viewportWidth;
 
             if (sidebarVisible) {
                 const sidebarBoundary = sidebarRequestedOpen ? sidebarRect.width : sidebarRect.right;
@@ -174,14 +176,14 @@
                 rightBoundary = Math.min(rightBoundary, layerSelectorRect.left);
             }
             if (technicalDrawerVisible) {
-                const drawerBoundary = technicalDrawerRequestedOpen
+                technicalDrawerBoundary = technicalDrawerRequestedOpen
                     ? viewportWidth - technicalDrawerRect.width
                     : technicalDrawerRect.left;
-                rightBoundary = Math.min(rightBoundary, drawerBoundary);
+                rightBoundary = Math.min(rightBoundary, technicalDrawerBoundary);
             }
 
             if (rightBoundary - leftBoundary < minUsableWidth) {
-                rightBoundary = viewportWidth;
+                rightBoundary = Math.min(viewportWidth, technicalDrawerBoundary);
                 if (legendVisible) {
                     bottomOffset = Math.max(
                         bottomOffset,

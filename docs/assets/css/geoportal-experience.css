@@ -650,7 +650,8 @@ body.institutional-modal-open {
     pointer-events: none;
 }
 
-body.mobile-layers-open .technical-drawer {
+body.mobile-layers-open .technical-drawer,
+body.technical-drawer-open .technical-drawer {
     transform: translateX(0);
     pointer-events: auto;
 }
@@ -854,6 +855,12 @@ body.mobile-layers-open .technical-toggle {
     overflow-y: auto;
     padding: 12px;
     border-radius: 7px;
+}
+
+@media (min-width: 769px) {
+    body.technical-drawer-open .legend-panel {
+        margin-right: calc(var(--technical-drawer-width) + 20px);
+    }
 }
 
 .map-selector-control,

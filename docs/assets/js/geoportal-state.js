@@ -271,6 +271,15 @@
             setMobilePanel("layers", false);
         }
 
+        function setDesktopTechnicalPanel(open) {
+            const shouldOpen = Boolean(open && !mobileMediaQuery.matches);
+            document.body.classList.toggle("technical-drawer-open", shouldOpen);
+            technicalDrawer?.setAttribute("aria-hidden", String(!shouldOpen));
+            technicalPanelToggle?.setAttribute("aria-expanded", String(shouldOpen));
+            window.requestAnimationFrame(updateProfileCardLayout);
+            window.setTimeout(updateProfileCardLayout, 240);
+        }
+
         function syncMobileLayerDrawer() {
             const container = layerControl?.getContainer?.() || document.querySelector(".leaflet-control-layers");
             const selector = document.querySelector(".map-selector-control");
@@ -293,9 +302,19 @@
         });
         technicalPanelToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();
-            setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
+            if (mobileMediaQuery.matches) {
+                setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
+                return;
+            }
+            setDesktopTechnicalPanel(!document.body.classList.contains("technical-drawer-open"));
         });
-        technicalDrawerClose?.addEventListener("click", () => setMobilePanel("layers", false));
+        technicalDrawerClose?.addEventListener("click", () => {
+            if (mobileMediaQuery.matches) {
+                setMobilePanel("layers", false);
+                return;
+            }
+            setDesktopTechnicalPanel(false);
+        });
         document.getElementById("clear-infrastructure-button")?.addEventListener("click", () => {
             Object.values(overlayMaps).forEach(layer => {
                 if (map.hasLayer(layer)) map.removeLayer(layer);
@@ -321,11 +340,14 @@
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeMobilePanels();
+                setDesktopTechnicalPanel(false);
                 setMobileLegend(false);
             }
         });
         mobileMediaQuery.addEventListener("change", (event) => {
-            if (!event.matches) {
+            if (event.matches) {
+                setDesktopTechnicalPanel(false);
+            } else {
                 closeMobilePanels();
                 setMobileLegend(false);
             }
