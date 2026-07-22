@@ -17,7 +17,7 @@ necesariamente a la fecha de publicacion institucional.
 | SPPAT fallecidos | 2016-2021 | [datosabiertos.gob.ec](https://www.datosabiertos.gob.ec/dataset/7594a5f6-9e88-42ca-bb2d-624c2d163263/resource/981876e9-1e61-4037-9073-cfc8a2d9eb79/download/sppat_fallecidosaccidentestransito_2016-2021.csv) | 2026-07-14 | normalizacion de condicion, tipo, sexo y canton | datos abiertos SPPAT; filas restringidas internamente |
 | Poblacion cantonal | 2010-2035 | INEC, proyecciones revision 2024, `Cantonal.zip` | 2026-07-14 | suma por sexo/edad y canton | CC BY 4.0 segun reporte de fuente |
 | Vehiculos matriculados | 2024 | INEC ESTRA, `2024_BDD_VEHICULOS_MATRICULADOS.sav` | archivo fechado 2025-07-04 | value labels SPSS, groupby canton/provincia/clase | uso estadistico; agregado publicado |
-| OSM | corte 2026-07-16 | Overpass API | generado por scripts | consultas poligonales por provincia, deduplicacion y recorte nacional | ODbL, OpenStreetMap contributors |
+| OSM | cortes 2026-07-16 y 2026-07-22 | Overpass API | generado por scripts | infraestructura y red vial; consultas poligonales por provincia, deduplicacion y recorte nacional. Las nuevas capas de vias y densidad reutilizan esta misma fuente licenciada | ODbL, OpenStreetMap contributors |
 | Mapillary | sin corte util | Graph API | salida vacia | requiere `MAPILLARY_ACCESS_TOKEN` | terminos Mapillary |
 
 ## Fuentes aun no incorporadas

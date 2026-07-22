@@ -262,7 +262,9 @@ function onEachProvinceFeature(feature, layer) {
                         classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}${scaleText}`)}`;
                     }
 
-                    const levelContext = LEVEL_LABELS[currentLevel] ? ` (Nivel: ${LEVEL_LABELS[currentLevel].charAt(0).toUpperCase() + LEVEL_LABELS[currentLevel].slice(1)})` : "";
+                    const levelContext = config.legendLevelLabel
+                        ? ` (${config.legendLevelLabel})`
+                        : (LEVEL_LABELS[currentLevel] ? ` (Nivel: ${LEVEL_LABELS[currentLevel].charAt(0).toUpperCase() + LEVEL_LABELS[currentLevel].slice(1)})` : "");
                     const title = `${config.label}${levelContext}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const displayBins = activeVariableBins.displayBins || bins;
@@ -299,12 +301,20 @@ function onEachProvinceFeature(feature, layer) {
                             </div>
                         `;
                     }
-                    itemsHtml += `
-                        <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                            <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569; height: 10px; width: 14px; border-radius: 2px;"></span>
-                            <span style="color: var(--text-muted)">Sin dato oficial</span>
-                        </div>
-                    `;
+                    if (!config.omitNoDataLegend) {
+                        itemsHtml += `
+                            <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
+                                <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569; height: 10px; width: 14px; border-radius: 2px;"></span>
+                                <span style="color: var(--text-muted)">Sin dato oficial</span>
+                            </div>
+                        `;
+                    }
+                    if (config.spatialLayer === "road_density_grid") {
+                        itemsHtml += `
+                            <div class="legend-item" style="padding-left:8px;color:var(--text-muted);font-size:.67rem;line-height:1.3;align-items:flex-start;">
+                                <span>La cuadrícula suma kilómetros mapeados; no representa tráfico, estado de la vía ni pertenencia a la Red Vial Estatal.</span>
+                            </div>`;
+                    }
 
                     container.innerHTML += itemsHtml;
                 }
@@ -420,6 +430,7 @@ function onEachProvinceFeature(feature, layer) {
             domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
 
             refreshTerritoryLayerStyles();
+            syncRoadDensityLayer();
             updateMapLevelNote(level);
             updateLegend();
             updateTerritoryLevelControl();

@@ -170,6 +170,31 @@ class PublishedDataContractTest(unittest.TestCase):
                 self.assertIn("elementos_total", coverage)
                 self.assertIn("advertencia", coverage)
 
+    def test_osm_road_layers_and_density_reconcile(self):
+        principals = load("vias_principales_ecuador.geojson")
+        secondaries = load("vias_secundarias_ecuador.geojson")
+        density = load("densidad_vial_ecuador.geojson")
+
+        self.assertEqual(len(principals["features"]), 14_687)
+        self.assertEqual(len(secondaries["features"]), 26_353)
+        self.assertEqual(len(density["features"]), 1_517)
+        self.assertEqual(principals["metadata"]["highway_incluidos"], ["motorway", "trunk", "primary"])
+        self.assertEqual(secondaries["metadata"]["highway_incluidos"], ["secondary", "tertiary"])
+        self.assertEqual(density["metadata"]["tamano_celda_km"], 10.0)
+        self.assertEqual(density["metadata"]["propiedad"], "km_vias_por_celda")
+        self.assertEqual(density["metadata"]["cobertura_osm_vs_mtop_pct"], 120.68)
+
+        road_total = sum(
+            feature["properties"]["longitud_km"]
+            for layer in [principals, secondaries]
+            for feature in layer["features"]
+        )
+        grid_total = sum(
+            feature["properties"]["km_vias_por_celda"]
+            for feature in density["features"]
+        )
+        self.assertAlmostEqual(road_total, grid_total, delta=0.2)
+
     def test_province_osm_coverage_uses_direct_deduplicated_counts(self):
         expected = {}
         for layer_name in ["semaforos_rotondas", "cruces", "aceras"]:

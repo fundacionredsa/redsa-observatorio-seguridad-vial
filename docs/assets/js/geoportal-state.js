@@ -87,6 +87,7 @@
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
         const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
+        const RUTA_DENSIDAD_VIAL_RELATIVA = "data/densidad_vial_ecuador.geojson";
         const CENTRO_MAPA = INITIAL_VIEW.center;
         const ZOOM_INICIAL = INITIAL_VIEW.zoom;
         const ZOOM_PROVINCIAS_MAX = 7;
@@ -206,6 +207,8 @@
         let cantonLayer;
         let cantonData = null;
         let hotspotData = null;
+        let roadDensityData = null;
+        let roadDensityLayer = null;
         let nationalFatalitiesByYear = {};
         let selectedLayer = null;
         let selectedProvinceLayer = null;
@@ -718,7 +721,13 @@
             };
         }
 
-        function getFeaturesForLevel(level) {
+        function getFeaturesForLevel(level, variable = selectedVariable) {
+            const selectedConfig = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
+            if (selectedConfig.spatialLayer === "road_density_grid") {
+                return roadDensityData && Array.isArray(roadDensityData.features)
+                    ? roadDensityData.features
+                    : [];
+            }
             const dataByLevel = {
                 province: provinceData,
                 canton: cantonData,
@@ -733,7 +742,7 @@
             if (variable === "normal" || !config.levels.includes(level)) {
                 activeVariableBins = { variable: "normal", level, year: selectedYear, periodMode: selectedPeriodMode, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
             } else {
-                const result = calculateOptimalBins(getFeaturesForLevel(level), config, variable);
+                const result = calculateOptimalBins(getFeaturesForLevel(level, variable), config, variable);
                 activeVariableBins = {
                     variable,
                     level,
@@ -848,10 +857,37 @@
 
         function getTerritoryStyle(feature, level, isHovered = false, isSelected = false) {
             const effectiveVariable = getEffectiveVariable(level);
-            if (effectiveVariable === "normal") {
+            const config = VARIABLE_CONFIGS[effectiveVariable] || VARIABLE_CONFIGS.normal;
+            if (effectiveVariable === "normal" || config.spatialLayer === "road_density_grid") {
                 return getBoundaryStyle(feature, level, isHovered, isSelected);
             }
             return getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
+        }
+
+        function getRoadDensityStyle(feature) {
+            const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+            const style = getChoroplethStyle(feature, "densidad_vial_osm", level, false, false);
+            return {
+                ...style,
+                color: "#ffffff",
+                weight: 0.35,
+                opacity: 0.45,
+                fillOpacity: 0.72
+            };
+        }
+
+        function syncRoadDensityLayer() {
+            if (!roadDensityLayer) return;
+            const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+            const shouldShow = config.spatialLayer === "road_density_grid";
+            if (shouldShow) {
+                roadDensityLayer.eachLayer(layer => roadDensityLayer.resetStyle(layer));
+                if (!map.hasLayer(roadDensityLayer)) roadDensityLayer.addTo(map);
+                roadDensityLayer.bringToBack?.();
+                getLayerForLevel(activeTerritoryLevel)?.bringToFront?.();
+            } else {
+                removeLayerIfPresent(roadDensityLayer);
+            }
         }
 
         function getProvinceStyle(feature, isHovered = false, isSelected = false) {

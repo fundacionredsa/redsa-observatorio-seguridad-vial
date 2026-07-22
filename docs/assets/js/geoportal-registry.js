@@ -198,6 +198,30 @@
             infoSigla: "COBERTURA_OSM",
             colorFamily: "Greens",
             format: value => value.toFixed(1)
+        },
+        densidad_vial_osm: {
+            label: "Densidad de vías principales y secundarias (OSM)",
+            fuente: "OpenStreetMap contributors, ODbL; procesamiento REDSA",
+            description: "Kilómetros de vías principales y secundarias mapeadas en OpenStreetMap dentro de cada celda de 10 km. Muestra concentración de red mapeada, no tráfico ni calidad de la vía.",
+            unidad: "kilómetros de vías por celda de 10 km",
+            metodologia: "Suma geodésica de vías highway=motorway, trunk, primary, secondary y tertiary dentro de una cuadrícula regular de 10 km. La ausencia de una celda coloreada significa que no se encontraron vías de esas clases mapeadas; no demuestra ausencia física.",
+            licencia: "Open Data Commons Open Database License (ODbL)",
+            referencias: [
+                { label: "OpenStreetMap - derechos de autor y licencia", url: "https://www.openstreetmap.org/copyright/es" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#vias-osm" }
+            ],
+            property: "km_vias_por_celda",
+            levels: ["province", "canton", "parish"],
+            temporal: { tipo: "foto_unica", anios_disponibles: [2026] },
+            dynamicBins: true,
+            zeroIsData: false,
+            continuous: true,
+            spatialLayer: "road_density_grid",
+            legendLevelLabel: "Cuadrícula de 10 km",
+            omitNoDataLegend: true,
+            infoSigla: "OSM_VIAS",
+            colorFamily: "YlOrBr",
+            format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
         }
     };
 
@@ -301,6 +325,30 @@
             osmAudit: true,
             popup: props => `<strong>Carril exclusivo de bus:</strong> ${props.name || "Carril sin nombre"}<br><strong>Número de carriles:</strong> ${props["lanes:bus"] || "No especificado"}<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
             legend: [{ shape: "line", color: "#06b6d4", label: "Carriles BRT o Metrobús" }]
+        },
+        {
+            id: "vias_principales",
+            label: "Vías principales",
+            url: "data/vias_principales_ecuador.geojson",
+            render: "line",
+            color: "#1d4ed8",
+            weight: 4,
+            coverageMask: false,
+            osmAudit: true,
+            popup: props => `<strong>Vía principal:</strong> ${props.name || "Tramo sin nombre"}<br><strong>Clase OSM:</strong> ${props.highway || "No especificada"}<br><strong>Longitud del tramo:</strong> ${Number(props.longitud_km || 0).toLocaleString("es-EC", { maximumFractionDigits: 2 })} km<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
+            legend: [{ shape: "line", color: "#1d4ed8", label: "Motorway, trunk y primary" }]
+        },
+        {
+            id: "vias_secundarias",
+            label: "Vías secundarias",
+            url: "data/vias_secundarias_ecuador.geojson",
+            render: "line",
+            color: "#475569",
+            weight: 2,
+            coverageMask: false,
+            osmAudit: true,
+            popup: props => `<strong>Vía secundaria:</strong> ${props.name || "Tramo sin nombre"}<br><strong>Clase OSM:</strong> ${props.highway || "No especificada"}<br><strong>Longitud del tramo:</strong> ${Number(props.longitud_km || 0).toLocaleString("es-EC", { maximumFractionDigits: 2 })} km<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
+            legend: [{ shape: "line", color: "#475569", label: "Secondary y tertiary" }]
         }
     ];
 

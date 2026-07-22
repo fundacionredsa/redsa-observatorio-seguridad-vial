@@ -1,0 +1,38 @@
+{
+  "principales": {
+    "registered": true,
+    "visible": true,
+    "loaded": true,
+    "features": 14687,
+    "unmappedCantons": 0,
+    "error": null
+  },
+  "secundarias": {
+    "registered": true,
+    "visible": true,
+    "loaded": true,
+    "features": 26353,
+    "unmappedCantons": 0,
+    "error": null
+  },
+  "ambas": {
+    "principales": true,
+    "secundarias": true
+  },
+  "densidad": {
+    "layer": {
+      "ready": true,
+      "visible": true,
+      "features": 1517
+    },
+    "bins": [
+      15.076,
+      31.246,
+      55.928,
+      115.518,
+      205.592
+    ],
+    "validValueCount": 1517,
+    "legend": "Leyenda\nDENSIDAD DE VÍAS PRINCIPALES Y SECUNDARIAS (OSM) (CUADRÍCULA DE 10 KM)\nⒾ\nⒾ\n:\n<= 15,0\n15,0 a 30,0\n30,0 a 55,0\n55,0 a 120,0\n120,0 a 210,0\n> 210,0\nLa cuadrícula suma kilómetros mapeados; no representa tráfico, estado de la vía ni pertenencia a la Red Vial Estatal."
+  }
+}

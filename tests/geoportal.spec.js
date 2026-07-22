@@ -27,7 +27,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.selectedVariable).toBe("siniestros_inec_2019");
   expect(state.selectedYear).toBe(2024);
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
-  expect(state.infrastructureLayerCount).toBe(8);
+  expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
   await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
   await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
@@ -37,7 +37,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
   ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
   expect(versionedAssets.length).toBeGreaterThan(5);
-  expect(versionedAssets.every(url => url.includes("v=0.9.3"))).toBeTruthy();
+  expect(versionedAssets.every(url => url.includes("v=0.9.4"))).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -105,8 +105,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer-close")).toBeHidden();
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#map-variable-select option")).toHaveCount(10);
-  await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(8);
+  await expect(page.locator("#map-variable-select option")).toHaveCount(11);
+  await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
   await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(1);
@@ -149,6 +149,39 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.selectedVariable).toBe("normal");
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+});
+
+test("carga vias OSM independientes y clasifica la cuadricula con el motor existente", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Las capas viales nacionales se renderizan una vez.");
+  await loadPortal(page);
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("densidad_vial_osm"));
+  await expect(page.locator(".legend-panel")).toContainText("Cuadrícula de 10 km");
+  await page.locator(".legend-panel [data-sigla='INFO']").click();
+  await expect(page.locator("#sigla-popover")).toContainText("GVF");
+  let state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.layers.roadDensity.visible).toBeTruthy();
+  expect(state.layers.roadDensity.features).toBe(1517);
+  expect(state.validValueCount).toBe(1517);
+  expect(state.bins.length).toBeGreaterThanOrEqual(4);
+
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Vías principales", true));
+  await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Vías principales"].loaded, null, { timeout: 90_000 });
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.osmLayers["Vías principales"].features).toBe(14687);
+  expect(state.osmLayers["Vías secundarias"].visible).toBeFalsy();
+
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Vías secundarias", true));
+  await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Vías secundarias"].loaded, null, { timeout: 90_000 });
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.osmLayers["Vías principales"].visible).toBeTruthy();
+  expect(state.osmLayers["Vías secundarias"].visible).toBeTruthy();
+  expect(state.osmLayers["Vías secundarias"].features).toBe(26353);
+
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Vías principales", false));
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.osmLayers["Vías principales"].visible).toBeFalsy();
+  expect(state.osmLayers["Vías secundarias"].visible).toBeTruthy();
 });
 
 test("leyenda declara cuando la variable no existe en el nivel territorial", async ({ page }) => {
@@ -394,7 +427,8 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   const descriptions = {
     siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
     tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
-    cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó."
+    cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó.",
+    densidad_vial_osm: "Kilómetros de vías principales y secundarias mapeadas en OpenStreetMap dentro de cada celda de 10 km. Muestra concentración de red mapeada, no tráfico ni calidad de la vía."
   };
   for (const [variable, text] of Object.entries(descriptions)) {
     await page.evaluate(selected => window.__redsaAudit.selectVariable(selected), variable);

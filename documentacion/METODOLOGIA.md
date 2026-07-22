@@ -138,6 +138,37 @@ de un elemento refleja cobertura colaborativa de OSM, no un inventario oficial.
 Mapillary tiene actualmente cero features porque falta una extraccion validada;
 el archivo vacio se mantiene para que la ausencia sea explicita.
 
+### Vias OSM y cuadricula de densidad
+
+La red vial usa exclusivamente OpenStreetMap, consultado por provincia mediante
+Overpass API el 22 de julio de 2026. Se deduplican los objetos por
+`osm_type/osm_id`, se recortan al territorio nacional y se separan asi:
+
+- vias principales: `highway=motorway|trunk|primary`;
+- vias secundarias: `highway=secondary|tertiary`.
+
+La prueba de completitud obtuvo 11.897,384 km OSM de vias principales frente a
+9.858,600 km en 725 tramos de la Red Vial Estatal MTOP 2024: una razon de
+120,68%. El resultado supera el umbral operativo de 70%, pero no debe
+interpretarse como cobertura literal superior al 100%: la jerarquia funcional
+de OSM incluye vias que no necesariamente pertenecen juridicamente a la Red
+Vial Estatal. Es una comprobacion orientativa de magnitud, no una conciliacion
+tramo a tramo.
+
+`tertiary` suma 18.350,325 km y representa 72,26% del grupo publicado como vias
+secundarias. Se conserva porque la consulta exige la etiqueta jerarquica
+explicita y verifico cero elementos de clases locales `residential`,
+`unclassified` o `service`. Su peso y la naturaleza colaborativa de OSM son
+limitaciones declaradas.
+
+La capa de densidad usa una cuadricula regular de 10 km (`TAMANO_CELDA_KM`) en
+EPSG:6933. Para cada celda se recortan las lineas y se suma su longitud
+geodesica WGS84 en `km_vias_por_celda`; no se promedian valores. Las 1.517
+celdas publicadas suman 37.292,128 km, exactamente el total de las dos capas
+viales. La coropleta reutiliza la clasificacion dinamica Jenks/GVF y la
+transformacion logaritmica del geoportal. No mide trafico, estado de la via,
+seguridad ni pertenencia a la red estatal.
+
 ## Privacidad
 
 Fechas exactas, edad, sexo, causa y parroquia de EDG/SPPAT pueden facilitar

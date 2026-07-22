@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T20:38:21.475703+00:00",
+  "generated_at": "2026-07-22T22:42:21.908242+00:00",
   "status": "ok",
   "failures": [],
   "files": {
@@ -26,6 +26,24 @@
       "expected_features": 224,
       "bytes": 5089005,
       "sha256": "eae33128273d42f823c21660d9c3ad508d861999d7c7bfeb1ef781a25ed6fc2f"
+    },
+    "vias_principales_ecuador.geojson": {
+      "features": 14687,
+      "expected_features": 14687,
+      "bytes": 8572229,
+      "sha256": "43c6f0d27014bba679122233ee53c3a7fd512cb7615a96816e06f959ffe63c17"
+    },
+    "vias_secundarias_ecuador.geojson": {
+      "features": 26353,
+      "expected_features": 26353,
+      "bytes": 18635419,
+      "sha256": "01351ee6bd9571da1f176f331faeec0a6d1b80e243b0bf05cedee68bba7ec69f"
+    },
+    "densidad_vial_ecuador.geojson": {
+      "features": 1517,
+      "expected_features": 1517,
+      "bytes": 784968,
+      "sha256": "9efd578409ce5d82548b276b8ebc5a6c88b56d8a57aac2d53c7a10cdc27b25ca"
     },
     "iluminacion_ecuador.geojson": {
       "features": 8191,

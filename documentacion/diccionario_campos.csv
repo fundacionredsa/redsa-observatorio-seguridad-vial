@@ -844,6 +844,14 @@ cruces_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,
 cruces_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
 cruces_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 cruces_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
+densidad_vial_ecuador.geojson,area_celda_km2,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,23.648
+densidad_vial_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+densidad_vial_ecuador.geojson,cell_id,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,r000c123
+densidad_vial_ecuador.geojson,columna,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,123
+densidad_vial_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-22
+densidad_vial_ecuador.geojson,fila,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+densidad_vial_ecuador.geojson,km_vias_por_celda,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,20.157
+densidad_vial_ecuador.geojson,tamano_celda_km,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,10.0
 hotspots_cantonales.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
 hotspots_cantonales.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
 hotspots_cantonales.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
@@ -1877,3 +1885,35 @@ velocidad_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario me
 velocidad_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,centro_representativo_del_tramo
 velocidad_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,both
 velocidad_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
+vias_principales_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+vias_principales_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+vias_principales_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+vias_principales_ecuador.geojson,bridge,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,yes
+vias_principales_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-22
+vias_principales_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,trunk
+vias_principales_ecuador.geojson,lanes,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2
+vias_principales_ecuador.geojson,longitud_km,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0.1311
+vias_principales_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,60
+vias_principales_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Troncal de la Costa
+vias_principales_ecuador.geojson,oneway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no
+vias_principales_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,531627050
+vias_principales_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+vias_principales_ecuador.geojson,ref,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,E25
+vias_principales_ecuador.geojson,surface,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,asphalt
+vias_principales_ecuador.geojson,tunnel,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,yes
+vias_secundarias_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
+vias_secundarias_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
+vias_secundarias_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
+vias_secundarias_ecuador.geojson,bridge,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,yes
+vias_secundarias_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-22
+vias_secundarias_ecuador.geojson,highway,string,no,Valor del tag OSM highway,texto,OpenStreetMap,tertiary
+vias_secundarias_ecuador.geojson,lanes,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2
+vias_secundarias_ecuador.geojson,longitud_km,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4.2159
+vias_secundarias_ecuador.geojson,maxspeed,string,no,Valor del tag OSM maxspeed,texto,OpenStreetMap,90
+vias_secundarias_ecuador.geojson,name,string,no,Valor del tag OSM name,texto,OpenStreetMap,Vía San Alfonso - Santa Marta
+vias_secundarias_ecuador.geojson,oneway,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no
+vias_secundarias_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,identificador,OpenStreetMap,280506936
+vias_secundarias_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,way
+vias_secundarias_ecuador.geojson,ref,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Guayas 137
+vias_secundarias_ecuador.geojson,surface,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,asphalt
+vias_secundarias_ecuador.geojson,tunnel,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,yes

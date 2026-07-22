@@ -73,9 +73,13 @@
             fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
                 if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
                 return response.json();
+            }),
+            fetch(RUTA_DENSIDAD_VIAL_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de densidad vial.");
+                return response.json();
             })
         ])
-            .then(([provinces, cantons, hotspots]) => {
+            .then(([provinces, cantons, hotspots, roadDensity]) => {
                 const tDownloadEnd = performance.now();
                 const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
                 document.getElementById("diag-download").textContent = `${tDownload}s`;
@@ -84,6 +88,7 @@
                 provinceData = provinces;
                 cantonData = cantons;
                 hotspotData = hotspots;
+                roadDensityData = roadDensity;
                 mergeHotspotsIntoCantons(cantonData, hotspotData);
                 nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
 
@@ -101,6 +106,11 @@
                         return getCantonStyle(feature, false, isSelected);
                     },
                     onEachFeature: onEachFeature
+                });
+
+                roadDensityLayer = L.geoJSON(roadDensityData, {
+                    interactive: false,
+                    style: getRoadDensityStyle
                 });
 
                 const tRenderEnd = performance.now();
@@ -328,6 +338,7 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
+                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
@@ -354,6 +365,7 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
+                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
@@ -366,6 +378,7 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
+                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
@@ -395,7 +408,8 @@
                     "CIE-10": "Clasificación Internacional de Enfermedades, 10ª revisión — estándar usado para causas de muerte por tránsito (códigos V01 a V89).",
                     "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador.",
                     "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.",
-                    "COBERTURA_OSM": "Cobertura de mapeo OSM: densidad de semáforos/rotondas, cruces y aceras registrados. Un cero significa sin elementos mapeados, no ausencia comprobada de infraestructura."
+                    "COBERTURA_OSM": "Cobertura de mapeo OSM: densidad de semáforos/rotondas, cruces y aceras registrados. Un cero significa sin elementos mapeados, no ausencia comprobada de infraestructura.",
+                    "OSM_VIAS": "Vías de OpenStreetMap clasificadas por jerarquía funcional. No equivalen jurídicamente a la Red Vial Estatal del MTOP y su cobertura depende del mapeo colaborativo."
                 };
 
                 const popover = document.createElement("div");
@@ -637,7 +651,8 @@
                             layers: {
                                 province: layerState(provinceLayer),
                                 canton: layerState(cantonLayer),
-                                parish: layerState(parishLayer)
+                                parish: layerState(parishLayer),
+                                roadDensity: layerState(roadDensityLayer)
                             },
                             osmLayers: Object.fromEntries(INFRASTRUCTURE_LAYER_CONFIGS.map(config => {
                                 const layer = overlayMaps[config.label];
