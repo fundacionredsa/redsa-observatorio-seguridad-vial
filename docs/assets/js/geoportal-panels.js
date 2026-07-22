@@ -307,7 +307,7 @@
             if (!card || !body || !title) return;
             currentProfileProps = props;
             const periodBadge = document.getElementById("hover-card-period");
-            if (periodBadge) periodBadge.textContent = selectedDetailPeriodMode === "accumulated" ? "Acumulado" : String(selectedYear);
+            if (periodBadge) periodBadge.textContent = selectedDetailPeriodMode === "accumulated" ? "Histórico" : String(selectedYear);
 
             // Fixed lower panel; dynamic sizing prevents overlap with map controls.
             card.style.display = "block";

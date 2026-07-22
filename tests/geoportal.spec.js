@@ -63,7 +63,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(8);
   await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
-  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Sentinel-2" })).toHaveCount(1);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(1);
   await expect(page.locator("#infrastructure-disclosure")).not.toHaveAttribute("open", "");
   await expect(page.locator("#clear-infrastructure-button")).toHaveCount(0);
   await expect(page.locator("#clean-map-button")).toHaveCount(0);
@@ -104,6 +104,41 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
 });
 
+test("leyenda declara cuando la variable no existe en el nivel territorial", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.selectVariable("siniestros_inec_2019");
+    window.__redsaAudit.setTerritoryLevelMode("parish");
+  });
+
+  await expect(page.locator(".legend-panel")).toContainText("Sin datos disponibles en este nivel territorial");
+  await expect(page.locator(".legend-panel")).toContainText("Accidentes de tránsito reportados");
+  await expect(page.locator(".legend-panel")).toContainText("Límites administrativos");
+});
+
+test("selector de periodo permanece accesible al desplazar el panel de analisis", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Comportamiento sticky del panel de escritorio.");
+  await loadPortal(page);
+  const sidebar = page.locator("#territory-sidebar");
+
+  await sidebar.evaluate(element => { element.scrollTop = element.scrollHeight; });
+  const layout = await page.evaluate(() => {
+    const sidebarRect = document.querySelector("#territory-sidebar").getBoundingClientRect();
+    const control = document.querySelector("#territory-sidebar .detail-period-control");
+    const controlRect = control.getBoundingClientRect();
+    return {
+      position: getComputedStyle(control).position,
+      sidebarTop: sidebarRect.top,
+      controlTop: controlRect.top,
+      visible: controlRect.bottom > sidebarRect.top && controlRect.top < sidebarRect.bottom
+    };
+  });
+
+  expect(layout.position).toBe("sticky");
+  expect(layout.visible).toBeTruthy();
+  expect(Math.abs(layout.controlTop - layout.sidebarTop)).toBeLessThanOrEqual(28);
+});
+
 test("paneles alternan entre anio y acumulados con cobertura explicita", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La lectura detallada se valida una vez en desktop.");
   await loadPortal(page);
@@ -118,7 +153,7 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
   await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
   await expect(page.locator("#siniestros-section-year")).toContainText("2017–2024");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
-  await expect(page.locator("#hover-card-period")).toHaveText("Acumulado");
+  await expect(page.locator("#hover-card-period")).toHaveText("Histórico");
   await expect(page.locator("#hover-card-body")).toContainText("(2020–2024)");
   await expect(page.locator("#hover-card-body")).toContainText("(2016–2021)");
 

@@ -257,6 +257,10 @@
         cursor: pointer;
     }
 
+    .sidebar .detail-period-control {
+        top: 52px;
+    }
+
     .technical-toggle {
         display: none;
     }

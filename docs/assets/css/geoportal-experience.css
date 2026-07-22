@@ -1027,7 +1027,18 @@ body.light-theme .period-mode-segments button.active {
 
 body.light-theme .detail-period-control {
     border-color: #cbd5e1;
-    background: #f8fafc;
+    background: rgba(248, 250, 252, 0.98);
+    box-shadow: 0 7px 16px rgba(15, 23, 42, 0.12);
+}
+
+body.light-theme .legend-unavailable {
+    border-color: #d97706;
+    background: #fff7ed;
+    color: #475569;
+}
+
+body.light-theme .legend-unavailable strong {
+    color: #9a3412;
 }
 
 body.light-theme .detail-period-segments button {

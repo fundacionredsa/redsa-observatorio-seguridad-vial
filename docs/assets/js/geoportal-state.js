@@ -157,10 +157,10 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' + attributionCantonales,
                 maxZoom: 19
             }),
-            "Sentinel-2 Satélite (2025)": L.tileLayer('https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2025_3857/default/g/{z}/{y}/{x}.jpg', {
-                attribution: '<a href="https://cloudless.eox.at/">EOxCloudless</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2025)' + attributionCantonales,
-                maxNativeZoom: 14,
-                maxZoom: 20
+            "Esri World Imagery (Satélite)": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Source: &copy; <a href="https://www.esri.com/">Esri</a>, Vantor, Earthstar Geographics, and the GIS User Community' + attributionCantonales,
+                maxNativeZoom: 23,
+                maxZoom: 23
             })
         };
 
@@ -482,7 +482,7 @@
             slider.value = String(selectedYear);
             badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
             badge.textContent = accumulated
-                ? "Acumulado"
+                ? "Histórico"
                 : isAnnual
                 ? String(selectedYear)
                 : (coverage.anios_disponibles.length

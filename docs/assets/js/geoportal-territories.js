@@ -220,7 +220,27 @@ function onEachProvinceFeature(feature, layer) {
             const effectiveVariable = getEffectiveVariable(currentLevel);
             if (currentLevel) {
                 hasItems = true;
-                if (effectiveVariable === 'normal') {
+                const requestedConfig = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
+                const unavailableAtLevel = selectedVariable !== "normal" && effectiveVariable === "normal";
+                const noValuesAtLevel = !unavailableAtLevel
+                    && effectiveVariable !== "normal"
+                    && activeVariableBins.method === "Sin datos";
+
+                if (unavailableAtLevel || noValuesAtLevel) {
+                    const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";
+                    const temporalLabel = requestedConfig.temporal?.tipo === "anual" ? ` · ${getActivePeriodLabel(requestedConfig)}` : "";
+                    container.innerHTML += `
+                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${requestedConfig.label} (Nivel: ${levelName})${temporalLabel}:</div>
+                        <div class="legend-unavailable" role="status">
+                            <strong>Sin datos disponibles en este nivel territorial.</strong>
+                            <span>${unavailableAtLevel ? "La variable seleccionada no se publica para este nivel; se muestran únicamente los límites administrativos." : "No existen valores publicables para la combinación de nivel y periodo seleccionada."}</span>
+                        </div>
+                        <div class="legend-item" style="padding-left: 8px;">
+                            <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
+                            <span>Límites administrativos</span>
+                        </div>
+                    `;
+                } else if (effectiveVariable === 'normal') {
                     const levelTitle = `Límites ${LEVEL_LABELS[currentLevel]}:`;
                     container.innerHTML += `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${levelTitle}</div>

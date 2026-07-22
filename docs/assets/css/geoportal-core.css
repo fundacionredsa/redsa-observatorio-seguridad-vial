@@ -677,11 +677,32 @@
         }
 
         .detail-period-control {
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky-content);
             margin: 8px 0 12px;
             padding: 9px;
             border: 1px solid var(--border-glass);
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.035);
+            background: rgba(15, 23, 42, 0.96);
+            box-shadow: 0 7px 16px rgba(15, 23, 42, 0.18);
+        }
+
+        .legend-unavailable {
+            display: grid;
+            gap: 4px;
+            margin: 2px 0 8px;
+            padding: 9px;
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            border-radius: 5px;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.69rem;
+            line-height: 1.35;
+        }
+
+        .legend-unavailable strong {
+            color: #fbbf24;
         }
 
         .detail-period-label {
