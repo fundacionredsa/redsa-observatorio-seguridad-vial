@@ -133,6 +133,23 @@ def main() -> None:
             if canton_sum != province_sum:
                 result["failures"].append(f"{field}.{year}: canton {canton_sum} != provincia {province_sum}")
 
+    result["national_controls"]["fallecidos_parroquial"] = {}
+    for year in ["2021", "2022", "2023", "2024"]:
+        parish_sum = aggregate(parishes["features"], "fallecidos_por_anio", year)
+        canton_sum = aggregate(cantons["features"], "fallecidos_parroquial", year)
+        province_sum = aggregate(provinces["features"], "fallecidos_parroquial", year)
+        matches = parish_sum == canton_sum == province_sum
+        result["national_controls"]["fallecidos_parroquial"][year] = {
+            "parish_sum": parish_sum,
+            "canton_sum": canton_sum,
+            "province_sum": province_sum,
+            "match": matches,
+        }
+        if not matches:
+            result["failures"].append(
+                f"fallecidos_parroquial.{year}: parroquia {parish_sum} != canton {canton_sum} != provincia {province_sum}"
+            )
+
     vehicles = sum(
         (feature["properties"].get("vehiculos_matriculados_2024") or {}).get("total") or 0
         for feature in cantons["features"]

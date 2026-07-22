@@ -50,6 +50,42 @@ class PublishedDataContractTest(unittest.TestCase):
                     province_sum = sum((feature["properties"].get(field) or {}).get(year, 0) or 0 for feature in self.provinces["features"])
                     self.assertEqual(canton_sum, province_sum)
 
+    def test_parish_fatalities_reconcile_at_all_levels(self):
+        for year in ["2021", "2022", "2023", "2024"]:
+            with self.subTest(year=year):
+                parish_sum = sum(
+                    (feature["properties"].get("fallecidos_por_anio") or {}).get(year, 0) or 0
+                    for feature in self.parishes["features"]
+                )
+                canton_sum = sum(
+                    (feature["properties"].get("fallecidos_parroquial") or {}).get(year, 0) or 0
+                    for feature in self.cantons["features"]
+                )
+                province_sum = sum(
+                    (feature["properties"].get("fallecidos_parroquial") or {}).get(year, 0) or 0
+                    for feature in self.provinces["features"]
+                )
+                self.assertEqual(parish_sum, canton_sum)
+                self.assertEqual(canton_sum, province_sum)
+
+        for level in [self.cantons, self.provinces]:
+            for feature in level["features"]:
+                coverage = feature["properties"].get("fallecidos_cobertura_pct") or {}
+                self.assertEqual(set(coverage), {"2021", "2022", "2023", "2024"})
+                self.assertTrue(all(0 <= value <= 100 for value in coverage.values()))
+
+    def test_quito_and_guayaquil_parish_aggregates(self):
+        expected = {
+            "1701": {"2021": 430, "2022": 428, "2023": 478, "2024": 504},
+            "0901": {"2021": 438, "2022": 546, "2023": 617, "2024": 665},
+        }
+        by_code = {
+            str(feature["properties"]["DPA_CANTON"]): feature["properties"]
+            for feature in self.cantons["features"]
+        }
+        for code, annual in expected.items():
+            self.assertEqual(by_code[code]["fallecidos_parroquial"], annual)
+
     def test_vehicle_total_and_missing_state(self):
         total = sum((feature["properties"].get("vehiculos_matriculados_2024") or {}).get("total") or 0 for feature in self.cantons["features"])
         self.assertEqual(total, 3_138_562)

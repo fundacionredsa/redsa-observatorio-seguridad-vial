@@ -53,6 +53,11 @@ cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa,object,no,Campo observado; v
 cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.aceras,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4218
 cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.cruces,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1210
 cantones_wgs84.geojson,cobertura_mapeo_osm.por_capa.semaforos_rotondas,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,637
+cantones_wgs84.geojson,fallecidos_cobertura_pct,object,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,
+cantones_wgs84.geojson,fallecidos_cobertura_pct.2021,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+cantones_wgs84.geojson,fallecidos_cobertura_pct.2022,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+cantones_wgs84.geojson,fallecidos_cobertura_pct.2023,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+cantones_wgs84.geojson,fallecidos_cobertura_pct.2024,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
 cantones_wgs84.geojson,fallecidos_detallado,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
 cantones_wgs84.geojson,fallecidos_detallado.2020,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
 cantones_wgs84.geojson,fallecidos_detallado.2020.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
@@ -171,8 +176,63 @@ cantones_wgs84.geojson,fallecidos_historico.2022,integer,no,Fallecidos CIE-10 V0
 cantones_wgs84.geojson,fallecidos_historico.2023,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,97
 cantones_wgs84.geojson,fallecidos_historico.2024,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,86
 cantones_wgs84.geojson,fallecidos_inec_2019,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,53
+cantones_wgs84.geojson,fallecidos_parroquial,object,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,
+cantones_wgs84.geojson,fallecidos_parroquial.2021,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,92
+cantones_wgs84.geojson,fallecidos_parroquial.2022,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,86
+cantones_wgs84.geojson,fallecidos_parroquial.2023,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,97
+cantones_wgs84.geojson,fallecidos_parroquial.2024,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,86
 cantones_wgs84.geojson,fallecidos_sppat_2016_2021,integer/null,si,Fallecidos SPPAT por categoria/ano,personas,SPPAT,359
 cantones_wgs84.geojson,inec_patron_horario,null/object,si,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_patron_horario.2017,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_patron_horario.2017.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,29
+cantones_wgs84.geojson,inec_patron_horario.2017.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,29
+cantones_wgs84.geojson,inec_patron_horario.2017.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,31
+cantones_wgs84.geojson,inec_patron_horario.2017.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,28
+cantones_wgs84.geojson,inec_patron_horario.2017.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,26
+cantones_wgs84.geojson,inec_patron_horario.2017.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,31
+cantones_wgs84.geojson,inec_patron_horario.2017.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,35
+cantones_wgs84.geojson,inec_patron_horario.2017.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,56
+cantones_wgs84.geojson,inec_patron_horario.2017.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,57
+cantones_wgs84.geojson,inec_patron_horario.2017.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
+cantones_wgs84.geojson,inec_patron_horario.2017.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,44
+cantones_wgs84.geojson,inec_patron_horario.2017.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,55
+cantones_wgs84.geojson,inec_patron_horario.2017.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,44
+cantones_wgs84.geojson,inec_patron_horario.2017.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,59
+cantones_wgs84.geojson,inec_patron_horario.2017.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,61
+cantones_wgs84.geojson,inec_patron_horario.2017.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,60
+cantones_wgs84.geojson,inec_patron_horario.2017.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,66
+cantones_wgs84.geojson,inec_patron_horario.2017.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,81
+cantones_wgs84.geojson,inec_patron_horario.2017.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,95
+cantones_wgs84.geojson,inec_patron_horario.2017.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,78
+cantones_wgs84.geojson,inec_patron_horario.2017.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,74
+cantones_wgs84.geojson,inec_patron_horario.2017.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,49
+cantones_wgs84.geojson,inec_patron_horario.2017.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,55
+cantones_wgs84.geojson,inec_patron_horario.2017.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,52
+cantones_wgs84.geojson,inec_patron_horario.2018,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_patron_horario.2018.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+cantones_wgs84.geojson,inec_patron_horario.2018.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2018.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,31
+cantones_wgs84.geojson,inec_patron_horario.2018.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2018.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,26
+cantones_wgs84.geojson,inec_patron_horario.2018.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2018.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,62
+cantones_wgs84.geojson,inec_patron_horario.2018.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,55
+cantones_wgs84.geojson,inec_patron_horario.2018.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2018.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,51
+cantones_wgs84.geojson,inec_patron_horario.2018.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,54
+cantones_wgs84.geojson,inec_patron_horario.2018.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,51
+cantones_wgs84.geojson,inec_patron_horario.2018.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,63
+cantones_wgs84.geojson,inec_patron_horario.2018.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,68
+cantones_wgs84.geojson,inec_patron_horario.2018.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,67
+cantones_wgs84.geojson,inec_patron_horario.2018.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,51
+cantones_wgs84.geojson,inec_patron_horario.2018.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,73
+cantones_wgs84.geojson,inec_patron_horario.2018.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,86
+cantones_wgs84.geojson,inec_patron_horario.2018.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,78
+cantones_wgs84.geojson,inec_patron_horario.2018.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,92
+cantones_wgs84.geojson,inec_patron_horario.2018.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,69
+cantones_wgs84.geojson,inec_patron_horario.2018.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,68
+cantones_wgs84.geojson,inec_patron_horario.2018.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,58
+cantones_wgs84.geojson,inec_patron_horario.2018.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,36
 cantones_wgs84.geojson,inec_patron_horario.2019,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_patron_horario.2019.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,24
 cantones_wgs84.geojson,inec_patron_horario.2019.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,28
@@ -198,6 +258,31 @@ cantones_wgs84.geojson,inec_patron_horario.2019.20:00 A 20:59,integer,no,Siniest
 cantones_wgs84.geojson,inec_patron_horario.2019.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,55
 cantones_wgs84.geojson,inec_patron_horario.2019.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,48
 cantones_wgs84.geojson,inec_patron_horario.2019.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+cantones_wgs84.geojson,inec_patron_horario.2020,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_patron_horario.2020.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,12
+cantones_wgs84.geojson,inec_patron_horario.2020.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,11
+cantones_wgs84.geojson,inec_patron_horario.2020.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,13
+cantones_wgs84.geojson,inec_patron_horario.2020.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,7
+cantones_wgs84.geojson,inec_patron_horario.2020.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,12
+cantones_wgs84.geojson,inec_patron_horario.2020.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,12
+cantones_wgs84.geojson,inec_patron_horario.2020.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,17
+cantones_wgs84.geojson,inec_patron_horario.2020.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+cantones_wgs84.geojson,inec_patron_horario.2020.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2020.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,22
+cantones_wgs84.geojson,inec_patron_horario.2020.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,21
+cantones_wgs84.geojson,inec_patron_horario.2020.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+cantones_wgs84.geojson,inec_patron_horario.2020.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,31
+cantones_wgs84.geojson,inec_patron_horario.2020.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,34
+cantones_wgs84.geojson,inec_patron_horario.2020.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,29
+cantones_wgs84.geojson,inec_patron_horario.2020.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,38
+cantones_wgs84.geojson,inec_patron_horario.2020.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+cantones_wgs84.geojson,inec_patron_horario.2020.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
+cantones_wgs84.geojson,inec_patron_horario.2020.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+cantones_wgs84.geojson,inec_patron_horario.2020.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,42
+cantones_wgs84.geojson,inec_patron_horario.2020.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,34
+cantones_wgs84.geojson,inec_patron_horario.2020.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,46
+cantones_wgs84.geojson,inec_patron_horario.2020.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,29
+cantones_wgs84.geojson,inec_patron_horario.2020.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,25
 cantones_wgs84.geojson,inec_patron_horario.2021,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_patron_horario.2021.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,15
 cantones_wgs84.geojson,inec_patron_horario.2021.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,19
@@ -299,6 +384,28 @@ cantones_wgs84.geojson,inec_patron_horario.2024.21:00 A 21:59,integer,no,Siniest
 cantones_wgs84.geojson,inec_patron_horario.2024.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,48
 cantones_wgs84.geojson,inec_patron_horario.2024.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
 cantones_wgs84.geojson,inec_por_causa,null/object,si,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_causa.2017,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_causa.2017.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,7
+cantones_wgs84.geojson,inec_por_causa.2017.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,151
+cantones_wgs84.geojson,inec_por_causa.2017.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,13
+cantones_wgs84.geojson,inec_por_causa.2017.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,2
+cantones_wgs84.geojson,inec_por_causa.2017.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,565
+cantones_wgs84.geojson,inec_por_causa.2017.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,71
+cantones_wgs84.geojson,inec_por_causa.2017.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,25
+cantones_wgs84.geojson,inec_por_causa.2017.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,94
+cantones_wgs84.geojson,inec_por_causa.2017.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,306
+cantones_wgs84.geojson,inec_por_causa.2017.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,4
+cantones_wgs84.geojson,inec_por_causa.2018,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_causa.2018.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,7
+cantones_wgs84.geojson,inec_por_causa.2018.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,174
+cantones_wgs84.geojson,inec_por_causa.2018.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,27
+cantones_wgs84.geojson,inec_por_causa.2018.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,1
+cantones_wgs84.geojson,inec_por_causa.2018.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,710
+cantones_wgs84.geojson,inec_por_causa.2018.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,46
+cantones_wgs84.geojson,inec_por_causa.2018.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+cantones_wgs84.geojson,inec_por_causa.2018.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,124
+cantones_wgs84.geojson,inec_por_causa.2018.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,200
+cantones_wgs84.geojson,inec_por_causa.2018.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,10
 cantones_wgs84.geojson,inec_por_causa.2019,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_por_causa.2019.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
 cantones_wgs84.geojson,inec_por_causa.2019.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,209
@@ -310,6 +417,17 @@ cantones_wgs84.geojson,inec_por_causa.2019.MAL ESTADO DE LA VIA,integer,no,Sinie
 cantones_wgs84.geojson,inec_por_causa.2019.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,61
 cantones_wgs84.geojson,inec_por_causa.2019.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,115
 cantones_wgs84.geojson,inec_por_causa.2019.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+cantones_wgs84.geojson,inec_por_causa.2020,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_causa.2020.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+cantones_wgs84.geojson,inec_por_causa.2020.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,92
+cantones_wgs84.geojson,inec_por_causa.2020.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,17
+cantones_wgs84.geojson,inec_por_causa.2020.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
+cantones_wgs84.geojson,inec_por_causa.2020.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,351
+cantones_wgs84.geojson,inec_por_causa.2020.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,34
+cantones_wgs84.geojson,inec_por_causa.2020.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
+cantones_wgs84.geojson,inec_por_causa.2020.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,11
+cantones_wgs84.geojson,inec_por_causa.2020.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,136
+cantones_wgs84.geojson,inec_por_causa.2020.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
 cantones_wgs84.geojson,inec_por_causa.2021,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_por_causa.2021.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,1
 cantones_wgs84.geojson,inec_por_causa.2021.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,92
@@ -355,6 +473,24 @@ cantones_wgs84.geojson,inec_por_causa.2024.MAL REBASAMIENTO INVADIR CARRIL,integ
 cantones_wgs84.geojson,inec_por_causa.2024.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,217
 cantones_wgs84.geojson,inec_por_causa.2024.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,31
 cantones_wgs84.geojson,inec_por_clase,null/object,si,Siniestros por clase y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_clase.2017,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_clase.2017.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,182
+cantones_wgs84.geojson,inec_por_clase.2017.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,14
+cantones_wgs84.geojson,inec_por_clase.2017.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,626
+cantones_wgs84.geojson,inec_por_clase.2017.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,133
+cantones_wgs84.geojson,inec_por_clase.2017.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,15
+cantones_wgs84.geojson,inec_por_clase.2017.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,202
+cantones_wgs84.geojson,inec_por_clase.2017.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,53
+cantones_wgs84.geojson,inec_por_clase.2017.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,11
+cantones_wgs84.geojson,inec_por_clase.2018,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_clase.2018.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,195
+cantones_wgs84.geojson,inec_por_clase.2018.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,18
+cantones_wgs84.geojson,inec_por_clase.2018.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,650
+cantones_wgs84.geojson,inec_por_clase.2018.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,114
+cantones_wgs84.geojson,inec_por_clase.2018.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,31
+cantones_wgs84.geojson,inec_por_clase.2018.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,235
+cantones_wgs84.geojson,inec_por_clase.2018.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,56
+cantones_wgs84.geojson,inec_por_clase.2018.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,5
 cantones_wgs84.geojson,inec_por_clase.2019,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_por_clase.2019.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,152
 cantones_wgs84.geojson,inec_por_clase.2019.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,6
@@ -364,6 +500,15 @@ cantones_wgs84.geojson,inec_por_clase.2019.OTROS,integer,no,Siniestros por clase
 cantones_wgs84.geojson,inec_por_clase.2019.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,169
 cantones_wgs84.geojson,inec_por_clase.2019.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,64
 cantones_wgs84.geojson,inec_por_clase.2019.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,7
+cantones_wgs84.geojson,inec_por_clase.2020,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_por_clase.2020.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,111
+cantones_wgs84.geojson,inec_por_clase.2020.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,5
+cantones_wgs84.geojson,inec_por_clase.2020.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,302
+cantones_wgs84.geojson,inec_por_clase.2020.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,51
+cantones_wgs84.geojson,inec_por_clase.2020.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,2
+cantones_wgs84.geojson,inec_por_clase.2020.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,152
+cantones_wgs84.geojson,inec_por_clase.2020.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,30
+cantones_wgs84.geojson,inec_por_clase.2020.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,4
 cantones_wgs84.geojson,inec_por_clase.2021,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_por_clase.2021.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,84
 cantones_wgs84.geojson,inec_por_clase.2021.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,9
@@ -401,10 +546,22 @@ cantones_wgs84.geojson,inec_por_clase.2024.PÉRDIDA DE PISTA,integer,no,Siniestr
 cantones_wgs84.geojson,inec_por_clase.2024.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,58
 cantones_wgs84.geojson,inec_por_clase.2024.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,9
 cantones_wgs84.geojson,inec_resumen_historico,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+cantones_wgs84.geojson,inec_resumen_historico.2017,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+cantones_wgs84.geojson,inec_resumen_historico.2017.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,50
+cantones_wgs84.geojson,inec_resumen_historico.2017.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,942
+cantones_wgs84.geojson,inec_resumen_historico.2017.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1236
+cantones_wgs84.geojson,inec_resumen_historico.2018,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+cantones_wgs84.geojson,inec_resumen_historico.2018.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,58
+cantones_wgs84.geojson,inec_resumen_historico.2018.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1186
+cantones_wgs84.geojson,inec_resumen_historico.2018.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1304
 cantones_wgs84.geojson,inec_resumen_historico.2019,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
 cantones_wgs84.geojson,inec_resumen_historico.2019.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,53
 cantones_wgs84.geojson,inec_resumen_historico.2019.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,928
 cantones_wgs84.geojson,inec_resumen_historico.2019.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1024
+cantones_wgs84.geojson,inec_resumen_historico.2020,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+cantones_wgs84.geojson,inec_resumen_historico.2020.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,46
+cantones_wgs84.geojson,inec_resumen_historico.2020.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,516
+cantones_wgs84.geojson,inec_resumen_historico.2020.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,657
 cantones_wgs84.geojson,inec_resumen_historico.2021,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
 cantones_wgs84.geojson,inec_resumen_historico.2021.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,63
 cantones_wgs84.geojson,inec_resumen_historico.2021.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,511
@@ -422,9 +579,18 @@ cantones_wgs84.geojson,inec_resumen_historico.2024.fallecidos,integer,no,Resumen
 cantones_wgs84.geojson,inec_resumen_historico.2024.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1025
 cantones_wgs84.geojson,inec_resumen_historico.2024.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1161
 cantones_wgs84.geojson,inec_urbano_rural,null/object,si,Siniestros por zona y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_urbano_rural.2017,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_urbano_rural.2017.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,485
+cantones_wgs84.geojson,inec_urbano_rural.2017.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,751
+cantones_wgs84.geojson,inec_urbano_rural.2018,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_urbano_rural.2018.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,422
+cantones_wgs84.geojson,inec_urbano_rural.2018.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,882
 cantones_wgs84.geojson,inec_urbano_rural.2019,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_urbano_rural.2019.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,389
 cantones_wgs84.geojson,inec_urbano_rural.2019.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,635
+cantones_wgs84.geojson,inec_urbano_rural.2020,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+cantones_wgs84.geojson,inec_urbano_rural.2020.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,296
+cantones_wgs84.geojson,inec_urbano_rural.2020.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,361
 cantones_wgs84.geojson,inec_urbano_rural.2021,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
 cantones_wgs84.geojson,inec_urbano_rural.2021.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,287
 cantones_wgs84.geojson,inec_urbano_rural.2021.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,335
@@ -470,7 +636,10 @@ cantones_wgs84.geojson,poblacion_por_anio.2034,integer,no,Poblacion proyectada p
 cantones_wgs84.geojson,poblacion_por_anio.2035,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,671963
 cantones_wgs84.geojson,porcentaje_motocicletas_vehiculos_2024,null/number,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,16.023284
 cantones_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+cantones_wgs84.geojson,siniestros_historico.2017,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1236
+cantones_wgs84.geojson,siniestros_historico.2018,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1304
 cantones_wgs84.geojson,siniestros_historico.2019,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1024
+cantones_wgs84.geojson,siniestros_historico.2020,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,657
 cantones_wgs84.geojson,siniestros_historico.2021,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,622
 cantones_wgs84.geojson,siniestros_historico.2022,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,917
 cantones_wgs84.geojson,siniestros_historico.2023,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,975
@@ -774,6 +943,19 @@ parroquias_wgs84.geojson,fallecidos_por_anio.2021,integer,no,Fallecidos EDG parr
 parroquias_wgs84.geojson,fallecidos_por_anio.2022,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
 parroquias_wgs84.geojson,fallecidos_por_anio.2023,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
 parroquias_wgs84.geojson,fallecidos_por_anio.2024,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
 provincias_wgs84.geojson,DPA_CANTON,null,si,Codigo DPA cantonal,codigo,INEC/CONALI,
 provincias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,AZUAY
 provincias_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
@@ -1055,6 +1237,11 @@ provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa,object,no,Campo observado;
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.aceras,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4222
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.cruces,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1294
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.semaforos_rotondas,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,681
+provincias_wgs84.geojson,fallecidos_cobertura_pct,object,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,
+provincias_wgs84.geojson,fallecidos_cobertura_pct.2021,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+provincias_wgs84.geojson,fallecidos_cobertura_pct.2022,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+provincias_wgs84.geojson,fallecidos_cobertura_pct.2023,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
+provincias_wgs84.geojson,fallecidos_cobertura_pct.2024,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
 provincias_wgs84.geojson,fallecidos_detallado,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
 provincias_wgs84.geojson,fallecidos_detallado.2020,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
 provincias_wgs84.geojson,fallecidos_detallado.2020.cobertura,object,no,Fallecidos EDG por categoria demografica,personas,INEC EDG,
@@ -1173,6 +1360,11 @@ provincias_wgs84.geojson,fallecidos_historico.2022,integer,no,Fallecidos CIE-10 
 provincias_wgs84.geojson,fallecidos_historico.2023,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,133
 provincias_wgs84.geojson,fallecidos_historico.2024,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,112
 provincias_wgs84.geojson,fallecidos_inec_2019,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,82
+provincias_wgs84.geojson,fallecidos_parroquial,object,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,
+provincias_wgs84.geojson,fallecidos_parroquial.2021,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,138
+provincias_wgs84.geojson,fallecidos_parroquial.2022,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,137
+provincias_wgs84.geojson,fallecidos_parroquial.2023,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,133
+provincias_wgs84.geojson,fallecidos_parroquial.2024,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,112
 provincias_wgs84.geojson,fallecidos_sppat_2016_2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,563
 provincias_wgs84.geojson,fuente_geometria,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Disolucion de docs/data/cantones_wgs84.geojson por DPA_PROVIN
 provincias_wgs84.geojson,inec_patron_horario,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,

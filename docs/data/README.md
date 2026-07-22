@@ -68,8 +68,18 @@ Atributos agregados por suma provincial:
 - desgloses `sppat_*`, `inec_*` y `fallecidos_detallado`
 - `vehiculos_matriculados_2024` y composicion de flota
 - cobertura de mapeo OSM, cuando las ocho capas nacionales han sido extraidas
+- `fallecidos_parroquial` 2021-2024, agregado directamente desde
+  `parroquias_wgs84.geojson`, con `fallecidos_cobertura_pct` por ano
 
 La tasa `tasa_fallecidos_100k` se recalcula a nivel provincial con numerador y denominador agregados, no promediando tasas cantonales. Los años con cantones sin dato no se imputan como cero: el archivo declara cobertura por campo y año en `properties.cobertura_datos`, con `estado` igual a `completo`, `parcial` o `sin_dato`.
+
+La agregacion parroquial se reproduce con
+`python scripts/agregar_fallecidos_territorial.py`. Los grupos historicos
+`9001`, `9003` y `9004` no tienen geometria cantonal publicada y registran cero
+fallecidos en 2021-2024; el script detiene la ejecucion si un grupo sin
+geometria contiene un valor distinto de cero. Los cantones `1413`, `9006` e
+`ISLA` no tienen parroquias en esta fuente y quedan con valor `null` y cobertura
+0%, explicitamente como sin dato.
 
 Validacion de `provincias_wgs84.geojson`:
 

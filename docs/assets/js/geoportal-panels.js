@@ -676,6 +676,17 @@
                 domWarningBox.style.display = "block";
             }
 
+            const fatalitiesCoverageWarning = selectedVariable === "fallecidos_parroquial"
+                ? getFatalitiesCoverageWarning(props, selectedYear)
+                : "";
+            if (fatalitiesCoverageWarning && domWarningBox) {
+                const prefix = domWarningBox.style.display === "block" && domWarningBox.textContent
+                    ? `${domWarningBox.textContent} `
+                    : "";
+                domWarningBox.textContent = `${prefix}${fatalitiesCoverageWarning}`;
+                domWarningBox.style.display = "block";
+            }
+
             const yearKey = String(selectedYear);
             const poblacion = props.poblacion_por_anio?.[yearKey];
             domPoblacionYear.textContent = yearKey;

@@ -375,6 +375,13 @@
                 : properties[config.property];
         }
 
+        function getFatalitiesCoverageWarning(properties, year = selectedYear) {
+            const coverage = properties?.fallecidos_cobertura_pct?.[String(year)];
+            if (!Number.isFinite(Number(coverage)) || Number(coverage) >= 100) return "";
+            if (Number(coverage) <= 0) return `Sin cobertura parroquial para ${year}; no se muestra como cero.`;
+            return `Cobertura parcial: ${Number(coverage).toLocaleString("es-EC", { maximumFractionDigits: 2 })}% de las parroquias tiene dato para ${year}.`;
+        }
+
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
             const badge = document.getElementById("timeline-badge");
@@ -435,7 +442,13 @@
             const valueText = getEffectiveVariable(level) === "normal"
                 ? "Límite administrativo"
                 : `${config.label}: ${value === null || value === undefined ? "Sin dato" : formatNumber(value)}`;
-            return `<strong>${names[level] || "Unidad territorial"}</strong><br>${valueText}`;
+            const coverageWarning = selectedVariable === "fallecidos_parroquial"
+                ? getFatalitiesCoverageWarning(props, selectedYear)
+                : "";
+            const warningHtml = coverageWarning
+                ? `<br><span class="u-text-warning">${coverageWarning}</span>`
+                : "";
+            return `<strong>${names[level] || "Unidad territorial"}</strong><br>${valueText}${warningHtml}`;
         }
 
         function getEffectiveVariable(level = activeTerritoryLevel) {

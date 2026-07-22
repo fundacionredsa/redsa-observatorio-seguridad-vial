@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-07-17T18:37:00.366782+00:00",
+  "generated_at": "2026-07-22T04:06:42.796585+00:00",
   "status": "ok",
   "failures": [],
   "files": {
     "cantones_wgs84.geojson": {
       "features": 224,
       "expected_features": 224,
-      "bytes": 6494148,
-      "sha256": "6b3bbfcb4db9eb8de0fe2b70547279ecccc493cec83de866c2fdb14444e472de"
+      "bytes": 6855507,
+      "sha256": "fdce54721aedcca8743b696494247ca86d4c4e3917f396fa1ce33c31a5d10439"
     },
     "provincias_wgs84.geojson": {
       "features": 24,
       "expected_features": 24,
-      "bytes": 2363997,
-      "sha256": "97625bc0e06bb298dac7df0735837e5be8b77182f6d8a92269f4e60950a97067"
+      "bytes": 2368213,
+      "sha256": "59f825b3240adb6808c3bdaa8a461e7c09b55d22043e8d0ada06f3d5df847ece"
     },
     "parroquias_wgs84.geojson": {
       "features": 1040,
       "expected_features": 1040,
-      "bytes": 5725084,
-      "sha256": "1f5b665b6f87ab6bd64e1d3f8bab1be379c511619a22583d2312f32e28899e5e"
+      "bytes": 6123684,
+      "sha256": "d25401ab171a41360253baa3a666eed54955eb13454e18555a2b4d56ec1c52f9"
     },
     "hotspots_cantonales.geojson": {
       "features": 224,
@@ -136,6 +136,32 @@
       "2024": {
         "canton_sum": 21191,
         "province_sum": 21191,
+        "match": true
+      }
+    },
+    "fallecidos_parroquial": {
+      "2021": {
+        "parish_sum": 3339,
+        "canton_sum": 3339,
+        "province_sum": 3339,
+        "match": true
+      },
+      "2022": {
+        "parish_sum": 3676,
+        "canton_sum": 3676,
+        "province_sum": 3676,
+        "match": true
+      },
+      "2023": {
+        "parish_sum": 4068,
+        "canton_sum": 4068,
+        "province_sum": 4068,
+        "match": true
+      },
+      "2024": {
+        "parish_sum": 4214,
+        "canton_sum": 4214,
+        "province_sum": 4214,
         "match": true
       }
     },

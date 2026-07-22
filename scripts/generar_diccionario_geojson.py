@@ -67,6 +67,8 @@ def describe(path: str) -> tuple[str, str, str]:
         ("local_moran", "Resultado Local Moran por ano", "estadistico/categoria", "Derivado REDSA"),
         ("fallecidos_2021_2024", "Fallecidos EDG acumulados 2021-2024", "personas", "INEC EDG"),
         ("fallecidos_por_anio", "Fallecidos EDG parroquiales por ano", "personas", "INEC EDG"),
+        ("fallecidos_parroquial", "Fallecidos EDG parroquiales agregados al nivel territorial", "personas", "INEC EDG / Derivado REDSA"),
+        ("fallecidos_cobertura_pct", "Porcentaje de parroquias con dato anual en el agregado", "porcentaje", "Derivado REDSA"),
         ("osm_id", "Identificador del objeto OpenStreetMap", "identificador", "OpenStreetMap"),
         ("attribution", "Atribucion requerida por la fuente", "texto", "OpenStreetMap"),
     ]

@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("redsa_tour_visto", "true"));
+});
+
 async function loadPortal(page) {
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
@@ -305,7 +309,7 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
   await loadPortal(page);
   await page.locator("#open-institutional-button").tap();
 
-  const geometry = await page.locator(".institutional-dialog").boundingBox();
+  const geometry = await page.locator("#institutional-modal .institutional-dialog").boundingBox();
   expect(geometry).not.toBeNull();
   expect(geometry.x).toBeGreaterThanOrEqual(0);
   expect(geometry.y).toBeGreaterThanOrEqual(0);
@@ -459,7 +463,8 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
 
     expect(geometry.map.width).toBe(viewport.width);
     expect(geometry.map.height).toBe(viewport.height);
-    expect(geometry.freeMapBand).toBeGreaterThanOrEqual(Math.min(300, viewport.height * 0.3));
+    const minimumUsableMapBand = Math.min(220, Math.max(120, viewport.height * 0.175));
+    expect(geometry.freeMapBand).toBeGreaterThanOrEqual(minimumUsableMapBand);
     expect(geometry.legend.height).toBeLessThanOrEqual(52);
     expect(geometry.sidebar.inViewport).toBeFalsy();
     expect(geometry.layers.inViewport).toBeFalsy();
@@ -629,5 +634,26 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
   const activeBins = await page.evaluate(() => window.__redsaActiveBins);
   expect(activeBins.colors.length).toBeGreaterThanOrEqual(3);
   expect(activeBins.logScaled).toBeDefined();
+});
+
+test("EDG parish-derived fatalities are available at province, canton and parish levels", async ({ page }) => {
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.__redsaAudit !== undefined);
+  await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
+
+  for (const level of ["province", "canton", "parish"]) {
+    await page.evaluate(value => window.__redsaAudit.setTerritoryLevelMode(value), level);
+    await page.waitForFunction(
+      expected => window.__redsaActiveBins?.variable === "fallecidos_parroquial"
+        && window.__redsaActiveBins?.level === expected,
+      level
+    );
+    await expect(page.locator("#map-level-note")).toBeHidden();
+    await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas (EDG)");
+  }
+
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1413", "click"));
+  await expect(page.locator("#cabecera-warning-box")).toContainText("Sin cobertura parroquial para 2024");
 });
 

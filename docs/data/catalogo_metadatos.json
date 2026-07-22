@@ -1,9 +1,9 @@
 {
   "resumen_transparencia": {
-    "pct_variables_con_fuente_documentada": 33.3,
+    "pct_variables_con_fuente_documentada": 44.4,
     "pct_cobertura_sin_dato_declarado": 75.0,
     "vars_total": 9,
-    "vars_con_fuente": 3,
+    "vars_con_fuente": 4,
     "vars_con_faltantes": 4,
     "vars_declarando_sin_dato": 3
   },
@@ -105,9 +105,9 @@
     },
     {
       "id": "fallecidos_parroquial",
-      "label": "Personas fallecidas por parroquia",
+      "label": "Personas fallecidas (EDG)",
       "categoria": "Mortalidad",
-      "fuente": "fuente_pendiente_confirmar",
+      "fuente": "INEC EDG",
       "anios_disponibles": [
         2021,
         2022,
@@ -115,6 +115,8 @@
         2024
       ],
       "nivel_territorial_disponible": [
+        "province",
+        "canton",
         "parish"
       ]
     },

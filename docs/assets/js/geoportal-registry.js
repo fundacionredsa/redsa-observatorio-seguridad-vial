@@ -87,10 +87,11 @@
             format: value => value.toString()
         },
         fallecidos_parroquial: {
-            label: "Personas fallecidas por parroquia",
-            description: "Fallecidos por accidente de tránsito a nivel de parroquia (2021-2024).",
-            getValue: (props, year) => props.fallecidos_por_anio?.[String(year)],
-            levels: ["parish"],
+            label: "Personas fallecidas (EDG)",
+            fuente: "INEC EDG",
+            description: "Personas fallecidas por accidentes de tránsito según el registro civil (EDG), comparables entre provincia, cantón y parroquia.",
+            getValue: (props, year) => props.fallecidos_parroquial?.[String(year)] ?? props.fallecidos_por_anio?.[String(year)],
+            levels: ["province", "canton", "parish"],
             temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
             dynamicBins: true,
             zeroIsData: true,

@@ -34,6 +34,8 @@ Aplica a `cantones_wgs84.geojson` y, salvo indicacion, a
 | `inec_urbano_rural.{anio}.{zona}` | integer | Eventos por zona urbana/rural | eventos |
 | `inec_patron_horario.{anio}.{franja}` | integer | Eventos por franja horaria | eventos |
 | `fallecidos_historico.{anio}` | integer | Defunciones con CIE-10 V01-V89 | personas, EDG 2020-2024 |
+| `fallecidos_parroquial.{anio}` | integer/null | Suma directa de `fallecidos_por_anio` de las parroquias del territorio | personas, EDG 2021-2024 |
+| `fallecidos_cobertura_pct.{anio}` | number | Porcentaje de parroquias con valor anual disponible | porcentaje; 0 no se interpreta como cero fallecidos |
 | `fallecidos_detallado.{anio}.sexo.{sexo}` | integer | Defunciones por sexo registrado | personas, EDG 2020-2024 |
 | `fallecidos_detallado.{anio}.edad.{grupo}` | integer | Defunciones por grupo etario | personas, EDG 2020-2024 |
 | `fallecidos_detallado.{anio}.usuario.{tipo}` | integer | Usuario inferido del rango CIE-10 | personas, EDG 2020-2024 |
@@ -75,6 +77,12 @@ deben usar para ampliar series nuevas; use los objetos historicos.
 
 Un cero parroquial significa cero filas asignadas por el pipeline; debe
 interpretarse junto con la vigencia incompleta de la geometria 2014.
+
+La misma serie se publica en cantones y provincias como
+`fallecidos_parroquial.{anio}`. Se deriva exclusivamente de esta capa
+parroquial, sin mezclar `fallecidos_historico`, SPPAT ni otra fuente. Los
+cantones sin parroquias representadas reciben `null` y cobertura 0%, nunca un
+cero falso.
 
 ## Hotspots
 
