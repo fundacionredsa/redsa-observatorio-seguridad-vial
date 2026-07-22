@@ -25,4 +25,5 @@ main p { margin:0 0 12px; }
 .warning { padding:14px; border-left:4px solid #d97706; background:#fff7ed; color:#713f12; }
 .formula { margin:14px 0; padding:15px; background:#13202b; color:#fff; font:600 1.05rem/1.3 monospace; text-align:center; }
 footer { padding:24px; background:#e8eef2; color:#52606b; text-align:center; font-size:.8rem; }
+footer a { color:#075d66; font-weight:700; }
 @media(max-width:760px){.method-header{align-items:flex-start;flex-direction:column;padding:28px 20px}.method-layout{display:block;padding:20px 12px 50px}.method-nav{position:static;margin-bottom:18px}.principle-grid{grid-template-columns:1fr}.source-table>div{grid-template-columns:1fr;gap:3px}main section{padding:22px 18px}}

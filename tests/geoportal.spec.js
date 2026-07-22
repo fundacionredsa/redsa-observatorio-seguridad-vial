@@ -31,6 +31,13 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
   await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
   await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
+  await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
+  const versionedAssets = await page.evaluate(() => [
+    ...Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(node => node.href),
+    ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
+  ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
+  expect(versionedAssets.length).toBeGreaterThan(5);
+  expect(versionedAssets.every(url => url.includes("v=0.9.1"))).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -62,10 +69,14 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
   await page.locator("#download-summary-button").click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^redsa_ficha_.+\.pdf$/);
-  const path = await download.path();
-  const bytes = await fs.readFile(path);
+  const savedPath = testInfo.outputPath("ficha-territorial.pdf");
+  await download.saveAs(savedPath);
+  const bytes = await fs.readFile(savedPath);
   expect(bytes.subarray(0, 5).toString("ascii")).toBe("%PDF-");
   expect(bytes.length).toBeGreaterThan(20_000);
+  const pdfAudit = await page.evaluate(() => window.__redsaLastPdfAudit);
+  expect(pdfAudit).toMatchObject({ vectorTrend: true, structuredProfile: true, contactIncluded: true, selectedYear: 2024 });
+  expect(pdfAudit.pageCount).toBeGreaterThanOrEqual(2);
   await expect(page.locator("#territory-search-status")).toContainText("no se almacenó en el portal");
 });
 

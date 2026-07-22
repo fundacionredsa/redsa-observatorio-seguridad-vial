@@ -16,6 +16,7 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
         for path in paths:
             content = path.read_text(encoding="utf-8")
             with self.subTest(path=path.relative_to(ROOT)):
+                self.assertNotIn("Observatorio REDSA", content)
                 self.assertNotRegex(content, r"Ã|Â|�")
 
     def test_catalog_workbooks_are_present_and_valid(self):
@@ -44,6 +45,7 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
                     )
                     for required in ("Fuente", "Licencia", "Metodolog", "Referencia"):
                         self.assertIn(required, searchable)
+                    self.assertNotIn("Observatorio REDSA", searchable)
 
 
 if __name__ == "__main__":

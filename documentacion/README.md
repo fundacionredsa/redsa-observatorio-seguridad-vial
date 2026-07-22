@@ -1,4 +1,4 @@
-# Documentacion del Observatorio REDSA
+# Documentacion del Observatorio de Seguridad Vial y Movilidad Sostenible
 
 Este es el punto de entrada para auditar, mantener o ampliar el geoportal.
 Estado documentado: **2026-07-17**.

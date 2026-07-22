@@ -126,6 +126,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#citizen-panel .citizen-intro-full')).toContainText('iniciativa independiente de la sociedad civil');
+            await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
+            await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
     });
 

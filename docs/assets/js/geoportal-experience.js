@@ -72,15 +72,6 @@
         return groups.join(", ");
     }
 
-    function escapeHtml(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
     function populateSearch() {
         const datalist = document.getElementById("territory-search-list");
         if (!datalist) return;
@@ -219,10 +210,6 @@
         if (downloadButton) downloadButton.disabled = false;
     }
 
-    function reportMetric(label, value) {
-        return `<div class="pdf-report-metric"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`;
-    }
-
     async function captureMapImage() {
         const map = document.getElementById("map");
         if (!map || typeof window.html2canvas !== "function") return null;
@@ -231,13 +218,76 @@
             useCORS: true,
             allowTaint: false,
             logging: false,
-            scale: 1,
+            scale: 2,
             ignoreElements: element => element.matches?.(".leaflet-control-zoom, .opacity-control, .basemap-control, .mobile-nav-toggle")
         });
         return canvas.toDataURL("image/jpeg", 0.9);
     }
 
-    function buildReportNode(props, year, mapImage) {
+    function buildTechnicalPdf(props, year, mapImage) {
+        const JsPDF = window.jspdf?.jsPDF;
+        if (!JsPDF) throw new Error("No se cargó el generador PDF");
+        const pdf = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+        const margin = 14;
+        const pageWidth = 210;
+        const contentWidth = pageWidth - margin * 2;
+        const pageBottom = 278;
+        const teal = [7, 93, 102];
+        const cyan = [14, 165, 233];
+        const orange = [245, 158, 11];
+        const ink = [23, 32, 51];
+        const muted = [82, 96, 107];
+        let y = 14;
+
+        const ensureSpace = height => {
+            if (y + height <= pageBottom) return;
+            pdf.addPage();
+            y = 16;
+        };
+        const addSection = title => {
+            ensureSpace(13);
+            pdf.setDrawColor(...teal);
+            pdf.setLineWidth(0.8);
+            pdf.line(margin, y, margin, y + 7);
+            pdf.setTextColor(...ink);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(13);
+            pdf.text(title, margin + 4, y + 5.5);
+            y += 11;
+        };
+        const addParagraph = (text, options = {}) => {
+            const width = options.width || contentWidth;
+            pdf.setFont("helvetica", options.bold ? "bold" : "normal");
+            pdf.setFontSize(options.size || 9);
+            pdf.setTextColor(...(options.color || muted));
+            const lines = pdf.splitTextToSize(String(text), width);
+            const height = lines.length * (options.lineHeight || 4.4);
+            ensureSpace(height + 2);
+            pdf.text(lines, options.x || margin, y);
+            y += height + (options.after ?? 2);
+        };
+        const drawBarList = (title, entries, x, width, color) => {
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(9);
+            pdf.setTextColor(...ink);
+            pdf.text(title, x, y);
+            let rowY = y + 5;
+            const maxValue = Math.max(1, ...entries.map(entry => Number(entry.value) || 0));
+            entries.forEach(entry => {
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(7.5);
+                pdf.setTextColor(...muted);
+                pdf.text(entry.label, x, rowY);
+                pdf.text(`${formatNumber(entry.value)} (${formatNumber(entry.pct, 1)}%)`, x + width, rowY, { align: "right" });
+                pdf.setFillColor(226, 232, 240);
+                pdf.roundedRect(x, rowY + 1.4, width, 2.4, 1, 1, "F");
+                pdf.setFillColor(...color);
+                pdf.roundedRect(x, rowY + 1.4, width * ((Number(entry.value) || 0) / maxValue), 2.4, 1, 1, "F");
+                rowY += 8;
+            });
+            return rowY;
+        };
+
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
         const years = availableAccidentYears(props);
@@ -249,75 +299,206 @@
             const value = Number(props.siniestros_historico?.[String(candidate)]);
             return Number.isFinite(value) ? total + value : total;
         }, 0);
-        const historyRows = years.map(candidate => {
-            const accidentValue = Number(props.siniestros_historico?.[String(candidate)]);
-            const deathValue = Number(props.fallecidos_historico?.[String(candidate)]);
-            return `<tr><td>${candidate}</td><td>${Number.isFinite(accidentValue) ? formatNumber(accidentValue) : "Sin dato"}</td><td>${Number.isFinite(deathValue) ? formatNumber(deathValue) : "Sin dato"}</td></tr>`;
-        }).join("");
-        const chart = document.getElementById("chart-historico");
-        let chartImage = null;
-        try {
-            chartImage = chart?.toDataURL("image/png") || null;
-        } catch (_) {
-            chartImage = null;
-        }
-        const profileText = document.getElementById("hover-card-body")?.innerText?.trim();
-        const report = document.createElement("section");
-        report.className = "pdf-report-sheet";
-        report.setAttribute("aria-hidden", "true");
-        report.innerHTML = `
-            <div class="pdf-report-kicker">Fundación REDSA · Observatorio Ciudadano de Seguridad Vial</div>
-            <h1>Ficha técnica territorial</h1>
-            <p class="pdf-report-context"><strong>${escapeHtml(name)}</strong> · ${escapeHtml(level)} · ${escapeHtml(props.DPA_DESPRO || "Ecuador")} · año seleccionado ${escapeHtml(year || "sin dato")}</p>
-            <div class="pdf-report-metrics">
-                ${reportMetric("Accidentes reportados", Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato")}
-                ${reportMetric("Personas fallecidas (registro civil)", Number.isFinite(deaths) ? formatNumber(deaths) : "Sin dato")}
-                ${reportMetric("Población", Number.isFinite(population) ? formatNumber(population) : "Sin dato")}
-                ${reportMetric("Accidentes por 100.000 habitantes", Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato")}
-            </div>
-            <p><strong>Dimensión histórica:</strong> ${formatNumber(historicalTotal)} accidentes acumulados en ${formatYearCoverage(years)}. Los años ausentes no se imputan ni se cuentan como cero.</p>
-            ${mapImage ? `<h2>Ubicación y mapa de referencia</h2><img class="pdf-report-image" src="${mapImage}" alt="Mapa de ${escapeHtml(name)}">` : ""}
-            ${chartImage ? `<h2>Tendencia histórica</h2><img class="pdf-report-image" src="${chartImage}" alt="Gráfico de tendencia histórica">` : ""}
-            <h2>Serie disponible</h2>
-            <table class="pdf-report-history"><thead><tr><th>Año</th><th>Accidentes reportados (INEC)</th><th>Personas fallecidas (INEC EDG)</th></tr></thead><tbody>${historyRows}</tbody></table>
-            ${profileText ? `<h2>Perfil de personas fallecidas</h2><p>${escapeHtml(profileText).replace(/\n/g, "<br>")}</p>` : ""}
-            <h2>Fuentes, metodología y trazabilidad</h2>
-            <div class="pdf-report-sources">
-                <p><strong>Accidentes:</strong> INEC, Estadísticas de Transporte (ESTRA), registros oficiales agregados territorialmente.</p>
-                <p><strong>Personas fallecidas:</strong> INEC, Estadísticas de Defunciones Generales (EDG), causas CIE-10 V01-V89. EDG registra el lugar de fallecimiento, que no necesariamente coincide con el lugar del siniestro.</p>
-                <p><strong>Límites:</strong> INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY.</p>
-                <p><strong>Tratamiento:</strong> Fundación REDSA. Las tasas se calculan como numerador / población del mismo año × 100.000. Los datos faltantes se declaran como “sin dato”.</p>
-                <p><strong>Metodología y datos auditables:</strong> ${escapeHtml(new URL("metodologia/", window.location.href).href)} · ${escapeHtml(new URL("data/catalogo_metadatos.json", window.location.href).href)}</p>
-                <p><strong>Cita sugerida:</strong> Fundación REDSA (${new Date().getFullYear()}). Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible. Consulta: ${new Date().toLocaleDateString("es-EC")}.</p>
-            </div>
-        `;
-        document.body.appendChild(report);
-        return report;
-    }
+        pdf.setFillColor(7, 93, 102);
+        pdf.rect(0, 0, pageWidth, 32, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(10);
+        pdf.text("OBSERVATORIO DE SEGURIDAD VIAL Y MOVILIDAD SOSTENIBLE", margin, 10);
+        pdf.setFontSize(20);
+        pdf.text("Ficha técnica territorial", margin, 20);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(8.5);
+        pdf.text("Iniciativa independiente de la sociedad civil impulsada por Fundación REDSA", margin, 27);
+        y = 42;
+        addParagraph(`${name} · ${level} · ${props.DPA_DESPRO || "Ecuador"} · año seleccionado ${year || "sin dato"}`, { bold: true, size: 12, color: ink });
 
-    function saveCanvasAsPdf(canvas, filename) {
-        const JsPDF = window.jspdf?.jsPDF;
-        if (!JsPDF) throw new Error("No se cargó el generador PDF");
-        const pdf = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-        const margin = 8;
-        const contentWidth = 210 - margin * 2;
-        const pageHeight = 297 - margin * 2;
-        const pixelsPerMm = canvas.width / contentWidth;
-        const sliceHeight = Math.floor(pageHeight * pixelsPerMm);
-        let sourceY = 0;
-        let page = 0;
-        while (sourceY < canvas.height) {
-            const height = Math.min(sliceHeight, canvas.height - sourceY);
-            const slice = document.createElement("canvas");
-            slice.width = canvas.width;
-            slice.height = height;
-            slice.getContext("2d").drawImage(canvas, 0, sourceY, canvas.width, height, 0, 0, canvas.width, height);
-            if (page > 0) pdf.addPage();
-            pdf.addImage(slice.toDataURL("image/jpeg", 0.9), "JPEG", margin, margin, contentWidth, height / pixelsPerMm);
-            sourceY += height;
-            page += 1;
+        const metrics = [
+            ["Accidentes reportados", Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato"],
+            ["Personas fallecidas (EDG)", Number.isFinite(deaths) ? formatNumber(deaths) : "Sin dato"],
+            ["Población", Number.isFinite(population) ? formatNumber(population) : "Sin dato"],
+            ["Accidentes por 100.000 hab.", Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato"]
+        ];
+        const metricWidth = (contentWidth - 9) / 4;
+        metrics.forEach(([label, value], index) => {
+            const x = margin + index * (metricWidth + 3);
+            pdf.setFillColor(241, 245, 249);
+            pdf.setDrawColor(203, 213, 225);
+            pdf.roundedRect(x, y, metricWidth, 18, 2, 2, "FD");
+            pdf.setTextColor(...ink);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(12);
+            pdf.text(String(value), x + 3, y + 7);
+            pdf.setTextColor(...muted);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(6.7);
+            pdf.text(pdf.splitTextToSize(label, metricWidth - 6), x + 3, y + 12);
+        });
+        y += 24;
+        addParagraph(`Dimensión histórica: ${formatNumber(historicalTotal)} accidentes acumulados en ${formatYearCoverage(years)}. Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+
+        if (mapImage) {
+            addSection("Ubicación y mapa de referencia");
+            ensureSpace(87);
+            pdf.addImage(mapImage, "JPEG", margin, y, contentWidth, 82, undefined, "FAST");
+            y += 87;
         }
-        pdf.save(filename);
+
+        const trendYears = [...new Set([
+            ...Object.keys(props.siniestros_historico || {}),
+            ...Object.keys(props.fallecidos_historico || {})
+        ])].map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+        addSection("Tendencia histórica");
+        ensureSpace(72);
+        const chartX = margin + 14;
+        const chartY = y + 8;
+        const chartW = contentWidth - 28;
+        const chartH = 46;
+        pdf.setDrawColor(203, 213, 225);
+        [0, 0.5, 1].forEach(position => pdf.line(chartX, chartY + chartH * position, chartX + chartW, chartY + chartH * position));
+        const drawSeries = (values, color, maxValue) => {
+            let previous = null;
+            values.forEach((value, index) => {
+                if (!Number.isFinite(value)) { previous = null; return; }
+                const point = {
+                    x: chartX + (trendYears.length === 1 ? chartW / 2 : index * chartW / (trendYears.length - 1)),
+                    y: chartY + chartH - (value / Math.max(1, maxValue)) * chartH
+                };
+                pdf.setDrawColor(...color);
+                pdf.setFillColor(...color);
+                pdf.setLineWidth(0.8);
+                if (previous) pdf.line(previous.x, previous.y, point.x, point.y);
+                pdf.circle(point.x, point.y, 1.1, "F");
+                previous = point;
+            });
+        };
+        const accidentSeries = trendYears.map(candidate => Number(props.siniestros_historico?.[String(candidate)]));
+        const deathSeries = trendYears.map(candidate => Number(props.fallecidos_historico?.[String(candidate)]));
+        const accidentMax = Math.max(1, ...accidentSeries.filter(Number.isFinite));
+        const deathMax = Math.max(1, ...deathSeries.filter(Number.isFinite));
+        drawSeries(accidentSeries, orange, accidentMax);
+        drawSeries(deathSeries, cyan, deathMax);
+        pdf.setFontSize(6.5);
+        pdf.setTextColor(...muted);
+        trendYears.forEach((candidate, index) => {
+            const x = chartX + (trendYears.length === 1 ? chartW / 2 : index * chartW / (trendYears.length - 1));
+            pdf.text(String(candidate), x, chartY + chartH + 5, { align: "center" });
+        });
+        pdf.setFillColor(...orange); pdf.rect(chartX, chartY - 5, 4, 2, "F");
+        pdf.setTextColor(...ink); pdf.text(`Accidentes (máx. ${formatNumber(accidentMax)})`, chartX + 6, chartY - 3.2);
+        pdf.setFillColor(...cyan); pdf.rect(chartX + 62, chartY - 5, 4, 2, "F");
+        pdf.text(`Fallecidos (máx. ${formatNumber(deathMax)})`, chartX + 68, chartY - 3.2);
+        y = chartY + chartH + 12;
+
+        const edg = props.fallecidos_detallado?.[String(year)];
+        ensureSpace(edg && edg.estado !== "sin_dato" && Number(edg.total) > 0 ? 123 : 28);
+        addSection(`Perfil de personas fallecidas (${year || "sin dato"})`);
+        if (edg && edg.estado !== "sin_dato" && Number(edg.total) > 0) {
+            const total = Number(edg.total);
+            addParagraph(`Registro civil INEC-EDG: ${formatNumber(total)} personas fallecidas. Las barras muestran conteos y proporciones del total.`, { size: 8.5 });
+            const male = Number(edg.sexo?.Hombre) || 0;
+            const female = Number(edg.sexo?.Mujer) || 0;
+            const knownSex = Math.max(1, male + female);
+            pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...ink); pdf.text("Sexo registrado", margin, y);
+            pdf.setFillColor(14, 165, 233); pdf.roundedRect(margin, y + 3, contentWidth * male / knownSex, 7, 1.5, 1.5, "F");
+            pdf.setFillColor(236, 72, 153); pdf.roundedRect(margin + contentWidth * male / knownSex, y + 3, contentWidth * female / knownSex, 7, 1.5, 1.5, "F");
+            pdf.setTextColor(255, 255, 255); pdf.setFontSize(7);
+            if (male > 0) pdf.text(`Hombres ${formatNumber(male / knownSex * 100, 1)}%`, margin + 3, y + 7.8);
+            if (female > 0) pdf.text(`Mujeres ${formatNumber(female / knownSex * 100, 1)}%`, margin + contentWidth - 3, y + 7.8, { align: "right" });
+            y += 16;
+            const missingUser = Math.max(0, total - (Number(edg.cobertura?.usuario_conocido) || total));
+            const userEntries = [
+                ["Peatón", edg.usuario?.peaton], ["Ciclista", edg.usuario?.ciclista],
+                ["Motociclista", edg.usuario?.motociclista], ["Ocupante", edg.usuario?.ocupante],
+                ["Otro / vehículo no especificado", Math.max(0, (Number(edg.usuario?.otro) || 0) - missingUser)],
+                ["Sin dato de usuario vial", missingUser]
+            ].map(([label, value]) => ({ label, value: Number(value) || 0, pct: (Number(value) || 0) / total * 100 }));
+            const ageLabels = { "0-14": "Niños (0-14)", "15-29": "Jóvenes (15-29)", "30-49": "Adultos (30-49)", "50-64": "Adultos (50-64)", "65+": "Adultos mayores (65+)" };
+            const ageEntries = Object.entries(ageLabels).map(([key, label]) => ({ label, value: Number(edg.edad?.[key]) || 0, pct: (Number(edg.edad?.[key]) || 0) / total * 100 }));
+            const leftEnd = drawBarList("Forma de desplazamiento / usuario vial", userEntries, margin, 86, [14, 165, 233]);
+            const rightEnd = drawBarList("Grupos de edad", ageEntries, margin + 96, 86, [8, 145, 178]);
+            y = Math.max(leftEnd, rightEnd) + 2;
+        } else {
+            addParagraph("Sin datos demográficos disponibles para el año seleccionado.", { color: ink });
+        }
+
+        addSection(`Reclamaciones del seguro - SPPAT (${year || "sin dato"})`);
+        const sppatSex = props.sppat_por_sexo?.[String(year)];
+        const sppatCondition = props.sppat_por_condicion?.[String(year)];
+        const sppatType = props.sppat_por_tipo_accidente?.[String(year)];
+        if (sppatSex?.estado === "disponible") {
+            const toEntries = entry => {
+                const categories = entry?.categorias || {};
+                const total = Math.max(1, Object.values(categories).reduce((sum, value) => sum + (Number(value) || 0), 0));
+                return Object.entries(categories).map(([label, value]) => ({ label, value: Number(value) || 0, pct: (Number(value) || 0) / total * 100 }));
+            };
+            const sexEntries = toEntries(sppatSex);
+            const conditionEntries = toEntries(sppatCondition);
+            const typeEntries = toEntries(sppatType);
+            ensureSpace(12 + Math.max(sexEntries.length, conditionEntries.length, typeEntries.length) * 8);
+            addParagraph("Registros vinculados a reclamaciones procesadas por el Servicio Público para Pago de Accidentes de Tránsito. No deben sumarse con EDG.", { size: 8.5 });
+            const columnWidth = 55;
+            const sexEnd = drawBarList("Sexo registrado", sexEntries, margin, columnWidth, [14, 165, 233]);
+            const conditionEnd = drawBarList("Condición", conditionEntries, margin + 63, columnWidth, [8, 145, 178]);
+            const typeEnd = drawBarList("Tipo de accidente", typeEntries, margin + 126, columnWidth, [168, 85, 247]);
+            y = Math.max(sexEnd, conditionEnd, typeEnd) + 2;
+        } else {
+            addParagraph("Sin detalle SPPAT disponible para el año seleccionado. La cobertura publicada de esta fuente corresponde a 2016-2021.", { color: ink });
+        }
+
+        addSection("Serie anual disponible");
+        ensureSpace(12 + years.length * 7);
+        const tableX = margin;
+        const colWidths = [28, 72, 82];
+        const headers = ["Año", "Accidentes reportados (INEC)", "Personas fallecidas (INEC-EDG)"];
+        pdf.setFillColor(7, 93, 102); pdf.rect(tableX, y, contentWidth, 8, "F");
+        pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5);
+        let xCursor = tableX;
+        headers.forEach((header, index) => { pdf.text(header, xCursor + 2, y + 5); xCursor += colWidths[index]; });
+        y += 8;
+        years.forEach((candidate, index) => {
+            if (index % 2 === 0) { pdf.setFillColor(241, 245, 249); pdf.rect(tableX, y, contentWidth, 7, "F"); }
+            pdf.setTextColor(...ink); pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+            const row = [candidate, props.siniestros_historico?.[String(candidate)], props.fallecidos_historico?.[String(candidate)]];
+            xCursor = tableX;
+            row.forEach((value, column) => {
+                const displayedValue = column === 0
+                    ? String(value)
+                    : (Number.isFinite(Number(value)) ? formatNumber(value) : "Sin dato");
+                pdf.text(displayedValue, xCursor + 2, y + 4.8);
+                xCursor += colWidths[column];
+            });
+            y += 7;
+        });
+        y += 5;
+
+        addSection("Fuentes, metodología y trazabilidad");
+        addParagraph("Accidentes: INEC, Estadísticas de Transporte (ESTRA), registros oficiales agregados territorialmente.");
+        addParagraph("Personas fallecidas: INEC, Estadísticas de Defunciones Generales (EDG), causas CIE-10 V01-V89. EDG registra el lugar de fallecimiento, que no necesariamente coincide con el lugar del siniestro.");
+        addParagraph("Límites: INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY. Las tasas se calculan como numerador / población del mismo año x 100.000. Los datos faltantes se declaran como sin dato.");
+        addParagraph(`Metodología: ${new URL("metodologia/", window.location.href).href}`, { size: 8 });
+        addParagraph(`Cita sugerida: Fundación REDSA (${new Date().getFullYear()}). Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible. Consulta: ${new Date().toLocaleDateString("es-EC")}.`, { size: 8 });
+        addParagraph("Contacto institucional: info@fundacionredsa.org", { bold: true, color: teal, size: 9 });
+
+        const pages = pdf.getNumberOfPages();
+        for (let page = 1; page <= pages; page += 1) {
+            pdf.setPage(page);
+            pdf.setDrawColor(203, 213, 225);
+            pdf.line(margin, 286, pageWidth - margin, 286);
+            pdf.setTextColor(...muted);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(7);
+            pdf.text("Fundación REDSA · info@fundacionredsa.org", margin, 291);
+            pdf.text(`Página ${page} de ${pages}`, pageWidth - margin, 291, { align: "right" });
+        }
+        window.__redsaLastPdfAudit = {
+            pageCount: pages,
+            vectorTrend: true,
+            structuredProfile: true,
+            contactIncluded: true,
+            selectedYear: year
+        };
+        return pdf;
     }
 
     async function downloadSummary() {
@@ -327,27 +508,19 @@
         const status = document.getElementById("territory-search-status");
         const year = resolveSummaryYear(props, state.context?.getSelectedYear?.());
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO;
-        let report = null;
         if (button) {
             button.disabled = true;
             button.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Generando ficha…';
         }
         try {
             const mapImage = await captureMapImage();
-            report = buildReportNode(props, year, mapImage);
-            await Promise.all(Array.from(report.querySelectorAll("img")).map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
-                image.addEventListener("load", resolve, { once: true });
-                image.addEventListener("error", resolve, { once: true });
-            })));
-            const canvas = await window.html2canvas(report, { backgroundColor: "#ffffff", scale: 1.5, logging: false });
             const slug = normalize(name).replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-            saveCanvasAsPdf(canvas, `redsa_ficha_${slug}_${year || "sin_anio"}.pdf`);
+            buildTechnicalPdf(props, year, mapImage).save(`redsa_ficha_${slug}_${year || "sin_anio"}.pdf`);
             if (status) status.textContent = "Ficha PDF generada en tu dispositivo; no se almacenó en el portal.";
         } catch (error) {
             console.error(error);
             if (status) status.textContent = "No se pudo generar la ficha PDF. Inténtalo nuevamente cuando el mapa termine de cargar.";
         } finally {
-            report?.remove();
             if (button) {
                 button.disabled = false;
                 button.innerHTML = '<i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF';

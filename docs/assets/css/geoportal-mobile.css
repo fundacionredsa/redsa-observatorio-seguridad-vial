@@ -180,7 +180,7 @@
     }
 
     .citizen-panel:not(.has-selection) .citizen-actions {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         margin-top: 7px;
     }
 
@@ -270,7 +270,7 @@
     }
 
     .sidebar .detail-period-control {
-        top: 60px;
+        top: 64px;
         z-index: calc(var(--z-sticky-content) - 1);
         margin-top: 12px;
     }

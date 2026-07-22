@@ -17,7 +17,7 @@
     {
       "id": "fallecidos_inec_2019",
       "archivo": "fallecidos_inec_2019.xlsx",
-      "bytes": 73748,
+      "bytes": 73752,
       "hojas": 7,
       "anios": [
         2020,
@@ -30,7 +30,7 @@
     {
       "id": "tasa_fallecidos_100k",
       "archivo": "tasa_fallecidos_100k.xlsx",
-      "bytes": 96924,
+      "bytes": 96922,
       "hojas": 7,
       "anios": [
         2020,
@@ -43,7 +43,7 @@
     {
       "id": "tasa_siniestros_1000_vehiculos_2024",
       "archivo": "tasa_siniestros_1000_vehiculos_2024.xlsx",
-      "bytes": 24291,
+      "bytes": 24289,
       "hojas": 3,
       "anios": [
         2024
@@ -52,7 +52,7 @@
     {
       "id": "tasa_motociclistas_1000_motos_2024",
       "archivo": "tasa_motociclistas_1000_motos_2024.xlsx",
-      "bytes": 22157,
+      "bytes": 22159,
       "hojas": 3,
       "anios": [
         2024
@@ -61,7 +61,7 @@
     {
       "id": "fallecidos_sppat_2016_2021",
       "archivo": "fallecidos_sppat_2016_2021.xlsx",
-      "bytes": 87024,
+      "bytes": 87021,
       "hojas": 8,
       "anios": [
         2016,
@@ -87,7 +87,7 @@
     {
       "id": "porcentaje_motos_flota_2024",
       "archivo": "porcentaje_motos_flota_2024.xlsx",
-      "bytes": 24724,
+      "bytes": 24723,
       "hojas": 3,
       "anios": [
         2024
@@ -96,7 +96,7 @@
     {
       "id": "cobertura_mapeo_osm",
       "archivo": "cobertura_mapeo_osm.xlsx",
-      "bytes": 24359,
+      "bytes": 24357,
       "hojas": 3,
       "anios": [
         2026

@@ -122,7 +122,7 @@ function buildReadme(workbook, variable) {
   sheet.getRange("A1").values = [[variable.label]];
   styleTitle(sheet, sheet.getRange("A1:H2"));
   const rows = [
-    ["Producto", "Descarga pública del Catálogo de datos del Observatorio REDSA"],
+    ["Producto", "Descarga pública del Catálogo de datos del Observatorio de Seguridad Vial y Movilidad Sostenible"],
     ["Descripción", variable.descripcion], ["Unidad", variable.unidad], ["Fuente", variable.fuente],
     ["Años", variable.anios_disponibles.join(", ")], ["Niveles", variable.nivel_territorial_disponible.join(", ")],
     ["Licencia", variable.licencia], ["Generado", CONFIG.generatedDate], ["Portal", CONFIG.sourceUrl],

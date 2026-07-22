@@ -224,4 +224,6 @@ scratch/
 node_modules/
 playwright-report/
 test-results/
+tmp/
+docs/descargas/*.inspect.ndjson
 artifacts/
