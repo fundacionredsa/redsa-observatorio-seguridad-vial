@@ -82,6 +82,28 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
 
   await page.evaluate(() => {
+    document.body.classList.remove("technical-drawer-open");
+    document.body.classList.add("mobile-layers-open");
+  });
+  await expect(page.locator("#citizen-panel")).toBeVisible();
+  const legacyLayout = await page.evaluate(() => {
+    const drawer = document.querySelector("#technical-drawer").getBoundingClientRect();
+    const legend = document.querySelector(".legend-panel").getBoundingClientRect();
+    return {
+      citizenOpacity: getComputedStyle(document.querySelector("#citizen-panel")).opacity,
+      backdropDisplay: getComputedStyle(document.querySelector("#mobile-overlay-backdrop")).display,
+      intersects: !(drawer.right <= legend.left || drawer.left >= legend.right || drawer.bottom <= legend.top || drawer.top >= legend.bottom)
+    };
+  });
+  expect(legacyLayout.citizenOpacity).toBe("1");
+  expect(legacyLayout.backdropDisplay).toBe("none");
+  expect(legacyLayout.intersects).toBeFalsy();
+  await page.evaluate(() => {
+    document.body.classList.remove("mobile-layers-open");
+    document.body.classList.add("technical-drawer-open");
+  });
+
+  await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
     window.__redsaAudit.setOverlay("Aceras", true);
   });

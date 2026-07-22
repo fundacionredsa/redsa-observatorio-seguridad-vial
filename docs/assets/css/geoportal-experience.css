@@ -858,8 +858,20 @@ body.mobile-layers-open .technical-toggle {
 }
 
 @media (min-width: 769px) {
-    body.technical-drawer-open .legend-panel {
+    body.technical-drawer-open .legend-panel,
+    body.mobile-layers-open .legend-panel {
         margin-right: calc(var(--technical-drawer-width) + 20px);
+    }
+
+    body.mobile-layers-open .citizen-panel {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.mobile-layers-open .mobile-overlay-backdrop {
+        display: none;
+        opacity: 0;
+        pointer-events: none;
     }
 }
 
