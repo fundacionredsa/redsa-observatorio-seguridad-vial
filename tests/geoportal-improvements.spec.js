@@ -231,4 +231,31 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(coordDiv.locator('#coord-lng')).not.toHaveText('--');
         });
     });
+
+    test.describe('Block F: Google Analytics 4 (GA4)', () => {
+        test('GA_MEASUREMENT_ID constant is defined and correctly configured', async ({ page }) => {
+            const measurementId = await page.evaluate(() => window.GA_MEASUREMENT_ID || GA_MEASUREMENT_ID);
+            expect(measurementId).toBe('G-9EXVX3E2SW');
+        });
+
+        test('GA4 script is NOT loaded in localhost / 127.0.0.1 development environment', async ({ page }) => {
+            const gaScripts = page.locator('script[src*="googletagmanager.com/gtag/js"]');
+            await expect(gaScripts).toHaveCount(0);
+        });
+
+        test('GA4 privacy notice is visible in "¿Por qué confiar?" section', async ({ page }) => {
+            const openInstitutionalBtn = page.locator('#open-institutional-button');
+            if (await openInstitutionalBtn.isVisible()) {
+                await openInstitutionalBtn.click();
+            }
+            const btnTrust = page.locator('#institutional-tab-trust');
+            await expect(btnTrust).toBeVisible();
+            await btnTrust.click();
+
+            const privacyNotice = page.locator('#privacy-notice');
+            await expect(privacyNotice).toBeVisible();
+            await expect(privacyNotice).toContainText('Google Analytics');
+            await expect(privacyNotice).toContainText('No publicamos datos personales de usuarios ni de víctimas');
+        });
+    });
 });
