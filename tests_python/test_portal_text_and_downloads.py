@@ -21,6 +21,13 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
     def test_catalog_workbooks_are_present_and_valid(self):
         manifest_path = ROOT / "docs" / "descargas" / "manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        catalog = json.loads((ROOT / "docs" / "data" / "catalogo_metadatos.json").read_text(encoding="utf-8"))
+        for variable in catalog["variables"]:
+            with self.subTest(variable=variable["id"]):
+                self.assertTrue(variable.get("fuente"))
+                self.assertTrue(variable.get("metodologia"))
+                self.assertTrue(variable.get("licencia"))
+                self.assertTrue(variable.get("referencias"))
         self.assertEqual(len(manifest["archivos"]), 9)
         for entry in manifest["archivos"]:
             workbook_path = manifest_path.parent / entry["archivo"]
@@ -30,6 +37,13 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
                 with zipfile.ZipFile(workbook_path) as workbook:
                     self.assertIn("xl/workbook.xml", workbook.namelist())
                     self.assertEqual(len([name for name in workbook.namelist() if name.startswith("xl/worksheets/sheet") and name.endswith(".xml")]), entry["hojas"])
+                    searchable = "\n".join(
+                        workbook.read(name).decode("utf-8", errors="ignore")
+                        for name in workbook.namelist()
+                        if name == "xl/sharedStrings.xml" or name.startswith("xl/worksheets/sheet")
+                    )
+                    for required in ("Fuente", "Licencia", "Metodolog", "Referencia"):
+                        self.assertIn(required, searchable)
 
 
 if __name__ == "__main__":

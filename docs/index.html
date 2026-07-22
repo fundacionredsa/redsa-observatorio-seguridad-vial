@@ -76,8 +76,7 @@
             <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
             <button class="citizen-action" id="btn-catalog" type="button"><i class="fa-solid fa-database"></i> Catálogo de Datos</button>
             <button class="citizen-action" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro"><i class="fa-solid fa-sun"></i> Modo Claro</button>
-            <button class="citizen-action" id="share-view-button" type="button" disabled>Compartir vista</button>
-            <button class="citizen-action" id="download-summary-button" type="button" disabled>Descargar resumen</button>
+            <button class="citizen-action citizen-action-wide" id="download-summary-button" type="button" disabled><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF</button>
         </div>
         <button class="institutional-entry" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal">Ver ranking nacional</button>
     </section>
@@ -421,6 +420,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="assets/js/vendor/simple-statistics.min.js"></script>
     <script src="assets/js/vendor/driver.min.js"></script>
+    <script src="assets/js/vendor/html2canvas.min.js"></script>
+    <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
     <script src="assets/js/geoportal-registry.js?v=0.9.0"></script>

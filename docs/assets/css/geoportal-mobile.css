@@ -270,7 +270,9 @@
     }
 
     .sidebar .detail-period-control {
-        top: 52px;
+        top: 60px;
+        z-index: calc(var(--z-sticky-content) - 1);
+        margin-top: 12px;
     }
 
     .technical-toggle {

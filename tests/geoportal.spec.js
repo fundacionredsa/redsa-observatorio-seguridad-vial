@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import fs from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("redsa_tour_visto", "true"));
@@ -44,10 +45,28 @@ test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async 
   await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
   await expect(page.locator("#citizen-summary")).toContainText("accidentes reportados");
   await expect(page.locator("#citizen-summary")).toContainText("mediana de los cantones");
+  await expect(page.locator("#citizen-summary")).toContainText("Histórico disponible");
+  await expect(page.locator("#citizen-summary")).toContainText("años con datos");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
-  await expect(page.locator("#share-view-button")).toBeEnabled();
+  await expect(page.locator("#share-view-button")).toHaveCount(0);
   await expect(page.locator("#download-summary-button")).toBeEnabled();
+});
+
+test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La generación binaria se prueba una vez.");
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1701"));
+  await expect(page.locator("#download-summary-button")).toBeEnabled();
+  const downloadPromise = page.waitForEvent("download", { timeout: 60_000 });
+  await page.locator("#download-summary-button").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^redsa_ficha_.+\.pdf$/);
+  const path = await download.path();
+  const bytes = await fs.readFile(path);
+  expect(bytes.subarray(0, 5).toString("ascii")).toBe("%PDF-");
+  expect(bytes.length).toBeGreaterThan(20_000);
+  await expect(page.locator("#territory-search-status")).toContainText("no se almacenó en el portal");
 });
 
 test("modo tecnico conserva variables, capas, metodologia y estado todo apagado", async ({ page }, testInfo) => {
@@ -617,6 +636,20 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(sidebar.scrollWidth).toBeLessThanOrEqual(sidebar.clientWidth + 1);
   expect(sidebar.close.width).toBeGreaterThanOrEqual(44);
   expect(sidebar.close.height).toBeGreaterThanOrEqual(44);
+
+  await page.locator("#territory-sidebar").evaluate(element => { element.scrollTop = 420; });
+  await page.waitForTimeout(100);
+  const sticky = await page.evaluate(() => {
+    const topbar = document.querySelector(".mobile-sidebar-topbar").getBoundingClientRect();
+    const period = document.querySelector(".sidebar .detail-period-control").getBoundingClientRect();
+    return {
+      topbar: { top: topbar.top, bottom: topbar.bottom },
+      period: { top: period.top, bottom: period.bottom },
+      viewportHeight: innerHeight
+    };
+  });
+  expect(sticky.period.top, JSON.stringify(sticky)).toBeGreaterThanOrEqual(sticky.topbar.bottom - 1);
+  expect(sticky.period.bottom).toBeLessThanOrEqual(sticky.viewportHeight);
 
   await page.locator("#mobile-overlay-backdrop").tap({ position: { x: width - 6, y: height - 6 } });
   await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);

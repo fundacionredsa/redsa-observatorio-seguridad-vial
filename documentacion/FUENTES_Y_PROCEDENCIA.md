@@ -38,4 +38,6 @@ permiten demostrar que un archivo auditado no cambio silenciosamente.
 
 - **simple-statistics**: v7.8.3, vendorizado localmente en `docs/assets/js/vendor/`. Licencia **ISC** (compatible con MIT). Se utiliza para clasificación espacial dinámica de variables continuas usando `ckmeans` (Goodness of Variance Fit).
 - **driver.js**: Biblioteca para crear el recorrido guiado interactivo. Obtenida de [driver.js](https://driverjs.com/). Licencia MIT.
+- **html2canvas**: v1.4.1, vendorizado localmente. Licencia MIT. Renderiza en el navegador el mapa y la ficha territorial antes de la descarga; no envia ni almacena la ficha en un servidor.
+- **jsPDF**: v4.2.1, vendorizado localmente. Licencia MIT. Genera el PDF territorial en memoria y lo entrega directamente al dispositivo de la persona usuaria.
 - **ColorBrewer**: Estándar de esquemas de color para cartografía, implementado como diccionario en el código fuente. Licencia **Apache 2.0**.

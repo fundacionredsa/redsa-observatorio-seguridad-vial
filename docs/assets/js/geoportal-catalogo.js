@@ -5,7 +5,54 @@
         canton: "data/cantones_wgs84.geojson",
         parish: "data/parroquias_wgs84.geojson"
     };
+    const DOWNLOAD_STORAGE_KEY = "redsa_catalog_downloads_device_v1";
     let catalogData = null;
+
+    function readDownloadCounts() {
+        try {
+            return JSON.parse(localStorage.getItem(DOWNLOAD_STORAGE_KEY) || "{}") || {};
+        } catch (_) {
+            return {};
+        }
+    }
+
+    function variableDownloadCount(variableId) {
+        const counts = readDownloadCounts();
+        return Object.entries(counts)
+            .filter(([key]) => key.startsWith(`${variableId}:`))
+            .reduce((total, [, value]) => total + (Number(value) || 0), 0);
+    }
+
+    function totalDeviceDownloads() {
+        return Object.values(readDownloadCounts()).reduce((total, value) => total + (Number(value) || 0), 0);
+    }
+
+    function updateDownloadCounters(variableId = null) {
+        document.querySelectorAll("[data-catalog-download-count]").forEach(node => {
+            const id = node.dataset.catalogDownloadCount;
+            if (!variableId || variableId === id) {
+                const count = variableDownloadCount(id);
+                node.textContent = `Descargas en este dispositivo: ${count}.`;
+            }
+        });
+        const total = document.getElementById("catalog-device-download-total");
+        if (total) total.textContent = `Descargas del catálogo registradas en este dispositivo: ${totalDeviceDownloads()}.`;
+    }
+
+    function recordDownload(variable, format, level = "all") {
+        const counts = readDownloadCounts();
+        const key = `${variable.id}:${format}:${level}`;
+        counts[key] = (Number(counts[key]) || 0) + 1;
+        try {
+            localStorage.setItem(DOWNLOAD_STORAGE_KEY, JSON.stringify(counts));
+        } catch (_) {
+            // La descarga sigue funcionando aunque el navegador bloquee almacenamiento local.
+        }
+        updateDownloadCounters(variable.id);
+        window.dispatchEvent(new CustomEvent("redsa:catalog-download", {
+            detail: { variableId: variable.id, format, level, timestamp: new Date().toISOString() }
+        }));
+    }
 
     async function loadCatalog() {
         if (catalogData) return catalogData;
@@ -30,6 +77,10 @@
         addText(container, "strong", "Transparencia de datos");
         addText(container, "p", `${stats.pct_variables_con_fuente_documentada}% de las variables tienen su fuente documentada explícitamente.`);
         addText(container, "p", `${stats.pct_cobertura_sin_dato_declarado}% declaran “sin dato” cuando falta información, en lugar de imputar o dejar en blanco.`);
+        const count = addText(container, "p", "", "catalog-device-count");
+        count.id = "catalog-device-download-total";
+        addText(container, "p", "Este conteo es local y no identifica usuarios. GitHub Pages no dispone de un contador global persistente sin incorporar un servicio externo.", "catalog-device-note");
+        updateDownloadCounters();
     }
 
     function getRegistryVariable(variableId) {
@@ -105,11 +156,14 @@
                     metodologia: variable.metodologia,
                     licencia: variable.licencia,
                     referencias: variable.referencias,
+                    responsable_tratamiento: "Fundación REDSA",
+                    cita_sugerida: `Fundación REDSA (${new Date().getFullYear()}). Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible. Variable: ${variable.label}.`,
                     generado_el: new Date().toISOString()
                 },
                 features
             };
             downloadBlob(new Blob([JSON.stringify(output)], { type: "application/geo+json;charset=utf-8" }), `${variable.id}_${LEVEL_LABELS[level]}.geojson`);
+            recordDownload(variable, "geojson", level);
         } catch (error) {
             console.error(error);
             button.textContent = "Error al preparar";
@@ -176,6 +230,7 @@
         excel.href = variable.descargas.excel;
         excel.download = "";
         excel.innerHTML = '<i class="fa-solid fa-file-excel" aria-hidden="true"></i> Excel documentado';
+        excel.addEventListener("click", () => recordDownload(variable, "excel"));
         downloads.appendChild(excel);
         variable.descargas.geojson_niveles.forEach((level) => {
             const button = document.createElement("button");
@@ -185,6 +240,9 @@
             button.addEventListener("click", () => downloadGeoJSON(variable, level, button));
             downloads.appendChild(button);
         });
+        const count = addText(downloads, "p", "", "catalog-download-count");
+        count.dataset.catalogDownloadCount = variable.id;
+        count.textContent = `Descargas en este dispositivo: ${variableDownloadCount(variable.id)}.`;
         article.appendChild(downloads);
         return article;
     }

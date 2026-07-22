@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs/promises';
 
 test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.beforeEach(async ({ page }) => {
         page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
         page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
-        
+        await page.addInitScript(() => localStorage.removeItem('redsa_catalog_downloads_device_v1'));
         await page.goto('./', { waitUntil: "domcontentloaded" });
         await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 10_000 });
         
@@ -74,6 +75,20 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             await expect(results.first().locator('.catalog-download')).toHaveCount(3);
+            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas en este dispositivo: 0.');
+
+            const geojsonDownload = page.waitForEvent('download');
+            await results.first().locator('button.catalog-download').first().click();
+            const geojson = await geojsonDownload;
+            const geojsonPath = await geojson.path();
+            const payload = JSON.parse(await fs.readFile(geojsonPath, 'utf8'));
+            expect(payload.metadata.fuente).toBeTruthy();
+            expect(payload.metadata.metodologia).toBeTruthy();
+            expect(payload.metadata.licencia).toBeTruthy();
+            expect(payload.metadata.referencias.length).toBeGreaterThan(0);
+            expect(payload.metadata.responsable_tratamiento).toBe('Fundación REDSA');
+            expect(payload.metadata.cita_sugerida).toContain('Fundación REDSA');
+            await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas en este dispositivo: 1.');
 
             const content = modal.locator('#catalog-results');
             const scrollMetrics = await content.evaluate(element => ({

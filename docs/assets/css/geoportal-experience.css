@@ -228,6 +228,13 @@
 
 .catalog-download:hover,
 .catalog-download:focus-visible { border-color: #0ea5e9; outline: 2px solid #7dd3fc; }
+.catalog-download-count {
+    flex-basis: 100%;
+    margin: 2px 0 0;
+    color: #64748b;
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
 .catalog-empty { padding: 30px; text-align: center; color: #64748b; }
 
 @media (max-width: 700px) {
@@ -372,6 +379,52 @@
     font-size: 0.65rem;
     line-height: 1.25;
 }
+
+.citizen-summary-history {
+    margin: 9px 0 0;
+    padding: 8px 9px;
+    border-left: 3px solid #0891b2;
+    background: rgba(8, 145, 178, 0.08);
+    color: var(--public-text);
+    font-size: 0.74rem;
+    line-height: 1.4;
+}
+
+.citizen-summary-history strong {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.citizen-action-wide {
+    grid-column: span 2;
+}
+
+.pdf-report-sheet {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: -10000px;
+    width: 794px;
+    padding: 34px;
+    background: #fff;
+    color: #172033;
+    font: 14px/1.45 Arial, sans-serif;
+}
+
+.pdf-report-sheet h1 { margin: 0; color: #075d66; font-size: 25px; }
+.pdf-report-sheet h2 { margin: 22px 0 8px; color: #172033; font-size: 17px; }
+.pdf-report-sheet p { margin: 5px 0; }
+.pdf-report-kicker { color: #087f8c; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.pdf-report-context { margin-top: 8px; color: #475569; }
+.pdf-report-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
+.pdf-report-metric { padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; }
+.pdf-report-metric strong { display: block; color: #0f172a; font-size: 18px; }
+.pdf-report-metric span { color: #475569; font-size: 11px; }
+.pdf-report-image { display: block; width: 100%; max-height: 355px; object-fit: contain; border: 1px solid #cbd5e1; }
+.pdf-report-history { width: 100%; border-collapse: collapse; }
+.pdf-report-history th, .pdf-report-history td { padding: 6px 8px; border: 1px solid #dbe4ea; text-align: left; }
+.pdf-report-history th { background: #edf6f7; }
+.pdf-report-sources { padding: 12px; border-left: 4px solid #087f8c; background: #f1f5f9; font-size: 11px; }
 
 .citizen-comparison {
     margin-top: 7px;
