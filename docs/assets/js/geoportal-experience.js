@@ -1,6 +1,7 @@
 (function () {
     const state = {
         context: null,
+        provinceFeatures: [],
         cantonFeatures: [],
         selectedProps: null,
         initialized: false
@@ -19,6 +20,42 @@
             minimumFractionDigits: digits,
             maximumFractionDigits: digits
         });
+    }
+
+    function finiteNumber(value) {
+        if (value === null || value === undefined || value === "") return null;
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function seriesYears(props) {
+        return [...new Set([
+            ...Object.keys(props?.siniestros_historico || {}),
+            ...Object.keys(props?.fallecidos_historico || {})
+        ])].map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+    }
+
+    function completeTimelineYears(props, consultedYear) {
+        const available = seriesYears(props);
+        const currentYear = new Date().getFullYear();
+        const firstYear = available.length ? available[0] : currentYear;
+        const lastYear = Math.max(currentYear, Number(consultedYear) || currentYear);
+        return Array.from({ length: Math.max(1, lastYear - firstYear + 1) }, (_, index) => firstYear + index);
+    }
+
+    function sumSeries(series) {
+        return Object.values(series || {}).reduce((total, value) => {
+            const parsed = finiteNumber(value);
+            return parsed === null ? total : total + parsed;
+        }, 0);
+    }
+
+    function coverageYears(series) {
+        return Object.entries(series || {})
+            .filter(([, value]) => finiteNumber(value) !== null)
+            .map(([year]) => Number(year))
+            .filter(Number.isFinite)
+            .sort((a, b) => a - b);
     }
 
     function availableAccidentYears(props) {
@@ -291,14 +328,15 @@
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
         const years = availableAccidentYears(props);
-        const accidents = Number(props.siniestros_historico?.[String(year)]);
-        const deaths = Number(props.fallecidos_historico?.[String(year)]);
-        const population = Number(props.poblacion_por_anio?.[String(year)]);
+        const trendYears = completeTimelineYears(props, year);
+        const accidentCoverage = coverageYears(props.siniestros_historico);
+        const deathCoverage = coverageYears(props.fallecidos_historico);
+        const accidents = finiteNumber(props.siniestros_historico?.[String(year)]);
+        const deaths = finiteNumber(props.fallecidos_historico?.[String(year)]);
+        const population = finiteNumber(props.poblacion_por_anio?.[String(year)]);
         const rate = rateForFeature(props, year);
-        const historicalTotal = years.reduce((total, candidate) => {
-            const value = Number(props.siniestros_historico?.[String(candidate)]);
-            return Number.isFinite(value) ? total + value : total;
-        }, 0);
+        const historicalTotal = sumSeries(props.siniestros_historico);
+        const historicalDeaths = sumSeries(props.fallecidos_historico);
         pdf.setFillColor(7, 93, 102);
         pdf.rect(0, 0, pageWidth, 32, "F");
         pdf.setTextColor(255, 255, 255);
@@ -314,10 +352,10 @@
         addParagraph(`${name} · ${level} · ${props.DPA_DESPRO || "Ecuador"} · año seleccionado ${year || "sin dato"}`, { bold: true, size: 12, color: ink });
 
         const metrics = [
-            ["Accidentes reportados", Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato"],
-            ["Personas fallecidas (EDG)", Number.isFinite(deaths) ? formatNumber(deaths) : "Sin dato"],
-            ["Población", Number.isFinite(population) ? formatNumber(population) : "Sin dato"],
-            ["Accidentes por 100.000 hab.", Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato"]
+            [`Accidentes ${year}\nFuente: INEC-ESTRA`, accidents !== null ? formatNumber(accidents) : "Sin dato"],
+            [`Accidentes históricos\nINEC-ESTRA: ${formatYearCoverage(accidentCoverage)}`, formatNumber(historicalTotal)],
+            [`Fallecidos ${year}\nFuente: INEC-EDG`, deaths !== null ? formatNumber(deaths) : "Sin dato"],
+            [`Fallecidos históricos\nINEC-EDG: ${formatYearCoverage(deathCoverage)}`, formatNumber(historicalDeaths)]
         ];
         const metricWidth = (contentWidth - 9) / 4;
         metrics.forEach(([label, value], index) => {
@@ -335,20 +373,67 @@
             pdf.text(pdf.splitTextToSize(label, metricWidth - 6), x + 3, y + 12);
         });
         y += 24;
-        addParagraph(`Dimensión histórica: ${formatNumber(historicalTotal)} accidentes acumulados en ${formatYearCoverage(years)}. Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
+        const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
+        addParagraph(`Contexto del año consultado: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con INEC-ESTRA e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+
+        const selectedCode = String(props.DPA_CANTON || "");
+        const selectedProvinceCode = String(props.DPA_PROVIN || selectedCode.slice(0, 2));
+        const parentCanton = props.DPA_DESPAR
+            ? state.cantonFeatures.find(feature => String(feature.properties?.DPA_CANTON) === selectedCode)?.properties
+            : null;
+        const parentProvince = level !== "Provincia"
+            ? state.provinceFeatures.find(feature => String(feature.properties?.DPA_PROVIN) === selectedProvinceCode)?.properties
+            : null;
+        const referenceRows = [
+            { label: level, data: props },
+            ...(parentCanton ? [{ label: "Cantón de referencia", data: parentCanton }] : []),
+            ...(parentProvince ? [{ label: "Provincia de referencia", data: parentProvince }] : [])
+        ];
+        if (referenceRows.length > 1) {
+            addSection("Contexto territorial comparable");
+            addParagraph(`Comparación del mismo año (${year}) y de los acumulados disponibles. Accidentes: INEC-ESTRA. Fallecidos: INEC-EDG.`, { size: 8 });
+            ensureSpace(10 + referenceRows.length * 8);
+            const widths = [47, 30, 34, 34, 37];
+            const headings = ["Territorio", `Accid. ${year}`, "Accid. histórico", `Fallec. ${year}`, "Fallec. histórico"];
+            pdf.setFillColor(7, 93, 102); pdf.rect(margin, y, contentWidth, 8, "F");
+            pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(6.7);
+            let referenceX = margin;
+            headings.forEach((heading, index) => { pdf.text(heading, referenceX + 1.5, y + 5); referenceX += widths[index]; });
+            y += 8;
+            referenceRows.forEach((reference, index) => {
+                if (index % 2 === 0) { pdf.setFillColor(241, 245, 249); pdf.rect(margin, y, contentWidth, 8, "F"); }
+                const referenceName = reference.data.DPA_DESPAR || reference.data.DPA_DESCAN || reference.data.DPA_DESPRO || reference.label;
+                const row = [
+                    `${reference.label}: ${referenceName}`,
+                    finiteNumber(reference.data.siniestros_historico?.[String(year)]),
+                    sumSeries(reference.data.siniestros_historico),
+                    finiteNumber(reference.data.fallecidos_historico?.[String(year)]),
+                    sumSeries(reference.data.fallecidos_historico)
+                ];
+                referenceX = margin;
+                row.forEach((value, column) => {
+                    const display = column === 0 ? String(value) : (value === null ? "Sin dato" : formatNumber(value));
+                    pdf.setTextColor(...ink); pdf.setFont("helvetica", column === 0 ? "bold" : "normal"); pdf.setFontSize(6.7);
+                    pdf.text(pdf.splitTextToSize(display, widths[column] - 3), referenceX + 1.5, y + 5);
+                    referenceX += widths[column];
+                });
+                y += 8;
+            });
+            y += 3;
+        }
 
         if (mapImage) {
             addSection("Ubicación y mapa de referencia");
+            addParagraph("Fuente cartográfica: límites INEC/CONALI vía datosabiertos.gob.ec (CC BY); mapa base según la selección visible y sus atribuciones.", { size: 7.5 });
             ensureSpace(87);
             pdf.addImage(mapImage, "JPEG", margin, y, contentWidth, 82, undefined, "FAST");
             y += 87;
         }
 
-        const trendYears = [...new Set([
-            ...Object.keys(props.siniestros_historico || {}),
-            ...Object.keys(props.fallecidos_historico || {})
-        ])].map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+        ensureSpace(82);
         addSection("Tendencia histórica");
+        addParagraph(`Fuentes: accidentes reportados, INEC-ESTRA; personas fallecidas, INEC-EDG. La línea llega hasta ${trendYears.at(-1)}; los años sin registro se muestran como ausencia de dato y no como cero.`, { size: 8 });
         ensureSpace(72);
         const chartX = margin + 14;
         const chartY = y + 8;
@@ -372,8 +457,8 @@
                 previous = point;
             });
         };
-        const accidentSeries = trendYears.map(candidate => Number(props.siniestros_historico?.[String(candidate)]));
-        const deathSeries = trendYears.map(candidate => Number(props.fallecidos_historico?.[String(candidate)]));
+        const accidentSeries = trendYears.map(candidate => finiteNumber(props.siniestros_historico?.[String(candidate)]));
+        const deathSeries = trendYears.map(candidate => finiteNumber(props.fallecidos_historico?.[String(candidate)]));
         const accidentMax = Math.max(1, ...accidentSeries.filter(Number.isFinite));
         const deathMax = Math.max(1, ...deathSeries.filter(Number.isFinite));
         drawSeries(accidentSeries, orange, accidentMax);
@@ -389,13 +474,16 @@
         pdf.setFillColor(...cyan); pdf.rect(chartX + 62, chartY - 5, 4, 2, "F");
         pdf.text(`Fallecidos (máx. ${formatNumber(deathMax)})`, chartX + 68, chartY - 3.2);
         y = chartY + chartH + 12;
+        const missingAccidentYears = trendYears.filter(candidate => finiteNumber(props.siniestros_historico?.[String(candidate)]) === null);
+        const missingDeathYears = trendYears.filter(candidate => finiteNumber(props.fallecidos_historico?.[String(candidate)]) === null);
+        addParagraph(`Sin dato INEC-ESTRA: ${missingAccidentYears.length ? missingAccidentYears.join(", ") : "ningún año de la serie"}. Sin dato INEC-EDG: ${missingDeathYears.length ? missingDeathYears.join(", ") : "ningún año de la serie"}.`, { size: 7.5 });
 
         const edg = props.fallecidos_detallado?.[String(year)];
         ensureSpace(edg && edg.estado !== "sin_dato" && Number(edg.total) > 0 ? 123 : 28);
         addSection(`Perfil de personas fallecidas (${year || "sin dato"})`);
         if (edg && edg.estado !== "sin_dato" && Number(edg.total) > 0) {
             const total = Number(edg.total);
-            addParagraph(`Registro civil INEC-EDG: ${formatNumber(total)} personas fallecidas. Las barras muestran conteos y proporciones del total.`, { size: 8.5 });
+            addParagraph(`Fuente: Registro Estadístico de Defunciones Generales (INEC-EDG), causas CIE-10 V01-V89. Año consultado: ${formatNumber(total)} personas fallecidas. Acumulado territorial EDG ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)}.`, { size: 8.5 });
             const male = Number(edg.sexo?.Hombre) || 0;
             const female = Number(edg.sexo?.Mujer) || 0;
             const knownSex = Math.max(1, male + female);
@@ -419,7 +507,7 @@
             const rightEnd = drawBarList("Grupos de edad", ageEntries, margin + 96, 86, [8, 145, 178]);
             y = Math.max(leftEnd, rightEnd) + 2;
         } else {
-            addParagraph("Sin datos demográficos disponibles para el año seleccionado.", { color: ink });
+            addParagraph(`Sin datos demográficos INEC-EDG disponibles para ${year}. Acumulado territorial disponible ${formatYearCoverage(deathCoverage)}: ${formatNumber(historicalDeaths)} personas fallecidas.`, { color: ink });
         }
 
         addSection(`Reclamaciones del seguro - SPPAT (${year || "sin dato"})`);
@@ -436,18 +524,20 @@
             const conditionEntries = toEntries(sppatCondition);
             const typeEntries = toEntries(sppatType);
             ensureSpace(12 + Math.max(sexEntries.length, conditionEntries.length, typeEntries.length) * 8);
-            addParagraph("Registros vinculados a reclamaciones procesadas por el Servicio Público para Pago de Accidentes de Tránsito. No deben sumarse con EDG.", { size: 8.5 });
+            addParagraph("Fuente: Servicio Público para Pago de Accidentes de Tránsito (SPPAT), reclamaciones procesadas. No deben sumarse con INEC-EDG porque son registros y metodologías diferentes.", { size: 8.5 });
             const columnWidth = 55;
             const sexEnd = drawBarList("Sexo registrado", sexEntries, margin, columnWidth, [14, 165, 233]);
             const conditionEnd = drawBarList("Condición", conditionEntries, margin + 63, columnWidth, [8, 145, 178]);
             const typeEnd = drawBarList("Tipo de accidente", typeEntries, margin + 126, columnWidth, [168, 85, 247]);
             y = Math.max(sexEnd, conditionEnd, typeEnd) + 2;
         } else {
-            addParagraph("Sin detalle SPPAT disponible para el año seleccionado. La cobertura publicada de esta fuente corresponde a 2016-2021.", { color: ink });
+            addParagraph(`Sin detalle SPPAT disponible para ${year}. La cobertura publicada de esta fuente corresponde a 2016-2021; la ausencia posterior no significa cero reclamaciones.`, { color: ink });
         }
 
+        ensureSpace(25 + trendYears.length * 7);
         addSection("Serie anual disponible");
-        ensureSpace(12 + years.length * 7);
+        addParagraph(`Fuentes por columna: accidentes reportados, INEC-ESTRA; personas fallecidas, INEC-EDG. Se incluyen todos los años hasta ${trendYears.at(-1)} y se declara “Sin dato” cuando la fuente no ofrece un valor.`, { size: 8 });
+        ensureSpace(12 + trendYears.length * 7);
         const tableX = margin;
         const colWidths = [28, 72, 82];
         const headers = ["Año", "Accidentes reportados (INEC)", "Personas fallecidas (INEC-EDG)"];
@@ -456,7 +546,7 @@
         let xCursor = tableX;
         headers.forEach((header, index) => { pdf.text(header, xCursor + 2, y + 5); xCursor += colWidths[index]; });
         y += 8;
-        years.forEach((candidate, index) => {
+        trendYears.forEach((candidate, index) => {
             if (index % 2 === 0) { pdf.setFillColor(241, 245, 249); pdf.rect(tableX, y, contentWidth, 7, "F"); }
             pdf.setTextColor(...ink); pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
             const row = [candidate, props.siniestros_historico?.[String(candidate)], props.fallecidos_historico?.[String(candidate)]];
@@ -464,7 +554,7 @@
             row.forEach((value, column) => {
                 const displayedValue = column === 0
                     ? String(value)
-                    : (Number.isFinite(Number(value)) ? formatNumber(value) : "Sin dato");
+                    : (finiteNumber(value) !== null ? formatNumber(value) : "Sin dato");
                 pdf.text(displayedValue, xCursor + 2, y + 4.8);
                 xCursor += colWidths[column];
             });
@@ -496,7 +586,11 @@
             vectorTrend: true,
             structuredProfile: true,
             contactIncluded: true,
-            selectedYear: year
+            selectedYear: year,
+            timelineEndYear: trendYears.at(-1),
+            sourcesBySection: true,
+            historicalComparison: true,
+            territorialReferenceCount: referenceRows.length
         };
         return pdf;
     }
@@ -506,7 +600,8 @@
         if (!props) return;
         const button = document.getElementById("download-summary-button");
         const status = document.getElementById("territory-search-status");
-        const year = resolveSummaryYear(props, state.context?.getSelectedYear?.());
+        const requestedYear = Number(state.context?.getSelectedYear?.());
+        const year = Number.isFinite(requestedYear) ? requestedYear : resolveSummaryYear(props, requestedYear);
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO;
         if (button) {
             button.disabled = true;
@@ -532,6 +627,7 @@
         if (state.initialized) return;
         state.initialized = true;
         state.context = context;
+        state.provinceFeatures = context.provinceFeatures || [];
         state.cantonFeatures = context.cantonFeatures || [];
         populateSearch();
 

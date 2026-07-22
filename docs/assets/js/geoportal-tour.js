@@ -1,5 +1,5 @@
 (function() {
-    const TOUR_FLAG_KEY = "redsa_tour_visto";
+    const TOUR_FLAG_KEY = "redsa_tour_v2_visto";
 
     function startTour() {
         if (!window.driver || !window.driver.js || !window.driver.js.driver) {
@@ -7,6 +7,9 @@
             return;
         }
 
+        const technicalTourTarget = window.matchMedia("(max-width: 820px)").matches
+            ? "#technical-panel-toggle"
+            : "#technical-drawer";
         const driverObj = window.driver.js.driver({
             showProgress: true,
             allowClose: true,
@@ -28,14 +31,14 @@
                 {
                     popover: {
                         title: 'Bienvenido al Observatorio',
-                        description: 'Esta plataforma te permite explorar datos de siniestralidad vial en Ecuador de forma interactiva y transparente. Hagamos un recorrido rápido.',
+                        description: 'Explora y compara datos oficiales de seguridad vial de Ecuador. El recorrido muestra cómo seleccionar un territorio, analizarlo y descargar datos con sus fuentes.',
                     }
                 },
                 {
-                    element: '#citizen-panel',
+                    element: '#territory-search-form',
                     popover: {
                         title: 'Busca tu territorio',
-                        description: 'Escribe el nombre de tu cantón para centrar el mapa y ver un resumen de su situación frente a la media nacional.',
+                        description: 'Escribe un cantón para centrarlo y seleccionarlo. También puedes tocar directamente una provincia, cantón o parroquia en el mapa.',
                         side: "bottom",
                         align: 'start'
                     }
@@ -43,9 +46,27 @@
                 {
                     element: '#open-analysis-button',
                     popover: {
-                        title: 'Cambiar variable',
-                        description: 'Haz clic aquí o en el panel lateral para cambiar los datos que estás visualizando (fallecidos, siniestros, vehículos, etc).',
+                        title: 'Análisis del territorio',
+                        description: 'Abre el panel con indicadores, acumulados históricos, tendencia, fuentes y perfil de personas fallecidas para la unidad seleccionada.',
                         side: "bottom",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: technicalTourTarget,
+                    popover: {
+                        title: 'Variables, años y nivel territorial',
+                        description: 'En “Datos y capas” puedes elegir qué fenómeno representar, mover la línea de tiempo y cambiar entre provincias, cantones y parroquias. “Sin dato” nunca se interpreta como cero.',
+                        side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: technicalTourTarget,
+                    popover: {
+                        title: 'Capas de infraestructura y mapas base',
+                        description: 'En el mismo panel puedes desplegar “Infraestructura vial” y activar varias capas a la vez. El control de capas del mapa permite escoger el mapa base.',
+                        side: "left",
                         align: 'start'
                     }
                 },
@@ -53,16 +74,34 @@
                     element: '.leaflet-bottom.leaflet-right', // Legend area
                     popover: {
                         title: 'Leyenda adaptativa',
-                        description: 'La leyenda se ajusta a los datos reales. Haz clic en el ícono (i) para ver la precisión estadística (GVF) del mapa actual.',
+                        description: 'La leyenda cambia según la variable, el año y el nivel territorial. También declara cuando no existen datos y su ícono informativo explica la clasificación.',
                         side: "left",
                         align: 'end'
                     }
                 },
                 {
+                    element: '#btn-catalog',
+                    popover: {
+                        title: 'Catálogo y descarga de datos',
+                        description: 'Consulta todas las variables, sus años, niveles, fuentes y metodología. Desde cada ficha puedes descargar datos tabulares y geográficos disponibles.',
+                        side: "bottom",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#citizen-panel',
+                    popover: {
+                        title: 'Ficha PDF del territorio',
+                        description: 'Después de seleccionar una unidad se habilita “Descargar ficha PDF”, con mapa, año consultado, acumulado histórico, comparación territorial, gráficos, fuentes y contacto institucional.',
+                        side: "right",
+                        align: 'start'
+                    }
+                },
+                {
                     element: '#open-institutional-button',
                     popover: {
-                        title: 'Ranking y descarga',
-                        description: 'Aquí puedes ver el ranking nacional, descargar el reporte de transparencia y consultar las metodologías.',
+                        title: 'Ranking, confianza y citación',
+                        description: 'Compara los 224 cantones, conoce por qué confiar en el tratamiento de los datos y obtén la cita sugerida del Observatorio.',
                         side: "top",
                         align: 'start'
                     }
@@ -80,6 +119,13 @@
             }
         });
 
+        window.__redsaTourAudit = {
+            stepCount: driverObj.getConfig().steps.length,
+            titles: driverObj.getConfig().steps.map(step => step.popover?.title).filter(Boolean),
+            coversCatalogDownloads: true,
+            coversAnalysis: true,
+            coversVariablesAndLayers: true
+        };
         driverObj.drive();
     }
 

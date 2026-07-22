@@ -128,6 +128,7 @@
                 }
 
                 window.REDSAExperience?.init({
+                    provinceFeatures: provinceData.features,
                     cantonFeatures: cantonData.features,
                     selectCanton: code => selectCantonByCode(code, true),
                     openAnalysis: () => setMobilePanel("sidebar", true),

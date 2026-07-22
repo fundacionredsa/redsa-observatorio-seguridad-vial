@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("redsa_tour_visto", "true"));
+  await page.addInitScript(() => localStorage.setItem("redsa_tour_v2_visto", "true"));
 });
 
 async function loadPortal(page) {
@@ -37,7 +37,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
   ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
   expect(versionedAssets.length).toBeGreaterThan(5);
-  expect(versionedAssets.every(url => url.includes("v=0.9.1"))).toBeTruthy();
+  expect(versionedAssets.every(url => url.includes("v=0.9.2"))).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -75,7 +75,16 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
   expect(bytes.subarray(0, 5).toString("ascii")).toBe("%PDF-");
   expect(bytes.length).toBeGreaterThan(20_000);
   const pdfAudit = await page.evaluate(() => window.__redsaLastPdfAudit);
-  expect(pdfAudit).toMatchObject({ vectorTrend: true, structuredProfile: true, contactIncluded: true, selectedYear: 2024 });
+  expect(pdfAudit).toMatchObject({
+    vectorTrend: true,
+    structuredProfile: true,
+    contactIncluded: true,
+    selectedYear: 2024,
+    timelineEndYear: 2026,
+    sourcesBySection: true,
+    historicalComparison: true,
+    territorialReferenceCount: 2
+  });
   expect(pdfAudit.pageCount).toBeGreaterThanOrEqual(2);
   await expect(page.locator("#territory-search-status")).toContainText("no se almacenó en el portal");
 });

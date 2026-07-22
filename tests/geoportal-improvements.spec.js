@@ -23,7 +23,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         test('tour appears on first visit, can be closed and reopened', async ({ page }) => {
             // By default, the first visit triggers it, which was handled by beforeEach above.
             // Let's clear localStorage and reload to ensure we get it fresh.
-            await page.evaluate(() => localStorage.removeItem('redsa_tour_visto'));
+            await page.evaluate(() => localStorage.removeItem('redsa_tour_v2_visto'));
             await page.reload({ waitUntil: "domcontentloaded" });
             
             const popover = page.locator('.driver-popover');
@@ -39,7 +39,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover).toBeHidden();
 
             // Verify localStorage is set
-            const flag = await page.evaluate(() => localStorage.getItem('redsa_tour_visto'));
+            const flag = await page.evaluate(() => localStorage.getItem('redsa_tour_v2_visto'));
             expect(flag).toBe('true');
 
             // Reload page - tour should NOT auto-start
@@ -57,6 +57,19 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             // Tour should appear again
             await expect(popover).toBeVisible();
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
+            const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
+            expect(tourAudit).toMatchObject({
+                stepCount: 9,
+                coversCatalogDownloads: true,
+                coversAnalysis: true,
+                coversVariablesAndLayers: true
+            });
+            expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
+            expect(tourAudit.titles).toContain('Ficha PDF del territorio');
+            for (const expectedTitle of tourAudit.titles.slice(1)) {
+                await popover.locator('.driver-popover-next-btn').click();
+                await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
+            }
         });
     });
 
