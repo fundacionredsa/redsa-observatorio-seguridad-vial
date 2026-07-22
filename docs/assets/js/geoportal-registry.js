@@ -8,8 +8,15 @@
         },
         siniestros_inec_2019: {
             label: "Accidentes de tránsito reportados (INEC)",
-            fuente: "INEC",
+            fuente: "INEC, Estadísticas de Transporte (ESTRA), con registros administrativos de la ANT",
             description: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
+            unidad: "accidentes reportados",
+            metodologia: "Conteo de registros de siniestros por código territorial DPA y año. Los valores faltantes se mantienen como sin dato; no se sustituyen por cero.",
+            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            referencias: [
+                { label: "INEC - Estadísticas de Transporte", url: "https://www.ecuadorencifras.gob.ec/transporte/" },
+                { label: "Metodología ESTRA 2024", url: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Economicas/Estadistica%20de%20Transporte/ESTRA/2024/2024_METODOLOGIA_ESTRA.pdf" }
+            ],
             getValue: (props, year) => props.siniestros_historico?.[String(year)],
             levels: ["province", "canton"],
             temporal: { tipo: "anual", anios_disponibles: [2019, 2021, 2022, 2023, 2024] },
@@ -21,8 +28,15 @@
         },
         fallecidos_inec_2019: {
             label: "Personas fallecidas por accidentes (registro civil)",
-            fuente: "Registro Civil",
+            fuente: "INEC, Registro Estadístico de Defunciones Generales (EDG)",
             description: "Número de personas que murieron por accidentes de tránsito.",
+            unidad: "personas fallecidas",
+            metodologia: "Conteo de defunciones con causa CIE-10 V01-V89. El territorio corresponde al lugar de fallecimiento registrado, que no necesariamente coincide con el lugar del siniestro.",
+            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            referencias: [
+                { label: "INEC - Defunciones Generales", url: "https://www.ecuadorencifras.gob.ec/defunciones-generales/" },
+                { label: "Metodología EDG 2024", url: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Poblacion_y_Demografia/Defunciones_Generales/2024/Metodologia_EDG_2024.pdf" }
+            ],
             getValue: (props, year) => props.fallecidos_historico?.[String(year)],
             levels: ["province", "canton"],
             temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
@@ -34,7 +48,15 @@
         },
         tasa_fallecidos_100k: {
             label: "Fallecidos por cada 100.000 habitantes",
+            fuente: "Cálculo REDSA con INEC EDG y población INEC",
             description: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
+            unidad: "personas fallecidas por cada 100.000 habitantes",
+            metodologia: "Personas fallecidas EDG del año divididas para la población del mismo año, multiplicado por 100.000. Las tasas agregadas se recalculan con numeradores y denominadores sumados; no se promedian tasas territoriales.",
+            licencia: "Derivado de fuentes INEC con atribución",
+            referencias: [
+                { label: "INEC - Defunciones Generales", url: "https://www.ecuadorencifras.gob.ec/defunciones-generales/" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#mortalidad" }
+            ],
             getValue: (props, year) => {
                 const numerator = props.fallecidos_historico?.[String(year)];
                 const denominator = props.poblacion_por_anio?.[String(year)];
@@ -52,7 +74,15 @@
         },
         tasa_siniestros_1000_vehiculos_2024: {
             label: "Accidentes por cada 1.000 vehículos (2024)",
+            fuente: "Cálculo REDSA con INEC ESTRA 2024",
             description: "Accidentes por cada 1.000 vehículos matriculados: mide el riesgo según la cantidad de vehículos, no solo de personas.",
+            unidad: "accidentes por cada 1.000 vehículos matriculados",
+            metodologia: "Accidentes reportados en 2024 divididos para vehículos matriculados en 2024, multiplicado por 1.000. Los vehículos se asignan por residencia del propietario, no por lugar de circulación.",
+            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            referencias: [
+                { label: "INEC - Estadísticas de Transporte 2024", url: "https://anda.inec.gob.ec/anda5/index.php/catalog/1217" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#vehiculos" }
+            ],
             property: "tasa_siniestros_por_1000_vehiculos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
@@ -65,7 +95,16 @@
         },
         tasa_motociclistas_1000_motos_2024: {
             label: "Motociclistas fallecidos por cada 1.000 motos (2024)",
+            fuente: "Cálculo REDSA con INEC EDG 2024 e INEC ESTRA 2024",
             description: "Muertes de motociclistas por cada 1.000 motos matriculadas en la zona.",
+            unidad: "motociclistas fallecidos por cada 1.000 motocicletas matriculadas",
+            metodologia: "Motociclistas fallecidos identificados en EDG 2024 divididos para motocicletas matriculadas en 2024, multiplicado por 1.000. La clasificación CIE-10 V89 puede subestimar el numerador identificado.",
+            licencia: "Derivado de fuentes INEC con atribución",
+            referencias: [
+                { label: "INEC - Defunciones Generales", url: "https://www.ecuadorencifras.gob.ec/defunciones-generales/" },
+                { label: "INEC - Estadísticas de Transporte 2024", url: "https://anda.inec.gob.ec/anda5/index.php/catalog/1217" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#vehiculos" }
+            ],
             property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
@@ -78,8 +117,15 @@
         },
         fallecidos_sppat_2016_2021: {
             label: "Fallecidos según reclamos del seguro (SPPAT)",
-            fuente: "SPPAT",
+            fuente: "Servicio Público para Pago de Accidentes de Tránsito (SPPAT)",
             description: "Fallecidos según reclamos del seguro obligatorio de accidentes de tránsito (2016-2021).",
+            unidad: "personas fallecidas registradas en reclamaciones",
+            metodologia: "Conteo anual de reclamaciones por fallecimiento procesadas por SPPAT y agregadas por código territorial. Esta fuente refleja reclamaciones administrativas y puede diferir del registro civil.",
+            licencia: "Consultar condiciones de la fuente institucional",
+            referencias: [
+                { label: "SPPAT - información institucional", url: "https://www.sppat.gob.ec/servicios/?p=60" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#cobertura-temporal" }
+            ],
             getValue: (props, year) => props.sppat_fallecidos_por_anio?.[String(year)],
             levels: ["province", "canton"],
             temporal: { tipo: "anual", anios_disponibles: [2016, 2017, 2018, 2019, 2020, 2021] },
@@ -91,8 +137,16 @@
         },
         fallecidos_parroquial: {
             label: "Personas fallecidas (EDG)",
-            fuente: "INEC EDG",
+            fuente: "INEC, Registro Estadístico de Defunciones Generales (EDG)",
             description: "Personas fallecidas por accidentes de tránsito según el registro civil (EDG), comparables entre provincia, cantón y parroquia.",
+            unidad: "personas fallecidas",
+            metodologia: "Conteo de defunciones CIE-10 V01-V89 a nivel parroquial. Los subtotales cantonales y provinciales se obtienen sumando parroquias con dato; las parroquias urbanas sin polígono propio se documentan como limitación.",
+            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            referencias: [
+                { label: "INEC - Defunciones Generales", url: "https://www.ecuadorencifras.gob.ec/defunciones-generales/" },
+                { label: "Metodología EDG 2024", url: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Poblacion_y_Demografia/Defunciones_Generales/2024/Metodologia_EDG_2024.pdf" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#mortalidad" }
+            ],
             getValue: (props, year) => props.fallecidos_parroquial?.[String(year)] ?? props.fallecidos_por_anio?.[String(year)],
             levels: ["province", "canton", "parish"],
             temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
@@ -104,7 +158,15 @@
         },
         porcentaje_motos_flota_2024: {
             label: "Porcentaje de vehículos que son motos (2024)",
+            fuente: "Cálculo REDSA con INEC ESTRA 2024",
             description: "Qué porcentaje de todos los vehículos matriculados en la zona son motocicletas.",
+            unidad: "porcentaje de vehículos matriculados",
+            metodologia: "Motocicletas matriculadas divididas para el total de vehículos matriculados en 2024, multiplicado por 100. El territorio representa la residencia del propietario.",
+            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            referencias: [
+                { label: "INEC - Estadísticas de Transporte 2024", url: "https://anda.inec.gob.ec/anda5/index.php/catalog/1217" },
+                { label: "Diccionario de vehículos matriculados", url: "https://anda.inec.gob.ec/anda5/index.php/catalog/1217/data-dictionary/F59" }
+            ],
             property: "porcentaje_motocicletas_vehiculos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
@@ -117,7 +179,15 @@
         },
         cobertura_mapeo_osm: {
             label: "Cobertura del mapeo de infraestructura vial",
+            fuente: "OpenStreetMap contributors, ODbL; normalización REDSA con población INEC 2024",
             description: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó.",
+            unidad: "elementos mapeados por cada 100.000 habitantes",
+            metodologia: "Suma de semáforos y rotondas, cruces peatonales y aceras mapeados en OpenStreetMap, dividida para la población 2024 y multiplicada por 100.000. Cero significa sin elementos mapeados, no ausencia de infraestructura.",
+            licencia: "Open Data Commons Open Database License (ODbL)",
+            referencias: [
+                { label: "OpenStreetMap - derechos de autor y licencia", url: "https://www.openstreetmap.org/copyright/es" },
+                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#openstreetmap" }
+            ],
             property: "cobertura_mapeo_infraestructura_por_100k",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2026] },

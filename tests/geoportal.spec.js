@@ -69,7 +69,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#clean-map-button")).toHaveCount(0);
   await expect(page.locator("#technical-drawer")).not.toContainText("Corredores priorizados por REDSA");
   await expect(page.locator("#technical-drawer")).not.toContainText("Mapillary");
-  await expect(page.locator("#technical-drawer")).toContainText("Metodología y descargas");
+  await expect(page.locator("#technical-drawer")).toContainText("Metodología");
+  await expect(page.locator("#technical-drawer")).not.toContainText("Descargar datos cantonales");
 
   const persistentLayout = await page.evaluate(() => {
     const rect = selector => {

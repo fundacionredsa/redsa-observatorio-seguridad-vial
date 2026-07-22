@@ -1,0 +1,36 @@
+import json
+import unittest
+import zipfile
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class PortalTextAndDownloadsTest(unittest.TestCase):
+    def test_visible_sources_have_no_mojibake(self):
+        paths = [ROOT / "docs" / "index.html", ROOT / "docs" / "data" / "catalogo_metadatos.json"]
+        paths.extend((ROOT / "docs" / "assets" / "js").glob("*.js"))
+        paths.extend((ROOT / "docs" / "assets" / "css").glob("*.css"))
+        paths.extend((ROOT / "docs" / "metodologia").glob("*.html"))
+        for path in paths:
+            content = path.read_text(encoding="utf-8")
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertNotRegex(content, r"Ã|Â|�")
+
+    def test_catalog_workbooks_are_present_and_valid(self):
+        manifest_path = ROOT / "docs" / "descargas" / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        self.assertEqual(len(manifest["archivos"]), 9)
+        for entry in manifest["archivos"]:
+            workbook_path = manifest_path.parent / entry["archivo"]
+            with self.subTest(workbook=entry["archivo"]):
+                self.assertTrue(workbook_path.exists())
+                self.assertTrue(zipfile.is_zipfile(workbook_path))
+                with zipfile.ZipFile(workbook_path) as workbook:
+                    self.assertIn("xl/workbook.xml", workbook.namelist())
+                    self.assertEqual(len([name for name in workbook.namelist() if name.startswith("xl/worksheets/sheet") and name.endswith(".xml")]), entry["hojas"])
+
+
+if __name__ == "__main__":
+    unittest.main()

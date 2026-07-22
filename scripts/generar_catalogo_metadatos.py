@@ -20,7 +20,7 @@ def infer_categoria(var_id):
     for prefix, cat in CONFIG["CATEGORIA_POR_PREFIJO"].items():
         if var_id.startswith(prefix):
             return cat
-    return "Otras Variables"
+    return "Otras variables"
 
 def run_node_extractor():
     # Node.js script to safely parse geoportal-registry.js and evaluate sin_dato on GeoJSON
@@ -88,6 +88,11 @@ def run_node_extractor():
             id: id,
             label: config.label,
             fuente: config.fuente || null,
+            description: config.description || null,
+            unidad: config.unidad || null,
+            metodologia: config.metodologia || null,
+            licencia: config.licencia || null,
+            referencias: config.referencias || [],
             anios_disponibles: config.temporal ? config.temporal.anios_disponibles : [],
             nivel_territorial_disponible: config.levels || [],
             explicit_sin_dato: explicit_sin_dato,
@@ -102,7 +107,13 @@ def run_node_extractor():
         f.write(node_script)
     
     try:
-        result = subprocess.run(["node", "temp_extractor.cjs"], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["node", "temp_extractor.cjs"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=True,
+        )
         return json.loads(result.stdout)
     finally:
         if os.path.exists("temp_extractor.cjs"):
@@ -152,8 +163,17 @@ def main():
             "label": var_data["label"],
             "categoria": infer_categoria(var_id),
             "fuente": fuente,
+            "descripcion": var_data["description"],
+            "unidad": var_data["unidad"],
+            "metodologia": var_data["metodologia"],
+            "licencia": var_data["licencia"],
+            "referencias": var_data["referencias"],
             "anios_disponibles": var_data["anios_disponibles"],
-            "nivel_territorial_disponible": var_data["nivel_territorial_disponible"]
+            "nivel_territorial_disponible": var_data["nivel_territorial_disponible"],
+            "descargas": {
+                "excel": f"descargas/{var_id}.xlsx",
+                "geojson_niveles": var_data["nivel_territorial_disponible"],
+            },
         })
 
     pct_fuente = (vars_con_fuente / vars_total) * 100 if vars_total > 0 else 0

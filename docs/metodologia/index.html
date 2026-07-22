@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Metodología | Observatorio REDSA</title>
+    <meta name="description" content="Fuentes, métodos, fórmulas y limitaciones del Observatorio Ciudadano de Seguridad Vial de Fundación REDSA.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/metodologia.css?v=0.9.0">
+</head>
+<body>
+    <header class="method-header">
+        <div>
+            <p>Fundación REDSA</p>
+            <h1>Cómo construimos los datos</h1>
+            <span>Fuentes, decisiones metodológicas y límites conocidos del Observatorio Ciudadano de Seguridad Vial.</span>
+        </div>
+        <a href="../">Volver al mapa</a>
+    </header>
+    <div class="method-layout">
+        <nav class="method-nav" aria-label="Contenido metodológico">
+            <strong>En esta página</strong>
+            <a href="#principios">Principios</a>
+            <a href="#fuentes">Fuentes oficiales</a>
+            <a href="#mortalidad">Mortalidad</a>
+            <a href="#vehiculos">Vehículos y tasas</a>
+            <a href="#zonas-calientes">Zonas calientes</a>
+            <a href="#cobertura-temporal">Cobertura temporal</a>
+            <a href="#openstreetmap">OpenStreetMap</a>
+            <a href="#descargas">Descargas auditables</a>
+        </nav>
+        <main>
+            <section id="principios" class="method-hero">
+                <p class="eyebrow">Transparencia por diseño</p>
+                <h2>Qué hacemos y qué no hacemos</h2>
+                <p>El Observatorio REDSA reúne registros oficiales, conserva los valores faltantes como <strong>sin dato</strong> y documenta cada cálculo. No reemplaza a las instituciones productoras ni convierte ausencia de información en cero.</p>
+                <div class="principle-grid">
+                    <article><strong>Fuente visible</strong><span>Cada indicador conserva su institución, enlace y licencia.</span></article>
+                    <article><strong>Cálculo reproducible</strong><span>Las tasas se entregan con numerador, denominador y fórmula.</span></article>
+                    <article><strong>Límites explícitos</strong><span>Advertimos diferencias de cobertura, territorio y periodo.</span></article>
+                </div>
+            </section>
+
+            <section id="fuentes">
+                <p class="eyebrow">Procedencia</p>
+                <h2>Fuentes oficiales y abiertas</h2>
+                <div class="source-table" role="table" aria-label="Fuentes de datos">
+                    <div role="row"><strong role="cell">INEC ESTRA</strong><span role="cell">Accidentes de tránsito y vehículos matriculados, a partir de registros administrativos de la ANT.</span><a role="cell" href="https://www.ecuadorencifras.gob.ec/transporte/">Fuente oficial</a></div>
+                    <div role="row"><strong role="cell">INEC EDG</strong><span role="cell">Defunciones por causas CIE-10 V01–V89 registradas por el Registro Civil.</span><a role="cell" href="https://www.ecuadorencifras.gob.ec/defunciones-generales/">Fuente oficial</a></div>
+                    <div role="row"><strong role="cell">SPPAT</strong><span role="cell">Reclamaciones administrativas por fallecimiento vinculadas a accidentes de tránsito.</span><a role="cell" href="https://www.sppat.gob.ec/servicios/?p=60">Fuente institucional</a></div>
+                    <div role="row"><strong role="cell">OpenStreetMap</strong><span role="cell">Infraestructura vial colaborativa bajo licencia ODbL.</span><a role="cell" href="https://www.openstreetmap.org/copyright/es">Licencia y atribución</a></div>
+                </div>
+            </section>
+
+            <section id="mortalidad">
+                <p class="eyebrow">Registro civil</p>
+                <h2>Personas fallecidas</h2>
+                <p>Se incluyen defunciones con causa básica CIE-10 entre V01 y V89. EDG georreferencia el <strong>lugar de fallecimiento</strong>, que no necesariamente coincide con el lugar donde ocurrió el siniestro.</p>
+                <aside class="warning"><strong>Limitación conocida:</strong> V89, vehículo de motor no especificado, concentra una proporción alta de los registros. Por eso el desglose por usuario vial debe interpretarse con cautela.</aside>
+            </section>
+
+            <section id="vehiculos">
+                <p class="eyebrow">Exposición</p>
+                <h2>Vehículos matriculados y tasas</h2>
+                <div class="formula">Tasa = numerador ÷ denominador × factor</div>
+                <p>Las tasas por 1.000 vehículos usan matriculados en 2024 según residencia del propietario. Esto <strong>no representa necesariamente los vehículos que circulan</strong> en cada territorio. Para agregaciones provinciales y nacionales sumamos numeradores y denominadores antes de dividir; nunca promediamos tasas territoriales.</p>
+            </section>
+
+            <section id="zonas-calientes">
+                <p class="eyebrow">Análisis espacial</p>
+                <h2>Zonas calientes y frías</h2>
+                <p>Getis-Ord Gi* compara la tasa de un cantón y sus vecinos contiguos con el patrón nacional. “Caliente” o “frío” significa una concentración estadísticamente significativa; no es una calificación política ni causal. Los territorios insulares sin vecinos se presentan como <strong>isla sin vecinos</strong>, sin fabricar significancia.</p>
+            </section>
+
+            <section id="cobertura-temporal">
+                <p class="eyebrow">Años disponibles</p>
+                <h2>Cobertura temporal</h2>
+                <p>Cada variable declara sus años reales. Los huecos en la línea de tiempo permanecen visibles y no se interpolan. SPPAT cubre 2016–2021; EDG y ESTRA tienen coberturas propias que se muestran en el catálogo y en cada descarga.</p>
+            </section>
+
+            <section id="openstreetmap">
+                <p class="eyebrow">Infraestructura colaborativa</p>
+                <h2>OpenStreetMap</h2>
+                <p>Las capas de semáforos, cruces, aceras y otras infraestructuras reflejan lo que la comunidad ha mapeado. Una zona con cero elementos puede tener infraestructura no registrada: esta métrica mide <strong>cobertura de mapeo</strong>, no existencia física.</p>
+            </section>
+
+            <section id="descargas">
+                <p class="eyebrow">Reutilización</p>
+                <h2>Descargas auditables</h2>
+                <p>El <a href="../#catalog-modal">Catálogo de datos</a> ofrece un Excel por variable y GeoJSON por nivel territorial. Cada Excel incluye portada, metodología, referencias, estado del dato y, cuando existe un cálculo, numerador y denominador.</p>
+                <a class="primary-link" href="../">Abrir el geoportal y el catálogo</a>
+            </section>
+        </main>
+    </div>
+    <footer>Fundación REDSA · Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible · Ecuador</footer>
+</body>
+</html>

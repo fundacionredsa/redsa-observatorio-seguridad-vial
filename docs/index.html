@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.8.5">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.8.5">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.8.5">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.9.0">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.9.0">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.9.0">
 </head>
 <body>
 
@@ -52,6 +52,8 @@
             </div>
             <span class="citizen-national-badge">Ecuador</span>
         </div>
+        <p class="citizen-intro citizen-intro-full">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para conocer y comparar la seguridad vial de cada territorio.</p>
+        <p class="citizen-intro citizen-intro-mobile">Iniciativa ciudadana independiente de Fundación REDSA con datos oficiales.</p>
         <p class="citizen-question">¿Qué tan seguras son las vías donde vives?</p>
         <form id="territory-search-form" role="search">
             <label class="citizen-search-label" for="territory-search-input">Busca tu cantón</label>
@@ -101,13 +103,12 @@
                 <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
             </details>
         </div>
-        <div class="technical-section-title">Metodología y descargas</div>
-        <nav class="technical-links" aria-label="Metodología y archivos">
-            <a href="data/README.md" target="_blank" rel="noopener">Inventario y fuentes de datos</a>
-            <a href="data/hotspots_metodologia.md" target="_blank" rel="noopener">Metodología de zonas calientes</a>
-            <a href="data/temporal_osm_metodologia.md" target="_blank" rel="noopener">Cobertura temporal y OpenStreetMap</a>
-            <a href="data/vehiculos_metodologia.md" target="_blank" rel="noopener">Vehículos matriculados y limitaciones</a>
-            <a href="data/cantones_wgs84.geojson" download>Descargar datos cantonales GeoJSON</a>
+        <div class="technical-section-title">Metodología</div>
+        <nav class="technical-links" aria-label="Metodología del observatorio">
+            <a href="metodologia/#fuentes">Inventario y fuentes de datos</a>
+            <a href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
+            <a href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
+            <a href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
         </nav>
     </aside>
 
@@ -199,29 +200,26 @@
     </div>
 
     <div class="institutional-modal" id="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-modal-title" aria-hidden="true" hidden>
-        <div class="institutional-dialog">
+        <div class="institutional-dialog catalog-dialog">
             <header class="institutional-header">
                 <div>
-                    <p class="institutional-eyebrow">Diccionario de Variables</p>
-                    <h2 id="catalog-modal-title">Catálogo de Datos del Observatorio</h2>
+                    <p class="institutional-eyebrow">Diccionario de variables</p>
+                    <h2 id="catalog-modal-title">Catálogo de datos del Observatorio</h2>
                 </div>
-                <button class="modal-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
+                <button class="institutional-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
             </header>
-            <div class="institutional-content">
-                <div class="catalog-filters" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="catalog-search" placeholder="Buscar variable..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit;">
-                    <select id="catalog-category-filter" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; background: white;">
+            <div class="institutional-content catalog-content">
+                <p class="catalog-lead">Consulta qué datos están disponibles y descarga cada variable en un Excel documentado o en GeoJSON listo para análisis geográfico.</p>
+                <div class="catalog-filters">
+                    <label class="sr-only" for="catalog-search">Buscar una variable</label>
+                    <input type="search" id="catalog-search" placeholder="Buscar variable…">
+                    <label class="sr-only" for="catalog-category-filter">Filtrar por categoría</label>
+                    <select id="catalog-category-filter">
                         <option value="todas">Todas las categorías</option>
                     </select>
                 </div>
-                
-                <div id="catalog-summary-stats" style="margin-bottom: 20px; padding: 15px; background: #f7f9fa; border-radius: 8px; border: 1px solid #e1e8ed; font-size: 14px;">
-                    <!-- Stats will be populated here -->
-                </div>
-
-                <div id="catalog-results" style="display: grid; gap: 15px;">
-                    <!-- Variables will be populated here -->
-                </div>
+                <div id="catalog-summary-stats" class="catalog-summary"></div>
+                <div id="catalog-results" class="catalog-results"></div>
             </div>
         </div>
     </div>
@@ -425,15 +423,15 @@
     <script src="assets/js/vendor/driver.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-registry.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-state.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.8.5"></script>
-    <script src="assets/js/geoportal-app.js?v=0.8.5"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-state.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.9.0"></script>
+    <script src="assets/js/geoportal-app.js?v=0.9.0"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

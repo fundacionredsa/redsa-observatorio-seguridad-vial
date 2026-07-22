@@ -1,0 +1,106 @@
+{
+  "generado_el": "2026-07-22",
+  "archivos": [
+    {
+      "id": "siniestros_inec_2019",
+      "archivo": "siniestros_inec_2019.xlsx",
+      "bytes": 74546,
+      "hojas": 7,
+      "anios": [
+        2019,
+        2021,
+        2022,
+        2023,
+        2024
+      ]
+    },
+    {
+      "id": "fallecidos_inec_2019",
+      "archivo": "fallecidos_inec_2019.xlsx",
+      "bytes": 73748,
+      "hojas": 7,
+      "anios": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ]
+    },
+    {
+      "id": "tasa_fallecidos_100k",
+      "archivo": "tasa_fallecidos_100k.xlsx",
+      "bytes": 96924,
+      "hojas": 7,
+      "anios": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ]
+    },
+    {
+      "id": "tasa_siniestros_1000_vehiculos_2024",
+      "archivo": "tasa_siniestros_1000_vehiculos_2024.xlsx",
+      "bytes": 24291,
+      "hojas": 3,
+      "anios": [
+        2024
+      ]
+    },
+    {
+      "id": "tasa_motociclistas_1000_motos_2024",
+      "archivo": "tasa_motociclistas_1000_motos_2024.xlsx",
+      "bytes": 22157,
+      "hojas": 3,
+      "anios": [
+        2024
+      ]
+    },
+    {
+      "id": "fallecidos_sppat_2016_2021",
+      "archivo": "fallecidos_sppat_2016_2021.xlsx",
+      "bytes": 87024,
+      "hojas": 8,
+      "anios": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021
+      ]
+    },
+    {
+      "id": "fallecidos_parroquial",
+      "archivo": "fallecidos_parroquial.xlsx",
+      "bytes": 271391,
+      "hojas": 6,
+      "anios": [
+        2021,
+        2022,
+        2023,
+        2024
+      ]
+    },
+    {
+      "id": "porcentaje_motos_flota_2024",
+      "archivo": "porcentaje_motos_flota_2024.xlsx",
+      "bytes": 24724,
+      "hojas": 3,
+      "anios": [
+        2024
+      ]
+    },
+    {
+      "id": "cobertura_mapeo_osm",
+      "archivo": "cobertura_mapeo_osm.xlsx",
+      "bytes": 24359,
+      "hojas": 3,
+      "anios": [
+        2026
+      ]
+    }
+  ]
+}

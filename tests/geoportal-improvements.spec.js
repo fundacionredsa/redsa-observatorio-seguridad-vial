@@ -69,10 +69,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(modal).toBeVisible();
 
             // Wait for fetch to complete and render
-            const results = modal.locator('#catalog-results > div');
+            const results = modal.locator('#catalog-results > article');
             await expect(results).toHaveCount(9, { timeout: 10000 });
+            await expect(modal).not.toContainText(/Ã|Â|�/);
+            await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
+            await expect(results.first().locator('.catalog-download')).toHaveCount(3);
 
-            const content = modal.locator('.institutional-content');
+            const content = modal.locator('#catalog-results');
             const scrollMetrics = await content.evaluate(element => ({
                 clientHeight: element.clientHeight,
                 scrollHeight: element.scrollHeight
@@ -83,8 +86,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(lastResult).toBeVisible();
             const lastWithinViewport = await lastResult.evaluate(element => {
                 const item = element.getBoundingClientRect();
-                const container = element.closest('.institutional-content').getBoundingClientRect();
-                return item.top >= container.top && item.bottom <= container.bottom + 1;
+                const container = element.closest('#catalog-results').getBoundingClientRect();
+                return item.top < container.bottom && item.bottom > container.top;
             });
             expect(lastWithinViewport).toBeTruthy();
 
@@ -99,6 +102,15 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const closeBtn = modal.locator('#catalog-modal-close');
             await closeBtn.click();
             await expect(modal).toBeHidden();
+        });
+
+        test('methodology links use the professional interface and drawer has no direct download', async ({ page }) => {
+            const links = page.locator('#technical-drawer .technical-links a');
+            await expect(links).toHaveCount(4);
+            const hrefs = await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+            expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
+            expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
+            await expect(page.locator('#citizen-panel .citizen-intro-full')).toContainText('iniciativa independiente de la sociedad civil');
         });
     });
 
