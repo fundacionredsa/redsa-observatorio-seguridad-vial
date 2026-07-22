@@ -384,8 +384,9 @@
                 document.body.appendChild(popover);
 
                 let activeTrigger = null;
+                let pinnedTrigger = null;
 
-                function showPopover(trigger, text) {
+                function showPopover(trigger, text, pinned = false) {
                     popover.innerHTML = text;
                     popover.style.display = "block";
 
@@ -407,17 +408,19 @@
                     popover.style.left = left + "px";
                     popover.style.opacity = "1";
                     activeTrigger = trigger;
+                    if (pinned) pinnedTrigger = trigger;
                 }
 
                 function hidePopover() {
                     popover.style.display = "none";
                     popover.style.opacity = "0";
                     activeTrigger = null;
+                    pinnedTrigger = null;
                 }
 
                 document.addEventListener("mouseover", (e) => {
                     const trigger = e.target.closest(".sigla-tooltip-trigger");
-                    if (trigger) {
+                    if (trigger && !pinnedTrigger) {
                         const sigla = trigger.getAttribute("data-sigla");
                         const customText = trigger.getAttribute("data-custom-text");
                         if (customText) {
@@ -430,7 +433,7 @@
 
                 document.addEventListener("mouseout", (e) => {
                     const trigger = e.target.closest(".sigla-tooltip-trigger");
-                    if (trigger && activeTrigger === trigger) {
+                    if (trigger && activeTrigger === trigger && !pinnedTrigger) {
                         hidePopover();
                     }
                 });
@@ -442,11 +445,11 @@
                         const sigla = trigger.getAttribute("data-sigla");
                         const customText = trigger.getAttribute("data-custom-text");
                         if (customText || siglaDefinitions[sigla]) {
-                            if (activeTrigger === trigger && popover.style.display === "block") {
+                            if (pinnedTrigger === trigger && popover.style.display === "block") {
                                 hidePopover();
                             } else {
                                 const text = customText ? customText : siglaDefinitions[sigla];
-                                showPopover(trigger, `<strong>${sigla}:</strong> ${text}`);
+                                showPopover(trigger, `<strong>${sigla}:</strong> ${text}`, true);
                             }
                         }
                     } else if (e.target.closest("#sigla-popover") === null) {
@@ -479,6 +482,17 @@
                         if (!found || !["click", "mouseover", "mouseout"].includes(eventName)) return false;
                         found.fire(eventName, { target: found });
                         return this.state();
+                    },
+                    territoryStyle(level, code) {
+                        const found = this.findTerritoryLayer(level, code);
+                        if (!found) return null;
+                        return {
+                            color: found.options.color,
+                            weight: found.options.weight,
+                            opacity: found.options.opacity,
+                            fillColor: found.options.fillColor,
+                            fillOpacity: found.options.fillOpacity
+                        };
                     },
                     setZoom(zoom) {
                         map.setView(map.getCenter(), zoom, { animate: false });
@@ -588,6 +602,7 @@
                                         ? selectedTerritory.props.DPA_CANTON
                                         : selectedTerritory.props.DPA_PARROQ)
                             } : null,
+                            selectedLayerReferenceCount: [selectedProvinceLayer, selectedLayer, selectedParishLayer].filter(Boolean).length,
                             selectedVariable,
                             selectedYear,
                             variableCount: Object.keys(VARIABLE_CONFIGS).length,

@@ -17,7 +17,7 @@
         --mobile-edge: 10px;
         --mobile-top-offset: 66px;
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
-        --perfil-card-max-height: 280px;
+        --perfil-card-max-height: 336px;
     }
 
     .ui-container {
@@ -292,6 +292,10 @@
     }
 
     .institutional-panel {
+        padding: 12px;
+    }
+
+    .institutional-content {
         padding: 12px;
     }
 

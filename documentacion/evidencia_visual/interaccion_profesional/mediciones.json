@@ -2,19 +2,19 @@
   "desktopSelection": {
     "card": {
       "left": 426,
-      "right": 1050,
-      "top": 460,
-      "bottom": 740,
-      "width": 624,
-      "height": 280
+      "right": 950,
+      "top": 60,
+      "bottom": 396,
+      "width": 524,
+      "height": 336
     },
     "legend": {
-      "left": 1066,
-      "right": 1356,
-      "top": 449.46875,
+      "left": 656,
+      "right": 946,
+      "top": 411.203125,
       "bottom": 741.203125,
       "width": 290,
-      "height": 291.734375
+      "height": 330
     },
     "obstacle": null,
     "viewport": {
@@ -43,10 +43,11 @@
         "level": "canton",
         "code": "1701"
       },
+      "selectedLayerReferenceCount": 1,
       "selectedVariable": "siniestros_inec_2019",
       "selectedYear": 2024,
       "variableCount": 10,
-      "infrastructureLayerCount": 10,
+      "infrastructureLayerCount": 8,
       "temporalCoverage": {
         "tipo": "anual",
         "anios_disponibles": [
@@ -61,10 +62,11 @@
       "timelineBadge": "2024",
       "effectiveVariable": "siniestros_inec_2019",
       "bins": [
-        3,
-        10,
-        22,
-        61
+        4,
+        12,
+        37,
+        130,
+        611
       ],
       "validValueCount": 212,
       "layers": {
@@ -148,22 +150,6 @@
           "features": 0,
           "unmappedCantons": null,
           "error": null
-        },
-        "Corredores priorizados por REDSA": {
-          "registered": true,
-          "visible": false,
-          "loaded": true,
-          "features": 1000,
-          "unmappedCantons": 0,
-          "error": null
-        },
-        "Mapillary (cobertura parcial)": {
-          "registered": true,
-          "visible": false,
-          "loaded": false,
-          "features": 0,
-          "unmappedCantons": null,
-          "error": null
         }
       }
     }
@@ -171,19 +157,19 @@
   "desktopSidebar": {
     "card": {
       "left": 456,
-      "right": 1050,
-      "top": 464,
-      "bottom": 744,
-      "width": 594,
-      "height": 280
+      "right": 950,
+      "top": 64,
+      "bottom": 400,
+      "width": 494,
+      "height": 336
     },
     "legend": {
-      "left": 1066,
-      "right": 1356,
-      "top": 453.46875,
+      "left": 656,
+      "right": 946,
+      "top": 415.203125,
       "bottom": 745.203125,
       "width": 290,
-      "height": 291.734375
+      "height": 330
     },
     "obstacle": {
       "left": 0,
@@ -219,10 +205,11 @@
         "level": "canton",
         "code": "1701"
       },
+      "selectedLayerReferenceCount": 1,
       "selectedVariable": "siniestros_inec_2019",
       "selectedYear": 2024,
       "variableCount": 10,
-      "infrastructureLayerCount": 10,
+      "infrastructureLayerCount": 8,
       "temporalCoverage": {
         "tipo": "anual",
         "anios_disponibles": [
@@ -237,10 +224,11 @@
       "timelineBadge": "2024",
       "effectiveVariable": "siniestros_inec_2019",
       "bins": [
-        3,
-        10,
-        22,
-        61
+        4,
+        12,
+        37,
+        130,
+        611
       ],
       "validValueCount": 212,
       "layers": {
@@ -324,22 +312,6 @@
           "features": 0,
           "unmappedCantons": null,
           "error": null
-        },
-        "Corredores priorizados por REDSA": {
-          "registered": true,
-          "visible": false,
-          "loaded": true,
-          "features": 1000,
-          "unmappedCantons": 0,
-          "error": null
-        },
-        "Mapillary (cobertura parcial)": {
-          "registered": true,
-          "visible": false,
-          "loaded": false,
-          "features": 0,
-          "unmappedCantons": null,
-          "error": null
         }
       }
     },
@@ -349,18 +321,18 @@
     "card": {
       "left": 426,
       "right": 950,
-      "top": 644,
-      "bottom": 744,
+      "top": 60,
+      "bottom": 396,
       "width": 524,
-      "height": 100
+      "height": 336
     },
     "legend": {
-      "left": 1066,
-      "right": 1356,
-      "top": 453.46875,
-      "bottom": 745.203125,
+      "left": 656,
+      "right": 946,
+      "top": 411.203125,
+      "bottom": 741.203125,
       "width": 290,
-      "height": 291.734375
+      "height": 330
     },
     "obstacle": {
       "left": 966,
@@ -396,10 +368,11 @@
         "level": "canton",
         "code": "1701"
       },
+      "selectedLayerReferenceCount": 1,
       "selectedVariable": "siniestros_inec_2019",
       "selectedYear": 2024,
       "variableCount": 10,
-      "infrastructureLayerCount": 10,
+      "infrastructureLayerCount": 8,
       "temporalCoverage": {
         "tipo": "anual",
         "anios_disponibles": [
@@ -414,10 +387,11 @@
       "timelineBadge": "2024",
       "effectiveVariable": "siniestros_inec_2019",
       "bins": [
-        3,
-        10,
-        22,
-        61
+        4,
+        12,
+        37,
+        130,
+        611
       ],
       "validValueCount": 212,
       "layers": {
@@ -495,22 +469,6 @@
           "error": null
         },
         "Carriles BRT/Metrobús": {
-          "registered": true,
-          "visible": false,
-          "loaded": false,
-          "features": 0,
-          "unmappedCantons": null,
-          "error": null
-        },
-        "Corredores priorizados por REDSA": {
-          "registered": true,
-          "visible": false,
-          "loaded": true,
-          "features": 1000,
-          "unmappedCantons": 0,
-          "error": null
-        },
-        "Mapillary (cobertura parcial)": {
           "registered": true,
           "visible": false,
           "loaded": false,
@@ -526,18 +484,18 @@
     "card": {
       "left": 12,
       "right": 378,
-      "top": 308,
-      "bottom": 588,
+      "top": 415,
+      "bottom": 751,
       "width": 366,
-      "height": 280
+      "height": 336
     },
     "legend": {
-      "left": 160,
+      "left": 252,
       "right": 380,
-      "top": 603.609375,
-      "bottom": 783.609375,
-      "width": 220,
-      "height": 180
+      "top": 766.40625,
+      "bottom": 812.40625,
+      "width": 128,
+      "height": 46
     },
     "obstacle": null,
     "viewport": {
@@ -547,17 +505,17 @@
     "state": {
       "zoom": 9,
       "center": {
-        "lat": -0.16521182183805,
-        "lng": -78.5554611328125
+        "lat": -0.1816142466547094,
+        "lng": -78.5513605078125
       },
       "bounds": {
         "_southWest": {
-          "lat": -1.3241517785613224,
-          "lng": -79.09104462890626
+          "lat": -1.3405498439262937,
+          "lng": -79.08694400390625
         },
         "_northEast": {
-          "lat": 0.9937957322014298,
-          "lng": -78.01987763671876
+          "lat": 0.9773956589886481,
+          "lng": -78.01577701171875
         }
       },
       "level": "canton",
@@ -566,10 +524,11 @@
         "level": "canton",
         "code": "1701"
       },
+      "selectedLayerReferenceCount": 1,
       "selectedVariable": "siniestros_inec_2019",
       "selectedYear": 2024,
       "variableCount": 10,
-      "infrastructureLayerCount": 10,
+      "infrastructureLayerCount": 8,
       "temporalCoverage": {
         "tipo": "anual",
         "anios_disponibles": [
@@ -584,10 +543,11 @@
       "timelineBadge": "2024",
       "effectiveVariable": "siniestros_inec_2019",
       "bins": [
-        3,
-        10,
-        22,
-        61
+        4,
+        12,
+        37,
+        130,
+        611
       ],
       "validValueCount": 212,
       "layers": {
@@ -665,22 +625,6 @@
           "error": null
         },
         "Carriles BRT/Metrobús": {
-          "registered": true,
-          "visible": false,
-          "loaded": false,
-          "features": 0,
-          "unmappedCantons": null,
-          "error": null
-        },
-        "Corredores priorizados por REDSA": {
-          "registered": true,
-          "visible": false,
-          "loaded": true,
-          "features": 1000,
-          "unmappedCantons": 0,
-          "error": null
-        },
-        "Mapillary (cobertura parcial)": {
           "registered": true,
           "visible": false,
           "loaded": false,

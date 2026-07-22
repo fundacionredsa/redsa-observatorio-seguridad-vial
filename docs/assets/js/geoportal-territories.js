@@ -236,12 +236,14 @@ function onEachProvinceFeature(feature, layer) {
                     let classificationInfo = "";
                     if (activeVariableBins.method && activeVariableBins.method !== "Sin datos") {
                         const gvfText = activeVariableBins.gvf !== undefined ? ` Ajuste estadístico GVF: ${activeVariableBins.gvf.toFixed(2)} sobre los datos disponibles para este nivel y año.` : "";
-                        classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}`)}`;
+                        const scaleText = activeVariableBins.logScaled
+                            ? " Se aplicó una escala logarítmica para representar mejor valores muy concentrados; los rangos visibles se mantienen en sus unidades originales."
+                            : "";
+                        classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}${scaleText}`)}`;
                     }
-                    
-                    let logScaleText = activeVariableBins.logScaled ? " <span style='color:var(--primary-color); font-weight:700;'>(escala logarítmica)</span>" : "";
+
                     const levelContext = LEVEL_LABELS[currentLevel] ? ` (Nivel: ${LEVEL_LABELS[currentLevel].charAt(0).toUpperCase() + LEVEL_LABELS[currentLevel].slice(1)})` : "";
-                    const title = `${config.label}${levelContext}${temporalLabel}${logScaleText}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
+                    const title = `${config.label}${levelContext}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const displayBins = activeVariableBins.displayBins || bins;
                     const colors = activeVariableBins.colors && activeVariableBins.colors.length > 0 ? activeVariableBins.colors : config.colors;

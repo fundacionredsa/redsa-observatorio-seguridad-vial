@@ -53,9 +53,10 @@ test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async 
 test("modo tecnico conserva variables, capas, metodologia y estado todo apagado", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "El drawer movil se valida en la prueba responsive.");
   await loadPortal(page);
-  await page.locator("#technical-panel-toggle").click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
+  await expect(page.locator("#technical-panel-toggle")).toBeHidden();
+  await expect(page.locator("#technical-drawer-close")).toBeHidden();
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#map-variable-select option")).toHaveCount(10);
@@ -80,28 +81,6 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
-
-  await page.evaluate(() => {
-    document.body.classList.remove("technical-drawer-open");
-    document.body.classList.add("mobile-layers-open");
-  });
-  await expect(page.locator("#citizen-panel")).toBeVisible();
-  const legacyLayout = await page.evaluate(() => {
-    const drawer = document.querySelector("#technical-drawer").getBoundingClientRect();
-    const legend = document.querySelector(".legend-panel").getBoundingClientRect();
-    return {
-      citizenOpacity: getComputedStyle(document.querySelector("#citizen-panel")).opacity,
-      backdropDisplay: getComputedStyle(document.querySelector("#mobile-overlay-backdrop")).display,
-      intersects: !(drawer.right <= legend.left || drawer.left >= legend.right || drawer.bottom <= legend.top || drawer.top >= legend.bottom)
-    };
-  });
-  expect(legacyLayout.citizenOpacity).toBe("1");
-  expect(legacyLayout.backdropDisplay).toBe("none");
-  expect(legacyLayout.intersects).toBeFalsy();
-  await page.evaluate(() => {
-    document.body.classList.remove("mobile-layers-open");
-    document.body.classList.add("technical-drawer-open");
-  });
 
   await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
@@ -188,6 +167,28 @@ test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ p
   await page.locator("#profile-card-close").click();
   await expect(card).toBeHidden();
   expect((await page.evaluate(() => window.__redsaAudit.state())).selectedTerritory).toBeNull();
+});
+
+test("solo conserva resaltada la unidad territorial seleccionada", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.setZoom(9);
+    window.__redsaAudit.showTerritory("canton", "1701");
+  });
+  const firstSelectedStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("canton", "1701"));
+
+  await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
+  const result = await page.evaluate(() => ({
+    state: window.__redsaAudit.state(),
+    first: window.__redsaAudit.territoryStyle("canton", "1701"),
+    second: window.__redsaAudit.territoryStyle("canton", "1702")
+  }));
+
+  expect(result.state.selectedTerritory).toEqual({ level: "canton", code: "1702" });
+  expect(result.state.selectedLayerReferenceCount).toBe(1);
+  expect(result.second.color).toBe(firstSelectedStyle.color);
+  expect(result.second.weight).toBe(firstSelectedStyle.weight);
+  expect(result.first.color).not.toBe(result.second.color);
 });
 
 test("control territorial permite fijar nivel y volver a modo automatico", async ({ page }) => {
@@ -401,6 +402,9 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   });
   expect(boxes.card.bottom).toBeLessThanOrEqual(boxes.innerHeight - 10);
   expect(boxes.intersects).toBeFalsy();
+  if ((page.viewportSize()?.width || 0) > 768) {
+    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThan(280);
+  }
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
   await expect(card.locator("#hover-card-title")).not.toHaveText(before || "");
@@ -439,7 +443,6 @@ test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page 
   await assertNoOverlap("#territory-sidebar");
   await page.locator("#mobile-sidebar-close").click();
 
-  await page.locator("#technical-panel-toggle").click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await assertNoOverlap("#technical-drawer");
 });
@@ -657,11 +660,11 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
       await mobileLegendToggle.click();
   }
 
-  const infoIcon = page.locator('.legend-panel .sigla-tooltip-trigger').first();
+  await expect(page.locator('.legend-panel')).not.toContainText(/escala logar.tmica/i);
+  const infoIcon = page.locator('.legend-panel .sigla-tooltip-trigger[data-sigla="INFO"]');
   await expect(infoIcon).toBeVisible();
 
-  await infoIcon.hover();
-  await infoIcon.hover();
+  await infoIcon.click();
 
   const popover = page.locator('.sigla-popover');
   await expect(popover).toBeVisible();
@@ -669,6 +672,9 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
   const popoverText = await popover.textContent();
   expect(popoverText).toMatch(/Clasificaci.n:/);
   expect(popoverText).toMatch(/GVF:/);
+  if ((await page.evaluate(() => window.__redsaActiveBins)).logScaled) {
+    expect(popoverText).toMatch(/escala logar.tmica/i);
+  }
 
   await page.mouse.click(10, 10);
   await expect(popover).not.toBeVisible();

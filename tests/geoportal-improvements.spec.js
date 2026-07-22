@@ -72,6 +72,22 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const results = modal.locator('#catalog-results > div');
             await expect(results).toHaveCount(9, { timeout: 10000 });
 
+            const content = modal.locator('.institutional-content');
+            const scrollMetrics = await content.evaluate(element => ({
+                clientHeight: element.clientHeight,
+                scrollHeight: element.scrollHeight
+            }));
+            expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+            await content.evaluate(element => { element.scrollTop = element.scrollHeight; });
+            const lastResult = results.nth(8);
+            await expect(lastResult).toBeVisible();
+            const lastWithinViewport = await lastResult.evaluate(element => {
+                const item = element.getBoundingClientRect();
+                const container = element.closest('.institutional-content').getBoundingClientRect();
+                return item.top >= container.top && item.bottom <= container.bottom + 1;
+            });
+            expect(lastWithinViewport).toBeTruthy();
+
             // Test search filter
             const searchInput = modal.locator('#catalog-search');
             await searchInput.fill('INEC');
@@ -107,6 +123,19 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             // Layer control should exist
             const layerControl = page.locator('.leaflet-top .leaflet-control-layers').first();
             await expect(layerControl).toBeVisible();
+
+            const controlsClearDrawer = await page.evaluate(() => {
+                const drawer = document.querySelector('#technical-drawer').getBoundingClientRect();
+                const zoom = document.querySelector('.leaflet-control-zoom').getBoundingClientRect();
+                const opacity = document.querySelector('.opacity-control').getBoundingClientRect();
+                return {
+                    zoomRight: zoom.right,
+                    opacityRight: opacity.right,
+                    drawerLeft: drawer.left
+                };
+            });
+            expect(controlsClearDrawer.zoomRight).toBeLessThanOrEqual(controlsClearDrawer.drawerLeft);
+            expect(controlsClearDrawer.opacityRight).toBeLessThanOrEqual(controlsClearDrawer.drawerLeft);
         });
     });
 
@@ -122,11 +151,35 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await btnTheme.click();
             await expect(page.locator('body')).toHaveClass(/light-theme/);
 
+            await page.evaluate(() => {
+                window.__redsaAudit.setZoom(9);
+                window.__redsaAudit.showTerritory('canton', '1701');
+            });
+            const lightSurfaces = await page.evaluate(() => {
+                const colors = selector => {
+                    const style = getComputedStyle(document.querySelector(selector));
+                    return { background: style.backgroundColor, color: style.color };
+                };
+                return {
+                    drawer: colors('#technical-drawer'),
+                    selector: colors('.map-selector-control'),
+                    profile: colors('.perfil-fallecidos-card'),
+                    legend: colors('.legend-panel')
+                };
+            });
+            for (const surface of Object.values(lightSurfaces)) {
+                const rgb = surface.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                expect(Math.min(...rgb)).toBeGreaterThan(230);
+                const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                expect(Math.max(...textRgb)).toBeLessThan(100);
+            }
+
             // Check localStorage
             const isLight = await page.evaluate(() => localStorage.getItem('redsa_light_theme'));
             expect(isLight).toBe('true');
 
             // Click again
+            await page.evaluate(() => window.__redsaAudit.clearSelection());
             await btnTheme.click();
             await expect(page.locator('body')).not.toHaveClass(/light-theme/);
         });

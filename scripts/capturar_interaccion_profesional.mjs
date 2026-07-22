@@ -28,6 +28,7 @@ async function geometry(page, obstacleSelector = null) {
 }
 
 async function load(page) {
+  await page.addInitScript(() => localStorage.setItem("redsa_tour_visto", "true"));
   await page.goto(baseURL, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
   await page.locator("#loader").waitFor({ state: "hidden", timeout: 90_000 });
@@ -61,7 +62,7 @@ try {
   report.desktopSidebar.intersects = intersects(report.desktopSidebar.card, report.desktopSidebar.obstacle);
   await desktop.locator("#mobile-sidebar-close").click();
 
-  await desktop.locator("#technical-panel-toggle").click();
+  await desktop.locator("#technical-drawer").waitFor({ state: "visible" });
   await desktop.waitForTimeout(320);
   await desktop.screenshot({ path: fileURLToPath(new URL("despues_desktop_nivel_manual.png", outputDir)) });
   report.desktopTechnical = await geometry(desktop, "#technical-drawer");

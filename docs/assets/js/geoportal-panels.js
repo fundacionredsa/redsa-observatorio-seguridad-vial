@@ -197,7 +197,10 @@
                 rightBoundary - leftBoundary - (rightBoundary < viewportWidth ? safetyMargin : viewportMargin)
             );
             const width = Math.floor(availableWidth);
-            const selectorBottom = selectorVisible ? selectorRect.bottom : 0;
+            const selectorOverlapsPanel = selectorVisible
+                && selectorRect.right > leftBoundary
+                && selectorRect.left < rightBoundary;
+            const selectorBottom = selectorOverlapsPanel ? selectorRect.bottom : 0;
             const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
             const maxHeight = Math.floor(Math.max(100, Math.min(configuredMaxHeight, availableHeight)));
 

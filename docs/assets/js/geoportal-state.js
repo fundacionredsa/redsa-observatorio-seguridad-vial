@@ -242,7 +242,7 @@
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
-                if (open) {
+                if (open && mobileMediaQuery.matches) {
                     document.body.classList.remove("mobile-layers-open");
                     if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
                     if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
@@ -255,7 +255,7 @@
                 technicalDrawer?.setAttribute("aria-hidden", String(!open));
                 if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", String(open));
                 if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", String(open));
-                if (open) {
+                if (open && mobileMediaQuery.matches) {
                     document.body.classList.remove("mobile-sidebar-open");
                     if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
                     territorySidebar?.setAttribute("aria-hidden", "true");
@@ -306,14 +306,14 @@
                 setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
                 return;
             }
-            setDesktopTechnicalPanel(!document.body.classList.contains("technical-drawer-open"));
+            setDesktopTechnicalPanel(true);
         });
         technicalDrawerClose?.addEventListener("click", () => {
             if (mobileMediaQuery.matches) {
                 setMobilePanel("layers", false);
                 return;
             }
-            setDesktopTechnicalPanel(false);
+            setDesktopTechnicalPanel(true);
         });
         document.getElementById("clear-infrastructure-button")?.addEventListener("click", () => {
             Object.values(overlayMaps).forEach(layer => {
@@ -340,7 +340,7 @@
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeMobilePanels();
-                setDesktopTechnicalPanel(false);
+                if (!mobileMediaQuery.matches) setDesktopTechnicalPanel(true);
                 setMobileLegend(false);
             }
         });
@@ -350,8 +350,15 @@
             } else {
                 closeMobilePanels();
                 setMobileLegend(false);
+                setDesktopTechnicalPanel(true);
             }
         });
+
+        if (!mobileMediaQuery.matches) {
+            document.body.classList.add("technical-drawer-open");
+            technicalDrawer?.setAttribute("aria-hidden", "false");
+            technicalPanelToggle?.setAttribute("aria-expanded", "true");
+        }
 
         let selectedVariable = INITIAL_VIEW.variable;
         let selectedYear = INITIAL_VIEW.year;
@@ -808,6 +815,12 @@
             if (level === "parish") selectedParishLayer = layer;
         }
 
+        function clearSelectedLayerReferences() {
+            selectedLayer = null;
+            selectedProvinceLayer = null;
+            selectedParishLayer = null;
+        }
+
         function fitBoundsWithinTerritoryLevel(layer, level) {
             const maxZoomByLevel = {
                 province: ZOOM_PROVINCIAS_MAX,
@@ -840,6 +853,7 @@
             setMobileLegend(false);
             const { fitBounds = true, updateHash = true } = options;
             const previousSelection = selectedTerritory;
+            clearSelectedLayerReferences();
             if (previousSelection?.layer && previousSelection.layer !== layer) {
                 const previousGroup = getLayerForLevel(previousSelection.level);
                 previousGroup?.resetStyle(previousSelection.layer);
@@ -865,14 +879,13 @@
         }
 
         function clearTerritorySelection() {
-            if (selectedTerritory?.layer) {
-                const group = getLayerForLevel(selectedTerritory.level);
-                group?.resetStyle(selectedTerritory.layer);
-            }
-            selectedLayer = null;
-            selectedProvinceLayer = null;
-            selectedParishLayer = null;
+            const previousSelection = selectedTerritory;
+            clearSelectedLayerReferences();
             selectedTerritory = null;
+            if (previousSelection?.layer) {
+                const group = getLayerForLevel(previousSelection.level);
+                group?.resetStyle(previousSelection.layer);
+            }
             currentProps = null;
             currentProfileProps = null;
             updateSidebar(null);

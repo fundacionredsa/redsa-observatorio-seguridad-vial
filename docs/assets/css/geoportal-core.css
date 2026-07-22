@@ -25,7 +25,7 @@
             --z-modal: 1600;
             --perfil-card-left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
             --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
-            --perfil-card-max-height: 280px;
+            --perfil-card-max-height: 336px;
         }
 
         body.light-theme {
@@ -37,6 +37,9 @@
             --text-muted: #64748b;
             --accent: #0284c7;
             --accent-hover: #0369a1;
+            --bg-panel: rgba(255, 255, 255, 0.98);
+            --border-color: #cbd5e1;
+            --text-color: #1e293b;
         }
 
         * {
