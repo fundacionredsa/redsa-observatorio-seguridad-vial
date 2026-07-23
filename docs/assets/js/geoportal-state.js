@@ -7,6 +7,10 @@
         const MIN_CLASSES = 5;
         const MAX_CLASSES = 7;
 
+        // --- CONSTANTES DE ANIMACION Y TRANSICION ---
+        const INTERVALO_REPRODUCCION_MS = 1200; // Intervalo de avance automático entre años (ms)
+        const DURACION_TRANSICION_MS = 400;     // Duración de la transición suave de color (ms)
+
         // --- PALETAS SEMANTICAS (ColorBrewer) ---
         const COLORBREWER = {
             "Reds": {
@@ -481,6 +485,125 @@
             return `Cobertura parcial: ${Number(coverage).toLocaleString("es-EC", { maximumFractionDigits: 2 })}% de las parroquias tiene dato para ${year}.`;
         }
 
+        // --- TIMELINE PLAYBACK ENGINE ---
+        let isPlayingTimeline = false;
+        let timelinePlaybackTimer = null;
+
+        function updateTimelinePlayControl() {
+            const playBtn = document.getElementById("timeline-play-button");
+            const playIcon = document.getElementById("timeline-play-icon");
+            if (!playBtn) return;
+
+            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+            const isAnnual = coverage.tipo === "anual";
+            const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+            const availableYears = coverage.anios_disponibles || [];
+            const isSingleYear = !isAnnual || accumulated || availableYears.length <= 1;
+
+            if (isSingleYear) {
+                if (isPlayingTimeline) {
+                    stopTimelinePlayback();
+                }
+                playBtn.disabled = true;
+                playBtn.classList.add("disabled");
+                playBtn.title = "Esta variable solo tiene un año disponible";
+                playBtn.setAttribute("aria-label", "Esta variable solo tiene un año disponible");
+                if (playIcon) playIcon.className = "fa-solid fa-play";
+            } else {
+                playBtn.disabled = false;
+                playBtn.classList.remove("disabled");
+                if (isPlayingTimeline) {
+                    playBtn.title = "Pausar animación";
+                    playBtn.setAttribute("aria-label", "Pausar línea de tiempo");
+                    if (playIcon) playIcon.className = "fa-solid fa-pause";
+                    playBtn.classList.add("playing");
+                } else {
+                    playBtn.title = "Reproducir animación año a año";
+                    playBtn.setAttribute("aria-label", "Reproducir línea de tiempo");
+                    if (playIcon) playIcon.className = "fa-solid fa-play";
+                    playBtn.classList.remove("playing");
+                }
+            }
+        }
+
+        function stopTimelinePlayback() {
+            if (timelinePlaybackTimer) {
+                clearInterval(timelinePlaybackTimer);
+                timelinePlaybackTimer = null;
+            }
+            isPlayingTimeline = false;
+            updateTimelinePlayControl();
+        }
+
+        function setSelectedYearAndRefresh(newYear) {
+            selectedYear = Number(newYear);
+            const slider = document.getElementById("map-year-slider");
+            if (slider) slider.value = String(selectedYear);
+
+            const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+            if (typeof updateMapVariableDescription === "function") updateMapVariableDescription();
+            updateTimelineControl();
+            recalculateActiveVariableBins(selectedVariable, level);
+            refreshTerritoryLayerStyles(level, true);
+            if (typeof updateMapLevelNote === "function") updateMapLevelNote(level);
+            if (typeof updateLegend === "function") updateLegend();
+            if (typeof updateSidebar === "function" && typeof currentProps !== "undefined" && currentProps) updateSidebar(currentProps);
+            if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
+            window.REDSAInstitutional?.refresh();
+        }
+
+        function advanceToNextTimelineYear() {
+            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+            const availableYears = coverage.anios_disponibles || [];
+            if (availableYears.length <= 1) {
+                stopTimelinePlayback();
+                return;
+            }
+
+            let currentIndex = availableYears.indexOf(selectedYear);
+            if (currentIndex < availableYears.length - 1) {
+                const nextYear = availableYears[currentIndex + 1];
+                setSelectedYearAndRefresh(nextYear);
+                if (currentIndex + 1 === availableYears.length - 1) {
+                    stopTimelinePlayback();
+                }
+            } else {
+                stopTimelinePlayback();
+            }
+        }
+
+        function startTimelinePlayback() {
+            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+            const availableYears = coverage.anios_disponibles || [];
+            if (availableYears.length <= 1) return;
+
+            isPlayingTimeline = true;
+
+            let currentIndex = availableYears.indexOf(selectedYear);
+            if (currentIndex < 0 || currentIndex >= availableYears.length - 1) {
+                setSelectedYearAndRefresh(availableYears[0]);
+            }
+
+            updateTimelinePlayControl();
+
+            if (timelinePlaybackTimer) clearInterval(timelinePlaybackTimer);
+            timelinePlaybackTimer = setInterval(() => {
+                advanceToNextTimelineYear();
+            }, INTERVALO_REPRODUCCION_MS);
+        }
+
+        function toggleTimelinePlayback() {
+            if (isPlayingTimeline) {
+                stopTimelinePlayback();
+            } else {
+                startTimelinePlayback();
+            }
+        }
+
+        window.toggleTimelinePlayback = toggleTimelinePlayback;
+        window.stopTimelinePlayback = stopTimelinePlayback;
+        window.startTimelinePlayback = startTimelinePlayback;
+
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
             const badge = document.getElementById("timeline-badge");
@@ -505,6 +628,8 @@
                 const covered = isAnnual && coverage.anios_disponibles.includes(year);
                 return `<span class="timeline-mark${covered ? "" : " gap"}">${String(year).slice(2)}</span>`;
             }).join("");
+
+            updateTimelinePlayControl();
         }
 
         let activeVariableBins = {

@@ -393,12 +393,106 @@ function onEachProvinceFeature(feature, layer) {
             }
         }
 
-        function refreshTerritoryLayerStyles(level = activeTerritoryLevel) {
+        let activeColorAnimationId = null;
+
+        function hexToRgbArray(hexOrRgb) {
+            if (!hexOrRgb) return [51, 65, 85];
+            if (typeof hexOrRgb === "string" && hexOrRgb.startsWith("rgb")) {
+                const match = hexOrRgb.match(/\d+/g);
+                if (match && match.length >= 3) {
+                    return [parseInt(match[0], 10), parseInt(match[1], 10), parseInt(match[2], 10)];
+                }
+            }
+            let hex = String(hexOrRgb).replace("#", "");
+            if (hex.length === 3) {
+                hex = hex.split("").map(c => c + c).join("");
+            }
+            if (hex.length === 6) {
+                const num = parseInt(hex, 16);
+                return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+            }
+            return [51, 65, 85];
+        }
+
+        function rgbArrayToHex(r, g, b) {
+            const clamp = x => Math.max(0, Math.min(255, Math.round(x)));
+            return "#" + [r, g, b].map(x => clamp(x).toString(16).padStart(2, "0")).join("");
+        }
+
+        function refreshTerritoryLayerStyles(level = activeTerritoryLevel, animate = true) {
             const layerGroup = getLayerForLevel(level);
             if (!layerGroup) return;
+
+            if (activeColorAnimationId) {
+                cancelAnimationFrame(activeColorAnimationId);
+                activeColorAnimationId = null;
+            }
+
+            if (!animate || typeof DURACION_TRANSICION_MS === "undefined" || DURACION_TRANSICION_MS <= 0) {
+                layerGroup.eachLayer(layer => {
+                    layerGroup.resetStyle(layer);
+                });
+                return;
+            }
+
+            const featureTargets = [];
             layerGroup.eachLayer(layer => {
-                layerGroup.resetStyle(layer);
+                const startColor = layer.options.fillColor || "#334155";
+                const startRgb = hexToRgbArray(startColor);
+
+                const targetStyle = getTerritoryStyle(layer.feature, level, false, layer === selectedLayer);
+                const targetColor = targetStyle.fillColor || "#334155";
+                const targetRgb = hexToRgbArray(targetColor);
+
+                featureTargets.push({
+                    layer,
+                    targetStyle,
+                    startRgb,
+                    targetRgb,
+                    isSame: startColor.toLowerCase() === targetColor.toLowerCase()
+                });
             });
+
+            if (featureTargets.every(t => t.isSame)) {
+                featureTargets.forEach(t => layerGroup.resetStyle(t.layer));
+                return;
+            }
+
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / DURACION_TRANSICION_MS);
+
+                featureTargets.forEach(t => {
+                    if (t.isSame) {
+                        t.layer.setStyle(t.targetStyle);
+                        return;
+                    }
+                    const r = t.startRgb[0] + (t.targetRgb[0] - t.startRgb[0]) * progress;
+                    const g = t.startRgb[1] + (t.targetRgb[1] - t.startRgb[1]) * progress;
+                    const b = t.startRgb[2] + (t.targetRgb[2] - t.startRgb[2]) * progress;
+
+                    const interpolatedColor = rgbArrayToHex(r, g, b);
+                    t.layer.setStyle({
+                        fillColor: interpolatedColor,
+                        fillOpacity: t.targetStyle.fillOpacity,
+                        color: t.targetStyle.color,
+                        weight: t.targetStyle.weight,
+                        opacity: t.targetStyle.opacity,
+                        dashArray: t.targetStyle.dashArray
+                    });
+                });
+
+                if (progress < 1) {
+                    activeColorAnimationId = requestAnimationFrame(step);
+                } else {
+                    featureTargets.forEach(t => t.layer.setStyle(t.targetStyle));
+                    activeColorAnimationId = null;
+                }
+            }
+
+            activeColorAnimationId = requestAnimationFrame(step);
         }
 
         function activateTerritoryLevel(level) {

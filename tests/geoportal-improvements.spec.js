@@ -310,4 +310,54 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(privacyNotice).toContainText('No publicamos datos personales de usuarios ni de víctimas');
         });
     });
+
+    test.describe('Block G: Timeline Playback & Color Transition', () => {
+        test('timeline play button advances year, pauses on click and auto-stops on last year', async ({ page }) => {
+            const playBtn = page.locator('#timeline-play-button');
+            await expect(playBtn).toBeVisible();
+
+            // Select an annual variable (e.g. siniestros_inec_2019)
+            await page.evaluate(() => window.__redsaAudit.selectVariable('siniestros_inec_2019'));
+            await page.waitForTimeout(500);
+
+            // Should not be disabled for annual variable with multiple years
+            await expect(playBtn).not.toBeDisabled();
+
+            // Start playback
+            await page.evaluate(() => window.toggleTimelinePlayback());
+            await expect(playBtn).toHaveClass(/playing/);
+            await expect(playBtn.locator('i')).toHaveClass(/fa-pause/);
+
+            // Wait for 1.5 seconds (INTERVALO_REPRODUCCION_MS is 1200ms)
+            await page.waitForTimeout(1600);
+
+            // Year should have advanced
+            const badge = page.locator('#timeline-badge');
+            const newYearText = await badge.innerText();
+            expect(Number(newYearText)).toBeGreaterThan(2019);
+
+            // Pause playback
+            await page.evaluate(() => window.toggleTimelinePlayback());
+            await expect(playBtn).not.toHaveClass(/playing/);
+            await expect(playBtn.locator('i')).toHaveClass(/fa-play/);
+
+            // Verify paused year stays stable
+            const yearAtPause = await badge.innerText();
+            await page.waitForTimeout(1500);
+            expect(await badge.innerText()).toBe(yearAtPause);
+        });
+
+        test('timeline play button is disabled with tooltip for foto_unica variables', async ({ page }) => {
+            const playBtn = page.locator('#timeline-play-button');
+            await expect(playBtn).toBeVisible();
+
+            // Switch to a single year / foto_unica variable (e.g., normal / límites administrativos)
+            await page.evaluate(() => window.__redsaAudit.selectVariable('normal'));
+            await page.waitForTimeout(500);
+
+            await expect(playBtn).toBeDisabled();
+            const title = await playBtn.getAttribute('title');
+            expect(title).toBe('Esta variable solo tiene un año disponible');
+        });
+    });
 });

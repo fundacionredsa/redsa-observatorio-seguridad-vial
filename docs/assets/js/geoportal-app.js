@@ -310,7 +310,12 @@
                             </div>
                             <div class="timeline-control">
                                 <div class="timeline-header">
-                                    <span>Línea de tiempo global</span>
+                                    <div class="timeline-title-wrap" style="display: inline-flex; align-items: center; gap: 6px;">
+                                        <button type="button" id="timeline-play-button" class="timeline-play-btn" aria-label="Reproducir línea de tiempo" title="Reproducir animación año a año">
+                                            <i class="fa-solid fa-play" id="timeline-play-icon"></i>
+                                        </button>
+                                        <span>Línea de tiempo global</span>
+                                    </div>
                                     <span id="timeline-badge" class="timeline-badge">2024</span>
                                 </div>
                                 <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año del geoportal">
@@ -329,6 +334,16 @@
                             <div id="map-level-note" class="map-level-note"></div>
                         `;
                         L.DomEvent.disableClickPropagation(div);
+                        const playBtn = div.querySelector("#timeline-play-button");
+                        if (playBtn) {
+                            L.DomEvent.on(playBtn, "click", function(e) {
+                                L.DomEvent.stopPropagation(e);
+                                L.DomEvent.preventDefault(e);
+                                if (!playBtn.disabled && window.toggleTimelinePlayback) {
+                                    window.toggleTimelinePlayback();
+                                }
+                            });
+                        }
                         return div;
                     }
                 });
@@ -341,6 +356,13 @@
                 updateTerritoryLevelControl();
                 updateLegend();
 
+                document.addEventListener("click", (e) => {
+                    const playBtn = e.target.closest("#timeline-play-button");
+                    if (playBtn && !playBtn.disabled) {
+                        window.toggleTimelinePlayback?.();
+                    }
+                });
+
                 document.addEventListener("change", (e) => {
                     if (e.target && e.target.id === "map-variable-select") {
                         selectedVariable = e.target.value;
@@ -349,12 +371,13 @@
                 });
 
                 function handleVariableChange() {
+                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
                     updatePeriodModeControl();
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
-                    refreshTerritoryLayerStyles(level);
+                    refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
@@ -374,25 +397,27 @@
                 document.addEventListener("click", (event) => {
                     const periodButton = event.target.closest("[data-period-mode]");
                     if (!periodButton || periodButton.disabled) return;
+                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     selectedPeriodMode = periodButton.dataset.periodMode;
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
                     updatePeriodModeControl();
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
-                    refreshTerritoryLayerStyles(level);
+                    refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
                 });
 
                 document.getElementById("map-year-slider").addEventListener("input", function() {
+                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     selectedYear = Number(this.value);
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
-                    refreshTerritoryLayerStyles(level);
+                    refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
