@@ -111,13 +111,21 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             // Wait for fetch to complete and render
             const results = modal.locator('#catalog-results > article');
-            await expect(results).toHaveCount(9, { timeout: 10000 });
+            await expect(results).toHaveCount(11, { timeout: 10000 });
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             await expect(results.first().locator('.catalog-download')).toHaveCount(3);
             await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas históricas registradas: 0.');
             await expect(modal.locator('#catalog-global-download-total')).toHaveText('Descargas históricas registradas en todo el catálogo: 0.');
             await expect(modal).toContainText('registra descargas, no personas únicas');
+
+            await modal.locator('#catalog-search').fill('vías principales');
+            await expect(results).toHaveCount(2);
+            await expect(modal).toContainText('Densidad de vías principales y secundarias');
+            await expect(modal).toContainText('Red de vías principales y secundarias');
+            await expect(modal.locator('.catalog-category')).toHaveText(['Otras variables', 'Otras variables']);
+            await modal.locator('#catalog-search').fill('');
+            await expect(results).toHaveCount(11);
 
             const geojsonDownload = page.waitForEvent('download');
             await results.first().locator('button.catalog-download').first().click();
@@ -140,7 +148,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             }));
             expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
             await content.evaluate(element => { element.scrollTop = element.scrollHeight; });
-            const lastResult = results.nth(8);
+            const lastResult = results.last();
             await expect(lastResult).toBeVisible();
             const lastWithinViewport = await lastResult.evaluate(element => {
                 const item = element.getBoundingClientRect();
@@ -175,7 +183,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
     });
 
     test.describe('Block D: Basemap and Opacity', () => {
-        test('opacity slider changes overlayPane opacity', async ({ page }) => {
+        test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
             // Check that the opacity control is on the map
             const slider = page.locator('.opacity-control input[type="range"]');
             await expect(slider).toBeVisible();
@@ -188,9 +196,11 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 node.dispatchEvent(new Event('input'));
             });
 
-            // Check if overlayPane has opacity 0.5
-            const overlayPane = page.locator('.leaflet-overlay-pane');
-            await expect(overlayPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
+            // The territorial pane fades while infrastructure keeps its visual priority.
+            const territoryPane = page.locator('.leaflet-territorio-pane');
+            const infrastructurePane = page.locator('.leaflet-infraestructura-pane');
+            await expect(territoryPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
+            await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
             // Layer control should exist
             const layerControl = page.locator('.leaflet-top .leaflet-control-layers').first();

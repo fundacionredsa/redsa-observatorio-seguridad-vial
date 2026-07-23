@@ -1144,6 +1144,24 @@ body.mobile-layers-open .technical-toggle {
     border-radius: 7px;
 }
 
+.road-scale-control {
+    margin-bottom: 4px !important;
+    padding: 4px 7px 3px;
+    border: 1px solid var(--border-glass);
+    border-radius: 4px;
+    background: var(--bg-panel);
+    box-shadow: var(--shadow);
+}
+
+.road-scale-control .leaflet-control-scale-line {
+    margin: 0;
+    border-color: var(--text-primary);
+    border-top: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
 @media (min-width: 769px) {
     .technical-drawer {
         transform: translateX(0);
@@ -1160,7 +1178,9 @@ body.mobile-layers-open .technical-toggle {
     }
 
     body.technical-drawer-open .legend-panel,
-    body.mobile-layers-open .legend-panel {
+    body.mobile-layers-open .legend-panel,
+    body.technical-drawer-open .road-scale-control,
+    body.mobile-layers-open .road-scale-control {
         margin-right: calc(var(--technical-drawer-width) + 20px);
     }
 

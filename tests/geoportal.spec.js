@@ -37,7 +37,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
   ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
   expect(versionedAssets.length).toBeGreaterThan(5);
-  expect(versionedAssets.every(url => url.includes("v=0.9.4"))).toBeTruthy();
+  expect(versionedAssets.every(url => url.includes("v=0.10.0"))).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -151,18 +151,29 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
 });
 
-test("carga vias OSM independientes y clasifica la cuadricula con el motor existente", async ({ page }, testInfo) => {
+test("carga vias OSM independientes y clasifica el raster con el motor existente", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Las capas viales nacionales se renderizan una vez.");
+  let roadRequests = 0;
+  page.on("request", request => {
+    if (request.url().endsWith("/data/vias_ecuador.geojson")) roadRequests += 1;
+  });
   await loadPortal(page);
+  const scaleNational = await page.locator(".road-scale-control .leaflet-control-scale-line").innerText();
+  await page.evaluate(() => window.__redsaAudit.setZoom(11));
+  await page.waitForTimeout(200);
+  const scaleLocal = await page.locator(".road-scale-control .leaflet-control-scale-line").innerText();
+  expect(scaleLocal).not.toBe(scaleNational);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("densidad_vial_osm"));
-  await expect(page.locator(".legend-panel")).toContainText("Cuadrícula de 10 km");
+  await expect(page.locator(".legend-panel")).toContainText("Raster de 250 m");
+  await expect(page.locator(".legend-panel")).toContainText("no consultable por punto");
   await page.locator(".legend-panel [data-sigla='INFO']").click();
   await expect(page.locator("#sigla-popover")).toContainText("GVF");
   let state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.layers.roadDensity.visible).toBeTruthy();
-  expect(state.layers.roadDensity.features).toBe(1517);
-  expect(state.validValueCount).toBe(1517);
+  expect(state.layers.roadDensity.pixelsWithRoads).toBe(148989);
+  expect(state.layers.roadDensity.resolutionMeters).toBe(250);
+  expect(state.validValueCount).toBe(148989);
   expect(state.bins.length).toBeGreaterThanOrEqual(4);
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Vías principales", true));
@@ -177,6 +188,23 @@ test("carga vias OSM independientes y clasifica la cuadricula con el motor exist
   expect(state.osmLayers["Vías principales"].visible).toBeTruthy();
   expect(state.osmLayers["Vías secundarias"].visible).toBeTruthy();
   expect(state.osmLayers["Vías secundarias"].features).toBe(26353);
+  expect(roadRequests).toBe(1);
+
+  const paneOrder = await page.evaluate(() => ({
+    territory: Number(getComputedStyle(window.geoportalMap.getPane("territorioPane")).zIndex),
+    infrastructure: Number(getComputedStyle(window.geoportalMap.getPane("infraestructuraPane")).zIndex)
+  }));
+  expect(paneOrder.infrastructure).toBeGreaterThan(paneOrder.territory);
+  await page.evaluate(() => {
+    window.__redsaAudit.selectVariable("fallecidos_inec_2019");
+    window.__redsaAudit.selectVariable("tasa_fallecidos_100k");
+    window.__redsaAudit.selectVariable("siniestros_inec_2019");
+  });
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.osmLayers["Vías principales"].visible).toBeTruthy();
+  expect(state.osmLayers["Vías secundarias"].visible).toBeTruthy();
+  expect(await page.evaluate(() => window.__redsaAudit.fireOverlayClick("Vías principales"))).toBeTruthy();
+  expect((await page.evaluate(() => window.__redsaAudit.state())).selectedTerritory).not.toBeNull();
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Vías principales", false));
   state = await page.evaluate(() => window.__redsaAudit.state());
@@ -428,7 +456,7 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
     siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
     tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
     cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó.",
-    densidad_vial_osm: "Kilómetros de vías principales y secundarias mapeadas en OpenStreetMap dentro de cada celda de 10 km. Muestra concentración de red mapeada, no tráfico ni calidad de la vía."
+    densidad_vial_osm: "Patrón visual de kilómetros de vías principales y secundarias mapeadas en OpenStreetMap a resolución de 250 m. Muestra concentración de red mapeada, no tráfico ni calidad de la vía."
   };
   for (const [variable, text] of Object.entries(descriptions)) {
     await page.evaluate(selected => window.__redsaAudit.selectVariable(selected), variable);

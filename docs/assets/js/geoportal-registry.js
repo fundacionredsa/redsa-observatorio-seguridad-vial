@@ -202,9 +202,9 @@
         densidad_vial_osm: {
             label: "Densidad de vías principales y secundarias (OSM)",
             fuente: "OpenStreetMap contributors, ODbL; procesamiento REDSA",
-            description: "Kilómetros de vías principales y secundarias mapeadas en OpenStreetMap dentro de cada celda de 10 km. Muestra concentración de red mapeada, no tráfico ni calidad de la vía.",
-            unidad: "kilómetros de vías por celda de 10 km",
-            metodologia: "Suma geodésica de vías highway=motorway, trunk, primary, secondary y tertiary dentro de una cuadrícula regular de 10 km. La ausencia de una celda coloreada significa que no se encontraron vías de esas clases mapeadas; no demuestra ausencia física.",
+            description: "Patrón visual de kilómetros de vías principales y secundarias mapeadas en OpenStreetMap a resolución de 250 m. Muestra concentración de red mapeada, no tráfico ni calidad de la vía.",
+            unidad: "kilómetros de vías por píxel de 250 m",
+            metodologia: "Raster de 250 m calculado en Web Mercator mediante muestreo subpíxel de las vías highway=motorway, trunk, primary, secondary y tertiary. Usa el mismo clasificador adaptativo del portal. Es una capa visual no consultable por punto; la grilla vectorial de 10 km se conserva como descarga simplificada.",
             licencia: "Open Data Commons Open Database License (ODbL)",
             referencias: [
                 { label: "OpenStreetMap - derechos de autor y licencia", url: "https://www.openstreetmap.org/copyright/es" },
@@ -216,12 +216,18 @@
             dynamicBins: true,
             zeroIsData: false,
             continuous: true,
-            spatialLayer: "road_density_grid",
-            legendLevelLabel: "Cuadrícula de 10 km",
+            spatialLayer: "road_density_raster",
+            rasterMetadataUrl: "data/densidad_vial_250m.json",
+            legendLevelLabel: "Raster de 250 m",
             omitNoDataLegend: true,
             infoSigla: "OSM_VIAS",
             colorFamily: "YlOrBr",
-            format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+            format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 2 }),
+            catalogDownloads: [
+                { formato: "PNG", etiqueta: "Raster visual PNG", url: "data/densidad_vial_250m.png" },
+                { formato: "JSON", etiqueta: "Metadatos y georreferenciación", url: "data/densidad_vial_250m.json" },
+                { formato: "GeoJSON", etiqueta: "Grilla consultable de 10 km", url: "data/densidad_vial_ecuador.geojson" }
+            ]
         }
     };
 
@@ -329,26 +335,42 @@
         {
             id: "vias_principales",
             label: "Vías principales",
-            url: "data/vias_principales_ecuador.geojson",
+            url: "data/vias_ecuador.geojson",
+            filterFeature: feature => feature.properties?.clase === "principal",
             render: "line",
-            color: "#1d4ed8",
+            color: "#9f2f2f",
             weight: 4,
             coverageMask: false,
             osmAudit: true,
             popup: props => `<strong>Vía principal:</strong> ${props.name || "Tramo sin nombre"}<br><strong>Clase OSM:</strong> ${props.highway || "No especificada"}<br><strong>Longitud del tramo:</strong> ${Number(props.longitud_km || 0).toLocaleString("es-EC", { maximumFractionDigits: 2 })} km<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
-            legend: [{ shape: "line", color: "#1d4ed8", label: "Motorway, trunk y primary" }]
+            legend: [{ shape: "line", color: "#9f2f2f", label: "Motorway, trunk y primary" }],
+            catalogEntry: {
+                id: "vias_osm",
+                label: "Red de vías principales y secundarias (OSM)",
+                description: "Geometrías lineales de vías mapeadas en OpenStreetMap, clasificadas en principales y secundarias para visualización independiente.",
+                fuente: "OpenStreetMap contributors",
+                unidad: "tramos viales con longitud en kilómetros",
+                metodologia: "Consulta Overpass por partición provincial, recorte al territorio nacional, deduplicación por osm_type/osm_id y clasificación funcional por highway.",
+                licencia: "Open Data Commons Open Database License (ODbL)",
+                referencias: [
+                    { label: "OpenStreetMap - derechos de autor y licencia", url: "https://www.openstreetmap.org/copyright/es" },
+                    { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#vias-osm" }
+                ],
+                downloads: [{ formato: "GeoJSON", etiqueta: "Red vial clasificada", url: "data/vias_ecuador.geojson" }]
+            }
         },
         {
             id: "vias_secundarias",
             label: "Vías secundarias",
-            url: "data/vias_secundarias_ecuador.geojson",
+            url: "data/vias_ecuador.geojson",
+            filterFeature: feature => feature.properties?.clase === "secundaria",
             render: "line",
-            color: "#475569",
+            color: "#b7791f",
             weight: 2,
             coverageMask: false,
             osmAudit: true,
             popup: props => `<strong>Vía secundaria:</strong> ${props.name || "Tramo sin nombre"}<br><strong>Clase OSM:</strong> ${props.highway || "No especificada"}<br><strong>Longitud del tramo:</strong> ${Number(props.longitud_km || 0).toLocaleString("es-EC", { maximumFractionDigits: 2 })} km<br><small>${props.attribution || "OpenStreetMap contributors, ODbL"}</small>`,
-            legend: [{ shape: "line", color: "#475569", label: "Secondary y tertiary" }]
+            legend: [{ shape: "line", color: "#b7791f", label: "Secondary y tertiary" }]
         }
     ];
 

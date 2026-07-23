@@ -86,8 +86,7 @@ def main() -> None:
         "provincias_wgs84.geojson": (provinces, 24),
         "parroquias_wgs84.geojson": (parishes, 1040),
         "hotspots_cantonales.geojson": (hotspots, 224),
-        "vias_principales_ecuador.geojson": (load("vias_principales_ecuador.geojson"), 14_687),
-        "vias_secundarias_ecuador.geojson": (load("vias_secundarias_ecuador.geojson"), 26_353),
+        "vias_ecuador.geojson": (load("vias_ecuador.geojson"), 41_040),
         "densidad_vial_ecuador.geojson": (load("densidad_vial_ecuador.geojson"), 1_517),
     }
     for name, (payload, count) in expected.items():

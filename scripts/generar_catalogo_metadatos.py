@@ -93,6 +93,8 @@ def run_node_extractor():
             metodologia: config.metodologia || null,
             licencia: config.licencia || null,
             referencias: config.referencias || [],
+            spatial_layer: config.spatialLayer || null,
+            catalog_downloads: config.catalogDownloads || null,
             anios_disponibles: config.temporal ? config.temporal.anios_disponibles : [],
             nivel_territorial_disponible: config.levels || [],
             explicit_sin_dato: explicit_sin_dato,
@@ -100,7 +102,10 @@ def run_node_extractor():
         };
     }
 
-    console.log(JSON.stringify(results));
+    const infrastructure = Object.values(window.REDSA_GEO_CONFIG.infrastructureLayers)
+        .filter(config => config.catalogEntry)
+        .map(config => config.catalogEntry);
+    console.log(JSON.stringify({ variables: results, infrastructure }));
     """
     
     with open("temp_extractor.cjs", "w", encoding="utf-8") as f:
@@ -122,7 +127,9 @@ def run_node_extractor():
 def main():
     print("Ejecutando extractor de Node...")
     try:
-        raw_vars = run_node_extractor()
+        extracted = run_node_extractor()
+        raw_vars = extracted["variables"]
+        infrastructure_entries = extracted["infrastructure"]
     except subprocess.CalledProcessError as e:
         print("Error ejecutando Node:", e.stderr)
         sys.exit(1)
@@ -158,6 +165,7 @@ def main():
         elif var_data["has_missing"]:
             vars_con_faltantes += 1
 
+        direct_downloads = var_data.get("catalog_downloads") or []
         catalogo.append({
             "id": var_data["id"],
             "label": var_data["label"],
@@ -170,9 +178,32 @@ def main():
             "referencias": var_data["referencias"],
             "anios_disponibles": var_data["anios_disponibles"],
             "nivel_territorial_disponible": var_data["nivel_territorial_disponible"],
+            "tipo": "raster_visual" if var_data.get("spatial_layer") == "road_density_raster" else "variable_territorial",
             "descargas": {
-                "excel": f"descargas/{var_id}.xlsx",
-                "geojson_niveles": var_data["nivel_territorial_disponible"],
+                "excel": None if direct_downloads else f"descargas/{var_id}.xlsx",
+                "geojson_niveles": [] if direct_downloads else var_data["nivel_territorial_disponible"],
+                "archivos_directos": direct_downloads,
+            },
+        })
+
+    for entry in infrastructure_entries:
+        catalogo.append({
+            "id": entry["id"],
+            "label": entry["label"],
+            "categoria": "Otras variables",
+            "fuente": entry["fuente"],
+            "descripcion": entry["description"],
+            "unidad": entry["unidad"],
+            "metodologia": entry["metodologia"],
+            "licencia": entry["licencia"],
+            "referencias": entry["referencias"],
+            "anios_disponibles": [2026],
+            "nivel_territorial_disponible": [],
+            "tipo": "capa_infraestructura",
+            "descargas": {
+                "excel": None,
+                "geojson_niveles": [],
+                "archivos_directos": entry["downloads"],
             },
         })
 

@@ -87,7 +87,7 @@
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
         const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
-        const RUTA_DENSIDAD_VIAL_RELATIVA = "data/densidad_vial_ecuador.geojson";
+        const RUTA_DENSIDAD_VIAL_METADATA_RELATIVA = "data/densidad_vial_250m.json";
         const CENTRO_MAPA = INITIAL_VIEW.center;
         const ZOOM_INICIAL = INITIAL_VIEW.zoom;
         const ZOOM_PROVINCIAS_MAX = 7;
@@ -106,6 +106,10 @@
         });
         window.geoportalMap = map;
         map.fitBounds(INITIAL_VIEW.bounds, { padding: [12, 12], animate: false });
+        map.createPane("territorioPane");
+        map.getPane("territorioPane").style.zIndex = "400";
+        map.createPane("infraestructuraPane");
+        map.getPane("infraestructuraPane").style.zIndex = "450";
 
         // Reposicionar el control de Zoom
         L.control.zoom({
@@ -135,6 +139,14 @@
                 return div;
             }
         });
+
+        const scaleControl = L.control.scale({
+            position: "bottomright",
+            imperial: false,
+            metric: true,
+            maxWidth: 130
+        }).addTo(map);
+        scaleControl.getContainer()?.classList.add("road-scale-control");
 
         const legendControlInstance = new LegendControl();
         legendControlInstance.addTo(map);
@@ -190,8 +202,9 @@
                     if (slider) {
                         slider.addEventListener('input', (e) => {
                             const val = e.target.value / 100;
-                            const pane = map.getPane('overlayPane');
-                            if (pane) pane.style.opacity = val;
+                            const territoryPane = map.getPane("territorioPane");
+                            if (territoryPane) territoryPane.style.opacity = val;
+                            roadDensityLayer?.setOpacity?.(val * 0.82);
                         });
                     }
                 }, 100);
@@ -207,7 +220,7 @@
         let cantonLayer;
         let cantonData = null;
         let hotspotData = null;
-        let roadDensityData = null;
+        let roadDensityMetadata = null;
         let roadDensityLayer = null;
         let nationalFatalitiesByYear = {};
         let selectedLayer = null;
@@ -569,165 +582,19 @@
                     config.zeroAsNoMapping ? value > 0 : (config.zeroIsData ? value >= 0 : value > 0)
                 ))
                 .sort((a, b) => a - b);
-                
-            if (!values.length) return { bins: [], displayBins: [], method: 'Sin datos', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
 
-            const uniqueValues = [...new Set(values)].sort((a,b) => a-b);
-            
-            if (uniqueValues.length <= MAX_CLASSES) {
-                const k = uniqueValues.length;
-                const numBreaks = Math.max(1, k - 1);
-                const bins = uniqueValues.slice(0, numBreaks);
-                const colors = getVariableColorPalette(config, Math.max(3, k)).slice(0, k);
-                return { 
-                    bins, 
-                    displayBins: [...bins], 
-                    method: 'Valores Únicos', 
-                    gvf: 1.0, 
-                    validValueCount: values.length, 
-                    colors, 
-                    logScaled: false 
-                };
-            }
-
-            const getGvf = (vals, breaks) => {
-                const sdam = ss.variance(vals) * vals.length;
-                if (sdam === 0) return 1;
-                let sdcm = 0;
-                let classValues = [];
-                let bIdx = 0;
-                for (let v of vals) {
-                    if (bIdx < breaks.length && v > breaks[bIdx]) {
-                        if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
-                        classValues = [];
-                        while(bIdx < breaks.length && v > breaks[bIdx]) bIdx++;
-                    }
-                    classValues.push(v);
-                }
-                if (classValues.length > 0) sdcm += ss.variance(classValues) * classValues.length;
-                return 1 - (sdcm / sdam);
-            };
-
-            // 1. Primer pase: calcular bins óptimos sobre valores crudos
-            let bestK = MIN_CLASSES;
-            let bestGvf = 0;
-            let bestBreaks = [];
-            
-            for (let k = MIN_CLASSES; k <= MAX_CLASSES; k++) {
-                const clusters = ss.ckmeans(values, k);
-                const breaks = clusters.slice(0, k - 1).map(c => Math.max(...c));
-                const currentGvf = getGvf(values, breaks);
-                
-                if (k === MIN_CLASSES) {
-                    bestK = k;
-                    bestGvf = currentGvf;
-                    bestBreaks = breaks;
-                } else if (currentGvf - bestGvf > UMBRAL_MEJORA_GVF) {
-                    bestK = k;
-                    bestGvf = currentGvf;
-                    bestBreaks = breaks;
-                } else {
-                    break;
-                }
-            }
-
-            // 2. Verificar si el primer bin de la clasificación cruda concentra > UMBRAL_CONCENTRACION_BIN (70%) de unidades
-            let logScaled = false;
-            let finalBreaks = bestBreaks;
-            let reportedGvf = bestGvf;
-            let bestMethod = 'Rupturas Naturales (Jenks)';
-
-            const firstBreak = bestBreaks[0];
-            const firstBinCount = values.filter(v => v <= firstBreak).length;
-            
-            if (firstBinCount / values.length > UMBRAL_CONCENTRACION_BIN) {
-                logScaled = true;
-                const logValues = values.map(v => Math.log(v + 1));
-                
-                // Recalcular sobre Math.log(valor + 1)
-                bestK = MIN_CLASSES;
-                bestGvf = 0;
-                bestBreaks = [];
-                for (let k = MIN_CLASSES; k <= MAX_CLASSES; k++) {
-                    const clusters = ss.ckmeans(logValues, k);
-                    const breaks = clusters.slice(0, k - 1).map(c => Math.max(...c));
-                    const currentGvf = getGvf(logValues, breaks);
-                    
-                    if (k === MIN_CLASSES) {
-                        bestK = k;
-                        bestGvf = currentGvf;
-                        bestBreaks = breaks;
-                    } else if (currentGvf - bestGvf > UMBRAL_MEJORA_GVF) {
-                        bestK = k;
-                        bestGvf = currentGvf;
-                        bestBreaks = breaks;
-                    } else {
-                        break;
-                    }
-                }
-                
-                // Des-transformar cortes
-                finalBreaks = bestBreaks.map(v => Math.exp(v) - 1);
-                reportedGvf = bestGvf;
-            } else {
-                // Si no se usó log, evaluar si intervalos iguales o cuantiles son mejores
-                const numBreaks = bestK - 1;
-                const quantiles = [];
-                for (let i = 1; i <= numBreaks; i++) quantiles.push(ss.quantile(values, i / bestK));
-                const gvfQuantiles = getGvf(values, quantiles);
-
-                const min = values[0];
-                const max = values[values.length - 1];
-                const step = (max - min) / bestK;
-                const equalIntervals = [];
-                for (let i = 1; i <= numBreaks; i++) equalIntervals.push(min + i * step);
-                const gvfEqual = getGvf(values, equalIntervals);
-
-                if (gvfEqual > reportedGvf) {
-                    finalBreaks = equalIntervals;
-                    bestMethod = 'Intervalos Iguales';
-                    reportedGvf = gvfEqual;
-                }
-                if (gvfQuantiles > reportedGvf + 0.01) {
-                    finalBreaks = quantiles;
-                    bestMethod = 'Cuantiles';
-                    reportedGvf = gvfQuantiles;
-                }
-            }
-
-            const displayBins = finalBreaks.map(val => {
-                if (val === 0) return 0;
-                const mag = Math.pow(10, Math.floor(Math.log10(Math.abs(val))));
-                let factor = 1;
-                if (mag >= 100) factor = mag / 10;
-                else if (mag >= 10) factor = 5;
-                else if (mag >= 1) factor = 1;
-                else factor = mag;
-                
-                let rounded = Math.round(val / factor) * factor;
-                return config.continuous ? Number(rounded.toFixed(3)) : Math.floor(rounded);
+            return window.REDSAClassification.calculateOptimalBinsFromValues(values, config, {
+                minClasses: MIN_CLASSES,
+                maxClasses: MAX_CLASSES,
+                improvementThreshold: UMBRAL_MEJORA_GVF,
+                concentrationThreshold: UMBRAL_CONCENTRACION_BIN,
+                palette: getVariableColorPalette
             });
-
-            const colors = getVariableColorPalette(config, bestK);
-
-            return { 
-                bins: finalBreaks.map(b => config.continuous ? Number(b.toFixed(6)) : Math.floor(b)), 
-                displayBins, 
-                method: bestMethod, 
-                gvf: reportedGvf, 
-                validValueCount: values.length, 
-                colors, 
-                logScaled 
-            };
         }
 
         function getFeaturesForLevel(level, variable = selectedVariable) {
             const selectedConfig = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
-            if (selectedConfig.spatialLayer === "road_density_grid") {
-                return roadDensityData && Array.isArray(roadDensityData.features)
-                    ? roadDensityData.features
-                    : [];
-            }
+            if (selectedConfig.spatialLayer === "road_density_raster") return [];
             const dataByLevel = {
                 province: provinceData,
                 canton: cantonData,
@@ -739,7 +606,22 @@
 
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
-            if (variable === "normal" || !config.levels.includes(level)) {
+            if (config.spatialLayer === "road_density_raster" && roadDensityMetadata?.clasificacion) {
+                const result = roadDensityMetadata.clasificacion;
+                activeVariableBins = {
+                    variable,
+                    level,
+                    year: selectedYear,
+                    periodMode: selectedPeriodMode,
+                    bins: [...result.bins],
+                    displayBins: [...result.displayBins],
+                    method: result.method,
+                    gvf: result.gvf,
+                    validValueCount: result.validValueCount,
+                    colors: [...result.colors],
+                    logScaled: result.logScaled
+                };
+            } else if (variable === "normal" || !config.levels.includes(level)) {
                 activeVariableBins = { variable: "normal", level, year: selectedYear, periodMode: selectedPeriodMode, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
             } else {
                 const result = calculateOptimalBins(getFeaturesForLevel(level, variable), config, variable);
@@ -858,33 +740,18 @@
         function getTerritoryStyle(feature, level, isHovered = false, isSelected = false) {
             const effectiveVariable = getEffectiveVariable(level);
             const config = VARIABLE_CONFIGS[effectiveVariable] || VARIABLE_CONFIGS.normal;
-            if (effectiveVariable === "normal" || config.spatialLayer === "road_density_grid") {
+            if (effectiveVariable === "normal" || config.spatialLayer === "road_density_raster") {
                 return getBoundaryStyle(feature, level, isHovered, isSelected);
             }
             return getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
         }
 
-        function getRoadDensityStyle(feature) {
-            const level = activeTerritoryLevel || getTerritoryLevelForZoom();
-            const style = getChoroplethStyle(feature, "densidad_vial_osm", level, false, false);
-            return {
-                ...style,
-                color: "#ffffff",
-                weight: 0.35,
-                opacity: 0.45,
-                fillOpacity: 0.72
-            };
-        }
-
         function syncRoadDensityLayer() {
             if (!roadDensityLayer) return;
             const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
-            const shouldShow = config.spatialLayer === "road_density_grid";
+            const shouldShow = config.spatialLayer === "road_density_raster";
             if (shouldShow) {
-                roadDensityLayer.eachLayer(layer => roadDensityLayer.resetStyle(layer));
                 if (!map.hasLayer(roadDensityLayer)) roadDensityLayer.addTo(map);
-                roadDensityLayer.bringToBack?.();
-                getLayerForLevel(activeTerritoryLevel)?.bringToFront?.();
             } else {
                 removeLayerIfPresent(roadDensityLayer);
             }

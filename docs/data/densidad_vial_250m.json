@@ -1,0 +1,71 @@
+{
+  "imagen": "densidad_vial_250m.png",
+  "bounds": [
+    [
+      -5.01740321,
+      -92.00769719
+    ],
+    [
+      1.68185379,
+      -75.18674349
+    ]
+  ],
+  "crs_calculo": "EPSG:3857",
+  "resolucion_metros": 250,
+  "paso_muestreo_metros": 125.0,
+  "ancho_px": 7490,
+  "alto_px": 2986,
+  "pixeles_con_vias": 148989,
+  "km_total_raster": 37292.128,
+  "valor_min_km": 0.001445,
+  "valor_max_km": 1.932516,
+  "clasificacion": {
+    "bins": [
+      0.151276,
+      0.252769,
+      0.359719,
+      0.515399,
+      0.804772
+    ],
+    "displayBins": [
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.8
+    ],
+    "method": "Rupturas Naturales (Jenks)",
+    "gvf": 0.9298275504029307,
+    "validValueCount": 148989,
+    "colors": [
+      "#ffffd4",
+      "#fee391",
+      "#fec44f",
+      "#fe9929",
+      "#d95f0e",
+      "#993404"
+    ],
+    "logScaled": false
+  },
+  "fuente": "OpenStreetMap via Overpass API",
+  "licencia": "ODbL",
+  "fecha_extraccion": "2026-07-22",
+  "highway_incluidos": [
+    "motorway",
+    "trunk",
+    "primary",
+    "secondary",
+    "tertiary"
+  ],
+  "cobertura_osm_vs_mtop_pct": 120.68,
+  "solo_visual": true,
+  "nota": "Capa de patron visual, no consultable por punto. La grilla vectorial de 10 km se conserva como descarga simplificada.",
+  "transformacion": [
+    250.0,
+    0.0,
+    -10242250.0,
+    0.0,
+    -250.0,
+    187250.0
+  ]
+}

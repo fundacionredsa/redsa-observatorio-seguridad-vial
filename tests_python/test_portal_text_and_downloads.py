@@ -29,6 +29,14 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
                 self.assertTrue(variable.get("metodologia"))
                 self.assertTrue(variable.get("licencia"))
                 self.assertTrue(variable.get("referencias"))
+        direct_entries = {variable["id"]: variable for variable in catalog["variables"] if variable["id"] in {"densidad_vial_osm", "vias_osm"}}
+        self.assertEqual(set(direct_entries), {"densidad_vial_osm", "vias_osm"})
+        for variable in direct_entries.values():
+            self.assertEqual(variable["categoria"], "Otras variables")
+            self.assertIsNone(variable["descargas"]["excel"])
+            self.assertTrue(variable["descargas"]["archivos_directos"])
+            for download in variable["descargas"]["archivos_directos"]:
+                self.assertTrue((ROOT / "docs" / download["url"]).exists())
         self.assertEqual(len(manifest["archivos"]), 9)
         for entry in manifest["archivos"]:
             workbook_path = manifest_path.parent / entry["archivo"]

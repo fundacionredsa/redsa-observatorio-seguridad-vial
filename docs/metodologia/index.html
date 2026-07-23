@@ -92,7 +92,8 @@
                 <h2>Vías principales, secundarias y densidad</h2>
                 <p>Las vías provienen exclusivamente de OpenStreetMap. Consideramos principales las clases <code>motorway</code>, <code>trunk</code> y <code>primary</code>; y secundarias las clases <code>secondary</code> y <code>tertiary</code>. Los datos se consultaron por provincia, se deduplicaron por identificador OSM y se recortaron al territorio ecuatoriano.</p>
                 <div class="callout"><strong>Prueba de completitud:</strong> OSM suma 11.897,384 km de vías principales frente a 9.858,600 km de Red Vial Estatal MTOP 2024 (120,68%). El valor superior a 100% no significa que OSM replique de más la red estatal: ambas clasificaciones miden universos distintos. La comparación sirve únicamente como control orientativo de magnitud.</div>
-                <p>La densidad suma kilómetros de vías mapeadas dentro de celdas regulares de 10 km. No mide tráfico, estado, seguridad ni pertenencia jurídica a la Red Vial Estatal. La falta de una celda coloreada tampoco demuestra que no exista una vía.</p>
+                <p>La vista principal de densidad es un raster de 250 m que permite reconocer patrones locales con mayor detalle. Es una capa exclusivamente visual: no permite consultar el valor exacto de un punto. El catálogo conserva además una grilla GeoJSON de 10 km como descarga simplificada y auditable.</p>
+                <p>Ambas representaciones suman kilómetros de vías mapeadas. No miden tráfico, estado, seguridad ni pertenencia jurídica a la Red Vial Estatal. Una zona transparente tampoco demuestra que no exista una vía.</p>
                 <p><a href="https://www.openstreetmap.org/copyright/es">OpenStreetMap contributors, licencia ODbL</a> · corte: 22 de julio de 2026.</p>
             </section>
 

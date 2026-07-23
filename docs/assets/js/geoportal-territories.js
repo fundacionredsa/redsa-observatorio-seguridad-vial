@@ -309,10 +309,10 @@ function onEachProvinceFeature(feature, layer) {
                             </div>
                         `;
                     }
-                    if (config.spatialLayer === "road_density_grid") {
+                    if (config.spatialLayer === "road_density_raster") {
                         itemsHtml += `
                             <div class="legend-item" style="padding-left:8px;color:var(--text-muted);font-size:.67rem;line-height:1.3;align-items:flex-start;">
-                                <span>La cuadrícula suma kilómetros mapeados; no representa tráfico, estado de la vía ni pertenencia a la Red Vial Estatal.</span>
+                                <span>Capa de patrón visual, no consultable por punto. Representa kilómetros mapeados; no tráfico, estado de la vía ni pertenencia a la Red Vial Estatal.</span>
                             </div>`;
                     }
 
@@ -467,6 +467,7 @@ function onEachProvinceFeature(feature, layer) {
                     parishData = data;
                     recalculateActiveVariableBins(selectedVariable, "parish");
                     parishLayer = L.geoJSON(parishData, {
+                        pane: "territorioPane",
                         style: function(feature) {
                             const isSelected = selectedParishLayer && selectedParishLayer.feature.properties.DPA_PARROQ === feature.properties.DPA_PARROQ;
                             return getParishStyle(feature, false, isSelected);

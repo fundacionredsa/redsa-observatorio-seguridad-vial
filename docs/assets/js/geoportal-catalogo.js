@@ -268,13 +268,15 @@
 
         const downloads = document.createElement("div");
         downloads.className = "catalog-downloads";
-        const excel = document.createElement("a");
-        excel.className = "catalog-download primary";
-        excel.href = variable.descargas.excel;
-        excel.download = "";
-        excel.innerHTML = '<i class="fa-solid fa-file-excel" aria-hidden="true"></i> Excel documentado';
-        excel.addEventListener("click", () => recordDownload(variable, "excel"));
-        downloads.appendChild(excel);
+        if (variable.descargas.excel) {
+            const excel = document.createElement("a");
+            excel.className = "catalog-download primary";
+            excel.href = variable.descargas.excel;
+            excel.download = "";
+            excel.innerHTML = '<i class="fa-solid fa-file-excel" aria-hidden="true"></i> Excel documentado';
+            excel.addEventListener("click", () => recordDownload(variable, "excel"));
+            downloads.appendChild(excel);
+        }
         variable.descargas.geojson_niveles.forEach((level) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -282,6 +284,15 @@
             button.innerHTML = `<i class="fa-solid fa-map" aria-hidden="true"></i> GeoJSON ${LEVEL_LABELS[level]}`;
             button.addEventListener("click", () => downloadGeoJSON(variable, level, button));
             downloads.appendChild(button);
+        });
+        (variable.descargas.archivos_directos || []).forEach(file => {
+            const link = document.createElement("a");
+            link.className = "catalog-download";
+            link.href = file.url;
+            link.download = "";
+            link.innerHTML = `<i class="fa-solid fa-download" aria-hidden="true"></i> ${file.etiqueta}`;
+            link.addEventListener("click", () => recordDownload(variable, file.formato.toLocaleLowerCase("es")));
+            downloads.appendChild(link);
         });
         const count = addText(downloads, "p", "", "catalog-download-count");
         count.dataset.catalogDownloadCount = variable.id;

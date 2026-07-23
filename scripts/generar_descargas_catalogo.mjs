@@ -187,6 +187,7 @@ async function main() {
   for (const [level, file] of Object.entries(CONFIG.geojson)) data[level] = JSON.parse(await fs.readFile(file, "utf8")).features;
   const manifest = [];
   for (const variable of catalog.variables) {
+    if (!variable.descargas?.excel) continue;
     const definition = DEFINITIONS[variable.id];
     if (!definition) throw new Error(`Falta definición de descarga para ${variable.id}`);
     const workbook = Workbook.create();

@@ -74,8 +74,8 @@
                 if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
                 return response.json();
             }),
-            fetch(RUTA_DENSIDAD_VIAL_RELATIVA).then(response => {
-                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de densidad vial.");
+            fetch(RUTA_DENSIDAD_VIAL_METADATA_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudieron cargar los metadatos del raster de densidad vial.");
                 return response.json();
             })
         ])
@@ -88,11 +88,12 @@
                 provinceData = provinces;
                 cantonData = cantons;
                 hotspotData = hotspots;
-                roadDensityData = roadDensity;
+                roadDensityMetadata = roadDensity;
                 mergeHotspotsIntoCantons(cantonData, hotspotData);
                 nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
 
                 provinceLayer = L.geoJSON(provinceData, {
+                    pane: "territorioPane",
                     style: function(feature) {
                         const isSelected = selectedProvinceLayer && selectedProvinceLayer.feature.properties.DPA_PROVIN === feature.properties.DPA_PROVIN;
                         return getProvinceStyle(feature, false, isSelected);
@@ -101,6 +102,7 @@
                 });
 
                 cantonLayer = L.geoJSON(cantonData, {
+                    pane: "territorioPane",
                     style: function(feature) {
                         const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
                         return getCantonStyle(feature, false, isSelected);
@@ -108,10 +110,11 @@
                     onEachFeature: onEachFeature
                 });
 
-                roadDensityLayer = L.geoJSON(roadDensityData, {
-                    interactive: false,
-                    style: getRoadDensityStyle
-                });
+                roadDensityLayer = L.imageOverlay(
+                    `data/${roadDensityMetadata.imagen}`,
+                    roadDensityMetadata.bounds,
+                    { pane: "infraestructuraPane", interactive: false, opacity: 0.82 }
+                );
 
                 const tRenderEnd = performance.now();
                 const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
@@ -174,8 +177,11 @@
 
                 function layerOptionsFromConfig(config) {
                     const options = {
+                        pane: "infraestructuraPane",
+                        filter: config.filterFeature,
                         onEachFeature(feature, layer) {
                             if (feature.properties && config.popup) layer.bindPopup(config.popup(feature.properties));
+                            layer.on("click", event => selectTerritoryBelowInfrastructure(event.latlng));
                         }
                     };
                     if (["point", "mixed"].includes(config.render)) {
@@ -184,6 +190,7 @@
                                 radius: config.radius || 5,
                                 fillColor: config.color,
                                 color: config.outlineColor || "#ffffff",
+                                pane: "infraestructuraPane",
                                 weight: 1,
                                 opacity: 1,
                                 fillOpacity: 0.82
@@ -202,6 +209,28 @@
                     return options;
                 }
 
+                function selectTerritoryBelowInfrastructure(latlng) {
+                    const territoryLayer = getLayerForLevel(activeTerritoryLevel);
+                    if (!territoryLayer || !latlng) return;
+                    const point = map.latLngToLayerPoint(latlng);
+                    let found = null;
+                    territoryLayer.eachLayer(layer => {
+                        if (!found && typeof layer._containsPoint === "function" && layer._containsPoint(point)) found = layer;
+                    });
+                    if (found) handleTerritoryClick(activeTerritoryLevel, { target: found, latlng });
+                }
+
+                const infrastructureDataPromises = new Map();
+                function fetchInfrastructureData(url) {
+                    if (!infrastructureDataPromises.has(url)) {
+                        infrastructureDataPromises.set(url, fetch(url).then(response => {
+                            if (!response.ok) throw new Error(`No se pudo cargar ${url}.`);
+                            return response.json();
+                        }));
+                    }
+                    return infrastructureDataPromises.get(url);
+                }
+
                 function registerInfrastructureLayer(config) {
                     const placeholder = L.layerGroup();
                     placeholder._redsaLoaded = false;
@@ -209,21 +238,20 @@
                     placeholder._redsaConfigId = config.id;
                     const startLoad = () => {
                         if (placeholder._redsaLoadPromise) return placeholder._redsaLoadPromise;
-                        placeholder._redsaLoadPromise = fetch(config.url)
-                            .then(response => {
-                                if (!response.ok) throw new Error(`No se pudo cargar la capa ${config.label}.`);
-                                return response.json();
-                            })
+                        placeholder._redsaLoadPromise = fetchInfrastructureData(config.url)
                             .then(data => {
-                                const layer = L.geoJSON(data, layerOptionsFromConfig(config));
+                                const selectedFeatures = (data.features || []).filter(feature => !config.filterFeature || config.filterFeature(feature));
+                                const selectedData = { ...data, features: selectedFeatures };
+                                const layer = L.geoJSON(selectedData, layerOptionsFromConfig(config));
                                 const mappedCantons = new Set(
-                                    (data.features || []).flatMap(feature => feature.properties?.DPA_CANTONES || []).map(String)
+                                    selectedFeatures.flatMap(feature => feature.properties?.DPA_CANTONES || []).map(String)
                                 );
                                 const unmappedFeatures = config.coverageMask
                                     ? (cantonData?.features || []).filter(feature => !mappedCantons.has(String(feature.properties?.DPA_CANTON)))
                                     : [];
                                 if (unmappedFeatures.length) {
                                     placeholder.addLayer(L.geoJSON({ type: "FeatureCollection", features: unmappedFeatures }, {
+                                        pane: "infraestructuraPane",
                                         interactive: false,
                                         style: {
                                             color: "#64748b",
@@ -235,7 +263,7 @@
                                         }
                                     }));
                                 }
-                                placeholder._redsaFeatureCount = data.features?.length || 0;
+                                placeholder._redsaFeatureCount = selectedFeatures.length;
                                 placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
                                 placeholder._redsaLoaded = true;
                                 placeholder.addLayer(layer);
@@ -616,11 +644,27 @@
                         updateLegend();
                         return this.state();
                     },
+                    fireOverlayClick(label) {
+                        const group = overlayMaps[label];
+                        if (!group) return false;
+                        let target = null;
+                        group.eachLayer(child => {
+                            if (!target && typeof child.eachLayer === "function") {
+                                child.eachLayer(candidate => {
+                                    if (!target && typeof candidate.getBounds === "function") target = candidate;
+                                });
+                            }
+                        });
+                        if (!target) return false;
+                        const latlng = target.getBounds().getCenter();
+                        target.fire("click", { latlng });
+                        return true;
+                    },
                     state() {
                         const layerState = layer => ({
                             ready: Boolean(layer),
                             visible: Boolean(layer && map.hasLayer(layer)),
-                            features: layer ? layer.getLayers().length : 0
+                            features: layer && typeof layer.getLayers === "function" ? layer.getLayers().length : 0
                         });
                         return {
                             zoom: map.getZoom(),
@@ -652,7 +696,11 @@
                                 province: layerState(provinceLayer),
                                 canton: layerState(cantonLayer),
                                 parish: layerState(parishLayer),
-                                roadDensity: layerState(roadDensityLayer)
+                                roadDensity: {
+                                    ...layerState(roadDensityLayer),
+                                    pixelsWithRoads: roadDensityMetadata?.pixeles_con_vias || 0,
+                                    resolutionMeters: roadDensityMetadata?.resolucion_metros || null
+                                }
                             },
                             osmLayers: Object.fromEntries(INFRASTRUCTURE_LAYER_CONFIGS.map(config => {
                                 const layer = overlayMaps[config.label];
