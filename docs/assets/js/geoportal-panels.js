@@ -384,6 +384,13 @@
                         otro: "#94a3b8",
                         sin_dato: "#64748b"
                     };
+                    const AGE_GROUP_COLORS = {
+                        '0-14': '#a78bfa',
+                        '15-29': '#8b5cf6',
+                        '30-49': '#7c3aed',
+                        '50-64': '#6d28d9',
+                        '65+': '#5b21b6'
+                    };
                     const userLabels = {
                         peaton: "Peatón",
                         ciclista: "Ciclista",
@@ -445,7 +452,7 @@
                         const count = edg.edad[k];
                         if (count > 0) {
                             const pct = (count / total_edg) * 100;
-                            html += defProgressBar(ageLabels[k], count, pct, "#cbd5e1");
+                            html += defProgressBar(ageLabels[k], count, pct, AGE_GROUP_COLORS[k] || "#8b5cf6");
                         }
                     });
                     html += `</div>`;

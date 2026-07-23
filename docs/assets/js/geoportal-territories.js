@@ -373,6 +373,12 @@ function onEachProvinceFeature(feature, layer) {
                 const isActive = button.dataset.levelMode === territoryLevelMode;
                 button.classList.toggle("active", isActive);
                 button.setAttribute("aria-pressed", String(isActive));
+
+                const levelKey = button.dataset.levelMode;
+                const config = VARIABLE_CONFIGS[selectedVariable];
+                const levelSupported = levelKey === "auto" || !config?.levels || config.levels.includes(levelKey);
+                button.classList.toggle("level-unavailable", !levelSupported);
+                button.title = levelSupported ? "" : `"${config.label}" no está disponible en ${LEVEL_LABELS[levelKey]}`;
             });
             if (status) {
                 const modeText = territoryLevelMode === "auto" ? "automático" : "fijado manualmente";

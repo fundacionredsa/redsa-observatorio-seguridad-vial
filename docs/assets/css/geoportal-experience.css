@@ -1228,6 +1228,11 @@ body.light-theme .u-muted-label {
     color: #52606b;
 }
 
+body.light-theme .timeline-mark.tm-available {
+    background: rgba(2, 132, 199, 0.15);
+    color: #0284c7;
+}
+
 /* Timeline Play Button Styles */
 .timeline-play-btn {
     display: inline-flex;

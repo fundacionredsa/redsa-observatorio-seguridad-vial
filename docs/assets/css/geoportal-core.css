@@ -625,6 +625,11 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .territory-level-segments button.level-unavailable {
+            opacity: 0.4;
+            cursor: help;
+        }
+
         .period-mode-control {
             margin-top: 9px;
             padding-top: 8px;
@@ -798,14 +803,20 @@
 
         .timeline-mark {
             text-align: center;
-            color: #cbd5e1;
             font-size: 0.53rem;
+            border-radius: 3px;
+            padding: 1px 2px;
+            transition: opacity 0.2s ease, background-color 0.2s ease;
         }
-
-        .timeline-mark.gap {
-            color: #64748b;
-            text-decoration: line-through;
-            opacity: 0.6;
+        .timeline-mark.tm-available {
+            color: var(--accent-hover);
+            background: rgba(14, 165, 233, 0.18);
+            opacity: 1;
+        }
+        .timeline-mark.tm-unavailable {
+            color: var(--text-muted, #64748b);
+            background: transparent;
+            opacity: 0.35;
         }
 
         .profile-row-with-trend {

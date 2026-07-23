@@ -626,7 +626,7 @@
             marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
             marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
                 const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                return `<span class="timeline-mark${covered ? "" : " gap"}">${String(year).slice(2)}</span>`;
+                return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${String(year).slice(2)}</span>`;
             }).join("");
 
             updateTimelinePlayControl();
