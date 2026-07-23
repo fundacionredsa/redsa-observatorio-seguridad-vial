@@ -178,7 +178,7 @@ def main():
             "referencias": var_data["referencias"],
             "anios_disponibles": var_data["anios_disponibles"],
             "nivel_territorial_disponible": var_data["nivel_territorial_disponible"],
-            "tipo": "raster_visual" if var_data.get("spatial_layer") == "road_density_raster" else "variable_territorial",
+            "tipo": "variable_territorial",
             "descargas": {
                 "excel": None if direct_downloads else f"descargas/{var_id}.xlsx",
                 "geojson_niveles": [] if direct_downloads else var_data["nivel_territorial_disponible"],

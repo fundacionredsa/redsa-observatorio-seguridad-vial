@@ -2,9 +2,6 @@ import json
 import unittest
 from pathlib import Path
 
-from PIL import Image
-
-
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "docs" / "data"
 
@@ -172,37 +169,20 @@ class PublishedDataContractTest(unittest.TestCase):
                 self.assertIn("elementos_total", coverage)
                 self.assertIn("advertencia", coverage)
 
-    def test_osm_road_layers_and_density_reconcile(self):
+    def test_osm_road_layer_is_complete_and_classified(self):
         roads = load("vias_ecuador.geojson")
-        density = load("densidad_vial_ecuador.geojson")
-        raster_metadata = load("densidad_vial_250m.json")
 
         self.assertEqual(len(roads["features"]), 41_040)
         self.assertEqual(sum(feature["properties"]["clase"] == "principal" for feature in roads["features"]), 14_687)
         self.assertEqual(sum(feature["properties"]["clase"] == "secundaria" for feature in roads["features"]), 26_353)
-        self.assertEqual(len(density["features"]), 1_517)
         self.assertEqual(roads["metadata"]["clasificacion"]["principal"], ["motorway", "trunk", "primary"])
         self.assertEqual(roads["metadata"]["clasificacion"]["secundaria"], ["secondary", "tertiary"])
-        self.assertEqual(density["metadata"]["tamano_celda_km"], 10.0)
-        self.assertEqual(density["metadata"]["propiedad"], "km_vias_por_celda")
-        self.assertEqual(density["metadata"]["cobertura_osm_vs_mtop_pct"], 120.68)
-
-        road_total = sum(
-            feature["properties"]["longitud_km"]
-            for feature in roads["features"]
+        self.assertEqual(roads["metadata"]["cobertura_osm_vs_mtop_pct"], 120.68)
+        self.assertAlmostEqual(
+            sum(feature["properties"]["longitud_km"] for feature in roads["features"]),
+            37_292.128,
+            delta=0.2,
         )
-        grid_total = sum(
-            feature["properties"]["km_vias_por_celda"]
-            for feature in density["features"]
-        )
-        self.assertAlmostEqual(road_total, grid_total, delta=0.2)
-        self.assertEqual(raster_metadata["resolucion_metros"], 250)
-        self.assertTrue(raster_metadata["solo_visual"])
-        self.assertAlmostEqual(raster_metadata["km_total_raster"], grid_total, delta=0.2)
-        self.assertGreaterEqual(len(raster_metadata["clasificacion"]["bins"]), 4)
-        with Image.open(DATA / "densidad_vial_250m.png") as raster:
-            self.assertEqual(raster.mode, "RGBA")
-            self.assertEqual(raster.size, (raster_metadata["ancho_px"], raster_metadata["alto_px"]))
 
     def test_province_osm_coverage_uses_direct_deduplicated_counts(self):
         expected = {}

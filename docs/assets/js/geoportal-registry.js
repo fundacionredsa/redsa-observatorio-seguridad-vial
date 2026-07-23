@@ -198,36 +198,6 @@
             infoSigla: "COBERTURA_OSM",
             colorFamily: "Greens",
             format: value => value.toFixed(1)
-        },
-        densidad_vial_osm: {
-            label: "Densidad de vías principales y secundarias (OSM)",
-            fuente: "OpenStreetMap contributors, ODbL; procesamiento REDSA",
-            description: "Patrón visual de kilómetros de vías principales y secundarias mapeadas en OpenStreetMap a resolución de 250 m. Muestra concentración de red mapeada, no tráfico ni calidad de la vía.",
-            unidad: "kilómetros de vías por píxel de 250 m",
-            metodologia: "Raster de 250 m calculado en Web Mercator mediante muestreo subpíxel de las vías highway=motorway, trunk, primary, secondary y tertiary. Usa el mismo clasificador adaptativo del portal. Es una capa visual no consultable por punto; la grilla vectorial de 10 km se conserva como descarga simplificada.",
-            licencia: "Open Data Commons Open Database License (ODbL)",
-            referencias: [
-                { label: "OpenStreetMap - derechos de autor y licencia", url: "https://www.openstreetmap.org/copyright/es" },
-                { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#vias-osm" }
-            ],
-            property: "km_vias_por_celda",
-            levels: ["province", "canton", "parish"],
-            temporal: { tipo: "foto_unica", anios_disponibles: [2026] },
-            dynamicBins: true,
-            zeroIsData: false,
-            continuous: true,
-            spatialLayer: "road_density_raster",
-            rasterMetadataUrl: "data/densidad_vial_250m.json",
-            legendLevelLabel: "Raster de 250 m",
-            omitNoDataLegend: true,
-            infoSigla: "OSM_VIAS",
-            colorFamily: "YlOrBr",
-            format: value => value.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 2 }),
-            catalogDownloads: [
-                { formato: "PNG", etiqueta: "Raster visual PNG", url: "data/densidad_vial_250m.png" },
-                { formato: "JSON", etiqueta: "Metadatos y georreferenciación", url: "data/densidad_vial_250m.json" },
-                { formato: "GeoJSON", etiqueta: "Grilla consultable de 10 km", url: "data/densidad_vial_ecuador.geojson" }
-            ]
         }
     };
 

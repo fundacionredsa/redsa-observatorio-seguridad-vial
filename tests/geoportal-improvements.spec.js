@@ -111,7 +111,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             // Wait for fetch to complete and render
             const results = modal.locator('#catalog-results > article');
-            await expect(results).toHaveCount(11, { timeout: 10000 });
+            await expect(results).toHaveCount(10, { timeout: 10000 });
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             await expect(results.first().locator('.catalog-download')).toHaveCount(3);
@@ -120,12 +120,11 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(modal).toContainText('registra descargas, no personas únicas');
 
             await modal.locator('#catalog-search').fill('vías principales');
-            await expect(results).toHaveCount(2);
-            await expect(modal).toContainText('Densidad de vías principales y secundarias');
+            await expect(results).toHaveCount(1);
             await expect(modal).toContainText('Red de vías principales y secundarias');
-            await expect(modal.locator('.catalog-category')).toHaveText(['Otras variables', 'Otras variables']);
+            await expect(modal.locator('.catalog-category')).toHaveText(['Otras variables']);
             await modal.locator('#catalog-search').fill('');
-            await expect(results).toHaveCount(11);
+            await expect(results).toHaveCount(10);
 
             const geojsonDownload = page.waitForEvent('download');
             await results.first().locator('button.catalog-download').first().click();

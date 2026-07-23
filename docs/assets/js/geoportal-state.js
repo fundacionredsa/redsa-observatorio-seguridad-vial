@@ -87,7 +87,6 @@
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
         const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
-        const RUTA_DENSIDAD_VIAL_METADATA_RELATIVA = "data/densidad_vial_250m.json";
         const CENTRO_MAPA = INITIAL_VIEW.center;
         const ZOOM_INICIAL = INITIAL_VIEW.zoom;
         const ZOOM_PROVINCIAS_MAX = 7;
@@ -204,7 +203,6 @@
                             const val = e.target.value / 100;
                             const territoryPane = map.getPane("territorioPane");
                             if (territoryPane) territoryPane.style.opacity = val;
-                            roadDensityLayer?.setOpacity?.(val * 0.82);
                         });
                     }
                 }, 100);
@@ -220,8 +218,6 @@
         let cantonLayer;
         let cantonData = null;
         let hotspotData = null;
-        let roadDensityMetadata = null;
-        let roadDensityLayer = null;
         let nationalFatalitiesByYear = {};
         let selectedLayer = null;
         let selectedProvinceLayer = null;
@@ -593,8 +589,6 @@
         }
 
         function getFeaturesForLevel(level, variable = selectedVariable) {
-            const selectedConfig = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
-            if (selectedConfig.spatialLayer === "road_density_raster") return [];
             const dataByLevel = {
                 province: provinceData,
                 canton: cantonData,
@@ -606,22 +600,7 @@
 
         function recalculateActiveVariableBins(variable, level) {
             const config = VARIABLE_CONFIGS[variable] || VARIABLE_CONFIGS.normal;
-            if (config.spatialLayer === "road_density_raster" && roadDensityMetadata?.clasificacion) {
-                const result = roadDensityMetadata.clasificacion;
-                activeVariableBins = {
-                    variable,
-                    level,
-                    year: selectedYear,
-                    periodMode: selectedPeriodMode,
-                    bins: [...result.bins],
-                    displayBins: [...result.displayBins],
-                    method: result.method,
-                    gvf: result.gvf,
-                    validValueCount: result.validValueCount,
-                    colors: [...result.colors],
-                    logScaled: result.logScaled
-                };
-            } else if (variable === "normal" || !config.levels.includes(level)) {
+            if (variable === "normal" || !config.levels.includes(level)) {
                 activeVariableBins = { variable: "normal", level, year: selectedYear, periodMode: selectedPeriodMode, bins: [], displayBins: [], method: '', gvf: 0, validValueCount: 0, colors: [], logScaled: false };
             } else {
                 const result = calculateOptimalBins(getFeaturesForLevel(level, variable), config, variable);
@@ -740,21 +719,10 @@
         function getTerritoryStyle(feature, level, isHovered = false, isSelected = false) {
             const effectiveVariable = getEffectiveVariable(level);
             const config = VARIABLE_CONFIGS[effectiveVariable] || VARIABLE_CONFIGS.normal;
-            if (effectiveVariable === "normal" || config.spatialLayer === "road_density_raster") {
+            if (effectiveVariable === "normal") {
                 return getBoundaryStyle(feature, level, isHovered, isSelected);
             }
             return getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
-        }
-
-        function syncRoadDensityLayer() {
-            if (!roadDensityLayer) return;
-            const config = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
-            const shouldShow = config.spatialLayer === "road_density_raster";
-            if (shouldShow) {
-                if (!map.hasLayer(roadDensityLayer)) roadDensityLayer.addTo(map);
-            } else {
-                removeLayerIfPresent(roadDensityLayer);
-            }
         }
 
         function getProvinceStyle(feature, isHovered = false, isSelected = false) {

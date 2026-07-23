@@ -73,13 +73,9 @@
             fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
                 if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
                 return response.json();
-            }),
-            fetch(RUTA_DENSIDAD_VIAL_METADATA_RELATIVA).then(response => {
-                if (!response.ok) throw new Error("No se pudieron cargar los metadatos del raster de densidad vial.");
-                return response.json();
             })
         ])
-            .then(([provinces, cantons, hotspots, roadDensity]) => {
+            .then(([provinces, cantons, hotspots]) => {
                 const tDownloadEnd = performance.now();
                 const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
                 document.getElementById("diag-download").textContent = `${tDownload}s`;
@@ -88,7 +84,6 @@
                 provinceData = provinces;
                 cantonData = cantons;
                 hotspotData = hotspots;
-                roadDensityMetadata = roadDensity;
                 mergeHotspotsIntoCantons(cantonData, hotspotData);
                 nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
 
@@ -109,12 +104,6 @@
                     },
                     onEachFeature: onEachFeature
                 });
-
-                roadDensityLayer = L.imageOverlay(
-                    `data/${roadDensityMetadata.imagen}`,
-                    roadDensityMetadata.bounds,
-                    { pane: "infraestructuraPane", interactive: false, opacity: 0.82 }
-                );
 
                 const tRenderEnd = performance.now();
                 const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
@@ -366,7 +355,6 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
-                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
@@ -393,7 +381,6 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
-                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
@@ -406,7 +393,6 @@
                     updateTimelineControl();
                     recalculateActiveVariableBins(selectedVariable, level);
                     refreshTerritoryLayerStyles(level);
-                    syncRoadDensityLayer();
                     updateMapLevelNote(level);
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
@@ -695,12 +681,7 @@
                             layers: {
                                 province: layerState(provinceLayer),
                                 canton: layerState(cantonLayer),
-                                parish: layerState(parishLayer),
-                                roadDensity: {
-                                    ...layerState(roadDensityLayer),
-                                    pixelsWithRoads: roadDensityMetadata?.pixeles_con_vias || 0,
-                                    resolutionMeters: roadDensityMetadata?.resolucion_metros || null
-                                }
+                                parish: layerState(parishLayer)
                             },
                             osmLayers: Object.fromEntries(INFRASTRUCTURE_LAYER_CONFIGS.map(config => {
                                 const layer = overlayMaps[config.label];

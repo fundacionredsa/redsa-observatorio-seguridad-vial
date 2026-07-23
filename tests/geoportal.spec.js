@@ -105,7 +105,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer-close")).toBeHidden();
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#map-variable-select option")).toHaveCount(11);
+  await expect(page.locator("#map-variable-select option")).toHaveCount(10);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
   await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
@@ -151,34 +151,23 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
 });
 
-test("carga vias OSM independientes y clasifica el raster con el motor existente", async ({ page }, testInfo) => {
+test("carga vias OSM independientes y conserva la escala grafica", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Las capas viales nacionales se renderizan una vez.");
   let roadRequests = 0;
   page.on("request", request => {
     if (request.url().endsWith("/data/vias_ecuador.geojson")) roadRequests += 1;
   });
   await loadPortal(page);
+  await expect(page.locator("#map-variable-select option[value='densidad_vial_osm']")).toHaveCount(0);
   const scaleNational = await page.locator(".road-scale-control .leaflet-control-scale-line").innerText();
   await page.evaluate(() => window.__redsaAudit.setZoom(11));
   await page.waitForTimeout(200);
   const scaleLocal = await page.locator(".road-scale-control .leaflet-control-scale-line").innerText();
   expect(scaleLocal).not.toBe(scaleNational);
 
-  await page.evaluate(() => window.__redsaAudit.selectVariable("densidad_vial_osm"));
-  await expect(page.locator(".legend-panel")).toContainText("Raster de 250 m");
-  await expect(page.locator(".legend-panel")).toContainText("no consultable por punto");
-  await page.locator(".legend-panel [data-sigla='INFO']").click();
-  await expect(page.locator("#sigla-popover")).toContainText("GVF");
-  let state = await page.evaluate(() => window.__redsaAudit.state());
-  expect(state.layers.roadDensity.visible).toBeTruthy();
-  expect(state.layers.roadDensity.pixelsWithRoads).toBe(148989);
-  expect(state.layers.roadDensity.resolutionMeters).toBe(250);
-  expect(state.validValueCount).toBe(148989);
-  expect(state.bins.length).toBeGreaterThanOrEqual(4);
-
   await page.evaluate(() => window.__redsaAudit.setOverlay("Vías principales", true));
   await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Vías principales"].loaded, null, { timeout: 90_000 });
-  state = await page.evaluate(() => window.__redsaAudit.state());
+  let state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.osmLayers["Vías principales"].features).toBe(14687);
   expect(state.osmLayers["Vías secundarias"].visible).toBeFalsy();
 
@@ -455,8 +444,7 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   const descriptions = {
     siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
     tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
-    cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó.",
-    densidad_vial_osm: "Patrón visual de kilómetros de vías principales y secundarias mapeadas en OpenStreetMap a resolución de 250 m. Muestra concentración de red mapeada, no tráfico ni calidad de la vía."
+    cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó."
   };
   for (const [variable, text] of Object.entries(descriptions)) {
     await page.evaluate(selected => window.__redsaAudit.selectVariable(selected), variable);

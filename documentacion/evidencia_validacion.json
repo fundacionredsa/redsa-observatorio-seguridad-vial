@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T00:09:25.765115+00:00",
+  "generated_at": "2026-07-23T00:32:51.812729+00:00",
   "status": "ok",
   "failures": [],
   "files": {
@@ -32,12 +32,6 @@
       "expected_features": 41040,
       "bytes": 28054348,
       "sha256": "59bc2d4bde6d6e9afbb0c462d86cac3228895d92b6765d553994345aa201ac60"
-    },
-    "densidad_vial_ecuador.geojson": {
-      "features": 1517,
-      "expected_features": 1517,
-      "bytes": 784968,
-      "sha256": "9efd578409ce5d82548b276b8ebc5a6c88b56d8a57aac2d53c7a10cdc27b25ca"
     },
     "iluminacion_ecuador.geojson": {
       "features": 8191,

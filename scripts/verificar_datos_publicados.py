@@ -87,7 +87,6 @@ def main() -> None:
         "parroquias_wgs84.geojson": (parishes, 1040),
         "hotspots_cantonales.geojson": (hotspots, 224),
         "vias_ecuador.geojson": (load("vias_ecuador.geojson"), 41_040),
-        "densidad_vial_ecuador.geojson": (load("densidad_vial_ecuador.geojson"), 1_517),
     }
     for name, (payload, count) in expected.items():
         actual = len(payload.get("features", []))

@@ -23,14 +23,15 @@ class PortalTextAndDownloadsTest(unittest.TestCase):
         manifest_path = ROOT / "docs" / "descargas" / "manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         catalog = json.loads((ROOT / "docs" / "data" / "catalogo_metadatos.json").read_text(encoding="utf-8"))
+        self.assertNotIn("densidad_vial_osm", {variable["id"] for variable in catalog["variables"]})
         for variable in catalog["variables"]:
             with self.subTest(variable=variable["id"]):
                 self.assertTrue(variable.get("fuente"))
                 self.assertTrue(variable.get("metodologia"))
                 self.assertTrue(variable.get("licencia"))
                 self.assertTrue(variable.get("referencias"))
-        direct_entries = {variable["id"]: variable for variable in catalog["variables"] if variable["id"] in {"densidad_vial_osm", "vias_osm"}}
-        self.assertEqual(set(direct_entries), {"densidad_vial_osm", "vias_osm"})
+        direct_entries = {variable["id"]: variable for variable in catalog["variables"] if variable["id"] == "vias_osm"}
+        self.assertEqual(set(direct_entries), {"vias_osm"})
         for variable in direct_entries.values():
             self.assertEqual(variable["categoria"], "Otras variables")
             self.assertIsNone(variable["descargas"]["excel"])

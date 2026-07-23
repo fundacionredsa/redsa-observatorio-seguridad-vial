@@ -57,27 +57,11 @@ try {
     secundarias: window.__redsaAudit.state().osmLayers["Vías secundarias"].visible
   }));
 
-  await setRoadLayer(page, "Vías principales", false);
-  await setRoadLayer(page, "Vías secundarias", false);
-  await page.evaluate(() => window.__redsaAudit.selectVariable("densidad_vial_osm"));
-  await page.evaluate(() => { window.geoportalMap.setView([-0.22, -78.5], 12, { animate: false }); });
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: fileURLToPath(new URL("04_densidad_vial_250m_zoom_local.png", CONFIG.outputDir)) });
-  report.densidad = await page.evaluate(() => ({
-    layer: window.__redsaAudit.state().layers.roadDensity,
-    bins: window.__redsaAudit.state().bins,
-    validValueCount: window.__redsaAudit.state().validValueCount,
-    legend: document.querySelector(".legend-panel")?.innerText,
+  report.escala = await page.evaluate(() => ({
     scale: document.querySelector(".road-scale-control")?.innerText,
-    zoom: window.geoportalMap.getZoom()
-  }));
-
-  await page.evaluate(() => { window.geoportalMap.setView([-1.7, -78.45], 6, { animate: false }); });
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: fileURLToPath(new URL("05_densidad_vial_escala_nacional.png", CONFIG.outputDir)) });
-  report.escalaNacional = await page.evaluate(() => ({
-    scale: document.querySelector(".road-scale-control")?.innerText,
-    zoom: window.geoportalMap.getZoom()
+    zoom: window.geoportalMap.getZoom(),
+    viasPrincipales: window.__redsaAudit.state().osmLayers["Vías principales"].visible,
+    viasSecundarias: window.__redsaAudit.state().osmLayers["Vías secundarias"].visible
   }));
 
   await page.close();

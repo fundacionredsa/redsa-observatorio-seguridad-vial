@@ -309,13 +309,6 @@ function onEachProvinceFeature(feature, layer) {
                             </div>
                         `;
                     }
-                    if (config.spatialLayer === "road_density_raster") {
-                        itemsHtml += `
-                            <div class="legend-item" style="padding-left:8px;color:var(--text-muted);font-size:.67rem;line-height:1.3;align-items:flex-start;">
-                                <span>Capa de patrón visual, no consultable por punto. Representa kilómetros mapeados; no tráfico, estado de la vía ni pertenencia a la Red Vial Estatal.</span>
-                            </div>`;
-                    }
-
                     container.innerHTML += itemsHtml;
                 }
             }
@@ -430,7 +423,6 @@ function onEachProvinceFeature(feature, layer) {
             domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
 
             refreshTerritoryLayerStyles();
-            syncRoadDensityLayer();
             updateMapLevelNote(level);
             updateLegend();
             updateTerritoryLevelControl();

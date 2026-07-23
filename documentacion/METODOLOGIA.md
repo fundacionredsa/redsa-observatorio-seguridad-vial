@@ -138,7 +138,7 @@ de un elemento refleja cobertura colaborativa de OSM, no un inventario oficial.
 Mapillary tiene actualmente cero features porque falta una extraccion validada;
 el archivo vacio se mantiene para que la ausencia sea explicita.
 
-### Vias OSM y densidad raster de alta resolucion
+### Vias OSM
 
 La red vial usa exclusivamente OpenStreetMap, consultado por provincia mediante
 Overpass API el 22 de julio de 2026. Se deduplican los objetos por
@@ -161,19 +161,9 @@ explicita y verifico cero elementos de clases locales `residential`,
 `unclassified` o `service`. Su peso y la naturaleza colaborativa de OSM son
 limitaciones declaradas.
 
-La vista principal de densidad es un raster PNG de 250 m
-(`RESOLUCION_RASTER_METROS`) en EPSG:3857, alineado con la proyeccion usada por
-Leaflet. La longitud geodesica de cada tramo se distribuye mediante muestreo
-subpixel cada 125 m. Sus 148.989 pixeles con vias suman 37.292,128 km,
-exactamente el total vial publicado. La paleta se genera con el mismo modulo de
-clasificacion adaptativa Jenks/GVF del navegador; en este corte uso seis clases,
-GVF 0,9298 y no requirio transformacion logaritmica.
-
-El raster es una capa de patron visual y no permite consultar el valor numerico
-de un punto. Para auditoria y descarga se conserva la cuadricula vectorial
-simplificada de 10 km en EPSG:6933, con 1.517 celdas y la propiedad
-`km_vias_por_celda`. Ninguna de las dos representaciones mide trafico, estado de
-la via, seguridad ni pertenencia a la red estatal.
+Las capas lineales publicadas suman 37.292,128 km mapeados. No miden trafico,
+estado de la via, seguridad ni pertenencia a la red estatal. La ausencia de una
+via tampoco demuestra que no exista fisicamente.
 
 ## Privacidad
 

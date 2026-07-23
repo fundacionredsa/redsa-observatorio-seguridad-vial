@@ -844,14 +844,6 @@ cruces_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,
 cruces_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
 cruces_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 cruces_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
-densidad_vial_ecuador.geojson,area_celda_km2,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,23.648
-densidad_vial_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"
-densidad_vial_ecuador.geojson,cell_id,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,r000c123
-densidad_vial_ecuador.geojson,columna,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,123
-densidad_vial_ecuador.geojson,fecha_extraccion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-22
-densidad_vial_ecuador.geojson,fila,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
-densidad_vial_ecuador.geojson,km_vias_por_celda,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,20.157
-densidad_vial_ecuador.geojson,tamano_celda_km,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,10.0
 hotspots_cantonales.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
 hotspots_cantonales.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
 hotspots_cantonales.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
