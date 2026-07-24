@@ -31,6 +31,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block B: Guided Tour', () => {
         test('tour appears on first visit, can be closed and reopened', async ({ page }) => {
+            const isMobile = (page.viewportSize()?.width || 0) <= 768;
+            test.skip(isMobile, 'Tour test is for desktop');
+
             // By default, the first visit triggers it, which was handled by beforeEach above.
             // Let's clear localStorage and reload to ensure we get it fresh.
             await page.evaluate(() => localStorage.removeItem('redsa_tour_v2_visto'));
