@@ -372,7 +372,7 @@
                 setMobilePanel("layers", false);
                 return;
             }
-            setDesktopTechnicalPanel(true);
+            setDesktopTechnicalPanel(false);
         });
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
         mobileLegendToggle?.addEventListener("click", () => {

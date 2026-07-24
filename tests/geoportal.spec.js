@@ -2,7 +2,11 @@ import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("redsa_tour_v2_visto", "true"));
+  await page.addInitScript(() => {
+    localStorage.setItem("redsa_tour_v2_visto", "true");
+    localStorage.setItem("redsa_tour_seen", "true");
+    localStorage.setItem("has_seen_geoportal_tour", "true");
+  });
 });
 
 async function loadPortal(page) {

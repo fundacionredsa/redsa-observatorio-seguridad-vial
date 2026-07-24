@@ -20,13 +20,14 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         await page.goto('./', { waitUntil: "domcontentloaded" });
         await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 10_000 });
         
-        // Cierra el tour si aparece (excepto si estamos en el test del tour)
-        const closeBtn = page.locator('.driver-popover-close-btn');
-        // Usamos una pequeña espera no bloqueante
-        await page.waitForTimeout(1500); 
-        if (await closeBtn.isVisible()) {
-            await closeBtn.click();
-        }
+        await page.waitForSelector('.driver-popover-close-btn', { state: 'visible', timeout: 5000 }).catch(() => {});
+        await page.evaluate(() => {
+            const closeBtn = document.querySelector('.driver-popover-close-btn');
+            if (closeBtn instanceof HTMLElement) closeBtn.click();
+            const overlay = document.querySelector('.driver-overlay');
+            if (overlay) overlay.remove();
+        });
+        await page.waitForSelector('.driver-overlay', { state: 'detached', timeout: 5000 }).catch(() => {});
     });
 
     test.describe('Block B: Guided Tour', () => {
