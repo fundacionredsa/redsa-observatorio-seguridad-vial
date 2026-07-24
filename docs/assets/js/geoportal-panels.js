@@ -559,6 +559,10 @@
             const hoverCard = document.getElementById("demographic-hover-card");
             if (hoverCard) {
                 window.addEventListener("resize", updateProfileCardLayout);
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener("resize", updateProfileCardLayout);
+                    window.visualViewport.addEventListener("scroll", updateProfileCardLayout);
+                }
             }
             document.getElementById("profile-card-close")?.addEventListener("click", clearTerritorySelection);
         });

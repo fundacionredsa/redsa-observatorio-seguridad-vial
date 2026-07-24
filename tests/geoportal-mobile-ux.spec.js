@@ -67,6 +67,25 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
     });
 
+    test('mobile-level-bar is visible on mobile and synchronizes level changes', async ({ page }) => {
+        const isMobile = (page.viewportSize()?.width || 0) <= 768;
+
+        const mobileLevelBar = page.locator('#mobile-level-bar');
+
+        if (isMobile) {
+            await expect(mobileLevelBar).toBeVisible();
+            const provButton = mobileLevelBar.locator('button[data-level-mode="province"]');
+            await provButton.click();
+            await expect(provButton).toHaveClass(/active/);
+
+            // Verify global synchronization across all level buttons
+            const panelProvButton = page.locator('#territory-level-control button[data-level-mode="province"]');
+            await expect(panelProvButton).toHaveClass(/active/);
+        } else {
+            await expect(mobileLevelBar).toBeHidden();
+        }
+    });
+
     test('search input has font-size 16px on mobile to prevent iOS auto-zoom', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
@@ -82,10 +101,12 @@ test.describe('Geoportal Mobile UX Improvements', () => {
 
         const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
         const mobileCitizenClose = page.locator('#mobile-citizen-close');
+        const mobileLevelBar = page.locator('#mobile-level-bar');
         const citizenPanel = page.locator('#citizen-panel');
 
         await expect(mobileCitizenToggle).toBeHidden();
         await expect(mobileCitizenClose).toBeHidden();
+        await expect(mobileLevelBar).toBeHidden();
         await expect(citizenPanel).toBeVisible();
     });
 });

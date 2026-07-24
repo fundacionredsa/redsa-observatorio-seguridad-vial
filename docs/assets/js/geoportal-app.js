@@ -115,6 +115,7 @@
 
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
+                map.on('zoomend', () => { if (typeof updateProfileCardLayout === "function") updateProfileCardLayout(); });
 
                 function selectCantonLayer(foundLayer, updateHash = true) {
                     if (!foundLayer) return false;

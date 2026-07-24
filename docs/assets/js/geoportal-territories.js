@@ -366,10 +366,8 @@ function onEachProvinceFeature(feature, layer) {
         }
 
         function updateTerritoryLevelControl() {
-            const control = document.getElementById("territory-level-control");
             const status = document.getElementById("territory-level-status");
-            if (!control) return;
-            control.querySelectorAll("[data-level-mode]").forEach(button => {
+            document.querySelectorAll("[data-level-mode]").forEach(button => {
                 const isActive = button.dataset.levelMode === territoryLevelMode;
                 button.classList.toggle("active", isActive);
                 button.setAttribute("aria-pressed", String(isActive));
