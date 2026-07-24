@@ -238,6 +238,9 @@
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
+        const mobileCitizenToggle = document.getElementById("mobile-citizen-toggle");
+        const mobileCitizenClose = document.getElementById("mobile-citizen-close");
+        const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
@@ -252,6 +255,7 @@
 
         territorySidebar?.addEventListener("transitionend", () => updateProfileCardLayout());
         technicalDrawer?.addEventListener("transitionend", () => updateProfileCardLayout());
+        citizenPanel?.addEventListener("transitionend", () => updateProfileCardLayout());
 
         function setMobileLegend(open) {
             const shouldOpen = Boolean(open && mobileMediaQuery.matches);
@@ -265,13 +269,25 @@
 
         function setMobilePanel(panel, open) {
             if (open) setMobileLegend(false);
+            if (panel === "citizen") {
+                document.body.classList.toggle("mobile-citizen-open", open);
+                citizenPanel?.setAttribute("aria-hidden", String(!open));
+                if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", String(open));
+                if (open && mobileMediaQuery.matches) {
+                    document.body.classList.remove("mobile-sidebar-open", "mobile-layers-open");
+                    if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
+                    if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
+                    mobileCitizenClose?.focus({ preventScroll: true });
+                }
+            }
             if (panel === "sidebar") {
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open");
+                    document.body.classList.remove("mobile-layers-open", "mobile-citizen-open");
                     if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
+                    if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", "false");
                     if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
                     technicalDrawer?.setAttribute("aria-hidden", "true");
                     mobileSidebarClose?.focus({ preventScroll: true });
@@ -283,8 +299,9 @@
                 if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", String(open));
                 if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-sidebar-open");
+                    document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open");
                     if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
+                    if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", "false");
                     territorySidebar?.setAttribute("aria-hidden", "true");
                     technicalDrawerClose?.focus({ preventScroll: true });
                 }
@@ -294,6 +311,7 @@
         }
 
         function closeMobilePanels() {
+            setMobilePanel("citizen", false);
             setMobilePanel("sidebar", false);
             setMobilePanel("layers", false);
         }
@@ -321,6 +339,8 @@
             if (selector && container) document.body.classList.add("technical-ready");
         }
 
+        mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
+        mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
         mobileSidebarToggle?.addEventListener("click", () => {
             setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
         });

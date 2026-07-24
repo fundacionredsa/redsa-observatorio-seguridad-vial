@@ -101,10 +101,6 @@
     }
 
     .citizen-panel {
-        top: var(--mobile-top-offset);
-        left: var(--mobile-edge);
-        width: calc(100vw - (2 * var(--mobile-edge)));
-        max-height: calc(100dvh - 160px);
         padding: 7px 12px;
         overflow-x: hidden;
     }
@@ -528,10 +524,6 @@
 @media (max-width: 370px) {
     .citizen-national-badge {
         display: none;
-    }
-
-    .citizen-panel {
-        max-height: calc(100dvh - 142px);
     }
 
     .mobile-nav-toggle {

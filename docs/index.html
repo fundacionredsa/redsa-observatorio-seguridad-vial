@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.2">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.2">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.2">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.3">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.3">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.3">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -75,6 +75,9 @@
     </div>
 
     <section class="citizen-panel" id="citizen-panel" aria-label="Explorar la seguridad vial de mi territorio">
+        <div class="citizen-panel-topbar">
+            <button type="button" id="mobile-citizen-close" class="mobile-citizen-close" aria-label="Cerrar panel">✕</button>
+        </div>
         <div class="citizen-brand">
             <div class="citizen-brand-copy">
                 <p class="citizen-eyebrow">Fundación REDSA</p>
@@ -149,6 +152,9 @@
     <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
         <span aria-hidden="true">&#9638;</span>
         <span>Datos y capas</span>
+    </button>
+    <button type="button" id="mobile-citizen-toggle" class="mobile-citizen-toggle" aria-expanded="false" aria-controls="citizen-panel">
+        Explorar mi territorio
     </button>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
 
@@ -459,16 +465,16 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.2"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.2"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.3"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.3"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

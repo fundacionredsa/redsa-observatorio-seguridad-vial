@@ -1118,7 +1118,8 @@ body.mobile-sidebar-open .sidebar {
 }
 
 body.mobile-sidebar-open .mobile-overlay-backdrop,
-body.mobile-layers-open .mobile-overlay-backdrop {
+body.mobile-layers-open .mobile-overlay-backdrop,
+body.mobile-citizen-open .mobile-overlay-backdrop {
     display: block;
     opacity: 1;
     pointer-events: auto;
@@ -1130,6 +1131,89 @@ body.mobile-sidebar-open .technical-toggle,
 body.mobile-layers-open .technical-toggle {
     opacity: 0;
     pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .citizen-panel {
+        z-index: var(--z-drawer);
+        opacity: 0;
+        transform: translateY(104%);
+        pointer-events: none;
+        transition: transform 220ms ease, opacity 160ms ease;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        max-width: 100vw;
+        max-height: min(80dvh, 560px);
+        border-radius: 12px 12px 0 0;
+    }
+
+    body.mobile-citizen-open .citizen-panel {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .mobile-citizen-toggle {
+        position: fixed;
+        z-index: var(--z-mobile-navigation);
+        bottom: 16px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 22px;
+        background: var(--accent);
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+        font-size: 0.82rem;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+    }
+
+    body.mobile-citizen-open .mobile-citizen-toggle,
+    body.mobile-sidebar-open .mobile-citizen-toggle,
+    body.mobile-layers-open .mobile-citizen-toggle {
+        display: none;
+    }
+
+    .mobile-citizen-close {
+        display: inline-flex;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0,0,0,0.12);
+        border-radius: 5px;
+        background: rgba(0,0,0,0.05);
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    .citizen-panel-topbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 6px;
+    }
+
+    .citizen-search-input {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-citizen-toggle,
+    .mobile-citizen-close,
+    .citizen-panel-topbar {
+        display: none;
+    }
 }
 
 .leaflet-top.leaflet-right .leaflet-control-zoom {
