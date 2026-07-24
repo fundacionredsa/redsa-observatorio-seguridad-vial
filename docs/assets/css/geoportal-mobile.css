@@ -270,6 +270,8 @@
     }
 
     .mobile-sidebar-close {
+        position: relative;
+        z-index: 2;
         display: inline-flex;
         width: 44px;
         height: 44px;
@@ -283,6 +285,7 @@
         font-size: 1.35rem;
         line-height: 1;
         cursor: pointer;
+        pointer-events: auto;
     }
 
     .sidebar .detail-period-control {

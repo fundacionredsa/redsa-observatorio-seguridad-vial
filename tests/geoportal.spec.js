@@ -359,7 +359,7 @@ test("control territorial permite fijar nivel y volver a modo automatico", async
   const fixed = await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
   expect(fixed.territoryLevelMode).toBe("canton");
   expect(fixed.level).toBe("canton");
-  await expect(page.locator('[data-level-mode="canton"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-level-mode="canton"]').first()).toHaveAttribute("aria-pressed", "true");
 
   const afterZoom = await page.evaluate(() => window.__redsaAudit.setZoom(12));
   expect(afterZoom.level).toBe("canton");
@@ -373,7 +373,7 @@ test("control territorial permite fijar nivel y volver a modo automatico", async
   const automatic = await page.evaluate(() => window.__redsaAudit.state());
   expect(automatic.level).toBe("parish");
   expect(automatic.territoryLevelMode).toBe("auto");
-  await expect(page.locator('[data-level-mode="auto"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-level-mode="auto"]').first()).toHaveAttribute("aria-pressed", "true");
 });
 
 test("recalcula bins por nivel y cae a limites cuando no aplica", async ({ page }) => {

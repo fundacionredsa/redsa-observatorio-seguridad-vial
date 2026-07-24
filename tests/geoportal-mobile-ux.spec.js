@@ -8,13 +8,14 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             window.localStorage.setItem('has_seen_geoportal_tour', 'true');
         });
         await page.goto('http://127.0.0.1:4173/docs/', { waitUntil: 'domcontentloaded' });
-        await page.waitForTimeout(1500);
+        await page.waitForSelector('.driver-popover-close-btn', { state: 'visible', timeout: 5000 }).catch(() => {});
         await page.evaluate(() => {
             const closeBtn = document.querySelector('.driver-popover-close-btn');
             if (closeBtn instanceof HTMLElement) closeBtn.click();
             const overlay = document.querySelector('.driver-overlay');
             if (overlay) overlay.remove();
         });
+        await page.waitForSelector('.driver-overlay', { state: 'detached', timeout: 5000 }).catch(() => {});
     });
 
     test('mobile citizen panel starts closed and can be toggled', async ({ page }) => {
@@ -44,27 +45,36 @@ test.describe('Geoportal Mobile UX Improvements', () => {
 
         const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
         const mobileSidebarToggle = page.locator('#mobile-sidebar-toggle');
+        const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const mobileLayersToggle = page.locator('#mobile-layers-toggle');
         const openAnalysisBtn = page.locator('#open-analysis-button');
 
         // Open citizen panel
         await mobileCitizenToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+        await expect(openAnalysisBtn).toBeVisible();
 
         // Click "Ver análisis completo" -> opens sidebar and closes citizen panel
         await openAnalysisBtn.click();
         await expect(page.locator('body')).toHaveClass(/mobile-sidebar-open/);
         await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
+        await expect(mobileSidebarClose).toBeInViewport();
 
-        // Open layers -> closes sidebar
-        await mobileLayersToggle.click();
-        await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
+        // Close sidebar
+        await mobileSidebarClose.click();
         await expect(page.locator('body')).not.toHaveClass(/mobile-sidebar-open/);
 
-        // Open citizen panel -> closes layers
+        // Open layers
+        await mobileLayersToggle.click();
+        await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
+
+        // Close layers drawer
+        await page.locator('#technical-drawer-close').click();
+        await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
+
+        // Open citizen panel
         await mobileCitizenToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-        await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
     });
 
     test('mobile-level-bar is positioned below top navigation without overlap', async ({ page }) => {

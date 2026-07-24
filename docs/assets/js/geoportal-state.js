@@ -240,6 +240,7 @@
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
         const mobileCitizenToggle = document.getElementById("mobile-citizen-toggle");
         const mobileCitizenClose = document.getElementById("mobile-citizen-close");
+        const openAnalysisButton = document.getElementById("open-analysis-button");
         const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
@@ -341,6 +342,15 @@
 
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
+        openAnalysisButton?.addEventListener("click", () => {
+            if (mobileMediaQuery.matches) {
+                setMobilePanel("citizen", false);
+                setMobilePanel("sidebar", true);
+            } else {
+                const sidebar = document.getElementById("territory-sidebar");
+                sidebar?.scrollIntoView({ behavior: "smooth" });
+            }
+        });
         mobileSidebarToggle?.addEventListener("click", () => {
             setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
         });
