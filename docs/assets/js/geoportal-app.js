@@ -431,6 +431,13 @@
                     if (levelButton) setTerritoryLevelMode(levelButton.dataset.levelMode);
                 });
 
+                document.addEventListener("click", (e) => {
+                    const yearButton = e.target.closest("#mobile-year-bar [data-year]");
+                    if (!yearButton || yearButton.disabled) return;
+                    window.stopTimelinePlayback?.();
+                    setSelectedYearAndRefresh(Number(yearButton.dataset.year));
+                });
+
                 // profile-accordion-btn listener removed
 
                 // Glossary Accordion Toggler

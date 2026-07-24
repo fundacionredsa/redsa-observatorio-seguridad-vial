@@ -103,6 +103,55 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         }
     });
 
+    test('mobile year bar shows coverage and stays synchronized with the main timeline', async ({ page }) => {
+        const isMobile = (page.viewportSize()?.width || 0) <= 768;
+        test.skip(!isMobile, 'Mobile-only test');
+        await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
+        await expect(page.locator('#loader')).toBeHidden({ timeout: 90_000 });
+
+        await page.evaluate(() => window.__redsaAudit.selectVariable('fallecidos_sppat_2016_2021'));
+        const yearBar = page.locator('#mobile-year-bar');
+        await expect(yearBar).toBeVisible();
+        await expect(yearBar.locator('button')).toHaveCount(11);
+        await expect(yearBar.locator('.my-available')).toHaveCount(6);
+        await expect(yearBar.locator('.my-unavailable')).toHaveCount(5);
+
+        const targetYear = yearBar.locator('button[data-year="2021"]');
+        await targetYear.click();
+        await expect(targetYear).toHaveClass(/my-selected/);
+        await expect(page.locator('#map-year-slider')).toHaveValue('2021');
+        expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2021);
+
+        await page.locator('#mobile-layers-toggle').click();
+        await expect(yearBar).toBeHidden();
+        await page.locator('#technical-drawer-close').click();
+        await expect(yearBar).toBeVisible();
+    });
+
+    test('mobile demographic profile has no horizontal scroll and exposes its close button', async ({ page }) => {
+        const isMobile = (page.viewportSize()?.width || 0) <= 768;
+        test.skip(!isMobile, 'Mobile-only test');
+        await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
+        await expect(page.locator('#loader')).toBeHidden({ timeout: 90_000 });
+
+        await page.evaluate(() => {
+            window.__redsaAudit.setZoom(9);
+            window.__redsaAudit.showTerritory('canton', '1701');
+        });
+
+        const card = page.locator('#demographic-hover-card');
+        await expect(card).toBeVisible();
+        await expect(page.locator('#profile-card-close')).toBeInViewport();
+        const overflow = await card.evaluate(element => ({
+            clientWidth: element.clientWidth,
+            scrollWidth: element.scrollWidth,
+            clientHeight: element.clientHeight,
+            scrollHeight: element.scrollHeight
+        }));
+        expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth);
+        expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
+    });
+
     test('mobile panel topbars have sticky positioning for close button accessibility', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
@@ -132,11 +181,13 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
         const mobileCitizenClose = page.locator('#mobile-citizen-close');
         const mobileLevelBar = page.locator('#mobile-level-bar');
+        const mobileYearBar = page.locator('#mobile-year-bar');
         const citizenPanel = page.locator('#citizen-panel');
 
         await expect(mobileCitizenToggle).toBeHidden();
         await expect(mobileCitizenClose).toBeHidden();
         await expect(mobileLevelBar).toBeHidden();
+        await expect(mobileYearBar).toBeHidden();
         await expect(citizenPanel).toBeVisible();
     });
 });

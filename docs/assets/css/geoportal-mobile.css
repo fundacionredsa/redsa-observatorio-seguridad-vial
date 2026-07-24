@@ -528,7 +528,47 @@
     }
 
     .perfil-card-grid {
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        display: block;
+    }
+
+    .perfil-card-section {
+        padding-right: 0;
+        border-right: 0;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .perfil-card-section:last-child {
+        border-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .perfil-fallecidos-card {
+        overflow-x: hidden;
+    }
+
+    .profile-card-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    #hover-card-title {
+        flex: 1 1 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-card-header-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .profile-period-segments {
+        width: auto;
+        min-width: 0;
     }
 
     .profile-card-close {

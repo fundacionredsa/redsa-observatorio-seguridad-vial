@@ -1242,15 +1242,59 @@ body.mobile-layers-open .technical-toggle {
     .mobile-level-bar button.level-unavailable {
         opacity: 0.35;
     }
+    .mobile-year-bar {
+        position: fixed;
+        z-index: var(--z-mobile-navigation);
+        top: calc(var(--mobile-top-offset, 66px) + 44px + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
+        overflow-x: auto;
+        display: flex;
+        gap: 3px;
+        padding: 4px;
+        border-radius: 14px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
+    }
+    .mobile-year-bar button {
+        flex: 0 0 auto;
+        min-width: 34px;
+        min-height: 34px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text-secondary);
+        font: inherit;
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .mobile-year-bar button.my-available {
+        background: rgba(14, 165, 233, 0.18);
+        color: var(--accent-hover);
+    }
+    .mobile-year-bar button.my-unavailable {
+        opacity: 0.35;
+    }
+    .mobile-year-bar button.my-selected {
+        background: var(--accent);
+        color: #fff;
+    }
     body.mobile-sidebar-open .mobile-level-bar,
     body.mobile-layers-open .mobile-level-bar,
-    body.mobile-citizen-open .mobile-level-bar {
+    body.mobile-citizen-open .mobile-level-bar,
+    body.mobile-sidebar-open .mobile-year-bar,
+    body.mobile-layers-open .mobile-year-bar,
+    body.mobile-citizen-open .mobile-year-bar {
         display: none;
     }
 }
 
 @media (min-width: 769px) {
     .mobile-level-bar,
+    .mobile-year-bar,
     .mobile-citizen-toggle,
     .mobile-citizen-close,
     .citizen-panel-topbar {
