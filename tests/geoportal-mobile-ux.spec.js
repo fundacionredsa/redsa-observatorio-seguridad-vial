@@ -67,13 +67,20 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
     });
 
-    test('mobile-level-bar is visible on mobile and synchronizes level changes', async ({ page }) => {
+    test('mobile-level-bar is positioned below top navigation without overlap', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
-
         const mobileLevelBar = page.locator('#mobile-level-bar');
 
         if (isMobile) {
             await expect(mobileLevelBar).toBeVisible();
+            const levelBarBox = await mobileLevelBar.boundingBox();
+            const sidebarToggleBox = await page.locator('#mobile-sidebar-toggle').boundingBox();
+
+            if (levelBarBox && sidebarToggleBox) {
+                // Verify level bar is positioned below the top navigation buttons
+                expect(levelBarBox.y).toBeGreaterThanOrEqual(sidebarToggleBox.y + sidebarToggleBox.height);
+            }
+
             const provButton = mobileLevelBar.locator('button[data-level-mode="province"]');
             await provButton.click();
             await expect(provButton).toHaveClass(/active/);
@@ -84,6 +91,19 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         } else {
             await expect(mobileLevelBar).toBeHidden();
         }
+    });
+
+    test('mobile panel topbars have sticky positioning for close button accessibility', async ({ page }) => {
+        const isMobile = (page.viewportSize()?.width || 0) <= 768;
+        test.skip(!isMobile, 'Mobile-only test');
+
+        const citizenTopbarPosition = await page.locator('.citizen-panel-topbar').evaluate(el => window.getComputedStyle(el).position);
+        const drawerHeaderPosition = await page.locator('.drawer-header').first().evaluate(el => window.getComputedStyle(el).position);
+        const sidebarTopbarPosition = await page.locator('.mobile-sidebar-topbar').evaluate(el => window.getComputedStyle(el).position);
+
+        expect(citizenTopbarPosition).toBe('sticky');
+        expect(drawerHeaderPosition).toBe('sticky');
+        expect(sidebarTopbarPosition).toBe('sticky');
     });
 
     test('search input has font-size 16px on mobile to prevent iOS auto-zoom', async ({ page }) => {

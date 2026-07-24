@@ -1210,9 +1210,11 @@ body.mobile-layers-open .technical-toggle {
     .mobile-level-bar {
         position: fixed;
         z-index: var(--z-mobile-navigation);
-        top: 12px;
+        top: var(--mobile-top-offset, 66px);
         left: 50%;
         transform: translateX(-50%);
+        max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
+        overflow-x: auto;
         display: flex;
         gap: 4px;
         padding: 4px;

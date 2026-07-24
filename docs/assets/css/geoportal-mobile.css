@@ -230,6 +230,26 @@
         pointer-events: auto;
     }
 
+    /* Header pegajoso para asegurar botón de cierre (×) visible durante el scroll en paneles móviles.
+       Cualquier nuevo panel móvil futuro debe seguir este mismo patrón sticky por defecto. */
+    .drawer-header {
+        position: sticky;
+        top: -12px;
+        z-index: var(--z-sticky-content);
+        margin: -12px -12px 12px;
+        padding: 12px 12px 12px;
+        background: #18212a;
+    }
+
+    .citizen-panel-topbar {
+        position: sticky;
+        top: -7px;
+        z-index: var(--z-sticky-content);
+        margin: -7px -12px 6px;
+        padding: 7px 12px 6px;
+        background: var(--public-surface, #fff);
+    }
+
     .mobile-sidebar-topbar {
         display: flex;
         position: sticky;
