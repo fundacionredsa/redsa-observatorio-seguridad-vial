@@ -41,7 +41,10 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
   ].filter(url => url.includes("/assets/css/geoportal-") || url.includes("/assets/js/geoportal-")));
   expect(versionedAssets.length).toBeGreaterThan(5);
-  expect(versionedAssets.every(url => url.includes("v=0.10.0"))).toBeTruthy();
+  const assetVersions = versionedAssets.map(url => new URL(url).searchParams.get("v"));
+  expect(assetVersions.every(Boolean)).toBeTruthy();
+  expect(new Set(assetVersions).size).toBe(1);
+  expect(assetVersions[0]).toMatch(/^\d+\.\d+\.\d+$/);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
@@ -437,7 +440,7 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await expect(page.locator("#timeline-marks .timeline-mark")).toHaveCount(11);
-  await expect(page.locator("#timeline-marks .timeline-mark.gap")).toHaveCount(6);
+  await expect(page.locator("#timeline-marks .timeline-mark.tm-unavailable")).toHaveCount(6);
 });
 
 test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
@@ -517,6 +520,8 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
   test.skip(testInfo.project.name !== "mobile", "Geometria y lectura movil del modal institucional.");
   await page.setViewportSize({ width: 390, height: 844 });
   await loadPortal(page);
+  await page.locator("#mobile-citizen-toggle").tap();
+  await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
   await page.locator("#open-institutional-button").tap();
 
   const geometry = await page.locator("#institutional-modal .institutional-dialog").boundingBox();
@@ -657,14 +662,21 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
           inViewport: rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight
         };
       };
-      const citizen = box("#citizen-panel");
       const legend = box(".legend-panel");
+      const topControls = [
+        box("#mobile-sidebar-toggle"),
+        box("#mobile-layers-toggle"),
+        box("#mobile-level-bar"),
+        box(".opacity-control")
+      ];
+      const visibleTopControls = topControls.filter(control => control.inViewport && control.display !== "none");
+      const controlsBottom = Math.max(0, ...visibleTopControls.map(control => control.bottom));
       return {
         viewport: { width: innerWidth, height: innerHeight },
         map: box("#map"),
-        citizen,
         legend,
-        freeMapBand: legend.top - citizen.bottom,
+        controlsBottom,
+        freeMapBand: legend.top - controlsBottom,
         sidebar: box("#territory-sidebar"),
         layers: box("#technical-drawer"),
         sidebarButton: box("#mobile-sidebar-toggle"),

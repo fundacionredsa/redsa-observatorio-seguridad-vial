@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 
+async function openCitizenPanelOnMobile(page) {
+    if ((page.viewportSize()?.width || 0) > 768) return;
+    await page.locator('#mobile-citizen-toggle').click();
+    await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+}
+
 test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -106,6 +112,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block C: Data Catalog', () => {
         test('catalog modal opens and displays variables', async ({ page }) => {
+            await openCitizenPanelOnMobile(page);
             const btnCatalog = page.locator('#btn-catalog');
             await expect(btnCatalog).toBeVisible();
             await btnCatalog.click();
@@ -226,6 +233,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block E: UI Theme & Coordinates', () => {
         test('theme toggle changes body class and localstorage', async ({ page }) => {
+            await openCitizenPanelOnMobile(page);
             const btnTheme = page.locator('#btn-theme-toggle');
             await expect(btnTheme).toBeVisible();
 
@@ -300,10 +308,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('GA4 privacy notice is visible in "¿Por qué confiar?" section', async ({ page }) => {
+            await openCitizenPanelOnMobile(page);
             const openInstitutionalBtn = page.locator('#open-institutional-button');
-            if (await openInstitutionalBtn.isVisible()) {
-                await openInstitutionalBtn.click();
-            }
+            await openInstitutionalBtn.click();
             const btnTrust = page.locator('#institutional-tab-trust');
             await expect(btnTrust).toBeVisible();
             await btnTrust.click();
