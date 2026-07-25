@@ -108,6 +108,76 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 }
             }
         });
+
+        test('mobile tour highlights every visible target inside the viewport', async ({ page }) => {
+            const isMobile = (page.viewportSize()?.width || 0) <= 768;
+            test.skip(!isMobile, 'Tour test is for mobile');
+
+            await page.evaluate(() => window.setMobilePanel?.('citizen', true));
+            await page.locator('#btn-tour').click();
+
+            const popover = page.locator('.driver-popover');
+            await expect(popover).toBeVisible();
+
+            const targets = [
+                null,
+                '#territory-search-form',
+                '#open-analysis-button',
+                '#mobile-layers-toggle',
+                '#mobile-layers-toggle',
+                '#legend-tour-target',
+                '#btn-catalog',
+                '#citizen-panel',
+                '#open-institutional-button'
+            ];
+
+            for (let index = 0; index < targets.length; index += 1) {
+                if (index > 0) {
+                    await popover.locator('.driver-popover-next-btn').click();
+                }
+                await page.waitForTimeout(450);
+
+                const geometry = await page.evaluate(selector => {
+                    const toBox = rect => rect && ({
+                        left: rect.left,
+                        right: rect.right,
+                        top: rect.top,
+                        bottom: rect.bottom,
+                        width: rect.width,
+                        height: rect.height
+                    });
+                    const target = selector ? document.querySelector(selector) : null;
+                    const active = document.querySelector('.driver-active-element');
+                    const legend = document.querySelector('.legend-panel');
+                    const targetBox = target?.getBoundingClientRect();
+                    const activeBox = active?.getBoundingClientRect();
+                    return {
+                        targetMatchesActive: selector ? target === active : active?.id === 'driver-dummy-element',
+                        target: toBox(targetBox),
+                        active: toBox(activeBox),
+                        legend: selector === '#legend-tour-target' ? toBox(legend?.getBoundingClientRect()) : null,
+                        viewport: { width: window.innerWidth, height: window.innerHeight }
+                    };
+                }, targets[index]);
+
+                expect(geometry.targetMatchesActive, JSON.stringify({ index, geometry })).toBeTruthy();
+                expect(geometry.active.width, JSON.stringify({ index, geometry })).toBeGreaterThanOrEqual(0);
+                expect(geometry.active.height, JSON.stringify({ index, geometry })).toBeGreaterThanOrEqual(0);
+
+                if (targets[index]) {
+                    expect(geometry.target.width, JSON.stringify({ index, geometry })).toBeGreaterThan(0);
+                    expect(geometry.target.height, JSON.stringify({ index, geometry })).toBeGreaterThan(0);
+                    expect(geometry.target.right, JSON.stringify({ index, geometry })).toBeGreaterThan(0);
+                    expect(geometry.target.left, JSON.stringify({ index, geometry })).toBeLessThan(geometry.viewport.width);
+                    expect(geometry.target.bottom, JSON.stringify({ index, geometry })).toBeGreaterThan(0);
+                    expect(geometry.target.top, JSON.stringify({ index, geometry })).toBeLessThan(geometry.viewport.height);
+                }
+
+                if (targets[index] === '#legend-tour-target') {
+                    expect(geometry.target, JSON.stringify({ index, geometry })).toEqual(geometry.legend);
+                }
+            }
+        });
     });
 
     test.describe('Block C: Data Catalog', () => {

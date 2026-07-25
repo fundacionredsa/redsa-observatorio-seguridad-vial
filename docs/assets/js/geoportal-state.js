@@ -633,6 +633,9 @@
         window.toggleTimelinePlayback = toggleTimelinePlayback;
         window.stopTimelinePlayback = stopTimelinePlayback;
         window.startTimelinePlayback = startTimelinePlayback;
+        window.setMobilePanel = setMobilePanel;
+        window.setMobileLegend = setMobileLegend;
+        window.closeMobilePanels = closeMobilePanels;
 
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
