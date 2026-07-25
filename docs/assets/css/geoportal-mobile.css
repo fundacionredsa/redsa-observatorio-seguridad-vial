@@ -241,6 +241,22 @@
         background: #18212a;
     }
 
+    body.light-theme .technical-drawer .drawer-header {
+        border-color: #d6dee5;
+        background: rgba(255, 255, 255, 0.98);
+        color: #1e293b;
+    }
+
+    body.light-theme .technical-drawer .drawer-header h2 {
+        color: #1e293b;
+    }
+
+    body.light-theme .technical-drawer .drawer-close {
+        border-color: #cbd5e1;
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
     .citizen-panel-topbar {
         position: sticky;
         top: -7px;

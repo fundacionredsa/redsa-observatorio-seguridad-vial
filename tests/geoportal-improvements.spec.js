@@ -297,7 +297,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
     });
 
     test.describe('Block E: UI Theme & Coordinates', () => {
-        test('theme toggle changes body class and localstorage', async ({ page }) => {
+        test('theme toggle changes body class and localstorage', async ({ page, isMobile }) => {
             await openCitizenPanelOnMobile(page);
             const btnTheme = page.locator('#btn-theme-toggle');
             await expect(btnTheme).toBeVisible();
@@ -326,6 +326,29 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 expect(Math.min(...rgb)).toBeGreaterThan(230);
                 const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
                 expect(Math.max(...textRgb)).toBeLessThan(100);
+            }
+
+            if (isMobile) {
+                await page.locator('#mobile-layers-toggle').click();
+                const mobileDrawerHeader = await page.evaluate(() => {
+                    const colors = selector => {
+                        const style = getComputedStyle(document.querySelector(selector));
+                        return { background: style.backgroundColor, color: style.color };
+                    };
+                    return {
+                        header: colors('#technical-drawer .drawer-header'),
+                        title: colors('#technical-drawer .drawer-header h2'),
+                        close: colors('#technical-drawer .drawer-close')
+                    };
+                });
+                const headerRgb = mobileDrawerHeader.header.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                expect(Math.min(...headerRgb)).toBeGreaterThan(230);
+                for (const surface of Object.values(mobileDrawerHeader)) {
+                    const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                    expect(Math.max(...textRgb)).toBeLessThan(100);
+                }
+                await page.locator('#technical-drawer-close').click();
+                await openCitizenPanelOnMobile(page);
             }
 
             // First click changes to dark and persists the choice.
