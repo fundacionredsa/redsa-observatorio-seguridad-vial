@@ -83,8 +83,8 @@ def main() -> None:
     }
     expected = {
         "cantones_wgs84.geojson": (cantons, 224),
-        "provincias_wgs84.geojson": (provinces, 24),
-        "parroquias_wgs84.geojson": (parishes, 1040),
+        "provincias_wgs84.geojson": (provinces, 26),
+        "parroquias_wgs84.geojson": (parishes, 1050),
         "hotspots_cantonales.geojson": (hotspots, 224),
         "vias_ecuador.geojson": (load("vias_ecuador.geojson"), 41_040),
     }

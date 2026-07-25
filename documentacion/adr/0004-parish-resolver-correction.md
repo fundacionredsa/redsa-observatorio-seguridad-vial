@@ -21,5 +21,5 @@ Se reescribió la lógica de resolución en `geoportal_estadisticas/process_parr
 
 ## Consequences
 
-- **Positivas**: Las cifras de recuperación aumentaron drásticamente con precisión espacial garantizada. Para el período 2021-2024 se recuperaron respectivamente 122, 158, 178 y 182 polígonos con coincidencias perfectas. DMQ y otras zonas metropolitanas ahora proyectan los polígonos parroquiales completos en el Geoportal. Los totales cantonales de `cantones_wgs84.geojson` permanecen inalterados.
+- **Positivas**: Las cifras de recuperación aumentaron drásticamente con precisión espacial garantizada. Con CONALI 2026, para el período 2021-2024 se recuperan respectivamente 122, 158, 178 y 186 coincidencias exactas en DMQ. El incremento de cuatro casos en 2024 corresponde al nombre vigente `CHECA`, antes publicado como `CHECA (CHILPA)`. Los nombres históricos de `ATAHUALPA (HABASPAMBA)`, `CALDERON (CARAPUNGO)` y `CHECA (CHILPA)` se normalizan a los nombres CONALI 2026. Los totales cantonales de `cantones_wgs84.geojson` permanecen inalterados.
 - **Negativas**: Mayor estrictez algorítmica significa que algunos nombres periféricos con errores ortográficos severos que antes podrían haber hecho match falso, ahora requieren auditoría manual en futuras fases (aunque actualmente la cobertura es altísima).

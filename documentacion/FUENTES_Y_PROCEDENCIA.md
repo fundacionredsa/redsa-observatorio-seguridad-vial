@@ -6,7 +6,8 @@ necesariamente a la fecha de publicacion institucional.
 | Fuente | Periodo | Origen / descarga | Copia local | Transformacion | Licencia/uso |
 |---|---|---|---|---|---|
 | Organizacion territorial cantonal | recurso 2025-02-20 | [datosabiertos.gob.ec](https://datosabiertos.gob.ec/dataset/f3ed6f26-a85c-449a-9246-2bdc9a612b4b/resource/11b85d91-9139-4709-97dd-4bc0b92d4f02/download/organizacion-territorial-cantonal.zip) | descargada 2026-07-14 | EPSG:32717 a 4326; simplificacion topologica 40 m | CKAN: CC BY sin version explicita |
-| Limites parroquiales | archivo historico 2014 | `SHP_INEC_2014.zip`; URL original no preservada | descargada 2026-07-15 | reproyeccion, agregacion de EDG | vigencia/licencia por confirmar; no presentar como CONALI 2022 |
+| Organizacion territorial provincial | recurso 2025-02-20 | [CONALI / Ministerio de Gobierno](https://www.datosabiertos.gob.ec/dataset/2df6df9f-d5ff-4a4f-be78-5b1f9e89f8a0/resource/8c750d82-d0f4-40ff-864f-bc02fb8cc1eb/download/organizacion-territorial-provincial.zip) | descargada 2026-07-24 | EPSG:32717 a 4326; `snap` submetrico, `clean only-arcs`, simplificacion topologica 40 m | CKAN: CC BY |
+| Organizacion territorial parroquial | vigencia 2026-02-03 | [CONALI / Ministerio de Gobierno](https://www.datosabiertos.gob.ec/dataset/2fd34713-51be-489c-a444-f0ec2b36dd6f/resource/1ae92432-cfce-4613-a7cf-252750a15c0e/download/organizacion-territorial-parroquial-03.02.2026.7z) | descargada 2026-07-24 | EPSG:32717 a 4326; `snap` submetrico, `clean only-arcs`, simplificacion topologica 40 m; cruce historico 140157 a 141350 | CKAN: CC BY |
 | INEC siniestros | 2019 | [datosabiertos.gob.ec](https://www.datosabiertos.gob.ec/dataset/4f7a7f85-7a78-4c15-9402-429745f810fc/resource/bbfef24d-e0b7-48b0-9998-5412a35d50c3/download/inec_anuario-de-estadisticas-de-transporte_siniestros-de-transito_2019.csv) | 2026-07-14 | homologacion territorial y agregacion | datos abiertos INEC |
 | INEC siniestros | 2021-2024 | CSV locales derivados de ESTRA | 2026-07-15 | homologacion territorial, resumen por clase/causa/zona/hora | origen exacto por archivo pendiente de registrar |
 | EDG | 2020 | [datosabiertos.gob.ec](https://www.datosabiertos.gob.ec/dataset/76c25389-908f-4253-b1dd-658faf3ad5a6/resource/fdad9620-9f05-4991-adb5-b8d8638dc83f/download/inec_defuncionesgenerales_2020.csv) | 2026-07-14 | filtro CIE-10 V01-V89 y agregacion | datos abiertos INEC; microdato restringido internamente |
@@ -19,6 +20,16 @@ necesariamente a la fecha de publicacion institucional.
 | Vehiculos matriculados | 2024 | INEC ESTRA, `2024_BDD_VEHICULOS_MATRICULADOS.sav` | archivo fechado 2025-07-04 | value labels SPSS, groupby canton/provincia/clase | uso estadistico; agregado publicado |
 | OSM | cortes 2026-07-16 y 2026-07-22 | Overpass API | generado por scripts | infraestructura y red vial; consultas poligonales por provincia, deduplicacion y recorte nacional. Las nuevas capas de vias y densidad reutilizan esta misma fuente licenciada | ODbL, OpenStreetMap contributors |
 | Mapillary | sin corte util | Graph API | salida vacia | requiere `MAPILLARY_ACCESS_TOKEN` | terminos Mapillary |
+
+Las capas oficiales conservan `txt` y `categoria_territorial`. Las dos zonas
+en estudio y la isla no se asignan a una provincia/parroquia ni se interpretan
+como `sin_dato`: su estado estadistico es `no_aplica_zona_especial`.
+
+La simplificacion provincial y parroquial usa mapshaper 0.7.48 en este orden:
+reproyeccion, `snap interval=0.000001 fix-geometry`, `clean only-arcs` y
+`simplify interval=40m keep-shapes`. La precision de salida es 0.000005 grados.
+La variacion de superficie total fue menor a 0.001%, con cero geometrías
+invalidas, huecos internos o solapamientos posteriores.
 
 ## Fuentes aun no incorporadas
 

@@ -22,8 +22,8 @@ class PublishedDataContractTest(unittest.TestCase):
     def test_feature_counts_and_unique_codes(self):
         cases = [
             (self.cantons, 224, "DPA_CANTON"),
-            (self.provinces, 24, "DPA_PROVIN"),
-            (self.parishes, 1040, "DPA_PARROQ"),
+            (self.provinces, 26, "DPA_PROVIN"),
+            (self.parishes, 1050, "DPA_PARROQ"),
             (self.hotspots, 224, "DPA_CANTON"),
         ]
         for data, expected, field in cases:
@@ -162,6 +162,12 @@ class PublishedDataContractTest(unittest.TestCase):
             for feature in level["features"]:
                 properties = feature["properties"]
                 coverage = properties.get("cobertura_mapeo_osm") or {}
+                if properties.get("categoria_territorial") in {"zona_en_estudio", "isla"}:
+                    self.assertEqual(
+                        coverage.get("estado"),
+                        "no_aplica_zona_especial",
+                    )
+                    continue
                 self.assertIn(
                     coverage.get("estado"),
                     {"disponible", "sin_elementos_mapeados", "sin_dato_poblacion"},
@@ -196,11 +202,31 @@ class PublishedDataContractTest(unittest.TestCase):
                     expected[province_code][layer_name] += 1
         for feature in self.provinces["features"]:
             properties = feature["properties"]
+            if properties.get("categoria_territorial") in {"zona_en_estudio", "isla"}:
+                continue
             code = str(properties["DPA_PROVIN"])
             actual = properties["cobertura_mapeo_osm"]["por_capa"]
             for layer_name in ["semaforos_rotondas", "cruces", "aceras"]:
                 with self.subTest(province=code, layer=layer_name):
                     self.assertEqual(actual[layer_name], expected.get(code, {}).get(layer_name, 0))
+
+    def test_official_special_territories_are_explicit(self):
+        province_special = [
+            feature["properties"]
+            for feature in self.provinces["features"]
+            if feature["properties"].get("categoria_territorial")
+            in {"zona_en_estudio", "isla"}
+        ]
+        parish_special = [
+            feature["properties"]
+            for feature in self.parishes["features"]
+            if feature["properties"].get("categoria_territorial")
+            in {"zona_en_estudio", "isla"}
+        ]
+        self.assertEqual(len(province_special), 2)
+        self.assertEqual(len(parish_special), 3)
+        self.assertTrue(all(properties.get("txt") for properties in province_special))
+        self.assertTrue(all(properties.get("txt") for properties in parish_special))
 
     def test_islands_never_have_inferential_values(self):
         for feature in self.hotspots["features"]:

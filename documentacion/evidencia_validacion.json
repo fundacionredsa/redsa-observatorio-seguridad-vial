@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-07-24T16:41:56.349241+00:00",
+  "generated_at": "2026-07-25T14:46:51.480580+00:00",
   "status": "ok",
   "failures": [],
   "files": {
     "cantones_wgs84.geojson": {
       "features": 224,
       "expected_features": 224,
-      "bytes": 6855507,
-      "sha256": "fdce54721aedcca8743b696494247ca86d4c4e3917f396fa1ce33c31a5d10439"
+      "bytes": 6855477,
+      "sha256": "486105cabcecbdb5871aec131d90d7b131813422c18a6b09eacdbbee4d6353b5"
     },
     "provincias_wgs84.geojson": {
-      "features": 24,
-      "expected_features": 24,
-      "bytes": 2368213,
-      "sha256": "59f825b3240adb6808c3bdaa8a461e7c09b55d22043e8d0ada06f3d5df847ece"
+      "features": 26,
+      "expected_features": 26,
+      "bytes": 2507739,
+      "sha256": "e9d21faceffccbe053c9df597d197483a786f25e26f130b536636fa694ffe43c"
     },
     "parroquias_wgs84.geojson": {
-      "features": 1040,
-      "expected_features": 1040,
-      "bytes": 6123684,
-      "sha256": "d25401ab171a41360253baa3a666eed54955eb13454e18555a2b4d56ec1c52f9"
+      "features": 1050,
+      "expected_features": 1050,
+      "bytes": 10321592,
+      "sha256": "a2c0cc254a3e8aac30b510ebd49e43bc6501593c86cb6104cbd0940eb61b169b"
     },
     "hotspots_cantonales.geojson": {
       "features": 224,
@@ -174,5 +174,66 @@
     "vehiculos_matriculados_2024": 3138562,
     "fallecidos_sppat_2016_2021": 16363
   },
-  "raw_controls": {}
+  "raw_controls": {
+    "siniestros_2019": {
+      "raw_rows": 24595,
+      "published": 24595,
+      "unresolved": 0
+    },
+    "siniestros_2021": {
+      "raw_rows": 21352,
+      "published": 21307,
+      "unresolved": 45
+    },
+    "siniestros_2022": {
+      "raw_rows": 21739,
+      "published": 21705,
+      "unresolved": 34
+    },
+    "siniestros_2023": {
+      "raw_rows": 20994,
+      "published": 20983,
+      "unresolved": 11
+    },
+    "siniestros_2024": {
+      "raw_rows": 21220,
+      "published": 21191,
+      "unresolved": 29
+    },
+    "edg_2020": {
+      "total_edg": 117030,
+      "v01_v89": 2578,
+      "v89": 1758,
+      "published": 2578,
+      "difference": 0
+    },
+    "edg_2021": {
+      "total_edg": 107648,
+      "v01_v89": 3339,
+      "v89": 2217,
+      "published": 3339,
+      "difference": 0
+    },
+    "edg_2022": {
+      "total_edg": 91954,
+      "v01_v89": 3676,
+      "v89": 2693,
+      "published": 3676,
+      "difference": 0
+    },
+    "edg_2023": {
+      "total_edg": 89877,
+      "v01_v89": 4068,
+      "v89": 3324,
+      "published": 4068,
+      "difference": 0
+    },
+    "edg_2024": {
+      "total_edg": 91803,
+      "v01_v89": 4214,
+      "v89": 3414,
+      "published": 4214,
+      "difference": 0
+    }
+  }
 }

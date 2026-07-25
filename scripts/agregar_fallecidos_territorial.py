@@ -32,7 +32,12 @@ SOURCE_FIELD = "fallecidos_por_anio"
 OUTPUT_FIELD = "fallecidos_parroquial"
 COVERAGE_FIELD = "fallecidos_cobertura_pct"
 STATUS_FIELDS = ("fallecidos_estado_por_anio", "estado_por_anio")
-MISSING_STATES = {"sin_dato", "no_resuelto", "no_disponible"}
+MISSING_STATES = {
+    "sin_dato",
+    "no_resuelto",
+    "no_disponible",
+    "no_aplica_zona_especial",
+}
 
 
 def load_geojson(path: Path) -> dict[str, Any]:

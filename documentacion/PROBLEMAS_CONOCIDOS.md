@@ -6,10 +6,11 @@
    usan nombres cantonales parenteticos recuperables; 72 usan localidades sin
    canton inequivoco. Corregir los 47 y publicar un contador nacional explicito
    para los restantes, sin asignacion especulativa.
-2. **Geometria parroquial desactualizada y mal atribuida historicamente.** El
-   archivo real es INEC 2014; una cadena del frontend afirmaba CONALI 2022. La
-   afirmacion se corrige en esta auditoria, pero debe sustituirse la geometria
-   por una fuente parroquial oficial vigente y con URL/licencia preservadas.
+2. **RESUELTO: geometria provincial y parroquial oficial vigente.** Las capas
+   publicadas usan CONALI provincial 2025-02-20 y parroquial 2026-02-03, con
+   URL/licencia preservadas. Las zonas en estudio y la isla se mantienen como
+   categorias especiales neutrales; Sevilla Don Bosco usa un cruce historico
+   versionado que no altera los totales nacionales.
 3. **Rutas absolutas en ETL heredado.** Se documentan variables de entorno y se
    corrigen entradas principales, pero los scripts requieren una refactorizacion
    a CLI con funciones puras antes de considerarse pipeline de produccion.

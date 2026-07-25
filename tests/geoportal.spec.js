@@ -18,7 +18,7 @@ async function loadPortal(page) {
 test("carga contratos territoriales y atribuciones", async ({ page }) => {
   await loadPortal(page);
   const metrics = await page.evaluate(() => window.__redsaGeojsonLoadMetrics);
-  expect(metrics.provinceFeatures).toBe(24);
+  expect(metrics.provinceFeatures).toBe(26);
   expect(metrics.cantonFeatures).toBe(224);
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC/CONALI");
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC 2014");
@@ -284,7 +284,7 @@ test("cambia una sola capa territorial por zoom", async ({ page }) => {
   const parish = await page.evaluate(() => window.__redsaAudit.state());
   expect(parish.level).toBe("parish");
   expect(parish.layers.parish.visible).toBeTruthy();
-  expect(parish.layers.parish.features).toBe(1040);
+  expect(parish.layers.parish.features).toBe(1050);
   expect(parish.layers.canton.visible).toBeFalsy();
 });
 
@@ -895,6 +895,12 @@ test("EDG parish-derived fatalities are available at province, canton and parish
 
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1413", "click"));
-  await expect(page.locator("#cabecera-warning-box")).toContainText("Sin cobertura parroquial para 2024");
+  await expect(page.locator("#cabecera-warning-box")).toBeEmpty();
+  const sevillaDonBosco2024 = await page.evaluate(
+    () => window.__redsaAudit
+      .findTerritoryLayer("canton", "1413")
+      .feature.properties.fallecidos_parroquial["2024"]
+  );
+  expect(sevillaDonBosco2024).toBe(7);
 });
 

@@ -52,9 +52,22 @@ npx --yes mapshaper "<SHAPEFILE_ORIGEN>" encoding=utf8 -filter-fields DPA_CANTON
 - `DPA_PROVIN`
 - `DPA_DESPRO`
 
-## Capa Provincial Derivada
+## Capas Provincial y Parroquial Oficiales
 
-`provincias_wgs84.geojson` fue generado disolviendo `cantones_wgs84.geojson` por `DPA_PROVIN`, sin incorporar un shapefile nuevo. La capa contiene 24 provincias oficiales (`01` a `24`) y excluye los grupos no provinciales presentes en la fuente cantonal (`90` e `ISLA`).
+`provincias_wgs84.geojson` usa la geometria oficial CONALI publicada el
+2025-02-20. Contiene las 24 provincias (`01` a `24`), una `ZONA EN ESTUDIO`
+(`90`) y `ISLA`: 26 áreas en total. Las estadísticas de las provincias
+regulares se agregan desde cantones; las áreas especiales conservan `txt`,
+`categoria_territorial` y `no_aplica_zona_especial`.
+
+`parroquias_wgs84.geojson` usa la organización territorial CONALI vigente al
+2026-02-03: 1.050 parroquias/áreas. El cruce histórico confirmado
+`140157 -> 141350` reasigna 21 fallecidos EDG de Sevilla Don Bosco al código
+vigente, sin cambiar los totales nacionales.
+
+Ambas geometrías se procesan con mapshaper 0.7.48: reproyección a EPSG:4326,
+normalización submétrica de vértices, `clean only-arcs` y simplificación
+topológica de 40 m. La precisión final es 0.000005 grados.
 
 Atributos agregados por suma provincial:
 
@@ -74,19 +87,16 @@ Atributos agregados por suma provincial:
 La tasa `tasa_fallecidos_100k` se recalcula a nivel provincial con numerador y denominador agregados, no promediando tasas cantonales. Los años con cantones sin dato no se imputan como cero: el archivo declara cobertura por campo y año en `properties.cobertura_datos`, con `estado` igual a `completo`, `parcial` o `sin_dato`.
 
 La agregacion parroquial se reproduce con
-`python scripts/agregar_fallecidos_territorial.py`. Los grupos historicos
-`9001`, `9003` y `9004` no tienen geometria cantonal publicada y registran cero
-fallecidos en 2021-2024; el script detiene la ejecucion si un grupo sin
-geometria contiene un valor distinto de cero. Los cantones `1413`, `9006` e
-`ISLA` no tienen parroquias en esta fuente y quedan con valor `null` y cobertura
-0%, explicitamente como sin dato.
+`python scripts/agregar_fallecidos_territorial.py`. Los grupos históricos se
+auditan antes de publicar; el script detiene la ejecución si un grupo sin
+geometría contiene un valor distinto de cero.
 
 Validacion de `provincias_wgs84.geojson`:
 
-- Features salida: 24
+- Features salida: 26
 - CRS: `EPSG:4326`
-- Geometrias validas: 24 / 24
-- Tamano salida actual: 2.363.997 bytes (2,25 MiB), con agregados estadisticos y cobertura OSM.
+- Geometrias validas: 26 / 26
+- Solapamientos y huecos internos posteriores: 0
 
 ## Validacion
 
