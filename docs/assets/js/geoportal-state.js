@@ -662,9 +662,9 @@
                 return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${String(year).slice(2)}</span>`;
             }).join("");
 
-            const mobileYearBar = document.getElementById("mobile-year-bar");
-            if (mobileYearBar) {
-                mobileYearBar.innerHTML = ALL_TIMELINE_YEARS.map(year => {
+            const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
+            if (mobileYearBarScroll) {
+                mobileYearBarScroll.innerHTML = ALL_TIMELINE_YEARS.map(year => {
                     const covered = isAnnual && coverage.anios_disponibles.includes(year);
                     const isSelected = isAnnual && Number(selectedYear) === year;
                     const cls = [`my-${covered ? "available" : "unavailable"}`, isSelected ? "my-selected" : ""].filter(Boolean).join(" ");

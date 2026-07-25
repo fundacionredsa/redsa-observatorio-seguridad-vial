@@ -1246,17 +1246,33 @@ body.mobile-layers-open .technical-toggle {
         position: fixed;
         z-index: var(--z-mobile-navigation);
         top: calc(var(--mobile-top-offset, 66px) + 44px + 8px);
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
-        overflow-x: auto;
+        left: var(--mobile-edge, 10px);
+        right: calc(var(--mobile-edge, 10px) + 142px + 10px);
+        transform: none;
         display: flex;
-        gap: 3px;
+        align-items: center;
+        gap: 6px;
         padding: 4px;
         border-radius: 14px;
         background: var(--bg-glass);
         backdrop-filter: blur(12px);
         box-shadow: var(--shadow);
+    }
+    .mobile-year-bar-label {
+        flex: 0 0 auto;
+        padding: 0 4px 0 6px;
+        color: var(--text-muted);
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border-right: 1px solid var(--border-glass);
+    }
+    .mobile-year-bar-scroll {
+        display: flex;
+        gap: 3px;
+        overflow-x: auto;
+        min-width: 0;
     }
     .mobile-year-bar button {
         flex: 0 0 auto;

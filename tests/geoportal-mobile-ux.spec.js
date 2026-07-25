@@ -112,9 +112,40 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.evaluate(() => window.__redsaAudit.selectVariable('fallecidos_sppat_2016_2021'));
         const yearBar = page.locator('#mobile-year-bar');
         await expect(yearBar).toBeVisible();
+        await expect(yearBar.locator('.mobile-year-bar-label')).toHaveText('Año');
         await expect(yearBar.locator('button')).toHaveCount(11);
         await expect(yearBar.locator('.my-available')).toHaveCount(6);
         await expect(yearBar.locator('.my-unavailable')).toHaveCount(5);
+
+        const layout = await page.evaluate(() => {
+            const toBox = element => {
+                const rect = element.getBoundingClientRect();
+                return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+            };
+            const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const bar = toBox(document.querySelector('#mobile-year-bar'));
+            const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
+            const opacity = toBox(document.querySelector('.opacity-control'));
+            return {
+                bar,
+                zoom,
+                opacity,
+                overlapsZoom: intersects(bar, zoom),
+                overlapsOpacity: intersects(bar, opacity)
+            };
+        });
+        expect(layout.overlapsZoom, JSON.stringify(layout)).toBeFalsy();
+        expect(layout.overlapsOpacity, JSON.stringify(layout)).toBeFalsy();
+
+        const labelPosition = await page.evaluate(() => {
+            const label = document.querySelector('.mobile-year-bar-label');
+            const scroll = document.querySelector('#mobile-year-bar-scroll');
+            const before = label.getBoundingClientRect().left;
+            scroll.scrollLeft = scroll.scrollWidth;
+            return { before, after: label.getBoundingClientRect().left, scrollLeft: scroll.scrollLeft };
+        });
+        expect(labelPosition.after).toBe(labelPosition.before);
+        expect(labelPosition.scrollLeft).toBeGreaterThan(0);
 
         const targetYear = yearBar.locator('button[data-year="2021"]');
         await targetYear.click();
@@ -126,6 +157,27 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(yearBar).toBeHidden();
         await page.locator('#technical-drawer-close').click();
         await expect(yearBar).toBeVisible();
+
+        await page.setViewportSize({ width: 360, height: 740 });
+        const compactLayout = await page.evaluate(() => {
+            const toBox = element => {
+                const rect = element.getBoundingClientRect();
+                return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+            };
+            const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const bar = toBox(document.querySelector('#mobile-year-bar'));
+            const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
+            const opacity = toBox(document.querySelector('.opacity-control'));
+            return {
+                bar,
+                zoom,
+                opacity,
+                overlapsZoom: intersects(bar, zoom),
+                overlapsOpacity: intersects(bar, opacity)
+            };
+        });
+        expect(compactLayout.overlapsZoom, JSON.stringify(compactLayout)).toBeFalsy();
+        expect(compactLayout.overlapsOpacity, JSON.stringify(compactLayout)).toBeFalsy();
     });
 
     test('mobile demographic profile has no horizontal scroll and exposes its close button', async ({ page }) => {
