@@ -10,14 +10,6 @@
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const variableTourTarget = isMobile ? "#mobile-layers-toggle" : "#variable-controls-slot";
         const infrastructureTourTarget = isMobile ? "#mobile-layers-toggle" : "#infrastructure-disclosure";
-        const legendTourTarget = document.createElement("div");
-        legendTourTarget.id = "legend-tour-target";
-        legendTourTarget.setAttribute("aria-hidden", "true");
-        Object.assign(legendTourTarget.style, {
-            position: "fixed",
-            pointerEvents: "none"
-        });
-        document.body.appendChild(legendTourTarget);
 
         const openCitizenPanelForTour = () => {
             if (isMobile && typeof window.setMobilePanel === "function") {
@@ -41,14 +33,6 @@
                 }
             }
 
-            const legendRect = document.querySelector(".legend-panel")?.getBoundingClientRect();
-            if (!legendRect) return;
-            Object.assign(legendTourTarget.style, {
-                left: `${legendRect.left}px`,
-                top: `${legendRect.top}px`,
-                width: `${legendRect.width}px`,
-                height: `${legendRect.height}px`
-            });
         };
 
         const driverObj = window.driver.js.driver({
@@ -63,7 +47,6 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                legendTourTarget.remove();
                 if (isMobile) {
                     window.setMobileLegend?.(false);
                     window.closeMobilePanels?.();
@@ -123,7 +106,7 @@
                     }
                 },
                 {
-                    element: '#legend-tour-target',
+                    element: '.legend-panel',
                     onHighlightStarted: prepareLegendForTour,
                     popover: {
                         title: 'Leyenda adaptativa',

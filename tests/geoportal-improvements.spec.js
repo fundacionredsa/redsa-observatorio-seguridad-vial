@@ -92,7 +92,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 if (expectedTitle === 'Leyenda adaptativa') {
                     const geometry = await page.evaluate(() => {
                         const legendElement = document.querySelector('.legend-panel');
-                        const targetElement = document.querySelector('#legend-tour-target');
+                        const targetElement = legendElement;
                         const legend = legendElement?.getBoundingClientRect();
                         const target = targetElement?.getBoundingClientRect();
                         const box = rect => rect && ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
@@ -125,7 +125,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '#open-analysis-button',
                 '#mobile-layers-toggle',
                 '#mobile-layers-toggle',
-                '#legend-tour-target',
+                '.legend-panel',
                 '#btn-catalog',
                 '#citizen-panel',
                 '#open-institutional-button'
@@ -146,16 +146,14 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                         width: rect.width,
                         height: rect.height
                     });
-                    const target = selector ? document.querySelector(selector) : null;
-                    const active = document.querySelector('.driver-active-element');
-                    const legend = document.querySelector('.legend-panel');
+                    const target = selector
+                        ? document.querySelector(selector)
+                        : document.querySelector('#driver-dummy-element');
                     const targetBox = target?.getBoundingClientRect();
-                    const activeBox = active?.getBoundingClientRect();
                     return {
-                        targetMatchesActive: selector ? target === active : active?.id === 'driver-dummy-element',
+                        targetMatchesActive: target?.classList.contains('driver-active-element'),
                         target: toBox(targetBox),
-                        active: toBox(activeBox),
-                        legend: selector === '#legend-tour-target' ? toBox(legend?.getBoundingClientRect()) : null,
+                        active: toBox(targetBox),
                         viewport: { width: window.innerWidth, height: window.innerHeight }
                     };
                 }, targets[index]);
@@ -173,9 +171,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                     expect(geometry.target.top, JSON.stringify({ index, geometry })).toBeLessThan(geometry.viewport.height);
                 }
 
-                if (targets[index] === '#legend-tour-target') {
-                    expect(geometry.target, JSON.stringify({ index, geometry })).toEqual(geometry.legend);
-                }
             }
         });
     });
