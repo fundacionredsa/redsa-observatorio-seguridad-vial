@@ -435,6 +435,8 @@
                     const yearButton = e.target.closest("#mobile-year-bar [data-year]");
                     if (!yearButton || yearButton.disabled) return;
                     window.stopTimelinePlayback?.();
+                    selectedPeriodMode = "year";
+                    updatePeriodModeControl();
                     setSelectedYearAndRefresh(Number(yearButton.dataset.year));
                 });
 

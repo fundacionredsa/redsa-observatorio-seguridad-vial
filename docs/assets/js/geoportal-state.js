@@ -669,7 +669,7 @@
                     const isSelected = isAnnual && Number(selectedYear) === year;
                     const cls = [`my-${covered ? "available" : "unavailable"}`, isSelected ? "my-selected" : ""].filter(Boolean).join(" ");
                     const label = covered ? `Dato disponible para ${year}` : `Sin dato disponible para ${year} en la variable activa`;
-                    return `<button type="button" data-year="${year}" class="${cls}" title="${label}" aria-label="${label}" ${!isAnnual || accumulated ? "disabled" : ""}>${String(year).slice(2)}</button>`;
+                    return `<button type="button" data-year="${year}" class="${cls}" title="${label}" aria-label="${label}" ${!isAnnual || !covered ? "disabled" : ""}>${String(year).slice(2)}</button>`;
                 }).join("");
             }
 
