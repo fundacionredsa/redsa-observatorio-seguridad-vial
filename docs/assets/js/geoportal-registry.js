@@ -7,19 +7,31 @@
             temporal: { tipo: "foto_unica", anios_disponibles: [] }
         },
         siniestros_inec_2019: {
-            label: "Accidentes de tránsito reportados (INEC)",
-            fuente: "INEC, Estadísticas de Transporte (ESTRA), con registros administrativos de la ANT",
-            description: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
+            label: "Siniestros de tránsito reportados (ANT/INEC)",
+            fuente: "ANT, registro administrativo primario; INEC/ESTRA, procesamiento estadístico oficial",
+            description: "Número de siniestros de tránsito registrados oficialmente. ANT e INEC/ESTRA forman una sola cadena estadística y sus cifras no deben sumarse entre sí. Entre 2021 y 2024, 72 registros corresponden a zonas en estudio y permanecen en el total nacional sin asignarse a un cantón.",
             unidad: "accidentes reportados",
-            metodologia: "Conteo de registros de siniestros por código territorial DPA y año. Los valores faltantes se mantienen como sin dato; no se sustituyen por cero.",
-            licencia: "Creative Commons Atribución 4.0 (fuente INEC)",
+            metodologia: "Conteo por código territorial DPA y año. Los valores faltantes se mantienen como sin dato. Los conteos territoriales principales no se someten al umbral SDC; el umbral de 5 se reserva para cruces de múltiples atributos. El corte 2026 es provisional, enero-junio, y solo debe compararse con enero-junio de 2025.",
+            licencia: "Fuentes oficiales ANT/INEC; derivado REDSA bajo CC BY 4.0",
             referencias: [
                 { label: "INEC - Estadísticas de Transporte", url: "https://www.ecuadorencifras.gob.ec/transporte/" },
-                { label: "Metodología ESTRA 2024", url: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Economicas/Estadistica%20de%20Transporte/ESTRA/2024/2024_METODOLOGIA_ESTRA.pdf" }
+                { label: "INEC - Siniestros de tránsito IV trimestre 2025", url: "https://www.ecuadorencifras.gob.ec/siniestros-de-transito-iv-trimestre-2025/" },
+                { label: "INEC - Siniestros de tránsito trimestral 2026", url: "https://www.ecuadorencifras.gob.ec/siniestros-transito-trimestral/" }
             ],
             getValue: (props, year) => props.siniestros_historico?.[String(year)],
-            levels: ["province", "canton"],
-            temporal: { tipo: "anual", anios_disponibles: [2019, 2021, 2022, 2023, 2024] },
+            levels: ["province", "canton", "parish"],
+            temporal: {
+                tipo: "anual",
+                anios_disponibles: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
+                anios_acumulables: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+                etiquetas_periodo: { 2026: "2026 parcial · enero-junio" },
+                procedencia_por_anio: {
+                    "2017-2024": "INEC/ESTRA, procesamiento de registros administrativos ANT",
+                    "2025": "ANT, reconciliado exactamente con INEC/ESTRA I-IV 2025",
+                    "2026": "ANT, corte provisional enero-junio; INEC/ESTRA I-2026 reconciliado y II-2026 pendiente de publicación"
+                },
+                fechas_corte: { 2025: "2025-12-31", 2026: "2026-06-30" }
+            },
             aggregation: "sum",
             dynamicBins: true,
             zeroIsData: true,
@@ -350,7 +362,7 @@
             center: [-1.7, -78.45],
             zoom: 6,
             variable: "siniestros_inec_2019",
-            year: 2024
+            year: 2025
         }),
         variables: Object.freeze(variables),
         infrastructureLayers: Object.freeze(infrastructureLayers)

@@ -40,7 +40,7 @@ class PublishedDataContractTest(unittest.TestCase):
     def test_national_sums_match_province_sums(self):
         fields = [
             ("fallecidos_historico", ["2020", "2021", "2022", "2023", "2024"]),
-            ("siniestros_historico", ["2019", "2021", "2022", "2023", "2024"]),
+            ("siniestros_historico", [str(year) for year in range(2017, 2027)]),
         ]
         for field, years in fields:
             for year in years:
@@ -48,6 +48,46 @@ class PublishedDataContractTest(unittest.TestCase):
                     canton_sum = sum((feature["properties"].get(field) or {}).get(year, 0) or 0 for feature in self.cantons["features"])
                     province_sum = sum((feature["properties"].get(field) or {}).get(year, 0) or 0 for feature in self.provinces["features"])
                     self.assertEqual(canton_sum, province_sum)
+
+    def test_siniestros_national_totals_and_special_zones_are_explicit(self):
+        expected = {
+            "2021": (21352, 21337, 15),
+            "2022": (21739, 21722, 17),
+            "2023": (20994, 20983, 11),
+            "2024": (21220, 21191, 29),
+            "2025": (20346, 20328, 18),
+            "2026": (10752, 10741, 11),
+        }
+        for payload in [self.cantons, self.provinces, self.parishes]:
+            metadata = payload["metadata"]["siniestros_transito_territorial"]
+            self.assertEqual(metadata["sd_c"]["umbral"], 5)
+            for year, (national, ordinary, special) in expected.items():
+                with self.subTest(level=metadata["nivel"], year=year):
+                    audit = metadata["anios"][year]
+                    self.assertEqual(audit["total_nacional"], national)
+                    self.assertEqual(audit["suma_cantonal_esperada"], ordinary)
+                    self.assertEqual(audit["zona_especial_sin_asignar"], special)
+                    self.assertEqual(
+                        audit["suma_publicada_en_este_nivel"] + audit["no_representados_en_este_nivel"],
+                        national,
+                    )
+        self.assertEqual(
+            self.cantons["metadata"]["siniestros_transito_territorial"]["anios"]["2026"]["estado"],
+            "parcial_enero_junio_provisional",
+        )
+
+    def test_parish_siniestros_are_missing_before_verified_coverage(self):
+        for feature in self.parishes["features"]:
+            series = feature["properties"]["siniestros_historico"]
+            for year in map(str, range(2017, 2024)):
+                self.assertIsNone(series[year])
+        expected_sums = {"2024": 21189, "2025": 20328, "2026": 10741}
+        for year, expected in expected_sums.items():
+            actual = sum(
+                (feature["properties"]["siniestros_historico"].get(year) or 0)
+                for feature in self.parishes["features"]
+            )
+            self.assertEqual(actual, expected)
 
     def test_parish_fatalities_reconcile_at_all_levels(self):
         for year in ["2021", "2022", "2023", "2024"]:

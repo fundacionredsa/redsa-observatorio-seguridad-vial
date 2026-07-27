@@ -45,6 +45,10 @@
                 .sort((a, b) => Number(a) - Number(b));
         }
 
+        function completeSiniestrosYears(series) {
+            return availableYears(series).filter(year => Number(year) <= 2025);
+        }
+
         function formatPeriodYears(years) {
             if (!years.length) return "sin datos";
             return years.length === 1 ? years[0] : `${years[0]}–${years[years.length - 1]}`;
@@ -307,7 +311,11 @@
             if (!card || !body || !title) return;
             currentProfileProps = props;
             const periodBadge = document.getElementById("hover-card-period");
-            if (periodBadge) periodBadge.textContent = selectedDetailPeriodMode === "accumulated" ? "Histórico" : String(selectedYear);
+            if (periodBadge) {
+                periodBadge.textContent = selectedDetailPeriodMode === "accumulated"
+                    ? "Histórico"
+                    : (Number(selectedYear) === 2026 ? "2026 ene-jun" : String(selectedYear));
+            }
 
             // Fixed lower panel; dynamic sizing prevents overlap with map controls.
             card.style.display = "block";
@@ -602,7 +610,7 @@
 
             const yearKey = String(yearVal);
             const yearsToProcess = selectedDetailPeriodMode === "accumulated"
-                ? availableYears(props.siniestros_historico)
+                ? completeSiniestrosYears(props.siniestros_historico)
                 : (props.siniestros_historico[yearKey] !== undefined ? [yearKey] : []);
 
             if (yearsToProcess.length === 0) {
@@ -616,6 +624,7 @@
 
             let totalSiniestros = 0;
             let totalLesionados = 0;
+            let hasLesionados = false;
 
             let mergedZona = {};
             let mergedClase = {};
@@ -628,6 +637,7 @@
                 const res = props.inec_resumen_historico && props.inec_resumen_historico[yr];
                 if (res) {
                     totalLesionados += res.lesionados || 0;
+                    hasLesionados = true;
                 }
 
                 const zObj = props.inec_urbano_rural && props.inec_urbano_rural[yr];
@@ -662,8 +672,10 @@
             domSiniestrosInec.textContent = totalSiniestros.toLocaleString('de-DE');
             domSiniestrosInec.classList.remove("empty");
 
-            domLesionadosInec.textContent = totalLesionados.toLocaleString('de-DE');
-            domLesionadosInec.classList.remove("empty");
+            domLesionadosInec.textContent = hasLesionados
+                ? totalLesionados.toLocaleString('de-DE')
+                : "Sin dato";
+            domLesionadosInec.classList.toggle("empty", !hasLesionados);
 
             inecDetailedStats.style.display = "block";
 
@@ -902,9 +914,11 @@
 
             currentProps = props;
             const inecYears = selectedDetailPeriodMode === "accumulated"
-                ? availableYears(props.siniestros_historico)
+                ? completeSiniestrosYears(props.siniestros_historico)
                 : [yearKey].filter(year => props.siniestros_historico?.[year] !== undefined);
-            document.getElementById("siniestros-section-year").textContent = selectedDetailPeriodMode === "accumulated" ? formatPeriodYears(inecYears) : yearKey;
+            document.getElementById("siniestros-section-year").textContent = selectedDetailPeriodMode === "accumulated"
+                ? formatPeriodYears(inecYears)
+                : (Number(selectedYear) === 2026 ? "2026 enero-junio" : yearKey);
             renderSiniestrosSection(props, selectedYear);
             updateInterpretationCard(parishProps ? null : props);
 

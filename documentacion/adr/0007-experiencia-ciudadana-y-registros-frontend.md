@@ -27,8 +27,8 @@ Adoptar divulgacion progresiva con dos superficies:
    fondo, capas independientes, advertencias de cobertura, metodologia y
    descargas. El analisis territorial detallado permanece en un segundo panel.
 
-La vista inicial usa `Siniestros INEC` en 2024, encuadra Ecuador continental y
-no activa infraestructura. Ninguna provincia recibe resaltado especial.
+La vista inicial usaba `Siniestros INEC` en 2024, encuadraba Ecuador continental
+y no activaba infraestructura. Ninguna provincia recibia resaltado especial.
 
 Separar la configuracion y la experiencia en archivos estaticos sin build:
 
@@ -64,3 +64,7 @@ editar ese monolito.
 
 Actualizacion 2026-07-16: ADR-008 completo esa modularizacion y reemplazo el
 modelo de hover por seleccion persistente mediante clic.
+
+Actualizacion 2026-07-27: la ampliacion de la serie ANT/INEC-ESTRA cambio el
+periodo inicial a 2025, ultimo ano completo disponible para la variable
+territorial de siniestros. La decision de divulgacion progresiva se mantiene.

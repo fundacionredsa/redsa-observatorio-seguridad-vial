@@ -50,6 +50,13 @@
         }, 0);
     }
 
+    function sumSeriesForYears(series, years) {
+        return (years || []).reduce((total, year) => {
+            const value = finiteNumber(series?.[String(year)]);
+            return value === null ? total : total + value;
+        }, 0);
+    }
+
     function coverageYears(series) {
         return Object.entries(series || {})
             .filter(([, value]) => finiteNumber(value) !== null)
@@ -203,7 +210,8 @@
         const title = document.getElementById("citizen-map-variable");
         const description = document.getElementById("citizen-map-description");
         if (!title || !description || !config) return;
-        const yearLabel = config.temporal?.tipo === "anual" && year ? ` · ${year}` : "";
+        const periodText = config.temporal?.etiquetas_periodo?.[year] || year;
+        const yearLabel = config.temporal?.tipo === "anual" && year ? ` · ${periodText}` : "";
         const level = levelLabel ? ` · ${levelLabel}` : "";
         title.textContent = `${config.label}${yearLabel}${level}`;
         description.textContent = config.description;
@@ -231,15 +239,19 @@
         const population = year ? Number(props.poblacion_por_anio?.[String(year)]) : null;
         const rate = year ? rateForFeature(props, year) : null;
         const years = availableAccidentYears(props);
+        const isPartial2026 = year === 2026;
         const previousYear = year ? years.filter(candidate => candidate < year).at(-1) : null;
-        const previousAccidents = previousYear ? Number(props.siniestros_historico?.[String(previousYear)]) : null;
+        const previousAccidents = isPartial2026
+            ? finiteNumber(props.siniestros_enero_junio_2025)
+            : (previousYear ? Number(props.siniestros_historico?.[String(previousYear)]) : null);
         const change = Number.isFinite(accidents) && Number.isFinite(previousAccidents) && previousAccidents > 0
             ? (accidents - previousAccidents) / previousAccidents * 100
             : null;
         const nationalMedian = year
             ? median(state.cantonFeatures.map(feature => rateForFeature(feature, year)))
             : null;
-        const historicalTotal = years.reduce((total, candidate) => {
+        const completeYears = years.filter(candidate => candidate <= 2025);
+        const historicalTotal = completeYears.reduce((total, candidate) => {
             const value = Number(props.siniestros_historico?.[String(candidate)]);
             return Number.isFinite(value) ? total + value : total;
         }, 0);
@@ -254,16 +266,17 @@
         }
         if (Number.isFinite(change)) {
             const movement = change > 0 ? "aumentó" : (change < 0 ? "disminuyó" : "no cambió");
-            comparison += ` Frente a ${previousYear}, el número reportado ${movement} ${formatNumber(Math.abs(change), 1)}%.`;
+            const comparisonPeriod = isPartial2026 ? "enero-junio de 2025" : previousYear;
+            comparison += ` Frente a ${comparisonPeriod}, el número reportado ${movement} ${formatNumber(Math.abs(change), 1)}%.`;
         }
 
         summary.innerHTML = `
             <div class="citizen-summary-title">${name} <span style="font-weight:500;">(${level})</span></div>
-            <div class="citizen-summary-province">${province}${year ? ` · datos ${year}` : ""}</div>
+            <div class="citizen-summary-province">${province}${year ? ` · ${isPartial2026 ? "datos parciales enero-junio 2026" : `datos ${year}`}` : ""}</div>
             <div class="citizen-summary-metrics">
                 <div class="citizen-summary-metric">
                     <strong>${Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato"}</strong>
-                    <span>accidentes reportados${year ? ` en ${year}` : ""}</span>
+                    <span>siniestros reportados${year ? ` en ${isPartial2026 ? "enero-junio de 2026" : year}` : ""}</span>
                 </div>
                 <div class="citizen-summary-metric">
                     <strong>${Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato"}</strong>
@@ -271,8 +284,8 @@
                 </div>
             </div>
             <div class="citizen-summary-history">
-                <strong>Histórico disponible: ${formatNumber(historicalTotal)} accidentes</strong>
-                <span>${formatYearCoverage(years)} (${years.length} ${years.length === 1 ? "año con dato" : "años con datos"})${Number.isFinite(currentShare) ? ` · ${year} representa ${formatNumber(currentShare, 1)}% del acumulado` : ""}.</span>
+                <strong>Histórico de años completos: ${formatNumber(historicalTotal)} siniestros</strong>
+                <span>${formatYearCoverage(completeYears)} (${completeYears.length} ${completeYears.length === 1 ? "año con dato" : "años con datos"})${!isPartial2026 && Number.isFinite(currentShare) ? ` · ${year} representa ${formatNumber(currentShare, 1)}% del histórico` : ""}.${isPartial2026 ? " El corte 2026 no se suma a este histórico." : ""}</span>
             </div>
             <p class="citizen-comparison">${comparison}</p>
         `;
@@ -371,7 +384,8 @@
         const deathPeriod = selectedDeaths !== null ? { year, value: selectedDeaths } : latestDeath;
         const population = finiteNumber(props.poblacion_por_anio?.[String(accidentPeriod?.year)]);
         const rate = accidentPeriod ? rateForFeature(props, accidentPeriod.year) : null;
-        const historicalTotal = sumSeries(props.siniestros_historico);
+        const completeAccidentYears = accidentCoverage.filter(candidate => candidate <= 2025);
+        const historicalTotal = sumSeriesForYears(props.siniestros_historico, completeAccidentYears);
         const historicalDeaths = sumSeries(props.fallecidos_historico);
         pdf.setFillColor(7, 93, 102);
         pdf.rect(0, 0, pageWidth, 32, "F");
@@ -388,8 +402,8 @@
         addParagraph(`${name} · ${level} · ${props.DPA_DESPRO || "Ecuador"} · período consultado ${year || "sin dato"}`, { bold: true, size: 12, color: ink });
 
         const metrics = [
-            [`Accidentes\n${metricPeriodLabel(year, accidentPeriod?.year, "INEC-ESTRA")}`, accidentPeriod ? formatNumber(accidentPeriod.value) : "Sin dato"],
-            [`Accidentes históricos\nINEC-ESTRA: ${formatYearCoverage(accidentCoverage)}`, formatNumber(historicalTotal)],
+            [`Siniestros\n${metricPeriodLabel(year, accidentPeriod?.year, "ANT/INEC")}`, accidentPeriod ? formatNumber(accidentPeriod.value) : "Sin dato"],
+            [`Siniestros históricos completos\nANT/INEC: ${formatYearCoverage(completeAccidentYears)}`, formatNumber(historicalTotal)],
             [`Fallecidos\n${metricPeriodLabel(year, deathPeriod?.year, "INEC-EDG")}`, deathPeriod ? formatNumber(deathPeriod.value) : "Sin dato"],
             [`Fallecidos históricos\nINEC-EDG: ${formatYearCoverage(deathCoverage)}`, formatNumber(historicalDeaths)]
         ];
@@ -411,7 +425,17 @@
         y += 24;
         const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
         const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
-        addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con INEC-ESTRA e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con ANT/INEC e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        if (Number(year) === 2026 && accidentPeriod?.year === 2026) {
+            const comparable2025 = finiteNumber(props.siniestros_enero_junio_2025);
+            const change = comparable2025 !== null && comparable2025 > 0
+                ? (Number(accidentPeriod.value) - comparable2025) / comparable2025 * 100
+                : null;
+            addParagraph(
+                `2026 es un corte provisional de enero a junio. Su referencia comparable es enero-junio de 2025: ${comparable2025 === null ? "sin dato territorial" : `${formatNumber(comparable2025)} siniestros${change === null ? "" : ` (${change >= 0 ? "+" : ""}${formatNumber(change, 1)}%)`}`}. No se compara con el total anual 2025.`,
+                { bold: true, color: ink, size: 8.5 }
+            );
+        }
 
         const selectedCode = String(props.DPA_CANTON || "");
         const selectedProvinceCode = String(props.DPA_PROVIN || selectedCode.slice(0, 2));
@@ -428,7 +452,7 @@
         ];
         if (referenceRows.length > 1) {
             addSection("Contexto territorial comparable");
-            addParagraph(`Comparación del período consultado (${year}) y de los acumulados disponibles. Si ese año no tiene dato, se muestra el último oficial con su año entre paréntesis. Accidentes: INEC-ESTRA. Fallecidos: INEC-EDG.`, { size: 8 });
+            addParagraph(`Comparación del período consultado (${year}) y de los acumulados disponibles. Si ese año no tiene dato, se muestra el último oficial con su año entre paréntesis. Siniestros: ANT/INEC-ESTRA. Fallecidos: INEC-EDG.`, { size: 8 });
             ensureSpace(10 + referenceRows.length * 8);
             const widths = [47, 30, 34, 34, 37];
             const headings = ["Territorio", "Accid. período", "Accid. histórico", "Fallec. período", "Fallec. histórico"];
@@ -477,7 +501,7 @@
 
         ensureSpace(82);
         addSection("Tendencia histórica");
-        addParagraph(`Fuentes: accidentes reportados, INEC-ESTRA; personas fallecidas, INEC-EDG. La línea llega hasta ${trendYears.at(-1)}; los años sin registro se muestran como ausencia de dato y no como cero.`, { size: 8 });
+        addParagraph(`Fuentes: siniestros reportados, ANT/INEC-ESTRA; personas fallecidas, INEC-EDG. La línea llega hasta ${trendYears.at(-1)}; los años sin registro se muestran como ausencia de dato y no como cero. El punto 2026 representa enero-junio y no es comparable con puntos de años completos.`, { size: 8 });
         ensureSpace(72);
         const chartX = margin + 14;
         const chartY = y + 8;
@@ -511,16 +535,16 @@
         pdf.setTextColor(...muted);
         trendYears.forEach((candidate, index) => {
             const x = chartX + (trendYears.length === 1 ? chartW / 2 : index * chartW / (trendYears.length - 1));
-            pdf.text(String(candidate), x, chartY + chartH + 5, { align: "center" });
+            pdf.text(candidate === 2026 ? "2026*" : String(candidate), x, chartY + chartH + 5, { align: "center" });
         });
         pdf.setFillColor(...orange); pdf.rect(chartX, chartY - 5, 4, 2, "F");
-        pdf.setTextColor(...ink); pdf.text(`Accidentes (máx. ${formatNumber(accidentMax)})`, chartX + 6, chartY - 3.2);
+        pdf.setTextColor(...ink); pdf.text(`Siniestros (máx. ${formatNumber(accidentMax)})`, chartX + 6, chartY - 3.2);
         pdf.setFillColor(...cyan); pdf.rect(chartX + 62, chartY - 5, 4, 2, "F");
         pdf.text(`Fallecidos (máx. ${formatNumber(deathMax)})`, chartX + 68, chartY - 3.2);
         y = chartY + chartH + 12;
         const missingAccidentYears = trendYears.filter(candidate => finiteNumber(props.siniestros_historico?.[String(candidate)]) === null);
         const missingDeathYears = trendYears.filter(candidate => finiteNumber(props.fallecidos_historico?.[String(candidate)]) === null);
-        addParagraph(`Sin dato INEC-ESTRA: ${missingAccidentYears.length ? missingAccidentYears.join(", ") : "ningún año de la serie"}. Sin dato INEC-EDG: ${missingDeathYears.length ? missingDeathYears.join(", ") : "ningún año de la serie"}.`, { size: 7.5 });
+        addParagraph(`Sin dato ANT/INEC-ESTRA: ${missingAccidentYears.length ? missingAccidentYears.join(", ") : "ningún año de la serie"}. Sin dato INEC-EDG: ${missingDeathYears.length ? missingDeathYears.join(", ") : "ningún año de la serie"}. * 2026: enero-junio, provisional.`, { size: 7.5 });
 
         const latestEdg = latestDetailedAvailable(props.fallecidos_detallado);
         const selectedEdg = props.fallecidos_detallado?.[String(year)];
@@ -591,11 +615,11 @@
 
         ensureSpace(25 + trendYears.length * 7);
         addSection("Serie anual disponible");
-        addParagraph(`Fuentes por columna: accidentes reportados, INEC-ESTRA; personas fallecidas, INEC-EDG. Se incluyen todos los años hasta ${trendYears.at(-1)} y se declara “Sin dato” cuando la fuente no ofrece un valor.`, { size: 8 });
+        addParagraph(`Fuentes por columna: siniestros reportados, ANT como registro administrativo primario e INEC-ESTRA como procesamiento estadístico; personas fallecidas, INEC-EDG. Se incluyen todos los años hasta ${trendYears.at(-1)} y se declara “Sin dato” cuando la fuente no ofrece un valor. 2026 corresponde únicamente a enero-junio y no se suma al histórico de años completos.`, { size: 8 });
         ensureSpace(12 + trendYears.length * 7);
         const tableX = margin;
         const colWidths = [28, 72, 82];
-        const headers = ["Año", "Accidentes reportados (INEC)", "Personas fallecidas (INEC-EDG)"];
+        const headers = ["Año / corte", "Siniestros reportados (ANT/INEC)", "Personas fallecidas (INEC-EDG)"];
         pdf.setFillColor(7, 93, 102); pdf.rect(tableX, y, contentWidth, 8, "F");
         pdf.setTextColor(255, 255, 255); pdf.setFont("helvetica", "bold"); pdf.setFontSize(7.5);
         let xCursor = tableX;
@@ -604,7 +628,7 @@
         trendYears.forEach((candidate, index) => {
             if (index % 2 === 0) { pdf.setFillColor(241, 245, 249); pdf.rect(tableX, y, contentWidth, 7, "F"); }
             pdf.setTextColor(...ink); pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
-            const row = [candidate, props.siniestros_historico?.[String(candidate)], props.fallecidos_historico?.[String(candidate)]];
+            const row = [candidate === 2026 ? "2026 ene-jun" : candidate, props.siniestros_historico?.[String(candidate)], props.fallecidos_historico?.[String(candidate)]];
             xCursor = tableX;
             row.forEach((value, column) => {
                 const displayedValue = column === 0
@@ -618,7 +642,8 @@
         y += 5;
 
         addSection("Fuentes, metodología y trazabilidad");
-        addParagraph("Accidentes: INEC, Estadísticas de Transporte (ESTRA), registros oficiales agregados territorialmente.");
+        addParagraph("Siniestros: ANT, registro administrativo primario; INEC, Estadísticas de Transporte (ESTRA), procesamiento estadístico oficial. Son dos etapas de una misma cadena y no deben sumarse entre sí. Los conteos principales no se suprimen; el umbral SDC de 5 se aplica únicamente a cruces de múltiples atributos.");
+        addParagraph("Cobertura temporal: 2025 es año completo semidefinitivo, reconciliado con los cuatro trimestres ESTRA. 2026 es provisional, enero-junio; el segundo trimestre aún no tenía publicación ESTRA al corte del 27 de julio de 2026.");
         addParagraph("Personas fallecidas: INEC, Estadísticas de Defunciones Generales (EDG), causas CIE-10 V01-V89. EDG registra el lugar de fallecimiento, que no necesariamente coincide con el lugar del siniestro.");
         addParagraph("Límites: INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY. Las tasas se calculan como numerador / población del mismo año x 100.000. Los datos faltantes se declaran como sin dato.");
         addParagraph(`Metodología: ${new URL("metodologia/", window.location.href).href}`, { size: 8 });

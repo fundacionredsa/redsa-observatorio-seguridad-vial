@@ -120,7 +120,7 @@ def main() -> None:
 
     for field, years in {
         "fallecidos_historico": ["2020", "2021", "2022", "2023", "2024"],
-        "siniestros_historico": ["2019", "2021", "2022", "2023", "2024"],
+        "siniestros_historico": [str(year) for year in range(2017, 2027)],
     }.items():
         result["national_controls"][field] = {}
         for year in years:
@@ -133,6 +133,57 @@ def main() -> None:
             }
             if canton_sum != province_sum:
                 result["failures"].append(f"{field}.{year}: canton {canton_sum} != provincia {province_sum}")
+
+    expected_siniestros = {
+        "2021": (21_352, 21_337, 15),
+        "2022": (21_739, 21_722, 17),
+        "2023": (20_994, 20_983, 11),
+        "2024": (21_220, 21_191, 29),
+        "2025": (20_346, 20_328, 18),
+        "2026": (10_752, 10_741, 11),
+    }
+    result["national_controls"]["siniestros_fuente_y_zonas_especiales"] = {}
+    for level_name, payload in {
+        "canton": cantons,
+        "province": provinces,
+        "parish": parishes,
+    }.items():
+        metadata = payload.get("metadata", {}).get("siniestros_transito_territorial", {})
+        if (metadata.get("sd_c") or {}).get("umbral") != 5:
+            result["failures"].append(f"{level_name}: falta umbral SDC=5")
+        for year, expected in expected_siniestros.items():
+            audit = (metadata.get("anios") or {}).get(year, {})
+            actual = (
+                audit.get("total_nacional"),
+                audit.get("suma_cantonal_esperada"),
+                audit.get("zona_especial_sin_asignar"),
+            )
+            result["national_controls"]["siniestros_fuente_y_zonas_especiales"].setdefault(year, {})[level_name] = actual
+            if actual != expected:
+                result["failures"].append(
+                    f"{level_name}.metadata.siniestros.{year}: {actual} != {expected}"
+                )
+            if (
+                audit.get("suma_publicada_en_este_nivel", 0)
+                + audit.get("no_representados_en_este_nivel", 0)
+                != audit.get("total_nacional")
+            ):
+                result["failures"].append(
+                    f"{level_name}.metadata.siniestros.{year}: total no reconcilia por nivel"
+                )
+
+    for feature in parishes["features"]:
+        series = feature["properties"].get("siniestros_historico") or {}
+        for year in map(str, range(2017, 2024)):
+            if series.get(year) is not None:
+                result["failures"].append(
+                    f"Parroquia {feature['properties'].get('DPA_PARROQ')}: {year} debe ser sin_dato"
+                )
+                break
+    for year, expected in {"2024": 21_189, "2025": 20_328, "2026": 10_741}.items():
+        actual = aggregate(parishes["features"], "siniestros_historico", year)
+        if actual != expected:
+            result["failures"].append(f"Parroquias siniestros {year}: {actual} != {expected}")
 
     result["national_controls"]["fallecidos_parroquial"] = {}
     for year in ["2021", "2022", "2023", "2024"]:

@@ -710,6 +710,22 @@
             color: #fbbf24;
         }
 
+        .legend-data-audit {
+            display: grid;
+            gap: 4px;
+            margin: 4px 0 8px;
+            padding: 8px;
+            border-left: 3px solid #0ea5e9;
+            background: rgba(14, 165, 233, 0.09);
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            line-height: 1.35;
+        }
+
+        .legend-data-audit strong {
+            color: var(--text-primary);
+        }
+
         .detail-period-label {
             display: block;
             margin-bottom: 6px;

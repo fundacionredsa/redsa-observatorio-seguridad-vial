@@ -96,6 +96,10 @@ def run_node_extractor():
             spatial_layer: config.spatialLayer || null,
             catalog_downloads: config.catalogDownloads || null,
             anios_disponibles: config.temporal ? config.temporal.anios_disponibles : [],
+            anios_acumulables: config.temporal ? (config.temporal.anios_acumulables || config.temporal.anios_disponibles || []) : [],
+            etiquetas_periodo: config.temporal ? (config.temporal.etiquetas_periodo || {}) : {},
+            procedencia_por_anio: config.temporal ? (config.temporal.procedencia_por_anio || {}) : {},
+            fechas_corte: config.temporal ? (config.temporal.fechas_corte || {}) : {},
             nivel_territorial_disponible: config.levels || [],
             explicit_sin_dato: explicit_sin_dato,
             has_missing: has_missing
@@ -177,6 +181,10 @@ def main():
             "licencia": var_data["licencia"],
             "referencias": var_data["referencias"],
             "anios_disponibles": var_data["anios_disponibles"],
+            "anios_acumulables": var_data["anios_acumulables"],
+            "etiquetas_periodo": var_data["etiquetas_periodo"],
+            "procedencia_por_anio": var_data["procedencia_por_anio"],
+            "fechas_corte": var_data["fechas_corte"],
             "nivel_territorial_disponible": var_data["nivel_territorial_disponible"],
             "tipo": "variable_territorial",
             "descargas": {

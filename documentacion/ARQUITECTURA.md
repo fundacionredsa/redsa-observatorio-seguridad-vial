@@ -7,7 +7,7 @@ flowchart LR
   subgraph F[Fuentes]
     CONALI[CONALI / limites cantonales]
     INECP[INEC / limites parroquiales 2014]
-    SIN[INEC / siniestros 2019, 2021-2024]
+    SIN[ANT / INEC-ESTRA siniestros 2017-2025 y 2026 parcial]
     EDG[INEC EDG 2020-2024]
     POP[INEC poblacion 2010-2035]
     VEH[INEC ESTRA vehiculos 2024]
@@ -115,7 +115,7 @@ temporal.
   orden con una version comun para invalidar cache. No contiene CSS ni el motor
   JavaScript inline.
 
-La vista inicial encuadra Ecuador continental, muestra siniestros 2024 y deja
+La vista inicial encuadra Ecuador continental, muestra siniestros 2025 y deja
 todas las capas de infraestructura apagadas. El modo Auto cambia el nivel por
 zoom con histeresis; el usuario puede fijar cualquiera de los tres niveles.
 En movil, sidebar y panel tecnico son overlays, la leyenda inicia colapsada y la

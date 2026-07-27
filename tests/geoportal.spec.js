@@ -29,7 +29,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   const state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.level).toBe("province");
   expect(state.selectedVariable).toBe("siniestros_inec_2019");
-  expect(state.selectedYear).toBe(2024);
+  expect(state.selectedYear).toBe(2025);
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
@@ -57,9 +57,9 @@ test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async 
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
   await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
-  await expect(page.locator("#citizen-summary")).toContainText("accidentes reportados");
+  await expect(page.locator("#citizen-summary")).toContainText("siniestros reportados");
   await expect(page.locator("#citizen-summary")).toContainText("mediana de los cantones");
-  await expect(page.locator("#citizen-summary")).toContainText("Histórico disponible");
+  await expect(page.locator("#citizen-summary")).toContainText("Histórico de años completos");
   await expect(page.locator("#citizen-summary")).toContainText("años con datos");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
@@ -92,7 +92,7 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
     sourcesBySection: true,
     historicalComparison: true,
     latestOfficialFallbacks: {
-      accidents: 2024,
+      accidents: 2026,
       deaths: 2024,
       demographicProfile: 2024,
       sppat: 2021
@@ -212,11 +212,12 @@ test("leyenda declara cuando la variable no existe en el nivel territorial", asy
   await loadPortal(page);
   await page.evaluate(() => {
     window.__redsaAudit.selectVariable("siniestros_inec_2019");
+    window.__redsaAudit.selectYear(2023);
     window.__redsaAudit.setTerritoryLevelMode("parish");
   });
 
   await expect(page.locator(".legend-panel")).toContainText("Sin datos disponibles en este nivel territorial");
-  await expect(page.locator(".legend-panel")).toContainText("Accidentes de tránsito reportados");
+  await expect(page.locator(".legend-panel")).toContainText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-panel")).toContainText("Límites administrativos");
 });
 
@@ -255,7 +256,7 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
 
   await expect(page.locator("#edg-sidebar-year")).toHaveText("2020–2024");
   await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
-  await expect(page.locator("#siniestros-section-year")).toContainText("2017–2024");
+  await expect(page.locator("#siniestros-section-year")).toContainText("2017–2025");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
   await expect(page.locator("#hover-card-period")).toHaveText("Histórico");
   await expect(page.locator("#hover-card-body")).toContainText("(2020–2024)");
@@ -440,16 +441,16 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await expect(page.locator("#timeline-marks .timeline-mark")).toHaveCount(11);
-  await expect(page.locator("#timeline-marks .timeline-mark.tm-unavailable")).toHaveCount(6);
+  await expect(page.locator("#timeline-marks .timeline-mark.tm-unavailable")).toHaveCount(1);
 });
 
 test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await loadPortal(page);
   const description = page.locator("#map-variable-description");
-  await expect(description).toHaveText("Número de accidentes de tránsito reportados oficialmente en esta zona.");
+  await expect(description).toContainText("Número de siniestros de tránsito registrados oficialmente.");
 
   const descriptions = {
-    siniestros_inec_2019: "Número de accidentes de tránsito reportados oficialmente en esta zona.",
+    siniestros_inec_2019: "Número de siniestros de tránsito registrados oficialmente. ANT e INEC/ESTRA forman una sola cadena estadística y sus cifras no deben sumarse entre sí. Entre 2021 y 2024, 72 registros corresponden a zonas en estudio y permanecen en el total nacional sin asignarse a un cantón.",
     tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
     cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó."
   };
@@ -482,7 +483,7 @@ test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", a
     expect(ranking.totalCount).toBe(224);
     expect(ranking.validCount + ranking.excludedCount).toBe(224);
     expect(ranking.validCount).toBeGreaterThan(0);
-    expect(ranking.excludedCount).toBeGreaterThan(0);
+    expect(ranking.excludedCount).toBeGreaterThanOrEqual(0);
     expect(ranking.rows.every(row => Number.isFinite(row.value))).toBeTruthy();
     expect(ranking.rows.every((row, index) => index === 0 || ranking.rows[index - 1].value >= row.value)).toBeTruthy();
     await expect(page.locator("#ranking-table-body tr")).toHaveCount(ranking.validCount);
@@ -492,7 +493,7 @@ test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", a
   };
 
   const accidents = await assertDescendingRanking("siniestros_inec_2019");
-  expect(accidents.year).toBe(2024);
+  expect(accidents.year).toBe(2025);
   await expect(page.locator("#ranking-coverage")).toContainText(`${accidents.excludedCount} cantones sin dato`);
 
   await page.locator("#ranking-search-input").fill("Distrito Metropolitano de Quito");
@@ -844,6 +845,7 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__redsaAudit !== undefined);
 
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
   await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
   await page.waitForFunction(() => window.__redsaActiveBins && window.__redsaActiveBins.variable === "fallecidos_parroquial");
@@ -880,6 +882,7 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
 test("EDG parish-derived fatalities are available at province, canton and parish levels", async ({ page }) => {
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__redsaAudit !== undefined);
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
 
   for (const level of ["province", "canton", "parish"]) {

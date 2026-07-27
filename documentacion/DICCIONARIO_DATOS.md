@@ -25,7 +25,7 @@ Aplica a `cantones_wgs84.geojson` y, salvo indicacion, a
 |---|---|---|---|
 | `poblacion`, `poblacion_2024` | integer/null | Proyeccion mas reciente expuesta | habitantes, INEC |
 | `poblacion_por_anio.{anio}` | integer | Proyeccion anual 2010-2035 | habitantes, INEC |
-| `siniestros_historico.{anio}` | integer | Siniestros resueltos a la unidad | eventos, INEC; 2019/2021-2024 |
+| `siniestros_historico.{anio}` | integer/null | Siniestros resueltos a la unidad; `null` cuando el nivel no tiene cobertura comprobable | eventos, ANT/INEC-ESTRA; 2017-2025 completos y 2026 parcial enero-junio |
 | `inec_resumen_historico.{anio}.siniestros` | integer | Igual al conteo anual | eventos |
 | `inec_resumen_historico.{anio}.lesionados` | integer | Lesionados declarados en eventos | personas |
 | `inec_resumen_historico.{anio}.fallecidos` | integer | Fallecidos declarados en eventos | personas |

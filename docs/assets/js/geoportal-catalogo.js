@@ -195,6 +195,10 @@
                     unidad: variable.unidad,
                     nivel_territorial: level,
                     anios: years,
+                    anios_acumulables: variable.anios_acumulables || years,
+                    etiquetas_periodo: variable.etiquetas_periodo || {},
+                    procedencia_por_anio: variable.procedencia_por_anio || {},
+                    fechas_corte: variable.fechas_corte || {},
                     fuente: variable.fuente,
                     metodologia: variable.metodologia,
                     licencia: variable.licencia,
@@ -249,6 +253,9 @@
         const entries = [
             ["Fuente", variable.fuente || "No documentada"],
             ["Años disponibles", variable.anios_disponibles?.join(", ") || "No aplica"],
+            ...(Object.keys(variable.etiquetas_periodo || {}).length
+                ? [["Cortes parciales", Object.values(variable.etiquetas_periodo).join(", ")]]
+                : []),
             ["Nivel territorial", variable.nivel_territorial_disponible?.map((level) => LEVEL_LABELS[level]).join(", ") || "No aplica"],
             ["Unidad", variable.unidad || "No documentada"],
             ["Licencia", variable.licencia || "Consultar fuente"]

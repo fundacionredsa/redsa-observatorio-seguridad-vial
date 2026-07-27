@@ -309,6 +309,27 @@ function onEachProvinceFeature(feature, layer) {
                             </div>
                         `;
                     }
+                    if (effectiveVariable === "siniestros_inec_2019" && selectedPeriodMode !== "accumulated") {
+                        const activeDataset = currentLevel === "province"
+                            ? provinceData
+                            : (currentLevel === "canton" ? cantonData : parishData);
+                        const yearAudit = activeDataset?.metadata?.siniestros_transito_territorial?.anios?.[String(selectedYear)];
+                        if (yearAudit) {
+                            const total = Number(yearAudit.total_nacional || 0).toLocaleString("es-EC");
+                            const mapped = Number(yearAudit.suma_publicada_en_este_nivel || 0).toLocaleString("es-EC");
+                            const special = Number(yearAudit.no_representados_en_este_nivel ?? yearAudit.zona_especial_sin_asignar ?? 0).toLocaleString("es-EC");
+                            const partial = String(yearAudit.estado || "").includes("parcial")
+                                ? "<strong>Corte parcial enero-junio:</strong> no comparar con años completos."
+                                : "";
+                            itemsHtml += `
+                                <div class="legend-data-audit" role="note">
+                                    <strong>Total nacional: ${total}</strong>
+                                    <span>${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio y se conservan en el total sin asignación especulativa.</span>
+                                    ${partial ? `<span>${partial}</span>` : ""}
+                                </div>
+                            `;
+                        }
+                    }
                     container.innerHTML += itemsHtml;
                 }
             }

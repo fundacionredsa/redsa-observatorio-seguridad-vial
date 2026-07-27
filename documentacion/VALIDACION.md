@@ -1,6 +1,6 @@
 # Evidencia de validacion
 
-Fecha de corte: 2026-07-16. Los comandos repetibles estan en
+Fecha de corte: 2026-07-27. Los comandos repetibles estan en
 `scripts/verificar_datos_publicados.py` y `tests/`.
 
 ## Contratos de archivos publicados
@@ -9,7 +9,7 @@ Fecha de corte: 2026-07-16. Los comandos repetibles estan en
 |---|---:|---|
 | cantones_wgs84.geojson | 224 | codigos DPA unicos |
 | provincias_wgs84.geojson | 24 | suma cantonal = suma provincial |
-| parroquias_wgs84.geojson | 1.040 | codigos parroquiales unicos |
+| parroquias_wgs84.geojson | 1.050 | codigos parroquiales/areas unicos |
 | hotspots_cantonales.geojson | 224 | mismo conjunto DPA cantonal |
 
 ## Conciliaciones nacionales
@@ -17,10 +17,12 @@ Fecha de corte: 2026-07-16. Los comandos repetibles estan en
 | Fuente/ano | Filas fuente relevantes | Suma cantonal | Suma provincial | Diferencia |
 |---|---:|---:|---:|---:|
 | Siniestros 2019 | 24.595 | 24.595 | 24.595 | 0 |
-| Siniestros 2021 | 21.352 | 21.307 | 21.307 | 45 no resueltos |
-| Siniestros 2022 | 21.739 | 21.705 | 21.705 | 34 no resueltos |
-| Siniestros 2023 | 20.994 | 20.983 | 20.983 | 11 no resueltos |
-| Siniestros 2024 | 21.220 | 21.191 | 21.191 | 29 no resueltos |
+| Siniestros 2021 | 21.352 | 21.337 | 21.337 | 15 en zona territorial especial |
+| Siniestros 2022 | 21.739 | 21.722 | 21.722 | 17 en zona territorial especial |
+| Siniestros 2023 | 20.994 | 20.983 | 20.983 | 11 en zona territorial especial |
+| Siniestros 2024 | 21.220 | 21.191 | 21.191 | 29 en zona territorial especial |
+| Siniestros 2025 | 20.346 | 20.328 | 20.328 | 18 en zona territorial especial |
+| Siniestros 2026 enero-junio | 10.752 | 10.741 | 10.741 | 11 en zona territorial especial |
 | EDG V01-V89 2020 | 2.578 | 2.578 | 2.578 | 0 |
 | EDG V01-V89 2021 | 3.339 | 3.339 | 3.339 | 0 |
 | EDG V01-V89 2022 | 3.676 | 3.676 | 3.676 | 0 |
@@ -28,6 +30,24 @@ Fecha de corte: 2026-07-16. Los comandos repetibles estan en
 | EDG V01-V89 2024 | 4.214 | 4.214 | 4.214 | 0 |
 | SPPAT 2016-2021 | 16.526 | 16.526 | 16.526 | 0 |
 | Vehiculos ESTRA 2024 | 3.138.562 | 3.138.562 | 3.138.562 | 0 |
+
+Los 47 registros recuperados territorialmente respecto de la version anterior
+son exactamente 30 de 2021 y 17 de 2022. Los 72 registros restantes de
+2021-2024 corresponden a zonas territoriales especiales y permanecen en el
+total oficial nacional, sin asignacion especulativa a un poligono ordinario.
+
+## Consistencia ANT / INEC-ESTRA
+
+| Corte comparable | Siniestros | Lesionados | Fallecidos en sitio | Diferencia ANT vs. INEC |
+|---|---:|---:|---:|---:|
+| 2024 anual | 21.220 | 18.312 | 2.302 | 0 / 0 / 0 |
+| 2025, suma I-IV trimestre | 20.346 | 17.932 | 2.354 | 0 / 0 / 0 |
+| 2026-I | 4.789 | 4.032 | 603 | 0 / 0 / 0 |
+
+La coincidencia comprueba consistencia interna entre el registro administrativo
+ANT y su publicacion estadistica INEC/ESTRA para esos cortes. No vuelve
+intercambiables estas cifras con EDG: ANT/ESTRA registra fallecidos en sitio,
+mientras EDG contabiliza defunciones del Registro Civil con CIE-10 V01-V89.
 
 Los conteos EDG usan como denominador todas las defunciones: 117.030 (2020),
 107.648 (2021), 91.954 (2022), 89.877 (2023) y 91.803 (2024).

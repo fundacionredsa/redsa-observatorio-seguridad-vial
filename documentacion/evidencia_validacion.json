@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-07-25T14:46:51.480580+00:00",
+  "generated_at": "2026-07-27T19:52:59.316933+00:00",
   "status": "ok",
   "failures": [],
   "files": {
     "cantones_wgs84.geojson": {
       "features": 224,
       "expected_features": 224,
-      "bytes": 6855477,
-      "sha256": "486105cabcecbdb5871aec131d90d7b131813422c18a6b09eacdbbee4d6353b5"
+      "bytes": 6871622,
+      "sha256": "2e4dd762b5059d7406d3d17a5cfda6ad7a7edd72262b0b6899936f355c2a6d12"
     },
     "provincias_wgs84.geojson": {
       "features": 26,
       "expected_features": 26,
-      "bytes": 2507739,
-      "sha256": "e9d21faceffccbe053c9df597d197483a786f25e26f130b536636fa694ffe43c"
+      "bytes": 2520108,
+      "sha256": "b4c3206ff2b573a5d0e60a7cc66d8a4560e7fa0035192a3ca8a214eee2218547"
     },
     "parroquias_wgs84.geojson": {
       "features": 1050,
       "expected_features": 1050,
-      "bytes": 10321592,
-      "sha256": "a2c0cc254a3e8aac30b510ebd49e43bc6501593c86cb6104cbd0940eb61b169b"
+      "bytes": 10503308,
+      "sha256": "c6d3ca5291e1358771c9dda366ec66eb583fb3f2bd88a259e1747e774af60107"
     },
     "hotspots_cantonales.geojson": {
       "features": 224,
@@ -119,19 +119,34 @@
       }
     },
     "siniestros_historico": {
+      "2017": {
+        "canton_sum": 28967,
+        "province_sum": 28967,
+        "match": true
+      },
+      "2018": {
+        "canton_sum": 25530,
+        "province_sum": 25530,
+        "match": true
+      },
       "2019": {
         "canton_sum": 24595,
         "province_sum": 24595,
         "match": true
       },
+      "2020": {
+        "canton_sum": 16972,
+        "province_sum": 16972,
+        "match": true
+      },
       "2021": {
-        "canton_sum": 21307,
-        "province_sum": 21307,
+        "canton_sum": 21337,
+        "province_sum": 21337,
         "match": true
       },
       "2022": {
-        "canton_sum": 21705,
-        "province_sum": 21705,
+        "canton_sum": 21722,
+        "province_sum": 21722,
         "match": true
       },
       "2023": {
@@ -143,6 +158,120 @@
         "canton_sum": 21191,
         "province_sum": 21191,
         "match": true
+      },
+      "2025": {
+        "canton_sum": 20328,
+        "province_sum": 20328,
+        "match": true
+      },
+      "2026": {
+        "canton_sum": 10741,
+        "province_sum": 10741,
+        "match": true
+      }
+    },
+    "siniestros_fuente_y_zonas_especiales": {
+      "2021": {
+        "canton": [
+          21352,
+          21337,
+          15
+        ],
+        "province": [
+          21352,
+          21337,
+          15
+        ],
+        "parish": [
+          21352,
+          21337,
+          15
+        ]
+      },
+      "2022": {
+        "canton": [
+          21739,
+          21722,
+          17
+        ],
+        "province": [
+          21739,
+          21722,
+          17
+        ],
+        "parish": [
+          21739,
+          21722,
+          17
+        ]
+      },
+      "2023": {
+        "canton": [
+          20994,
+          20983,
+          11
+        ],
+        "province": [
+          20994,
+          20983,
+          11
+        ],
+        "parish": [
+          20994,
+          20983,
+          11
+        ]
+      },
+      "2024": {
+        "canton": [
+          21220,
+          21191,
+          29
+        ],
+        "province": [
+          21220,
+          21191,
+          29
+        ],
+        "parish": [
+          21220,
+          21191,
+          29
+        ]
+      },
+      "2025": {
+        "canton": [
+          20346,
+          20328,
+          18
+        ],
+        "province": [
+          20346,
+          20328,
+          18
+        ],
+        "parish": [
+          20346,
+          20328,
+          18
+        ]
+      },
+      "2026": {
+        "canton": [
+          10752,
+          10741,
+          11
+        ],
+        "province": [
+          10752,
+          10741,
+          11
+        ],
+        "parish": [
+          10752,
+          10741,
+          11
+        ]
       }
     },
     "fallecidos_parroquial": {
@@ -174,66 +303,5 @@
     "vehiculos_matriculados_2024": 3138562,
     "fallecidos_sppat_2016_2021": 16363
   },
-  "raw_controls": {
-    "siniestros_2019": {
-      "raw_rows": 24595,
-      "published": 24595,
-      "unresolved": 0
-    },
-    "siniestros_2021": {
-      "raw_rows": 21352,
-      "published": 21307,
-      "unresolved": 45
-    },
-    "siniestros_2022": {
-      "raw_rows": 21739,
-      "published": 21705,
-      "unresolved": 34
-    },
-    "siniestros_2023": {
-      "raw_rows": 20994,
-      "published": 20983,
-      "unresolved": 11
-    },
-    "siniestros_2024": {
-      "raw_rows": 21220,
-      "published": 21191,
-      "unresolved": 29
-    },
-    "edg_2020": {
-      "total_edg": 117030,
-      "v01_v89": 2578,
-      "v89": 1758,
-      "published": 2578,
-      "difference": 0
-    },
-    "edg_2021": {
-      "total_edg": 107648,
-      "v01_v89": 3339,
-      "v89": 2217,
-      "published": 3339,
-      "difference": 0
-    },
-    "edg_2022": {
-      "total_edg": 91954,
-      "v01_v89": 3676,
-      "v89": 2693,
-      "published": 3676,
-      "difference": 0
-    },
-    "edg_2023": {
-      "total_edg": 89877,
-      "v01_v89": 4068,
-      "v89": 3324,
-      "published": 4068,
-      "difference": 0
-    },
-    "edg_2024": {
-      "total_edg": 91803,
-      "v01_v89": 4214,
-      "v89": 3414,
-      "published": 4214,
-      "difference": 0
-    }
-  }
+  "raw_controls": {}
 }

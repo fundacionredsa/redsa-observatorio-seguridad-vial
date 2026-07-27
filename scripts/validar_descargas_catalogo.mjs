@@ -21,7 +21,7 @@ async function main() {
     if (names.length !== entry.hojas) throw new Error(`${entry.archivo}: se esperaban ${entry.hojas} hojas y se encontraron ${names.length}`);
     if (CONFIG.representative.has(entry.archivo)) {
       for (const sheetName of ["Léeme", names.find(name => name.startsWith("Año "))]) {
-        const rendered = await workbook.render({ sheetName, range: sheetName === "Léeme" ? "A1:H16" : "A1:K25", scale: 1, format: "png" });
+        const rendered = await workbook.render({ sheetName, range: sheetName === "Léeme" ? "A1:H16" : "A1:L25", scale: 1, format: "png" });
         await fs.writeFile(path.join(CONFIG.previewDir, `${path.parse(entry.archivo).name}-${sheetName.replaceAll(" ", "_")}.png`), new Uint8Array(await rendered.arrayBuffer()));
       }
     }

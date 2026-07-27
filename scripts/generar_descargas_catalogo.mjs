@@ -70,28 +70,62 @@ function groupBy(items, keyFn) {
   return groups;
 }
 
+function payloadFeatures(data, level) {
+  return data[level]?.features || [];
+}
+
+function levelHasData(variable, definition, year, data, level) {
+  if (!variable.nivel_territorial_disponible.includes(level)) return false;
+  return payloadFeatures(data, level).some((feature) => metric(definition, feature.properties, year).value !== null);
+}
+
+function bestDetailLevel(variable, definition, year, data) {
+  if (levelHasData(variable, definition, year, data, "parish")) return "parish";
+  if (levelHasData(variable, definition, year, data, "canton")) return "canton";
+  return variable.nivel_territorial_disponible.includes("province") ? "province" : "canton";
+}
+
+function officialNationalAudit(variable, year, data, preferredLevel) {
+  if (variable.id !== "siniestros_inec_2019") return null;
+  for (const level of [preferredLevel, "canton", "province", "parish"].filter(Boolean)) {
+    const audit = data[level]?.metadata?.siniestros_transito_territorial?.anios?.[String(year)];
+    if (audit) return audit;
+  }
+  return null;
+}
+
 function sheetRows(variable, definition, year, data) {
-  const useParish = variable.nivel_territorial_disponible.includes("parish");
-  const details = (useParish ? data.parish : data.canton).map((feature) => territorial(feature, useParish ? "parish" : "canton"));
+  const detailLevel = bestDetailLevel(variable, definition, year, data);
+  const useParish = detailLevel === "parish";
+  const useProvince = detailLevel === "province";
+  const details = payloadFeatures(data, detailLevel).map((feature) => territorial(feature, detailLevel));
   details.sort((a, b) => `${a.province}|${a.canton}|${a.parish}`.localeCompare(`${b.province}|${b.canton}|${b.parish}`, "es"));
-  const rows = [{ type: "Total nacional", provinceCode: "", province: "ECUADOR", cantonCode: "", canton: "", parishCode: "", parish: "" }];
+  const rows = [{ type: "Total nacional", provinceCode: "", province: "ECUADOR", cantonCode: "", canton: "", parishCode: "", parish: "", observation: "" }];
   const groupedProvinces = groupBy(details, (item) => item.provinceCode);
   for (const provinceRows of groupedProvinces.values()) {
     const firstProvince = provinceRows[0];
-    rows.push({ type: "Subtotal provincia", ...firstProvince, cantonCode: "", canton: "", parishCode: "", parish: "" });
+    rows.push({
+      type: useProvince ? "Provincia" : "Subtotal provincia",
+      ...firstProvince,
+      cantonCode: "",
+      canton: "",
+      parishCode: "",
+      parish: "",
+      observation: ""
+    });
     if (useParish) {
       const groupedCantons = groupBy(provinceRows, (item) => item.cantonCode);
       for (const cantonRows of groupedCantons.values()) {
-        rows.push({ type: "Subtotal cantón", ...cantonRows[0], parishCode: "", parish: "" });
-        cantonRows.forEach((item) => rows.push({ type: "Parroquia", ...item }));
+        rows.push({ type: "Subtotal cantón", ...cantonRows[0], parishCode: "", parish: "", observation: "" });
+        cantonRows.forEach((item) => rows.push({ type: "Parroquia", ...item, observation: "" }));
       }
-    } else {
-      provinceRows.forEach((item) => rows.push({ type: "Cantón", ...item }));
+    } else if (!useProvince) {
+      provinceRows.forEach((item) => rows.push({ type: "Cantón", ...item, observation: "" }));
     }
   }
   const detailMetrics = details.map((item) => ({ item, metric: metric(definition, item.properties, year) }));
   return rows.map((row) => {
-    if (row.type === "Cantón" || row.type === "Parroquia") {
+    if (row.type === "Cantón" || row.type === "Parroquia" || row.type === "Provincia") {
       const result = metric(definition, row.properties, year);
       return { ...row, metric: result, status: result.value === null ? "sin_dato" : "con_dato" };
     }
@@ -100,6 +134,14 @@ function sheetRows(variable, definition, year, data) {
     if (row.type === "Subtotal cantón") children = children.filter(({ item }) => item.cantonCode === row.cantonCode);
     const result = aggregateMetric(definition, children.map((child) => child.metric));
     const missing = children.some((child) => child.metric.value === null);
+    if (row.type === "Total nacional") {
+      const audit = officialNationalAudit(variable, year, data, detailLevel);
+      if (audit && definition.kind === "count") {
+        result.value = Number(audit.total_nacional);
+        const notRepresented = Number(audit.no_representados_en_este_nivel ?? audit.zona_especial_sin_asignar ?? 0);
+        row.observation = `${notRepresented} registros incluidos en el total nacional no tienen polígono publicable en este nivel territorial.`;
+      }
+    }
     return { ...row, metric: result, status: result.value === null ? "sin_dato" : (missing ? "calculado_con_datos_parciales" : "calculado") };
   });
 }
@@ -126,7 +168,7 @@ function buildReadme(workbook, variable) {
     ["Descripción", variable.descripcion], ["Unidad", variable.unidad], ["Fuente", variable.fuente],
     ["Años", variable.anios_disponibles.join(", ")], ["Niveles", variable.nivel_territorial_disponible.join(", ")],
     ["Licencia", variable.licencia], ["Generado", CONFIG.generatedDate], ["Portal", CONFIG.sourceUrl],
-    ["Cómo leer", "Cada hoja anual presenta total nacional, subtotales provinciales y datos cantonales. Cuando existe nivel parroquial, incluye además subtotales cantonales y el detalle parroquial."],
+    ["Cómo leer", "Cada hoja anual usa el nivel más detallado realmente disponible: parroquia cuando existe información comprobable para ese año; en caso contrario, cantón o provincia. Incluye subtotales y total nacional."],
     ["Valores faltantes", "Un valor vacío acompañado por estado sin_dato significa que la fuente no ofrece información suficiente. No se reemplaza por cero."],
     ["Citación sugerida", `Fundación REDSA (2026). ${variable.label}. Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible. Consulta: ${CONFIG.generatedDate}.`]
   ];
@@ -146,6 +188,11 @@ function buildMethod(workbook, variable, definition) {
   const rows = [["Método", variable.metodologia], ["Fórmula", formula], ["Fuente", variable.fuente], ["Licencia", variable.licencia]];
   variable.referencias.forEach((reference, index) => rows.push([`Referencia ${index + 1}`, `${reference.label}: ${reference.url}`]));
   rows.push(["Tratamiento territorial", "Los subtotales se calculan en el archivo mediante fórmulas sobre las filas de detalle. Las tasas se recalculan con numeradores y denominadores agregados; no se promedian tasas territoriales."]);
+  if (variable.id === "siniestros_inec_2019") {
+    rows.push(["Control de divulgación", "El umbral SDC de 5 aplica a tabulaciones cruzadas de múltiples atributos. No se aplica a conteos territoriales principales de siniestros, lesionados o fallecidos porque son cifras oficiales públicas."]);
+    rows.push(["Corte 2026", "Dato provisional enero-junio. Su comparación válida es enero-junio de 2025; no se compara ni se suma con años completos."]);
+    rows.push(["Zonas en estudio", "Los registros sin cantón ordinario inequívoco se incluyen en el total nacional y se declaran en la columna Observación; no se asignan especulativamente a un polígono."]);
+  }
   sheet.getRange(`A4:B${rows.length + 3}`).values = rows;
   sheet.getRange(`A4:A${rows.length + 3}`).format.font = { bold: true, color: "#075D66" };
   sheet.getRange(`A4:B${rows.length + 3}`).format.wrapText = true;
@@ -155,28 +202,30 @@ function buildMethod(workbook, variable, definition) {
 function buildYear(workbook, variable, definition, year, data) {
   const sheet = workbook.worksheets.add(`Año ${year}`);
   sheet.showGridLines = false;
-  sheet.getRange("A1:K2").merge(); sheet.getRange("A1").values = [[`${variable.label} · ${year}`]]; styleTitle(sheet, sheet.getRange("A1:K2"));
-  sheet.getRange("A3:K3").merge(); sheet.getRange("A3").values = [[`${variable.fuente} · ${variable.unidad} · Los vacíos se declaran como sin_dato.`]];
-  sheet.getRange("A3:K3").format.font = { color: "#52606B", italic: true, size: 9 };
-  const headers = [["Tipo de fila", "Código provincia", "Provincia", "Código cantón", "Cantón", "Código parroquia", "Parroquia", "Valor", "Estado del dato", "Numerador", "Denominador"]];
-  sheet.getRange("A5:K5").values = headers; styleHeader(sheet.getRange("A5:K5"));
+  const periodLabel = variable.id === "siniestros_inec_2019" && Number(year) === 2026 ? "2026 parcial · enero-junio" : year;
+  sheet.getRange("A1:L2").merge(); sheet.getRange("A1").values = [[`${variable.label} · ${periodLabel}`]]; styleTitle(sheet, sheet.getRange("A1:L2"));
+  sheet.getRange("A3:L3").merge(); sheet.getRange("A3").values = [[`${variable.fuente} · ${variable.unidad} · Los vacíos se declaran como sin_dato.`]];
+  sheet.getRange("A3:L3").format.font = { color: "#52606B", italic: true, size: 9 };
+  const headers = [["Tipo de fila", "Código provincia", "Provincia", "Código cantón", "Cantón", "Código parroquia", "Parroquia", "Valor", "Estado del dato", "Numerador", "Denominador", "Observación"]];
+  sheet.getRange("A5:L5").values = headers; styleHeader(sheet.getRange("A5:L5"));
   const rows = sheetRows(variable, definition, year, data);
   const start = 6, end = start + rows.length - 1;
   const values = rows.map((row) => [row.type, row.provinceCode, row.province, row.cantonCode, row.canton, row.parishCode, row.parish,
-    row.metric?.value ?? null, row.status, row.metric?.numerator ?? null, row.metric?.denominator ?? null]);
-  sheet.getRange(`A${start}:K${end}`).values = values;
+    row.metric?.value ?? null, row.status, row.metric?.numerator ?? null, row.metric?.denominator ?? null, row.observation || ""]);
+  sheet.getRange(`A${start}:L${end}`).values = values;
   sheet.freezePanes.freezeRows(5);
   sheet.getRange(`H${start}:H${end}`).format.numberFormat = definition.kind === "count" ? "0" : "0.00";
   sheet.getRange(`J${start}:K${end}`).format.numberFormat = "0";
-  sheet.getRange(`A${start}:K${end}`).format.font = { size: 9, name: "Aptos" };
+  sheet.getRange(`A${start}:L${end}`).format.font = { size: 9, name: "Aptos" };
   rows.forEach((row, index) => {
-    const range = sheet.getRange(`A${start + index}:K${start + index}`);
+    const range = sheet.getRange(`A${start + index}:L${start + index}`);
     if (row.type === "Total nacional") { range.format.fill = "#DFF4F6"; range.format.font = { bold: true, color: "#075D66" }; }
     else if (row.type === "Subtotal provincia") { range.format.fill = "#E8EEF2"; range.format.font = { bold: true, color: "#243746" }; }
     else if (row.type === "Subtotal cantón") { range.format.fill = "#F5F7F9"; range.format.font = { bold: true, color: "#334155" }; }
   });
-  sheet.getRange(`A5:K${end}`).format.borders = { preset: "inside", style: "thin", color: "#E2E8F0" };
-  const widths = [20, 15, 24, 14, 27, 16, 27, 16, 15, 16, 16];
+  sheet.getRange(`A5:L${end}`).format.borders = { preset: "inside", style: "thin", color: "#E2E8F0" };
+  sheet.getRange(`L${start}:L${end}`).format.wrapText = true;
+  const widths = [20, 15, 24, 14, 27, 16, 27, 16, 15, 16, 16, 55];
   widths.forEach((width, i) => sheet.getRangeByIndexes(0, i, end, 1).format.columnWidth = width);
 }
 
@@ -184,7 +233,7 @@ async function main() {
   await fs.mkdir(CONFIG.outputDir, { recursive: true });
   const catalog = JSON.parse(await fs.readFile(CONFIG.catalogPath, "utf8"));
   const data = {};
-  for (const [level, file] of Object.entries(CONFIG.geojson)) data[level] = JSON.parse(await fs.readFile(file, "utf8")).features;
+  for (const [level, file] of Object.entries(CONFIG.geojson)) data[level] = JSON.parse(await fs.readFile(file, "utf8"));
   const manifest = [];
   for (const variable of catalog.variables) {
     if (!variable.descargas?.excel) continue;

@@ -1536,6 +1536,16 @@ body.light-theme .legend-unavailable strong {
     color: #9a3412;
 }
 
+body.light-theme .legend-data-audit {
+    border-left-color: #0284c7;
+    background: #e0f2fe;
+    color: #334155;
+}
+
+body.light-theme .legend-data-audit strong {
+    color: #0c4a6e;
+}
+
 body.light-theme .detail-period-segments button {
     border-color: #cbd5e1;
     background: #fff;

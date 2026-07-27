@@ -23,7 +23,13 @@ La interfaz mantiene un registro central por variable con:
 {tipo: anual | agregado_multianio | foto_unica, anios_disponibles: [...]}
 ```
 
-El slider muestra la union 2016-2026: las series estadisticas llegan hasta 2024 y la foto OSM tiene corte 2026. Una variable anual lee exclusivamente el valor del ano seleccionado; un hueco queda visible y se representa como `sin_dato`. Las variables de foto unica deshabilitan el slider y muestran el badge `Dato fijo`, evitando que parezcan series historicas.
+El slider muestra la union 2016-2026. La serie territorial de siniestros llega
+hasta 2025 completo y 2026 parcial enero-junio; EDG llega hasta 2024 y la foto
+OSM tiene corte 2026. Una variable anual lee exclusivamente el valor del ano
+seleccionado; un hueco queda visible y se representa como `sin_dato`. El modo
+historico de siniestros suma solo anos completos (2017-2025): nunca mezcla el
+corte parcial 2026 con anualidades completas. Las variables de foto unica
+deshabilitan el slider y muestran el badge `Dato fijo`.
 
 El sidebar, la tarjeta demografica, los sparklines y el marcador del grafico historico comparten el mismo estado global de ano. Se elimino el selector local que antes permitia consolidar siniestros de varios anos.
 

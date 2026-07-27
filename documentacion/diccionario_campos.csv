@@ -635,6 +635,7 @@ cantones_wgs84.geojson,poblacion_por_anio.2033,integer,no,Poblacion proyectada p
 cantones_wgs84.geojson,poblacion_por_anio.2034,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,667419
 cantones_wgs84.geojson,poblacion_por_anio.2035,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,671963
 cantones_wgs84.geojson,porcentaje_motocicletas_vehiculos_2024,null/number,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,16.023284
+cantones_wgs84.geojson,siniestros_enero_junio_2025,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,182
 cantones_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 cantones_wgs84.geojson,siniestros_historico.2017,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1236
 cantones_wgs84.geojson,siniestros_historico.2018,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1304
@@ -644,6 +645,8 @@ cantones_wgs84.geojson,siniestros_historico.2021,integer,no,Siniestros del ano r
 cantones_wgs84.geojson,siniestros_historico.2022,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,917
 cantones_wgs84.geojson,siniestros_historico.2023,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,975
 cantones_wgs84.geojson,siniestros_historico.2024,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1161
+cantones_wgs84.geojson,siniestros_historico.2025,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,523
+cantones_wgs84.geojson,siniestros_historico.2026,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,278
 cantones_wgs84.geojson,siniestros_inec_2019,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1024
 cantones_wgs84.geojson,sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 cantones_wgs84.geojson,sppat_fallecidos_por_anio.2016,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,45
@@ -931,31 +934,56 @@ pacificacion_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStre
 pacificacion_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
 pacificacion_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 pacificacion_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
-parroquias_wgs84.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,1503
-parroquias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,ARCHIDONA
-parroquias_wgs84.geojson,DPA_DESPAR,string,no,Nombre de parroquia,texto,INEC 2014,HATUN SUMAKU
-parroquias_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,NAPO
-parroquias_wgs84.geojson,DPA_PARROQ,string,no,Codigo DPA parroquial,codigo,INEC 2014,150356
-parroquias_wgs84.geojson,DPA_PROVIN,string,no,Codigo DPA provincial,codigo,INEC/CONALI,15
-parroquias_wgs84.geojson,fallecidos_2021_2024,integer,no,Fallecidos EDG acumulados 2021-2024,personas,INEC EDG,0
+parroquias_wgs84.geojson,DPA_ANIO,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026
+parroquias_wgs84.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
+parroquias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
+parroquias_wgs84.geojson,DPA_DESPAR,string,no,Nombre de parroquia,texto,INEC 2014,CUENCA
+parroquias_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
+parroquias_wgs84.geojson,DPA_PARROQ,string,no,Codigo DPA parroquial,codigo,INEC 2014,010150
+parroquias_wgs84.geojson,DPA_PROVIN,string,no,Codigo DPA provincial,codigo,INEC/CONALI,01
+parroquias_wgs84.geojson,categoria_territorial,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,unidad_administrativa
+parroquias_wgs84.geojson,fallecidos_2021_2024,null/number,si,Fallecidos EDG acumulados 2021-2024,personas,INEC EDG,234.0
+parroquias_wgs84.geojson,fallecidos_estado_por_anio,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+parroquias_wgs84.geojson,fallecidos_estado_por_anio.2021,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
+parroquias_wgs84.geojson,fallecidos_estado_por_anio.2022,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
+parroquias_wgs84.geojson,fallecidos_estado_por_anio.2023,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
+parroquias_wgs84.geojson,fallecidos_estado_por_anio.2024,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
 parroquias_wgs84.geojson,fallecidos_por_anio,object,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,
-parroquias_wgs84.geojson,fallecidos_por_anio.2021,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
-parroquias_wgs84.geojson,fallecidos_por_anio.2022,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
-parroquias_wgs84.geojson,fallecidos_por_anio.2023,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
-parroquias_wgs84.geojson,fallecidos_por_anio.2024,integer,no,Fallecidos EDG parroquiales por ano,personas,INEC EDG,0
+parroquias_wgs84.geojson,fallecidos_por_anio.2021,integer/null,si,Fallecidos EDG parroquiales por ano,personas,INEC EDG,59
+parroquias_wgs84.geojson,fallecidos_por_anio.2022,integer/null,si,Fallecidos EDG parroquiales por ano,personas,INEC EDG,55
+parroquias_wgs84.geojson,fallecidos_por_anio.2023,integer/null,si,Fallecidos EDG parroquiales por ano,personas,INEC EDG,66
+parroquias_wgs84.geojson,fallecidos_por_anio.2024,integer/null,si,Fallecidos EDG parroquiales por ano,personas,INEC EDG,54
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
-parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
-parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,58
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2021.cruce_historico_confirmado,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
-parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,55
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2022.cruce_historico_confirmado,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
-parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,66
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2023.cruce_historico_confirmado,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
-parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.agregado_cabecera_sin_poligono_propio,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,54
 parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.coincidencia_parroquial,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,resolucion_parroquial_por_anio.2024.cruce_historico_confirmado,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+parroquias_wgs84.geojson,siniestros_enero_junio_2025,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,99
+parroquias_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2017,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2018,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2019,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2020,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2021,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2022,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2023,null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+parroquias_wgs84.geojson,siniestros_historico.2024,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,830
+parroquias_wgs84.geojson,siniestros_historico.2025,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,308
+parroquias_wgs84.geojson,siniestros_historico.2026,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,149
+parroquias_wgs84.geojson,txt,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,CABECERA CANTONAL
+provincias_wgs84.geojson,DPA_ANIO,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2024
 provincias_wgs84.geojson,DPA_CANTON,null,si,Codigo DPA cantonal,codigo,INEC/CONALI,
 provincias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,AZUAY
 provincias_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
@@ -965,6 +993,7 @@ provincias_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_fallecidos,string,no,
 provincias_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_motociclistas,string,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,disponible
 provincias_wgs84.geojson,calidad_tasas_vehiculos_2024.tasa_siniestros,string,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,disponible
 provincias_wgs84.geojson,cantones_incluidos,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,15
+provincias_wgs84.geojson,categoria_territorial,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,unidad_administrativa
 provincias_wgs84.geojson,cobertura_datos,object,no,Cobertura del agregado provincial,metadato,Derivado REDSA,
 provincias_wgs84.geojson,cobertura_datos.fallecidos_historico,object,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,
 provincias_wgs84.geojson,cobertura_datos.fallecidos_historico.2020,object,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,
@@ -1155,12 +1184,30 @@ provincias_wgs84.geojson,cobertura_datos.poblacion_por_anio.2035.cantones_total,
 provincias_wgs84.geojson,cobertura_datos.poblacion_por_anio.2035.codigos_cantones_sin_dato,array,no,Poblacion proyectada para el ano indicado,habitantes,INEC,
 provincias_wgs84.geojson,cobertura_datos.poblacion_por_anio.2035.estado,string,no,Poblacion proyectada para el ano indicado,habitantes,INEC,completo
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017.cantones_con_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,13
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017.cantones_sin_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,2
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017.cantones_total,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017.codigos_cantones_sin_dato,array,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2017.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018.cantones_con_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,13
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018.cantones_sin_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,2
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018.cantones_total,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018.codigos_cantones_sin_dato,array,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2018.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019.cantones_con_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,14
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019.cantones_sin_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019.cantones_total,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019.codigos_cantones_sin_dato,array,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2019.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020.cantones_con_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,12
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020.cantones_sin_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,3
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020.cantones_total,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020.codigos_cantones_sin_dato,array,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2020.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2021,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2021.cantones_con_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2021.cantones_sin_dato,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,0
@@ -1185,6 +1232,14 @@ provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.cantones_sin_
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.cantones_total,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,15
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.codigos_cantones_sin_dato,array,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
 provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2024.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,parcial
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2025,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2025.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,completo
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2025.fecha_corte,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,2025-12-31
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2025.fuente,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,"ANT, registro administrativo; reconciliado con INEC ESTRA trimestral I-IV 2025"
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2026,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2026.estado,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,completo
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2026.fecha_corte,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,2026-06-30
+provincias_wgs84.geojson,cobertura_datos.siniestros_historico.2026.fuente,string,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,"ANT, registro administrativo"
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 provincias_wgs84.geojson,cobertura_datos.sppat_fallecidos_por_anio.2016.cantones_con_dato,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,15
@@ -1226,17 +1281,18 @@ provincias_wgs84.geojson,cobertura_mapeo_infraestructura_por_100k,number,no,Camp
 provincias_wgs84.geojson,cobertura_mapeo_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
 provincias_wgs84.geojson,cobertura_mapeo_osm.advertencia,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Mide densidad de elementos mapeados en OSM; un cero no demuestra ausencia de infraestructura.
 provincias_wgs84.geojson,cobertura_mapeo_osm.anio_poblacion,integer,no,Poblacion proyectada,habitantes,INEC,2024
-provincias_wgs84.geojson,cobertura_mapeo_osm.elementos_total,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,6197
+provincias_wgs84.geojson,cobertura_mapeo_osm.elementos_total,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,6197
 provincias_wgs84.geojson,cobertura_mapeo_osm.estado,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,disponible
 provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
 provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.aceras,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
 provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.cruces,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
 provincias_wgs84.geojson,cobertura_mapeo_osm.fecha_corte_osm.semaforos_rotondas,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026-07-16
-provincias_wgs84.geojson,cobertura_mapeo_osm.poblacion_referencia,integer,no,Poblacion proyectada,habitantes,INEC,831220
-provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa,object,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+provincias_wgs84.geojson,cobertura_mapeo_osm.poblacion_referencia,integer/null,si,Poblacion proyectada,habitantes,INEC,831220
+provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa,null/object,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.aceras,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4222
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.cruces,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1294
 provincias_wgs84.geojson,cobertura_mapeo_osm.por_capa.semaforos_rotondas,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,681
+provincias_wgs84.geojson,estado_datos,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,no_aplica_zona_especial
 provincias_wgs84.geojson,fallecidos_cobertura_pct,object,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,
 provincias_wgs84.geojson,fallecidos_cobertura_pct.2021,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
 provincias_wgs84.geojson,fallecidos_cobertura_pct.2022,number,no,Porcentaje de parroquias con dato anual en el agregado,porcentaje,Derivado REDSA,100.0
@@ -1361,13 +1417,64 @@ provincias_wgs84.geojson,fallecidos_historico.2023,integer,no,Fallecidos CIE-10 
 provincias_wgs84.geojson,fallecidos_historico.2024,integer,no,Fallecidos CIE-10 V01-V89 por ano,personas,INEC EDG,112
 provincias_wgs84.geojson,fallecidos_inec_2019,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,82
 provincias_wgs84.geojson,fallecidos_parroquial,object,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,
-provincias_wgs84.geojson,fallecidos_parroquial.2021,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,138
-provincias_wgs84.geojson,fallecidos_parroquial.2022,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,137
-provincias_wgs84.geojson,fallecidos_parroquial.2023,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,133
-provincias_wgs84.geojson,fallecidos_parroquial.2024,integer,no,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,112
+provincias_wgs84.geojson,fallecidos_parroquial.2021,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,138
+provincias_wgs84.geojson,fallecidos_parroquial.2022,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,137
+provincias_wgs84.geojson,fallecidos_parroquial.2023,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,133
+provincias_wgs84.geojson,fallecidos_parroquial.2024,integer/null,si,Fallecidos EDG parroquiales agregados al nivel territorial,personas,INEC EDG / Derivado REDSA,112
 provincias_wgs84.geojson,fallecidos_sppat_2016_2021,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,563
-provincias_wgs84.geojson,fuente_geometria,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,Disolucion de docs/data/cantones_wgs84.geojson por DPA_PROVIN
+provincias_wgs84.geojson,fcode,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,HA002
+provincias_wgs84.geojson,fuente_geometria,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,"CONALI / Ministerio de Gobierno, Organización Territorial Provincial"
 provincias_wgs84.geojson,inec_patron_horario,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_patron_horario.2017,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_patron_horario.2017.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+provincias_wgs84.geojson,inec_patron_horario.2017.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+provincias_wgs84.geojson,inec_patron_horario.2017.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+provincias_wgs84.geojson,inec_patron_horario.2017.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,33
+provincias_wgs84.geojson,inec_patron_horario.2017.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,28
+provincias_wgs84.geojson,inec_patron_horario.2017.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,38
+provincias_wgs84.geojson,inec_patron_horario.2017.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,40
+provincias_wgs84.geojson,inec_patron_horario.2017.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,66
+provincias_wgs84.geojson,inec_patron_horario.2017.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,66
+provincias_wgs84.geojson,inec_patron_horario.2017.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,54
+provincias_wgs84.geojson,inec_patron_horario.2017.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,56
+provincias_wgs84.geojson,inec_patron_horario.2017.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,67
+provincias_wgs84.geojson,inec_patron_horario.2017.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,51
+provincias_wgs84.geojson,inec_patron_horario.2017.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,70
+provincias_wgs84.geojson,inec_patron_horario.2017.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,75
+provincias_wgs84.geojson,inec_patron_horario.2017.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,79
+provincias_wgs84.geojson,inec_patron_horario.2017.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,83
+provincias_wgs84.geojson,inec_patron_horario.2017.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,98
+provincias_wgs84.geojson,inec_patron_horario.2017.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,107
+provincias_wgs84.geojson,inec_patron_horario.2017.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,99
+provincias_wgs84.geojson,inec_patron_horario.2017.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,90
+provincias_wgs84.geojson,inec_patron_horario.2017.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,59
+provincias_wgs84.geojson,inec_patron_horario.2017.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,66
+provincias_wgs84.geojson,inec_patron_horario.2017.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,59
+provincias_wgs84.geojson,inec_patron_horario.2018,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_patron_horario.2018.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
+provincias_wgs84.geojson,inec_patron_horario.2018.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
+provincias_wgs84.geojson,inec_patron_horario.2018.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+provincias_wgs84.geojson,inec_patron_horario.2018.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,41
+provincias_wgs84.geojson,inec_patron_horario.2018.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,34
+provincias_wgs84.geojson,inec_patron_horario.2018.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,42
+provincias_wgs84.geojson,inec_patron_horario.2018.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,67
+provincias_wgs84.geojson,inec_patron_horario.2018.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,71
+provincias_wgs84.geojson,inec_patron_horario.2018.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,39
+provincias_wgs84.geojson,inec_patron_horario.2018.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,56
+provincias_wgs84.geojson,inec_patron_horario.2018.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,61
+provincias_wgs84.geojson,inec_patron_horario.2018.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,62
+provincias_wgs84.geojson,inec_patron_horario.2018.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,74
+provincias_wgs84.geojson,inec_patron_horario.2018.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,78
+provincias_wgs84.geojson,inec_patron_horario.2018.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,80
+provincias_wgs84.geojson,inec_patron_horario.2018.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,64
+provincias_wgs84.geojson,inec_patron_horario.2018.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,83
+provincias_wgs84.geojson,inec_patron_horario.2018.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,99
+provincias_wgs84.geojson,inec_patron_horario.2018.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,85
+provincias_wgs84.geojson,inec_patron_horario.2018.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,117
+provincias_wgs84.geojson,inec_patron_horario.2018.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,81
+provincias_wgs84.geojson,inec_patron_horario.2018.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,74
+provincias_wgs84.geojson,inec_patron_horario.2018.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,61
+provincias_wgs84.geojson,inec_patron_horario.2018.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,40
 provincias_wgs84.geojson,inec_patron_horario.2019,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_patron_horario.2019.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,28
 provincias_wgs84.geojson,inec_patron_horario.2019.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
@@ -1393,6 +1500,31 @@ provincias_wgs84.geojson,inec_patron_horario.2019.20:00 A 20:59,integer,no,Sinie
 provincias_wgs84.geojson,inec_patron_horario.2019.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,63
 provincias_wgs84.geojson,inec_patron_horario.2019.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,54
 provincias_wgs84.geojson,inec_patron_horario.2019.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,49
+provincias_wgs84.geojson,inec_patron_horario.2020,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_patron_horario.2020.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,14
+provincias_wgs84.geojson,inec_patron_horario.2020.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,15
+provincias_wgs84.geojson,inec_patron_horario.2020.02:00 A 02:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,13
+provincias_wgs84.geojson,inec_patron_horario.2020.03:00 A 03:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,8
+provincias_wgs84.geojson,inec_patron_horario.2020.04:00 A 04:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,16
+provincias_wgs84.geojson,inec_patron_horario.2020.05:00 A 05:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,17
+provincias_wgs84.geojson,inec_patron_horario.2020.06:00 A 06:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,21
+provincias_wgs84.geojson,inec_patron_horario.2020.07:00 A 07:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,47
+provincias_wgs84.geojson,inec_patron_horario.2020.08:00 A 08:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,40
+provincias_wgs84.geojson,inec_patron_horario.2020.09:00 A 09:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,22
+provincias_wgs84.geojson,inec_patron_horario.2020.10:00 A 10:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,27
+provincias_wgs84.geojson,inec_patron_horario.2020.11:00 A 11:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+provincias_wgs84.geojson,inec_patron_horario.2020.12:00 A 12:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,40
+provincias_wgs84.geojson,inec_patron_horario.2020.13:00 A 13:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,42
+provincias_wgs84.geojson,inec_patron_horario.2020.14:00 A 14:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,38
+provincias_wgs84.geojson,inec_patron_horario.2020.15:00 A 15:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,49
+provincias_wgs84.geojson,inec_patron_horario.2020.16:00 A 16:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,42
+provincias_wgs84.geojson,inec_patron_horario.2020.17:00 A 17:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,49
+provincias_wgs84.geojson,inec_patron_horario.2020.18:00 A 18:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,46
+provincias_wgs84.geojson,inec_patron_horario.2020.19:00 A 19:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,57
+provincias_wgs84.geojson,inec_patron_horario.2020.20:00 A 20:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,37
+provincias_wgs84.geojson,inec_patron_horario.2020.21:00 A 21:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,52
+provincias_wgs84.geojson,inec_patron_horario.2020.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,32
+provincias_wgs84.geojson,inec_patron_horario.2020.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,27
 provincias_wgs84.geojson,inec_patron_horario.2021,object,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_patron_horario.2021.00:00 A 00:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,19
 provincias_wgs84.geojson,inec_patron_horario.2021.01:00 A 01:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,25
@@ -1494,6 +1626,28 @@ provincias_wgs84.geojson,inec_patron_horario.2024.21:00 A 21:59,integer,no,Sinie
 provincias_wgs84.geojson,inec_patron_horario.2024.22:00 A 22:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,56
 provincias_wgs84.geojson,inec_patron_horario.2024.23:00 A 23:59,integer,no,Siniestros por franja horaria y ano,eventos,INEC ESTRA,52
 provincias_wgs84.geojson,inec_por_causa,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_causa.2017,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_causa.2017.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,8
+provincias_wgs84.geojson,inec_por_causa.2017.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,156
+provincias_wgs84.geojson,inec_por_causa.2017.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,25
+provincias_wgs84.geojson,inec_por_causa.2017.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,4
+provincias_wgs84.geojson,inec_por_causa.2017.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,763
+provincias_wgs84.geojson,inec_por_causa.2017.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,76
+provincias_wgs84.geojson,inec_por_causa.2017.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,26
+provincias_wgs84.geojson,inec_por_causa.2017.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,122
+provincias_wgs84.geojson,inec_por_causa.2017.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,316
+provincias_wgs84.geojson,inec_por_causa.2017.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+provincias_wgs84.geojson,inec_por_causa.2018,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_causa.2018.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,7
+provincias_wgs84.geojson,inec_por_causa.2018.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,175
+provincias_wgs84.geojson,inec_por_causa.2018.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,28
+provincias_wgs84.geojson,inec_por_causa.2018.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,2
+provincias_wgs84.geojson,inec_por_causa.2018.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,911
+provincias_wgs84.geojson,inec_por_causa.2018.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,49
+provincias_wgs84.geojson,inec_por_causa.2018.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,8
+provincias_wgs84.geojson,inec_por_causa.2018.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,138
+provincias_wgs84.geojson,inec_por_causa.2018.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,200
+provincias_wgs84.geojson,inec_por_causa.2018.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,10
 provincias_wgs84.geojson,inec_por_causa.2019,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_por_causa.2019.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
 provincias_wgs84.geojson,inec_por_causa.2019.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,212
@@ -1505,6 +1659,17 @@ provincias_wgs84.geojson,inec_por_causa.2019.MAL ESTADO DE LA VIA,integer,no,Sin
 provincias_wgs84.geojson,inec_por_causa.2019.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,93
 provincias_wgs84.geojson,inec_por_causa.2019.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,130
 provincias_wgs84.geojson,inec_por_causa.2019.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+provincias_wgs84.geojson,inec_por_causa.2020,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_causa.2020.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,5
+provincias_wgs84.geojson,inec_por_causa.2020.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,96
+provincias_wgs84.geojson,inec_por_causa.2020.EXCESO VELOCIDAD,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,18
+provincias_wgs84.geojson,inec_por_causa.2020.FACTORES CLIMATICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
+provincias_wgs84.geojson,inec_por_causa.2020.IMPERICIA E IMPRUDENCIA DEL CONDUCTOR,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,446
+provincias_wgs84.geojson,inec_por_causa.2020.IMPRUDENCIA DEL PEATON,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,34
+provincias_wgs84.geojson,inec_por_causa.2020.MAL ESTADO DE LA VIA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,3
+provincias_wgs84.geojson,inec_por_causa.2020.MAL REBASAMIENTO INVADIR CARRIL,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,11
+provincias_wgs84.geojson,inec_por_causa.2020.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,166
+provincias_wgs84.geojson,inec_por_causa.2020.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,6
 provincias_wgs84.geojson,inec_por_causa.2021,object,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_por_causa.2021.DANOS MECANICOS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,1
 provincias_wgs84.geojson,inec_por_causa.2021.EMBRIAGUEZ O DROGA,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,92
@@ -1550,6 +1715,24 @@ provincias_wgs84.geojson,inec_por_causa.2024.MAL REBASAMIENTO INVADIR CARRIL,int
 provincias_wgs84.geojson,inec_por_causa.2024.NO RESPETA LAS SENALES DE TRANSITO,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,298
 provincias_wgs84.geojson,inec_por_causa.2024.OTRAS CAUSAS,integer,no,Siniestros por causa probable y ano,eventos,INEC ESTRA,33
 provincias_wgs84.geojson,inec_por_clase,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_clase.2017,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_clase.2017.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,205
+provincias_wgs84.geojson,inec_por_clase.2017.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,18
+provincias_wgs84.geojson,inec_por_clase.2017.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,717
+provincias_wgs84.geojson,inec_por_clase.2017.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,150
+provincias_wgs84.geojson,inec_por_clase.2017.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,24
+provincias_wgs84.geojson,inec_por_clase.2017.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,276
+provincias_wgs84.geojson,inec_por_clase.2017.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,79
+provincias_wgs84.geojson,inec_por_clase.2017.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,28
+provincias_wgs84.geojson,inec_por_clase.2018,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_clase.2018.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,215
+provincias_wgs84.geojson,inec_por_clase.2018.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,21
+provincias_wgs84.geojson,inec_por_clase.2018.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,746
+provincias_wgs84.geojson,inec_por_clase.2018.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,124
+provincias_wgs84.geojson,inec_por_clase.2018.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,38
+provincias_wgs84.geojson,inec_por_clase.2018.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,306
+provincias_wgs84.geojson,inec_por_clase.2018.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,68
+provincias_wgs84.geojson,inec_por_clase.2018.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,10
 provincias_wgs84.geojson,inec_por_clase.2019,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_por_clase.2019.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,180
 provincias_wgs84.geojson,inec_por_clase.2019.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,9
@@ -1559,6 +1742,15 @@ provincias_wgs84.geojson,inec_por_clase.2019.OTROS,integer,no,Siniestros por cla
 provincias_wgs84.geojson,inec_por_clase.2019.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,220
 provincias_wgs84.geojson,inec_por_clase.2019.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,71
 provincias_wgs84.geojson,inec_por_clase.2019.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,16
+provincias_wgs84.geojson,inec_por_clase.2020,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_por_clase.2020.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,132
+provincias_wgs84.geojson,inec_por_clase.2020.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,5
+provincias_wgs84.geojson,inec_por_clase.2020.CHOQUES,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,346
+provincias_wgs84.geojson,inec_por_clase.2020.ESTRELLAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,60
+provincias_wgs84.geojson,inec_por_clase.2020.OTROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,4
+provincias_wgs84.geojson,inec_por_clase.2020.PÉRDIDA DE PISTA,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,192
+provincias_wgs84.geojson,inec_por_clase.2020.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,39
+provincias_wgs84.geojson,inec_por_clase.2020.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,10
 provincias_wgs84.geojson,inec_por_clase.2021,object,no,Siniestros por clase y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_por_clase.2021.ATROPELLOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,103
 provincias_wgs84.geojson,inec_por_clase.2021.CAÍDA DE PASAJEROS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,9
@@ -1596,10 +1788,22 @@ provincias_wgs84.geojson,inec_por_clase.2024.PÉRDIDA DE PISTA,integer,no,Sinies
 provincias_wgs84.geojson,inec_por_clase.2024.ROZAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,75
 provincias_wgs84.geojson,inec_por_clase.2024.VOLCAMIENTOS,integer,no,Siniestros por clase y ano,eventos,INEC ESTRA,17
 provincias_wgs84.geojson,inec_resumen_historico,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+provincias_wgs84.geojson,inec_resumen_historico.2017,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+provincias_wgs84.geojson,inec_resumen_historico.2017.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,92
+provincias_wgs84.geojson,inec_resumen_historico.2017.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1127
+provincias_wgs84.geojson,inec_resumen_historico.2017.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1497
+provincias_wgs84.geojson,inec_resumen_historico.2018,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+provincias_wgs84.geojson,inec_resumen_historico.2018.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,102
+provincias_wgs84.geojson,inec_resumen_historico.2018.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1357
+provincias_wgs84.geojson,inec_resumen_historico.2018.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1528
 provincias_wgs84.geojson,inec_resumen_historico.2019,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
 provincias_wgs84.geojson,inec_resumen_historico.2019.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,82
 provincias_wgs84.geojson,inec_resumen_historico.2019.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1097
 provincias_wgs84.geojson,inec_resumen_historico.2019.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1249
+provincias_wgs84.geojson,inec_resumen_historico.2020,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
+provincias_wgs84.geojson,inec_resumen_historico.2020.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,63
+provincias_wgs84.geojson,inec_resumen_historico.2020.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,577
+provincias_wgs84.geojson,inec_resumen_historico.2020.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,788
 provincias_wgs84.geojson,inec_resumen_historico.2021,object,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,
 provincias_wgs84.geojson,inec_resumen_historico.2021.fallecidos,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,96
 provincias_wgs84.geojson,inec_resumen_historico.2021.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,625
@@ -1617,9 +1821,18 @@ provincias_wgs84.geojson,inec_resumen_historico.2024.fallecidos,integer,no,Resum
 provincias_wgs84.geojson,inec_resumen_historico.2024.lesionados,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1266
 provincias_wgs84.geojson,inec_resumen_historico.2024.siniestros,integer,no,Resumen anual de siniestros/victimas,conteo,INEC ESTRA,1416
 provincias_wgs84.geojson,inec_urbano_rural,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_urbano_rural.2017,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_urbano_rural.2017.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,737
+provincias_wgs84.geojson,inec_urbano_rural.2017.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,760
+provincias_wgs84.geojson,inec_urbano_rural.2018,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_urbano_rural.2018.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,640
+provincias_wgs84.geojson,inec_urbano_rural.2018.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,888
 provincias_wgs84.geojson,inec_urbano_rural.2019,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_urbano_rural.2019.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,604
 provincias_wgs84.geojson,inec_urbano_rural.2019.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,645
+provincias_wgs84.geojson,inec_urbano_rural.2020,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
+provincias_wgs84.geojson,inec_urbano_rural.2020.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,421
+provincias_wgs84.geojson,inec_urbano_rural.2020.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,367
 provincias_wgs84.geojson,inec_urbano_rural.2021,object,no,Siniestros por zona y ano,eventos,INEC ESTRA,
 provincias_wgs84.geojson,inec_urbano_rural.2021.RURAL,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,481
 provincias_wgs84.geojson,inec_urbano_rural.2021.URBANA,integer,no,Siniestros por zona y ano,eventos,INEC ESTRA,347
@@ -1665,12 +1878,18 @@ provincias_wgs84.geojson,poblacion_por_anio.2033,integer,no,Poblacion proyectada
 provincias_wgs84.geojson,poblacion_por_anio.2034,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,879038
 provincias_wgs84.geojson,poblacion_por_anio.2035,integer,no,Poblacion proyectada para el ano indicado,habitantes,INEC,883986
 provincias_wgs84.geojson,porcentaje_motocicletas_vehiculos_2024,number,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,17.229167
+provincias_wgs84.geojson,siniestros_enero_junio_2025,integer/null,si,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,310
 provincias_wgs84.geojson,siniestros_historico,object,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,
+provincias_wgs84.geojson,siniestros_historico.2017,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1497
+provincias_wgs84.geojson,siniestros_historico.2018,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1528
 provincias_wgs84.geojson,siniestros_historico.2019,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1249
+provincias_wgs84.geojson,siniestros_historico.2020,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,788
 provincias_wgs84.geojson,siniestros_historico.2021,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,828
 provincias_wgs84.geojson,siniestros_historico.2022,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1154
 provincias_wgs84.geojson,siniestros_historico.2023,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1197
 provincias_wgs84.geojson,siniestros_historico.2024,integer,no,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,1416
+provincias_wgs84.geojson,siniestros_historico.2025,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,806
+provincias_wgs84.geojson,siniestros_historico.2026,integer/null,si,Siniestros del ano resueltos territorialmente,eventos,INEC ESTRA,444
 provincias_wgs84.geojson,siniestros_inec_2019,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1249
 provincias_wgs84.geojson,sppat_fallecidos_por_anio,object,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,
 provincias_wgs84.geojson,sppat_fallecidos_por_anio.2016,integer,no,Fallecidos SPPAT por categoria/ano,personas,SPPAT,64
@@ -1824,6 +2043,7 @@ provincias_wgs84.geojson,tasa_fallecidos_100k_por_anio.2024,number,no,Tasa calcu
 provincias_wgs84.geojson,tasa_fallecidos_por_1000_vehiculos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.678028
 provincias_wgs84.geojson,tasa_motociclistas_fallecidos_por_1000_motos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,0.527056
 provincias_wgs84.geojson,tasa_siniestros_por_1000_vehiculos_2024,number,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,8.572207
+provincias_wgs84.geojson,txt,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,PROVINCIA
 provincias_wgs84.geojson,vehiculos_matriculados_2024,object,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,
 provincias_wgs84.geojson,vehiculos_matriculados_2024.estado,string,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,disponible
 provincias_wgs84.geojson,vehiculos_matriculados_2024.por_clase,object,no,Vehiculos por residencia del propietario,vehiculos,INEC ESTRA 2024,

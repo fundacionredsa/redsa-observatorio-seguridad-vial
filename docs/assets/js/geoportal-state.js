@@ -449,11 +449,15 @@
             return config?.temporal?.tipo === "anual" && config.aggregation === "sum";
         }
 
+        function getAccumulationYears(config) {
+            return config?.temporal?.anios_acumulables || config?.temporal?.anios_disponibles || [];
+        }
+
         function getVariableValue(properties, variable, year = selectedYear) {
             const config = VARIABLE_CONFIGS[variable];
             if (!config || !properties) return null;
             if (selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
-                const values = config.temporal.anios_disponibles
+                const values = getAccumulationYears(config)
                     .map(coveredYear => getSingleYearVariableValue(properties, config, coveredYear))
                     .filter(value => value !== null && value !== undefined && Number.isFinite(Number(value)))
                     .map(Number);
@@ -482,9 +486,11 @@
 
         function getActivePeriodLabel(config = VARIABLE_CONFIGS[selectedVariable]) {
             if (selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
-                return `Acumulado ${formatCoveredYears(config.temporal.anios_disponibles)}`;
+                return `Histórico ${formatCoveredYears(getAccumulationYears(config))}`;
             }
-            return config?.temporal?.tipo === "anual" ? String(selectedYear) : "";
+            return config?.temporal?.tipo === "anual"
+                ? (config.temporal.etiquetas_periodo?.[selectedYear] || String(selectedYear))
+                : "";
         }
 
         function updatePeriodModeControl() {
@@ -502,7 +508,7 @@
             if (note) {
                 note.textContent = supported
                     ? (selectedPeriodMode === "accumulated"
-                        ? `Suma de los años disponibles: ${formatCoveredYears(config.temporal.anios_disponibles)}.`
+                        ? `Suma de años completos compatibles: ${formatCoveredYears(getAccumulationYears(config))}. Los cortes parciales no se mezclan con años completos.`
                         : "Muestra únicamente el año marcado en la línea de tiempo.")
                     : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
             }

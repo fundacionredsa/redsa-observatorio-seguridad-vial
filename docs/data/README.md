@@ -10,6 +10,17 @@ Metodologias complementarias:
 - `hotspots_metodologia.md`
 - `temporal_osm_metodologia.md`
 
+## Serie territorial de siniestros
+
+`siniestros_historico` cubre 2017-2026 en provincias y cantones. El nivel
+parroquial tiene dato comprobable desde 2024; 2017-2023 permanece `null`.
+2025 es un ano completo semidefinitivo y 2026 es un corte provisional de
+enero-junio, comparable solo con `siniestros_enero_junio_2025`.
+
+El bloque `metadata.siniestros_transito_territorial` declara por ano la fuente,
+fecha de corte, total nacional y conteo de zonas en estudio que no se asignan a
+un poligono ordinario.
+
 Capas OSM nacionales (corte 2026-07-16):
 
 - `ciclovias_ecuador.geojson`

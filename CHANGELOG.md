@@ -8,6 +8,12 @@ incluidos errores relevantes corregidos durante el desarrollo.
 
 ### Added
 
+- Serie territorial de siniestros ampliada a 2025 completo y 2026 parcial
+  enero-junio, con procedencia y fecha de corte por ano.
+- Comparacion territorial enero-junio 2026 contra enero-junio 2025 y nivel
+  parroquial disponible desde 2024, sin imputar anos anteriores.
+- Umbral SDC de 5 para cruces de multiples atributos; los conteos territoriales
+  oficiales principales permanecen completos.
 - Documentacion auditable, diccionario de datos, ADR, pruebas automatizadas y
   licencias explicitas.
 - Inventario de problemas abiertos y evidencia reproducible de validacion.
@@ -19,11 +25,21 @@ incluidos errores relevantes corregidos durante el desarrollo.
 
 ### Fixed
 
+- Cuarenta y siete de 119 siniestros historicos no agregados se recuperaron con
+  DPA ANT (30 en 2021 y 17 en 2022). Los 72 de zonas en estudio permanecen
+  visibles en el total nacional y sin asignacion especulativa.
+- La reconciliacion nacional cierra exactamente con la fuente: ANT e
+  INEC/ESTRA coinciden en 2024 anual (21.220 siniestros, 18.312 lesionados y
+  2.302 fallecidos en sitio), en la suma de los cuatro trimestres de 2025
+  (20.346, 17.932 y 2.354) y en 2026-I (4.789, 4.032 y 603).
 - Experiencia movil recuperada con sidebar y panel tecnico operables, leyenda
   colapsable, mapa util y una unica estrategia CSS responsive.
 
 ### Changed
 
+- El ano inicial del geoportal pasa de 2024 a 2025, ultimo ano completo de la
+  serie territorial de siniestros; 2026 se mantiene identificado como corte
+  parcial enero-junio.
 - Corredores priorizados por REDSA y Mapillary dejan de mostrarse en el control
   publico de capas mientras no aporten informacion validada al geoportal.
 

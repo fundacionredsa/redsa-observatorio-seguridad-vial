@@ -2,10 +2,10 @@
 
 ## Prioridad alta
 
-1. **119 siniestros 2021-2024 no agregados territorialmente.** Cuarenta y siete
-   usan nombres cantonales parenteticos recuperables; 72 usan localidades sin
-   canton inequivoco. Corregir los 47 y publicar un contador nacional explicito
-   para los restantes, sin asignacion especulativa.
+1. **RESUELTO CON LIMITACION: 119 siniestros 2021-2024 antes no agregados.**
+   El DPA ANT resolvio de forma trazable 47 (30 en 2021 y 17 en 2022). Los 72
+   restantes son zonas en estudio (15/17/11/29 por ano) y se publican en el
+   total nacional, visibles y sin asignacion especulativa a un poligono.
 2. **RESUELTO: geometria provincial y parroquial oficial vigente.** Las capas
    publicadas usan CONALI provincial 2025-02-20 y parroquial 2026-02-03, con
    URL/licencia preservadas. Las zonas en estudio y la isla se mantienen como
@@ -46,3 +46,7 @@
     demanda y separar geometria de series estadisticas tendria el mayor impacto.
 16. En 390 px de ancho el sidebar ocupa casi todo el viewport inicial. Hace falta
     un modo movil colapsable que preserve acceso al mapa, selector y leyenda.
+17. **Cumplimiento REUSE parcial.** El pipeline ANT nuevo tiene SPDX,
+    `REUSE.toml` y textos de licencia, pero el repositorio historico completo
+    contiene archivos anteriores cuya titularidad/licencia debe revisarse uno
+    por uno antes de declarar conformidad REUSE total.

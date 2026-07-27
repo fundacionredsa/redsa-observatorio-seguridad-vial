@@ -4,7 +4,8 @@
 
 1. Los faltantes permanecen `null`/`sin_dato`; ausencia de registro no equivale
    automaticamente a cero.
-2. Solo se publican agregados territoriales.
+2. Los conteos territoriales se publican completos; los microdatos puntuales ANT
+   se preparan en una fase separada con minimizacion de atributos.
 3. Toda tasa conserva numerador, denominador, periodo y escala.
 4. La geometria web sirve para visualizacion, no para precision catastral.
 5. Una clasificacion inferencial solo se muestra si existe soporte espacial.
@@ -19,28 +20,51 @@ grados. Se conservaron DPA_CANTON, DPA_DESCAN, DPA_PROVIN y DPA_DESPRO.
 
 ### Provincias
 
-Las 24 provincias se derivan disolviendo cantones por DPA_PROVIN. Los conteos
-se suman. Las tasas se recalculan como suma de numeradores / suma de
-denominadores; nunca se promedian tasas cantonales. `cobertura_datos` declara
-si cada provincia/anio es `completo`, `parcial` o `sin_dato`.
+La geometria usa la capa oficial CONALI publicada el 20 de febrero de 2025:
+24 provincias, una zona en estudio y una isla (26 areas). Los conteos
+estadisticos de provincias ordinarias se agregan desde cantones. Las tasas se
+recalculan con numeradores y denominadores sumados; nunca se promedian tasas.
 
 ### Parroquias
 
-La geometria procede de `SHP_INEC_2014.zip`, no de la capa CONALI 2024 usada
-para cantones. Tiene 1.040 features y puede no reflejar creaciones o cambios
-posteriores. Las parroquias urbanas agrupadas/cabeceras requieren especial
-cautela. Esta diferencia de vigencia es una limitacion abierta.
+La geometria usa CONALI vigente al 3 de febrero de 2026 y contiene 1.050
+parroquias/areas. Las zonas en estudio y la isla conservan categoria territorial
+propia: no se rellenan, no se asignan a un lado y no se confunden con
+`sin_dato`.
 
-## Siniestros INEC
+## Siniestros ANT / INEC-ESTRA
 
-Cada fila de los CSV representa un siniestro. Se normalizan tildes y nombres,
-se resuelve canton/provincia a DPA y se agregan:
+ANT es el registro administrativo primario e INEC/ESTRA publica su
+procesamiento estadistico. Son dos etapas de una misma cadena y no deben
+sumarse como fuentes rivales. Cada fila representa un siniestro; se normalizan
+codigos DPA y se agregan:
 
 - conteo total por anio;
 - fallecidos, lesionados y victimas informados;
 - clase, causa, zona urbana/rural y patron horario.
 
-Cobertura publicada: 2017-2024. Los años 2017, 2018 y 2020 se integraron a partir de las Encuestas de Transporte (EDT/ANET) descargadas del catálogo ANDA del INEC (Catálogos 704, 786 y 894, respectivamente, descargados el 17/07/2026). En 2021-2024 hay 119 filas que no resolvieron a canton: 47 son nombres parenteticos recuperables (`BOLIVAR (MANABI/CARCHI)`, `OLMEDO (MANABI/LOJA)`) y 72 son localidades que no identifican un canton de forma inequivoca (`EL PIEDRERO`, `MATILDE ESTHER`, `SANTA ROSA DE AGUA CLARA`). La capa actual omite las 119; ver problemas conocidos antes de comparar el total nacional publicado con el archivo crudo.
+Cobertura publicada: 2017-2026. Los anos 2017, 2018 y 2020 proceden de
+EDT/ANET (catalogos ANDA 704, 786 y 894). Para 2021-2024, el DPA del microdato
+ANT resolvio de forma trazable 47 de los 119 registros antes no agregados:
+30 en 2021 y 17 en 2022. Los 72 restantes corresponden a zonas en estudio:
+15 en 2021, 17 en 2022, 11 en 2023 y 29 en 2024. Permanecen en el total
+nacional y no se asignan especulativamente a un poligono.
+
+2025 es un ano completo semidefinitivo: ANT (20.346 siniestros, 17.932
+lesionados y 2.354 fallecidos en sitio) coincide exactamente con la suma de
+INEC/ESTRA I-IV. 2026 es provisional y cubre enero-junio: 10.752 siniestros,
+9.220 lesionados y 1.226 fallecidos en sitio. INEC/ESTRA I-2026 coincide con
+ANT (4.789 / 4.032 / 603); el trimestre II no estaba publicado al 27 de julio
+de 2026. El corte 2026 solo se compara con enero-junio de 2025, nunca con un
+ano completo.
+
+### Control de divulgacion estadistica
+
+El umbral SDC es 5 y se aplica a tabulaciones cruzadas de multiples atributos
+(por ejemplo, tipo por causa por franja horaria por parroquia). No se aplica a
+los conteos territoriales principales de siniestros, lesionados y fallecidos
+por provincia, canton o parroquia: son cifras oficiales publicas y su
+supresion romperia la lectura territorial sin aportar proteccion adicional.
 
 ## Fallecidos EDG y CIE-10
 

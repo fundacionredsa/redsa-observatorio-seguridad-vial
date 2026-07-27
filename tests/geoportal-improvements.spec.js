@@ -190,7 +190,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(results).toHaveCount(10, { timeout: 10000 });
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
-            await expect(results.first().locator('.catalog-download')).toHaveCount(3);
+            // Excel plus GeoJSON provincial, cantonal and parroquial.
+            await expect(results.first().locator('.catalog-download')).toHaveCount(4);
             await expect(results.first().locator('.catalog-download-count')).toHaveText('Descargas históricas registradas: 0.');
             await expect(modal.locator('#catalog-global-download-total')).toHaveText('Descargas históricas registradas en todo el catálogo: 0.');
             await expect(modal).toContainText('registra descargas, no personas únicas');

@@ -317,7 +317,7 @@
                                         </button>
                                         <span>Línea de tiempo global</span>
                                     </div>
-                                    <span id="timeline-badge" class="timeline-badge">2024</span>
+                                    <span id="timeline-badge" class="timeline-badge">${selectedYear}</span>
                                 </div>
                                 <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año del geoportal">
                                 <div id="timeline-marks" class="timeline-marks"></div>

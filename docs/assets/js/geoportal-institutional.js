@@ -50,9 +50,9 @@
     function formatPeriod(config, year, periodMode = "year") {
         const coverage = config?.temporal || {};
         if (periodMode === "accumulated" && config?.aggregation === "sum") {
-            return `Acumulado · ${(coverage.anios_disponibles || []).join(", ")}`;
+            return `Histórico · ${(coverage.anios_acumulables || coverage.anios_disponibles || []).join(", ")}`;
         }
-        if (coverage.tipo === "anual") return `Año ${year}`;
+        if (coverage.tipo === "anual") return coverage.etiquetas_periodo?.[year] || `Año ${year}`;
         const years = coverage.anios_disponibles || [];
         return years.length ? `Dato fijo · ${years.join("–")}` : "Dato fijo";
     }
