@@ -170,12 +170,13 @@ Poblacion: proyecciones INEC 2010-2035, 221/224 unidades con dato.
   vehiculos_matriculados_2024 * 1000`.
 - `tasa_fallecidos_por_1000_vehiculos_2024 = fallecidos_EDG_2024 /
   vehiculos_matriculados_2024 * 1000`.
-- `tasa_motociclistas_fallecidos_por_1000_motos_2024 = motociclistas_EDG_2020_2024 /
+- `tasa_motociclistas_fallecidos_por_1000_motos_2024 = motociclistas_EDG_2024 /
   motos_matriculadas_2024 * 1000`.
 
-La ultima formula mezcla numerador de cinco anos con denominador de un ano y
-solo es exploratoria. Los vehiculos reflejan residencia del propietario, no
-lugar de circulacion.
+La ultima formula usa numerador y denominador de 2024. El numerador puede
+subestimar a los motociclistas porque los codigos CIE-10 V80-V89, en especial
+V89, no siempre identifican el tipo de usuario vial. Los vehiculos reflejan
+residencia del propietario, no lugar de circulacion.
 
 ## Hotspots
 

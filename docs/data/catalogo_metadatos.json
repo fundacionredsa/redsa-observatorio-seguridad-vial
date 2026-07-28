@@ -80,6 +80,55 @@
           "parish"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Mide la frecuencia territorial de siniestros registrados y permite seguir la serie nacional, provincial y cantonal. Es pertinente para diagnóstico y seguimiento, pero no mide por sí sola exposición al tránsito ni riesgo individual.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y unidad",
+            "documentacion/METODOLOGIA.md: cadena ANT/INEC-ESTRA"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones",
+          "declaracion": "Los totales ANT coinciden exactamente con INEC/ESTRA en 2024 anual, 2025 I-IV y 2026-I. Se recuperaron 47 registros territoriales de 2021-2022; 72 registros de 2021-2024 permanecen únicamente en el total nacional por corresponder a zonas territoriales especiales. El corte 2026 es provisional.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Consistencia ANT / INEC-ESTRA",
+            "documentacion/PROBLEMAS_CONOCIDOS.md: problema 1"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "La serie llega a 2025 completo y a enero-junio de 2026. La fecha de corte está declarada; no existe en el repositorio una evaluación de cumplimiento respecto de un calendario de publicación comprometido.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: fechas_corte y etiquetas_periodo"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada con condiciones",
+          "declaracion": "ANT es el registro administrativo primario e INEC/ESTRA su procesamiento estadístico: no son series que deban sumarse. Los años completos son comparables dentro de esa cadena; 2026 debe compararse con enero-junio de 2025, no con años completos.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: procedencia_por_anio",
+            "documentacion/METODOLOGIA.md: Control cruzado ANT-INEC/ESTRA"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "Las sumas cantonales y provinciales coinciden entre sí. La diferencia frente al total nacional queda explicada por zonas territoriales especiales y no se imputa a polígonos ordinarios.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica con metadatos, referencias, Excel y GeoJSON por niveles disponibles. Los faltantes se declaran como sin dato y el derivado REDSA se identifica como CC BY 4.0.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, licencia y referencias"
+          ]
+        }
       }
     },
     {
@@ -130,6 +179,55 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Mide defunciones registradas con causas de transporte terrestre y complementa la mortalidad en sitio de ANT. Es relevante para describir la carga de mortalidad, no para localizar exactamente el lugar del siniestro.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y metodologia",
+            "documentacion/METODOLOGIA.md: Fallecidos EDG y CIE-10"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones",
+          "declaracion": "El filtro CIE-10 V01-V89 está versionado y los totales nacionales 2020-2024 reconcilian con los agregados territoriales. V89 concentra 76,1% en 2021-2024, por lo que el detalle por usuario vial tiene una limitación severa. El territorio es el lugar de fallecimiento registrado, no necesariamente el lugar del siniestro.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Fallecidos EDG y CIE-10",
+            "documentacion/VALIDACION.md: V89 y DMQ"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "La serie publicada cubre 2020-2024. No se ha evaluado el retraso de publicación ni la puntualidad frente a un calendario oficial.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada con condiciones",
+          "declaracion": "Se aplica el mismo rango CIE-10 V01-V89 en 2020-2024 y se comparan provincias y cantones. No debe sumarse ni tratarse como equivalente a fallecidos en sitio ANT o reclamaciones SPPAT.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: cadena estadística y Fallecidos EDG",
+            "docs/data/catalogo_metadatos.json: nivel_territorial_disponible"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "Las sumas cantonales y provinciales coinciden con los totales EDG publicados para cada año 2020-2024.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Dispone de Excel, GeoJSON provincial y cantonal, metodología, referencias INEC y licencia CC BY 4.0 declarada.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, referencias y licencia"
+          ]
+        }
       }
     },
     {
@@ -180,6 +278,54 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Permite comparar mortalidad entre territorios de distinto tamaño poblacional. Es un indicador REDSA y no se presenta como el indicador oficial ODS 3.6.1.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion",
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones heredadas",
+          "declaracion": "La tasa usa fallecidos EDG y población INEC del mismo año. Hereda las limitaciones territoriales y de clasificación CIE-10 de EDG; 3 de 224 cantones no tienen población 2024 en la fuente documentada.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia",
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "Está disponible para 2020-2024. No existe evaluación documentada sobre puntualidad respecto de calendarios de EDG y proyecciones poblacionales.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "La fórmula es estable para 2020-2024 y para provincias y cantones. Las tasas territoriales agregadas se recalculan con numeradores y denominadores sumados; no se promedian.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia y nivel_territorial_disponible"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "El numerador y el denominador corresponden al mismo año. Los resultados agregados mantienen la relación con los conteos EDG y la población utilizada.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal, con fórmula y fuentes enlazadas.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas y referencias"
+          ]
+        }
       }
     },
     {
@@ -222,6 +368,54 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada con alcance limitado",
+          "declaracion": "Aporta un denominador alternativo a la población para comparar siniestros. Los vehículos se asignan por residencia del propietario, por lo que el indicador no mide vehículos que circulan ni exposición vial efectiva.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y metodologia"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones",
+          "declaracion": "El universo de 3.138.562 vehículos matriculados fue reconciliado sin pérdidas y la fórmula está declarada. La residencia del propietario puede diferir del lugar de circulación.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales",
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "foto única",
+          "declaracion": "Solo existe para 2024. No se ha evaluado la puntualidad de la publicación ni existe todavía una serie anual.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "limitada",
+          "declaracion": "Permite comparación territorial en 2024 con una fórmula uniforme. No permite comparación temporal y no equivale a una tasa por kilómetros recorridos o flujo vehicular.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia y nivel_territorial_disponible"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "Numerador y denominador corresponden a 2024; las agregaciones provinciales se calculan con sumas antes de obtener la tasa.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia",
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal, con advertencia sobre residencia del propietario y referencias metodológicas.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas y referencias"
+          ]
+        }
       }
     },
     {
@@ -268,6 +462,57 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Aporta una medida exploratoria sobre mortalidad de motociclistas frente al parque de motocicletas matriculadas.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y unidad"
+          ]
+        },
+        "precision": {
+          "evaluacion": "limitada",
+          "declaracion": "El numerador identificado por CIE-10 puede estar subestimado porque V89 concentra casos con vehículo no especificado. El denominador representa residencia del propietario, no circulación.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia",
+            "documentacion/METODOLOGIA.md: Fallecidos EDG y Poblacion y tasas"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "foto única",
+          "declaracion": "Solo se publica para 2024. No existe una evaluación de puntualidad ni una serie anual comparable.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "limitada",
+          "declaracion": "Permite comparación territorial dentro de la publicación 2024, pero no comparación temporal. La alta proporción de V89 puede variar entre cantones y afectar comparaciones del numerador.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: V89 y DMQ"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "El cálculo publicado usa motociclistas identificados en fallecidos_detallado.2024.usuario.motociclista y motocicletas matriculadas en 2024. El pipeline, el registro del frontend, el catálogo y los valores publicados aplican el mismo periodo.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia",
+            "docs/assets/js/geoportal-registry.js: tasa_motociclistas_1000_motos_2024",
+            "redsa-observatorio-pipelines/geoportal_estadisticas/procesar_datos.py: calculo con perfil EDG 2024",
+            "redsa-observatorio-pipelines/geoportal_estadisticas/procesar_vehiculos_2024.py: get_motorcyclist_deaths",
+            "documentacion/METODOLOGIA.md: Poblacion y tasas"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal con fórmula, fuentes y limitaciones enlazadas.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas y referencias"
+          ]
+        }
       }
     },
     {
@@ -320,6 +565,55 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada con alcance específico",
+          "declaracion": "Describe fallecidos registrados en reclamaciones del seguro y aporta categorías administrativas útiles. No representa el universo exhaustivo de defunciones.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y metodologia",
+            "documentacion/METODOLOGIA.md: SPPAT"
+          ]
+        },
+        "precision": {
+          "evaluacion": "limitada",
+          "declaracion": "Los agregados publicados reconcilian con 16.526 filas de la fuente documentada. No existe una evaluación independiente de subregistro de reclamaciones ni de cobertura frente al registro civil.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales",
+            "documentacion/METODOLOGIA.md: SPPAT"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "desactualizada",
+          "declaracion": "La serie termina en 2021. No se identificó una descarga pública posterior ni se evaluó un calendario de actualización.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles",
+            "documentacion/PROBLEMAS_CONOCIDOS.md"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada con condiciones",
+          "declaracion": "La serie 2016-2021 usa la misma cobertura administrativa de reclamaciones. No debe compararse como equivalente ni sumarse con EDG o ANT.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: SPPAT"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada internamente",
+          "declaracion": "Las filas relevantes y los agregados nacionales, cantonales y provinciales documentados tienen diferencia cero. La coherencia externa con otras fuentes no ha sido evaluada como equivalencia.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada con limitación de licencia",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal con metodología y referencia institucional. Las condiciones de licencia de la fuente requieren consulta.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, referencias y licencia"
+          ]
+        }
       }
     },
     {
@@ -374,6 +668,54 @@
           "parish"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Permite analizar defunciones por transporte terrestre a nivel parroquial y agregarlas a cantón y provincia.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y nivel_territorial_disponible"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones territoriales",
+          "declaracion": "Los registros V01-V89 de 2021-2024 fueron resueltos sin alterar los totales cantonales. Las parroquias urbanas sin polígono propio se agregan a la cabecera cantonal y los cruces históricos se documentan.",
+          "evidencia": [
+            "documentacion/adr/0004-parish-resolver-correction.md",
+            "documentacion/METODOLOGIA.md: Fallecidos EDG"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "La serie parroquial llega a 2024. No existe evaluación documentada del retraso o puntualidad de publicación.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada con condiciones",
+          "declaracion": "Se aplica el mismo filtro CIE-10 en 2021-2024. La geometría vigente es CONALI 2026 y el cruce histórico 140157 a 141350 está versionado; cambios administrativos y cabeceras urbanas deben considerarse al comparar.",
+          "evidencia": [
+            "documentacion/FUENTES_Y_PROCEDENCIA.md",
+            "documentacion/adr/0004-parish-resolver-correction.md"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "Las sumas parroquiales coinciden exactamente con cantones y provincias para 2021-2024.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON para provincia, cantón y parroquia, con metodología, fuente y licencia.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, referencias y licencia"
+          ]
+        }
       }
     },
     {
@@ -416,6 +758,53 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Describe la composición del parque matriculado y ayuda a contextualizar la exposición potencial de motocicletas.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y unidad"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitación conceptual",
+          "declaracion": "El total de 3.138.562 vehículos matriculados reconcilia con la fuente. El territorio corresponde a la residencia del propietario y no al lugar de circulación.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Conciliaciones nacionales",
+            "docs/data/catalogo_metadatos.json: metodologia"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "foto única",
+          "declaracion": "Solo está disponible para 2024. No se ha evaluado puntualidad ni continuidad anual.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "limitada",
+          "declaracion": "Permite comparación provincial y cantonal en 2024 con una clasificación común. No permite analizar cambios temporales.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: nivel_territorial_disponible"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "El porcentaje se calcula con motocicletas y total de vehículos del mismo universo ESTRA 2024.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal con diccionario y referencias INEC.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas y referencias"
+          ]
+        }
       }
     },
     {
@@ -458,6 +847,54 @@
           "canton"
         ],
         "archivos_directos": []
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada con alcance específico",
+          "declaracion": "Mide qué infraestructura ha sido mapeada en OpenStreetMap. Es útil para detectar brechas de mapeo, pero no demuestra existencia, ausencia, calidad ni seguridad de infraestructura real.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y metodologia"
+          ]
+        },
+        "precision": {
+          "evaluacion": "pendiente de evaluación externa",
+          "declaracion": "El pipeline deduplica los objetos observados, pero la completitud de OpenStreetMap no tiene un inventario oficial independiente de referencia. Cero significa sin elementos mapeados, no ausencia física.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Capas OSM/Mapillary",
+            "docs/data/catalogo_metadatos.json: metodologia"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "foto única",
+          "declaracion": "Representa cortes OSM de julio de 2026 combinados con población INEC 2024. No existe calendario de actualización evaluado.",
+          "evidencia": [
+            "documentacion/FUENTES_Y_PROCEDENCIA.md: OSM",
+            "docs/data/catalogo_metadatos.json: anios_disponibles"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "limitada",
+          "declaracion": "La fórmula es uniforme entre provincias y cantones, pero diferencias territoriales pueden reflejar actividad de mapeo y no infraestructura real. No existe serie temporal.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia y nivel_territorial_disponible"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada con condición temporal",
+          "declaracion": "El conteo OSM se normaliza con población 2024 y mantiene una definición común de capas. La diferencia de fechas entre numerador y denominador está declarada.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: fuente y metodologia"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se publica en Excel y GeoJSON provincial/cantonal bajo ODbL, con explicación explícita de lo que el indicador no mide.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, licencia y referencias"
+          ]
+        }
       }
     },
     {
@@ -494,6 +931,53 @@
             "url": "data/vias_ecuador.geojson"
           }
         ]
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada con alcance cartográfico",
+          "declaracion": "Aporta una red vial visual clasificada en vías principales y secundarias. No mide tráfico, estado, seguridad ni pertenencia jurídica a la Red Vial Estatal.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion",
+            "documentacion/METODOLOGIA.md: Vias OSM"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con limitaciones de fuente colaborativa",
+          "declaracion": "La extracción deduplica por osm_type/osm_id y publica 37.292,128 km. La comparación de magnitud con MTOP dio 120,68%, pero no es una conciliación tramo a tramo ni una medida de completitud literal.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Vias OSM"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "foto única",
+          "declaracion": "Corresponde al corte OSM del 22 de julio de 2026. No se ha definido ni evaluado un calendario de actualización.",
+          "evidencia": [
+            "documentacion/FUENTES_Y_PROCEDENCIA.md: OSM"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "La clasificación highway es uniforme dentro del archivo. La consistencia del etiquetado colaborativo entre territorios y a través del tiempo está pendiente de evaluación.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Vias OSM"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada internamente",
+          "declaracion": "Las clases publicadas excluyen categorías locales y la deduplicación está documentada. La relación con MTOP es solo orientativa porque ambos universos conceptuales difieren.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Vias OSM"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada",
+          "declaracion": "Se ofrece un GeoJSON directo con fuente, metodología y licencia ODbL. No se publica Excel porque es una capa lineal, no una tabla territorial.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, referencias y licencia"
+          ]
+        }
       }
     },
     {
@@ -546,6 +1030,56 @@
             "url": "data/siniestros_ant_2026.geojson"
           }
         ]
+      },
+      "calidad": {
+        "marco": "Declaración descriptiva basada en dimensiones UN NQAF/Eurostat; no es una certificación ni una calificación numérica.",
+        "fecha_evaluacion": "2026-07-28",
+        "relevancia": {
+          "evaluacion": "documentada",
+          "declaracion": "Permite observar patrones espaciales de los mismos siniestros usados en los agregados territoriales. La capa de calor representa concentración de registros, no riesgo individual, calidad vial ni exposición.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descripcion y metodologia",
+            "documentacion/METODOLOGIA.md: Siniestros ANT"
+          ]
+        },
+        "precision": {
+          "evaluacion": "documentada con exclusiones trazables",
+          "declaracion": "Se publican 21.193 de 21.220 ubicaciones en 2024, 20.148 de 20.346 en 2025 y 10.747 de 10.752 en 2026. Se excluyen 29 ubicaciones no verificables sin alterar agregados territoriales; también se distinguen registros sin ubicación y fechas no publicables.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: metodologia",
+            "documentacion/INFORME_DIAGNOSTICO_COORDENADAS_ANT.md"
+          ]
+        },
+        "oportunidad_puntualidad": {
+          "evaluacion": "documentada parcialmente",
+          "declaracion": "Incluye 2024 y 2025 completos y enero-junio de 2026 como corte parcial. No se ha evaluado puntualidad frente a un calendario comprometido.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: anios_disponibles y descripcion"
+          ]
+        },
+        "comparabilidad": {
+          "evaluacion": "documentada con condiciones",
+          "declaracion": "Los tres años usan el mismo esquema sanitizado. El corte parcial 2026 no debe compararse con años completos y la escala de calor adaptativa no permite comparar colores directamente entre años.",
+          "evidencia": [
+            "documentacion/METODOLOGIA.md: Siniestros ANT",
+            "docs/data/catalogo_metadatos.json: descripcion"
+          ]
+        },
+        "coherencia": {
+          "evaluacion": "documentada",
+          "declaracion": "Los totales fuente ANT concilian con INEC/ESTRA para los cortes verificados. La diferencia entre total territorial y puntos publicados se explica por calidad de ubicación y fecha; ambas representaciones corresponden al mismo fenómeno y no deben sumarse.",
+          "evidencia": [
+            "documentacion/VALIDACION.md: Consistencia ANT / INEC-ESTRA",
+            "documentacion/INFORME_DIAGNOSTICO_COORDENADAS_ANT.md"
+          ]
+        },
+        "accesibilidad": {
+          "evaluacion": "documentada con condiciones de fuente",
+          "declaracion": "Se ofrecen GeoJSON sanitizados por año, metodología y referencias. El derivado REDSA se declara CC BY 4.0; la fuente ANT no tiene una licencia explícita identificada en el repositorio.",
+          "evidencia": [
+            "docs/data/catalogo_metadatos.json: descargas, referencias y licencia"
+          ]
+        }
       }
     }
   ]
