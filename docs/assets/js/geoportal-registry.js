@@ -380,9 +380,9 @@
                 }
             },
             auditByYear: {
-                "2024": { totalEvents: 21220, validLocations: 21213, periodLabel: "año completo" },
-                "2025": { totalEvents: 20346, validLocations: 20156, periodLabel: "año completo" },
-                "2026": { totalEvents: 10752, validLocations: 10748, periodLabel: "parcial enero-junio" }
+                "2024": { totalEvents: 21220, publishedLocations: 21193, noLocation: 7, unverifiableLocation: 20, invalidDate: 0, periodLabel: "año completo" },
+                "2025": { totalEvents: 20346, publishedLocations: 20148, noLocation: 186, unverifiableLocation: 8, invalidDate: 4, periodLabel: "año completo" },
+                "2026": { totalEvents: 10752, publishedLocations: 10747, noLocation: 4, unverifiableLocation: 1, invalidDate: 0, periodLabel: "parcial enero-junio" }
             },
             heatBandwidthProfile: "focused",
             description: "Los mismos siniestros de la variable territorial, ubicados en el punto donde ocurrieron. No constituyen otra fuente ni deben sumarse a la coropleta.",
@@ -392,7 +392,7 @@
                 description: "Derivados públicos sanitizados de siniestros registrados por ANT. Publican mes, día de semana, franja horaria, atributos del evento y coordenadas con precisión limitada; excluyen placas, participantes, dirección textual y fecha exacta. El corte 2026 es parcial enero-junio.",
                 fuente: "Agencia Nacional de Tránsito (ANT)",
                 unidad: "siniestros con ubicación válida",
-                metodologia: "Último corte acumulativo disponible de cada año, deduplicación por clave compuesta, normalización DPA y cuarentena de coordenadas no demostrables. Ubicaciones publicables: 21.213 de 21.220 en 2024; 20.156 de 20.346 en 2025; 10.748 de 10.752 en enero-junio de 2026.",
+                metodologia: "Último corte acumulativo disponible de cada año, deduplicación por clave compuesta, normalización DPA y cuarentena de coordenadas no demostrables. Ubicaciones publicadas: 21.193 de 21.220 en 2024; 20.148 de 20.346 en 2025; 10.747 de 10.752 en enero-junio de 2026. Se excluyen 29 ubicaciones no verificables (20/8/1), sin alterar los totales territoriales.",
                 licencia: "Derivado REDSA CC BY 4.0; fuente ANT bajo condiciones originales sin licencia explícita identificada",
                 anios_disponibles: [2024, 2025, 2026],
                 referencias: [

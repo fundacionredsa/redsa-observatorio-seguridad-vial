@@ -349,7 +349,10 @@ function onEachProvinceFeature(feature, layer) {
                         </div>`;
                 }).join("");
                 const audit = entry.audit
-                    ? `<div class="legend-data-audit"><strong>${Number(entry.audit.valid).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} eventos con ubicación válida</strong></div>`
+                    ? `<div class="legend-data-audit">
+                        <strong>${Number(entry.audit.published).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} puntos publicados</strong>
+                        <span>Sin ubicación: ${Number(entry.audit.noLocation || 0).toLocaleString("es-EC")} · Ubicación no verificable: ${Number(entry.audit.unverifiableLocation || 0).toLocaleString("es-EC")}${Number(entry.audit.invalidDate || 0) ? ` · Fecha no publicable: ${Number(entry.audit.invalidDate).toLocaleString("es-EC")}` : ""}</span>
+                    </div>`
                     : "";
                 const notes = (entry.notes || []).map(note => `<span>${note}</span>`).join("");
                 const noteBlock = notes ? `<div class="legend-overlay-notes" role="note">${notes}</div>` : "";

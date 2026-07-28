@@ -68,13 +68,21 @@ supresion romperia la lectura territorial sin aportar proteccion adicional.
 
 ### Capa puntual ANT 2024-2026
 
-Cada ano se publica y descarga por separado. En 2024 hay 21.213 eventos con
-ubicacion valida de 21.220; en 2025, 20.156 de 20.346; y en el corte parcial
-enero-junio de 2026, 10.748 de 10.752. Los eventos sin ubicacion publicable no
+Cada ano se publica y descarga por separado. En 2024 hay 21.193 eventos con
+ubicacion publicable de 21.220; en 2025, 20.148 de 20.346; y en el corte parcial
+enero-junio de 2026, 10.747 de 10.752. Los eventos sin ubicacion publicable no
 se dibujan, pero permanecen en los agregados territoriales cuando su DPA es
 valido. El archivo del ano seleccionado se descarga de forma diferida solo al
 activar `Siniestros (ANT)`; el arranque normal del geoportal no solicita
 ninguno de los tres.
+
+La auditoria distingue ausencia de coordenadas de ubicacion no verificable.
+Se excluyen de la representacion puntual 29 coordenadas defectuosas de origen
+(20 en 2024, 8 en 2025 y 1 en 2026), sin alterar los conteos territoriales por
+DPA. La validacion usa la union provincial CONALI; una distancia mayor a 50 km
+del centroide del canton declarado se marca para revision, pero no se elimina
+automaticamente porque el centroide no es una frontera. Ver
+[informe de diagnostico](INFORME_DIAGNOSTICO_COORDENADAS_ANT.md).
 
 La capa conserva exclusivamente mes, dia de semana, franja horaria, DPA, zona,
 tipo de siniestro, causa probable registrada, lesionados, fallecidos en sitio,

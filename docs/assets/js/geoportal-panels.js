@@ -24,7 +24,7 @@
 
         // Configuración de aviso de cabecera
         const CABECERA_SUFFIX = "50";
-        const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} en la geometría histórica INEC 2014 disponible para esta capa. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
+        const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} representadas como cabecera cantonal en la geometría CONALI vigente al 3 de febrero de 2026. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
 
         // Dynamic Containers
         const inecDetailedStats = document.getElementById("inec-detailed-stats");

@@ -116,7 +116,14 @@
     function coverageText(year = state.year) {
         const audit = auditForYear(year);
         if (!audit) return "";
-        return `${Number(audit.validLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} eventos tienen ubicación válida.`;
+        const details = [
+            `sin ubicación: ${Number(audit.noLocation || 0).toLocaleString("es-EC")}`,
+            `ubicación no verificable: ${Number(audit.unverifiableLocation || 0).toLocaleString("es-EC")}`
+        ];
+        if (Number(audit.invalidDate || 0) > 0) {
+            details.push(`fecha no publicable: ${Number(audit.invalidDate).toLocaleString("es-EC")}`);
+        }
+        return `${Number(audit.publishedLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} puntos publicados; ${details.join("; ")}.`;
     }
 
     function escapeHtml(value) {
@@ -382,7 +389,9 @@
             fatalities: Number(properties.f || 0),
             injured: Number(properties.l || 0),
             vehicles: (properties.v || []).map(code => dictionaryValue("diccionario_vehiculos", code)).join(", ") || "No especificado",
-            coordinateQuality: properties.q ? "Coordenada corregida de forma inequívoca" : "Coordenada válida de la fuente"
+            coordinateQuality: properties.q
+                ? "Coordenada corregida de forma inequívoca"
+                : "Coordenada válida de la fuente"
         };
     }
 
@@ -654,7 +663,13 @@
                 : state.mode === "clusters"
                 ? [{ shape: "circle", color: CLUSTER_COLOR, label: "El tamaño indica cantidad agrupada" }]
                 : [{ shape: "circle", color: CASE_COLOR, label: "Un símbolo por siniestro con ubicación válida" }],
-            audit: available && audit ? { valid: audit.validLocations, total: audit.totalEvents } : null,
+            audit: available && audit ? {
+                published: audit.publishedLocations,
+                total: audit.totalEvents,
+                noLocation: audit.noLocation,
+                unverifiableLocation: audit.unverifiableLocation,
+                invalidDate: audit.invalidDate
+            } : null,
             notes: [
                 "Son los mismos siniestros de la variable territorial, mostrados donde ocurrieron; no deben sumarse ni compararse como otra fuente.",
                 "Concentración de registros: no mide riesgo individual, calidad de la vía ni exposición al tránsito.",

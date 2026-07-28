@@ -91,7 +91,8 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   await page.evaluate(() => window.setMobileLegend?.(true));
   const legend = page.locator("#legend-items");
   await expect(legend).toContainText("Siniestros (ANT)");
-  await expect(legend).toContainText("20.156 de 20.346");
+  await expect(legend).toContainText("20.148 de 20.346");
+  await expect(legend).toContainText("Ubicación no verificable: 8");
   await expect(legend).toContainText("no mide riesgo individual");
 });
 
@@ -126,7 +127,7 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
   expect(state.cacheYears).toHaveLength(1);
   await page.evaluate(() => window.setMobileLegend?.(true));
   await expect(page.locator("#legend-items")).toContainText("parcial enero-junio");
-  await expect(page.locator("#legend-items")).toContainText("10.748 de 10.752");
+  await expect(page.locator("#legend-items")).toContainText("10.747 de 10.752");
   expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe(before);
 });
 

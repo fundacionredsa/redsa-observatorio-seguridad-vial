@@ -13,9 +13,9 @@ class AntPublicLayerContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.expected = {
-            2024: {"features": 21_213, "total": 21_220, "corte": "2024-12-31", "coverage": "anio_completo"},
-            2025: {"features": 20_156, "total": 20_346, "corte": "2025-12-31", "coverage": "anio_completo"},
-            2026: {"features": 10_748, "total": 10_752, "corte": "2026-06-30", "coverage": "parcial_enero_junio"},
+            2024: {"features": 21_193, "total": 21_220, "sin_ubicacion": 7, "no_verificable": 20, "fecha": 0, "corte": "2024-12-31", "coverage": "anio_completo"},
+            2025: {"features": 20_148, "total": 20_346, "sin_ubicacion": 186, "no_verificable": 8, "fecha": 4, "corte": "2025-12-31", "coverage": "anio_completo"},
+            2026: {"features": 10_747, "total": 10_752, "sin_ubicacion": 4, "no_verificable": 1, "fecha": 0, "corte": "2026-06-30", "coverage": "parcial_enero_junio"},
         }
         cls.layers = {
             year: json.loads((DATA / f"siniestros_ant_{year}.geojson").read_text(encoding="utf-8"))
@@ -31,6 +31,12 @@ class AntPublicLayerContractTest(unittest.TestCase):
                 self.assertEqual(layer["metadata"]["corte"], expected["corte"])
                 self.assertEqual(layer["metadata"]["cobertura_temporal"], expected["coverage"])
                 self.assertEqual(layer["metadata"]["sd_c"]["umbral_recomendado"], 5)
+                audit = layer["metadata"]["auditoria_ubicacion"]
+                self.assertEqual(audit["total_eventos"], expected["total"])
+                self.assertEqual(audit["ubicaciones_publicadas"], expected["features"])
+                self.assertEqual(audit["sin_ubicacion"], expected["sin_ubicacion"])
+                self.assertEqual(audit["ubicacion_no_verificable"], expected["no_verificable"])
+                self.assertEqual(audit["fechas_no_publicables"], expected["fecha"])
 
     def test_public_properties_are_whitelisted_and_sanitized(self):
         for year, layer in self.layers.items():

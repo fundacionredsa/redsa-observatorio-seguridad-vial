@@ -23,7 +23,8 @@ test("carga contratos territoriales y atribuciones", async ({ page }) => {
   expect(metrics.cantonIndexFeatures).toBe(224);
   expect(metrics.cantonDeferred).toBeTruthy();
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC/CONALI");
-  await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC 2014");
+  await expect(page.locator(".leaflet-control-attribution")).toContainText("CONALI");
+  await expect(page.locator(".leaflet-control-attribution")).toContainText("2026-02-03");
 });
 
 test("abre como observatorio nacional con siniestros y sin infraestructura", async ({ page }) => {

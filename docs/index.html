@@ -283,17 +283,32 @@
                 <button class="institutional-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
             </header>
             <div class="institutional-content catalog-content">
-                <p class="catalog-lead">Consulta qué datos están disponibles y descarga cada variable en un Excel documentado o en GeoJSON listo para análisis geográfico.</p>
-                <div class="catalog-filters">
-                    <label class="sr-only" for="catalog-search">Buscar una variable</label>
-                    <input type="search" id="catalog-search" placeholder="Buscar variable…">
-                    <label class="sr-only" for="catalog-category-filter">Filtrar por categoría</label>
-                    <select id="catalog-category-filter">
-                        <option value="todas">Todas las categorías</option>
-                    </select>
+                <div class="catalog-tabs" role="tablist" aria-label="Secciones del catálogo">
+                    <button id="catalog-tab-variables" class="catalog-tab is-active" type="button"
+                        role="tab" aria-selected="true" aria-controls="catalog-panel-variables"
+                        tabindex="0" data-catalog-tab="variables">Variables</button>
+                    <button id="catalog-tab-transparency" class="catalog-tab" type="button"
+                        role="tab" aria-selected="false" aria-controls="catalog-panel-transparency"
+                        tabindex="-1" data-catalog-tab="transparency">Transparencia y confianza</button>
                 </div>
-                <div id="catalog-summary-stats" class="catalog-summary"></div>
-                <div id="catalog-results" class="catalog-results"></div>
+                <section id="catalog-panel-variables" class="catalog-tab-panel catalog-variables-panel"
+                    role="tabpanel" aria-labelledby="catalog-tab-variables" data-catalog-panel="variables">
+                    <p class="catalog-lead">Consulta qué datos están disponibles y descarga cada variable en un Excel documentado o en GeoJSON listo para análisis geográfico.</p>
+                    <div class="catalog-filters">
+                        <label class="sr-only" for="catalog-search">Buscar una variable</label>
+                        <input type="search" id="catalog-search" placeholder="Buscar variable…">
+                        <label class="sr-only" for="catalog-category-filter">Filtrar por categoría</label>
+                        <select id="catalog-category-filter">
+                            <option value="todas">Todas las categorías</option>
+                        </select>
+                    </div>
+                    <div id="catalog-results" class="catalog-results"></div>
+                </section>
+                <section id="catalog-panel-transparency" class="catalog-tab-panel catalog-transparency-panel"
+                    role="tabpanel" aria-labelledby="catalog-tab-transparency"
+                    data-catalog-panel="transparency" hidden>
+                    <div id="catalog-summary-stats" class="catalog-summary"></div>
+                </section>
             </div>
         </div>
     </div>

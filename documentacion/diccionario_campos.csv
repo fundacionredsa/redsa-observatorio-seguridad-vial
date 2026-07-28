@@ -934,9 +934,9 @@ pacificacion_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic
 parroquias_wgs84.geojson,DPA_ANIO,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2026
 parroquias_wgs84.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
 parroquias_wgs84.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
-parroquias_wgs84.geojson,DPA_DESPAR,string,no,Nombre de parroquia,texto,INEC 2014,CUENCA
+parroquias_wgs84.geojson,DPA_DESPAR,string,no,Nombre de parroquia,texto,CONALI 2026,CUENCA
 parroquias_wgs84.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
-parroquias_wgs84.geojson,DPA_PARROQ,string,no,Codigo DPA parroquial,codigo,INEC 2014,010150
+parroquias_wgs84.geojson,DPA_PARROQ,string,no,Codigo DPA parroquial,codigo,CONALI 2026,010150
 parroquias_wgs84.geojson,DPA_PROVIN,string,no,Codigo DPA provincial,codigo,INEC/CONALI,01
 parroquias_wgs84.geojson,categoria_territorial,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,unidad_administrativa
 parroquias_wgs84.geojson,fallecidos_2021_2024,null/number,si,Fallecidos EDG acumulados 2021-2024,personas,INEC EDG,234.0

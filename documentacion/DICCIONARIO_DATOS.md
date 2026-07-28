@@ -13,8 +13,8 @@ campos y evita repetir cientos de claves de anos, horas y categorias.
 | `DPA_DESPRO` | string | Nombre oficial de provincia | texto | INEC/CONALI | `PICHINCHA` |
 | `DPA_CANTON` | string | Codigo DPA de canton | codigo, 4 caracteres | INEC/CONALI | `1701` |
 | `DPA_DESCAN` | string | Nombre de canton | texto | INEC/CONALI | `DISTRITO METROPOLITANO DE QUITO` |
-| `DPA_PARROQ` | string | Codigo DPA parroquial | codigo | INEC 2014 | `170150` |
-| `DPA_DESPAR` | string | Nombre de parroquia | texto | INEC 2014 | `QUITO` |
+| `DPA_PARROQ` | string | Codigo DPA parroquial | codigo | CONALI 2026 | `170150` |
+| `DPA_DESPAR` | string | Nombre de parroquia | texto | CONALI 2026 | `QUITO` |
 
 ## Cantones y provincias
 

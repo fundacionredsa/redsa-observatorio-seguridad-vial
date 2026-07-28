@@ -186,6 +186,11 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             const modal = page.locator('#catalog-modal');
             await expect(modal).toBeVisible();
+            const variablesTab = modal.locator('#catalog-tab-variables');
+            const transparencyTab = modal.locator('#catalog-tab-transparency');
+            await expect(variablesTab).toHaveAttribute('aria-selected', 'true');
+            await expect(modal.locator('#catalog-panel-variables')).toBeVisible();
+            await expect(modal.locator('#catalog-panel-transparency')).toBeHidden();
 
             // Wait for fetch to complete and render
             const results = modal.locator('#catalog-results > article');
@@ -222,9 +227,16 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const content = modal.locator('#catalog-results');
             const scrollMetrics = await content.evaluate(element => ({
                 clientHeight: element.clientHeight,
-                scrollHeight: element.scrollHeight
+                scrollHeight: element.scrollHeight,
+                visibleCards: [...element.children].filter((child) => {
+                    const card = child.getBoundingClientRect();
+                    const container = element.getBoundingClientRect();
+                    return card.top < container.bottom && card.bottom > container.top;
+                }).length
             }));
             expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+            expect(scrollMetrics.clientHeight).toBeGreaterThanOrEqual(180);
+            expect(scrollMetrics.visibleCards).toBeGreaterThanOrEqual(1);
             await content.evaluate(element => { element.scrollTop = element.scrollHeight; });
             const lastResult = results.last();
             await expect(lastResult).toBeVisible();
@@ -235,6 +247,17 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             });
             expect(lastWithinViewport).toBeTruthy();
 
+            await transparencyTab.click();
+            await expect(transparencyTab).toHaveAttribute('aria-selected', 'true');
+            await expect(modal.locator('#catalog-panel-transparency')).toBeVisible();
+            await expect(modal.locator('#catalog-panel-variables')).toBeHidden();
+            await expect(modal.locator('.catalog-trust-card')).toBeVisible();
+            await expect(modal.locator('.catalog-crosscheck-table [role="row"]')).toHaveCount(3);
+            await transparencyTab.press('ArrowLeft');
+            await expect(variablesTab).toBeFocused();
+            await expect(variablesTab).toHaveAttribute('aria-selected', 'true');
+            await expect(modal.locator('#catalog-panel-variables')).toBeVisible();
+
             // Test search filter
             const searchInput = modal.locator('#catalog-search');
             await searchInput.fill('INEC');
@@ -243,9 +266,16 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(results).not.toHaveCount(9, { timeout: 5000 });
             await expect(results.first()).toBeVisible();
 
+            await transparencyTab.click();
+            await expect(transparencyTab).toHaveAttribute('aria-selected', 'true');
             const closeBtn = modal.locator('#catalog-modal-close');
             await closeBtn.click();
             await expect(modal).toBeHidden();
+            await btnCatalog.click();
+            await expect(modal).toBeVisible();
+            await expect(variablesTab).toHaveAttribute('aria-selected', 'true');
+            await expect(modal.locator('#catalog-panel-variables')).toBeVisible();
+            await closeBtn.click();
         });
 
         test('methodology links use the professional interface and drawer has no direct download', async ({ page }) => {

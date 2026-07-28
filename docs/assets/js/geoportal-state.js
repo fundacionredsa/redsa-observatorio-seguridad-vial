@@ -158,7 +158,7 @@
         legendControlInstance.addTo(map);
 
         // Definir Atribuciones Requeridas
-        const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites parroquiales: INEC 2014 (vigencia histórica)';
+        const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites provinciales y parroquiales: CONALI, vigencia 2025-02-20 y 2026-02-03, licencia CC-BY';
 
         // Definición de Capas Base (Mapas de fondo)
         const baseMaps = {

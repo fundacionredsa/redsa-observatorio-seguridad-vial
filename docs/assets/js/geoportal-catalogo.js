@@ -346,9 +346,39 @@
         const btnClose = document.getElementById("catalog-modal-close");
         const searchInput = document.getElementById("catalog-search");
         const catSelect = document.getElementById("catalog-category-filter");
+        const tabs = [...document.querySelectorAll("[data-catalog-tab]")];
+        const panels = [...document.querySelectorAll("[data-catalog-panel]")];
         if (!modal || !btnOpen) return;
 
+        const selectTab = (tabName, moveFocus = false) => {
+            tabs.forEach((tab) => {
+                const selected = tab.dataset.catalogTab === tabName;
+                tab.classList.toggle("is-active", selected);
+                tab.setAttribute("aria-selected", String(selected));
+                tab.tabIndex = selected ? 0 : -1;
+                if (selected && moveFocus) tab.focus();
+            });
+            panels.forEach((panel) => {
+                panel.hidden = panel.dataset.catalogPanel !== tabName;
+            });
+        };
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener("click", () => selectTab(tab.dataset.catalogTab));
+            tab.addEventListener("keydown", (event) => {
+                if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+                event.preventDefault();
+                let nextIndex = index;
+                if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+                if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+                if (event.key === "Home") nextIndex = 0;
+                if (event.key === "End") nextIndex = tabs.length - 1;
+                selectTab(tabs[nextIndex].dataset.catalogTab, true);
+            });
+        });
+
         btnOpen.addEventListener("click", async () => {
+            selectTab("variables");
             modal.hidden = false;
             modal.setAttribute("aria-hidden", "false");
             try {

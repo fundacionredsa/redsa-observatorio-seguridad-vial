@@ -363,17 +363,31 @@
         overflow: hidden;
     }
 
+    .catalog-tabs {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+
+    .catalog-tab {
+        min-height: 44px;
+        padding: 7px 9px;
+        font-size: 0.76rem;
+    }
+
+    .catalog-variables-panel {
+        gap: 10px;
+    }
+
     .catalog-results {
-        min-height: 180px;
-        flex: 1 1 220px;
+        min-height: 0;
+        flex: 1 1 auto;
         overflow-y: auto;
         padding-right: 0;
     }
 
-    .catalog-summary {
-        max-height: min(38dvh, 310px);
-        flex: 0 1 auto;
+    .catalog-transparency-panel {
         overflow-y: auto;
+        padding-right: 0;
     }
 
     .catalog-crosscheck-table [role="row"] {
