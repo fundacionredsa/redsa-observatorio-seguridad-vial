@@ -481,6 +481,7 @@ test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", a
   await expect(page.locator("#institutional-modal")).toBeVisible();
 
   const assertDescendingRanking = async expectedVariable => {
+    await expect(page.locator("#ranking-table-body tr").first()).toBeVisible({ timeout: 15_000 });
     const ranking = await page.evaluate(() => window.__redsaInstitutionalAudit.state());
     expect(ranking.variable).toBe(expectedVariable);
     expect(ranking.totalCount).toBe(224);
@@ -909,4 +910,34 @@ test("EDG parish-derived fatalities are available at province, canton and parish
   );
   expect(sevillaDonBosco2024).toBe(7);
 });
+
+test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines without cross-fallbacks", async ({ page }) => {
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.__redsaAudit !== undefined);
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+
+  // 1. Territorio con siniestros_historico disponible (Quito cantón)
+  const quitoTooltip = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("canton", "1701");
+    return window.getTerritoryTooltipContent ? window.getTerritoryTooltipContent(layer.feature, "canton") : null;
+  });
+  expect(quitoTooltip).toContain("Siniestros (2024):");
+  expect(quitoTooltip).toContain("Fallecidos (2024):");
+  expect(quitoTooltip).not.toContain("Siniestros (2024): Sin dato");
+
+  // 2. Territorio sin siniestros_historico pero con fallecidos (parroquia Cuenca con fallecidos en 2021)
+  await page.evaluate(() => window.__redsaAudit.selectYear(2021));
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
+  await page.waitForFunction(() => Boolean(window.__redsaAudit.findTerritoryLayer("parish", "010150")));
+
+  const parishTooltip = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("parish", "010150");
+    return window.getTerritoryTooltipContent ? window.getTerritoryTooltipContent(layer.feature, "parish") : null;
+  });
+  expect(parishTooltip).toContain("Siniestros (2021): Sin dato");
+  expect(parishTooltip).toContain("Fallecidos (2021): 59");
+  expect(parishTooltip).not.toContain("Siniestros (2021): 59");
+});
+
 

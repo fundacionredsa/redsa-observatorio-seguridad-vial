@@ -134,7 +134,7 @@
                     getSelectedYear: () => selectedYear
                 });
                 window.REDSAInstitutional?.init({
-                    cantonFeatures: [],
+                    cantonFeatures: cantonIndexFeatures,
                     ensureCantonFeatures: async () => {
                         await ensureCantonLayer();
                         return cantonData.features;

@@ -643,6 +643,7 @@
         window.setMobilePanel = setMobilePanel;
         window.setMobileLegend = setMobileLegend;
         window.closeMobilePanels = closeMobilePanels;
+        window.getTerritoryTooltipContent = getTerritoryTooltipContent;
 
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
@@ -731,12 +732,16 @@
                 ? formatTooltipValue(popRaw)
                 : "Sin dato";
 
-            const sinRaw = props.siniestros_historico?.[String(selectedYear)]
-                ?? props.fallecidos_por_anio?.[String(selectedYear)]
-                ?? props.fallecidos_historico?.[String(selectedYear)]
-                ?? props.fallecidos_parroquial?.[String(selectedYear)];
+            const sinRaw = props.siniestros_historico?.[String(selectedYear)];
             const sinText = (sinRaw !== null && sinRaw !== undefined && Number.isFinite(Number(sinRaw)))
                 ? formatTooltipValue(sinRaw)
+                : "Sin dato";
+
+            const falRaw = props.fallecidos_historico?.[String(selectedYear)]
+                ?? props.fallecidos_por_anio?.[String(selectedYear)]
+                ?? props.fallecidos_parroquial?.[String(selectedYear)];
+            const falText = (falRaw !== null && falRaw !== undefined && Number.isFinite(Number(falRaw)))
+                ? formatTooltipValue(falRaw)
                 : "Sin dato";
 
             const effectiveVar = getEffectiveVariable(level);
@@ -751,7 +756,7 @@
             const warningHtml = coverageWarning
                 ? `<br><span class="u-text-warning">${coverageWarning}</span>`
                 : "";
-            return `<strong>${name}</strong><br>Población (${selectedYear}): ${popText}<br>Siniestros (${selectedYear}): ${sinText}<br>${valueText}${warningHtml}`;
+            return `<strong>${name}</strong><br>Población (${selectedYear}): ${popText}<br>Siniestros (${selectedYear}): ${sinText}<br>Fallecidos (${selectedYear}): ${falText}<br>${valueText}${warningHtml}`;
         }
 
         function getEffectiveVariable(level = activeTerritoryLevel) {

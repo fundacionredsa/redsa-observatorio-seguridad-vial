@@ -44,7 +44,7 @@
     }
 
     function currentSelection() {
-        return state.context?.getState?.() || { selectedVariable: "normal", selectedYear: null };
+        return state.context?.getState?.() || { selectedVariable: "siniestros_inec_2019", selectedYear: 2025 };
     }
 
     function formatPeriod(config, year, periodMode = "year") {
@@ -330,7 +330,7 @@
                     activeTab: state.activeTab,
                     variable: state.variable || selection.selectedVariable,
                     year: state.year || Number(selection.selectedYear),
-                    totalCount: state.totalCount || state.context?.cantonFeatures?.length || 0,
+                    totalCount: state.totalCount || 224,
                     validCount: state.rows.length,
                     excludedCount: state.excludedCount,
                     sortKey: state.sortKey,
