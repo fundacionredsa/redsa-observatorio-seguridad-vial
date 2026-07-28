@@ -121,18 +121,10 @@ function onEachProvinceFeature(feature, layer) {
         }
 
         function mergeHotspotsIntoCantons(cantons, hotspots) {
-            const hotspotByCanton = new Map();
-            (hotspots.features || []).forEach(feature => {
-                const props = feature.properties || {};
-                if (props.DPA_CANTON) {
-                    hotspotByCanton.set(String(props.DPA_CANTON), props.hotspot_gi || null);
-                }
-            });
-
             (cantons.features || []).forEach(feature => {
                 const props = feature.properties || {};
-                const hotspot = hotspotByCanton.get(String(props.DPA_CANTON));
-                props.hotspot_gi = hotspot || null;
+                const hotspot = hotspots?.por_dpa?.[String(props.DPA_CANTON)] || null;
+                props.hotspot_gi = hotspot?.hotspot_gi || null;
             });
         }
 
@@ -635,6 +627,57 @@ function onEachProvinceFeature(feature, layer) {
             return parishLoadPromise;
         }
 
+        function ensureCantonLayer() {
+            if (cantonLayer) return Promise.resolve(cantonLayer);
+            if (cantonLoadPromise) return cantonLoadPromise;
+
+            const loader = document.getElementById("loader");
+            if (loader) {
+                document.getElementById("loader-status").textContent = "Descargando límites cantonales...";
+                loader.style.display = "flex";
+            }
+            const cantonStart = performance.now();
+            cantonLoadPromise = Promise.all([
+                fetch(RUTA_CANTONES_RELATIVA).then(response => {
+                    if (!response.ok) throw new Error("No se pudo cargar el GeoJSON cantonal.");
+                    return response.json();
+                }),
+                fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
+                    if (!response.ok) throw new Error("No se pudo cargar el índice de hotspots cantonales.");
+                    return response.json();
+                })
+            ]).then(([cantons, hotspots]) => {
+                cantonData = cantons;
+                hotspotData = hotspots;
+                mergeHotspotsIntoCantons(cantonData, hotspotData);
+                nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
+                cantonLayer = L.geoJSON(cantonData, {
+                    pane: "territorioPane",
+                    style(feature) {
+                        const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
+                        return getCantonStyle(feature, false, isSelected);
+                    },
+                    onEachFeature
+                });
+                window.REDSAExperience?.setCantonFeatures?.(cantonData.features);
+                window.REDSAInstitutional?.setCantonFeatures?.(cantonData.features);
+                if (loader) loader.style.display = "none";
+                window.__redsaGeojsonLoadMetrics = {
+                    ...(window.__redsaGeojsonLoadMetrics || {}),
+                    cantonLoadMs: Math.round(performance.now() - cantonStart),
+                    cantonFeatures: cantonData.features.length,
+                    cantonDeferred: false
+                };
+                return cantonLayer;
+            }).catch(error => {
+                cantonLoadPromise = null;
+                if (loader) loader.style.display = "none";
+                console.error("No se pudo cargar la capa cantonal:", error);
+                throw error;
+            });
+            return cantonLoadPromise;
+        }
+
         function syncTerritoryLayerToZoom() {
             const desiredLevel = territoryLevelMode === "auto"
                 ? getTerritoryLevelForZoom()
@@ -652,6 +695,17 @@ function onEachProvinceFeature(feature, layer) {
                         }
                     })
                     .catch(err => console.error("No se pudo sincronizar capa parroquial:", err));
+                return;
+            }
+            if (desiredLevel === "canton" && !cantonLayer) {
+                ensureCantonLayer()
+                    .then(() => {
+                        const stillDesired = territoryLevelMode === "auto"
+                            ? getTerritoryLevelForZoom() === "canton"
+                            : territoryLevelMode === "canton";
+                        if (stillDesired) activateTerritoryLevel("canton");
+                    })
+                    .catch(error => console.error("No se pudo sincronizar capa cantonal:", error));
                 return;
             }
             activateTerritoryLevel(desiredLevel);

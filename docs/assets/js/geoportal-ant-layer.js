@@ -5,6 +5,15 @@
     const CASE_RADIUS_PX = 4;
     const CLUSTER_COLOR = "#0f766e";
     const CASE_COLOR = "#7c2d12";
+    const CLUSTER_RADIUS_MIN = 10;
+    const CLUSTER_RADIUS_MAX = 22;
+    const CLUSTER_RADIUS_BASE = 8;
+    const CLUSTER_RADIUS_SCALE = 2;
+    const CLUSTER_FILL_OPACITY = 0.72;
+    const compactNumber = new Intl.NumberFormat("es-EC", {
+        notation: "compact",
+        maximumFractionDigits: 1
+    });
     const HEAT_GRADIENT = Object.freeze({
         0.12: "#000004",
         0.32: "#51127c",
@@ -59,8 +68,34 @@
         queryTimer: null,
         cacheYears: [],
         selectedTerritory: null,
-        bandwidthProfile: "focused"
+        bandwidthProfile: "focused",
+        activationStartedAt: null,
+        activationCacheHit: false,
+        activationReadyTracked: false
     };
+
+    function connectionType() {
+        return navigator.connection?.effectiveType || "unknown";
+    }
+
+    function trackAntEvent(name, parameters = {}) {
+        if (typeof window.gtag !== "function") return;
+        window.gtag("event", name, {
+            year: Number(state.year),
+            mode: state.mode,
+            connection_type: connectionType(),
+            ...parameters
+        });
+    }
+
+    function trackReadyOnce() {
+        if (state.activationReadyTracked || !Number.isFinite(state.activationStartedAt)) return;
+        state.activationReadyTracked = true;
+        trackAntEvent("ant_layer_ready", {
+            duration_ms: Math.round(performance.now() - state.activationStartedAt),
+            cache_hit: state.activationCacheHit
+        });
+    }
 
     function availableYears() {
         return (state.config?.temporal?.anios_disponibles || []).map(Number);
@@ -163,6 +198,12 @@
             state.worker.terminate();
             state.worker = null;
             state.requestId = null;
+            trackAntEvent("ant_layer_load_cancelled", {
+                duration_ms: Number.isFinite(state.activationStartedAt)
+                    ? Math.round(performance.now() - state.activationStartedAt)
+                    : 0,
+                cache_hit: false
+            });
             setStatus(reason);
         }
     }
@@ -173,6 +214,12 @@
         state.worker.onmessage = handleWorkerMessage;
         state.worker.onerror = event => {
             console.error("Worker ANT:", event.message);
+            trackAntEvent("ant_layer_load_error", {
+                duration_ms: Number.isFinite(state.activationStartedAt)
+                    ? Math.round(performance.now() - state.activationStartedAt)
+                    : 0,
+                cache_hit: false
+            });
             setStatus("error");
         };
         return state.worker;
@@ -180,6 +227,12 @@
 
     function loadYear() {
         if (!state.active || !isYearAvailable()) return;
+        state.activationStartedAt = performance.now();
+        state.activationCacheHit = Boolean(
+            state.heatPoints && state.cacheYears.includes(state.year) && state.loadedYear === state.year
+        );
+        state.activationReadyTracked = false;
+        trackAntEvent("ant_layer_activation_start", { cache_hit: state.activationCacheHit });
         if (state.heatPoints && state.cacheYears.includes(state.year) && state.loadedYear === state.year) {
             setStatus("ready");
             syncControls();
@@ -222,6 +275,12 @@
         if (message.type === "summary") renderTerritorySummary(message);
         if (message.type === "error") {
             console.error(message.message);
+            trackAntEvent("ant_layer_load_error", {
+                duration_ms: Number.isFinite(state.activationStartedAt)
+                    ? Math.round(performance.now() - state.activationStartedAt)
+                    : 0,
+                cache_hit: false
+            });
             setStatus("error");
             syncControls();
         }
@@ -251,6 +310,7 @@
             radiusPx: radius
         };
         setStatus("ready");
+        trackReadyOnce();
     }
 
     function requestViewport(type) {
@@ -270,7 +330,10 @@
         const props = feature.properties || {};
         if (!props.cluster) return caseMarker(feature, [lat, lon], renderer, false);
         const count = Number(props.point_count || 0);
-        const radius = Math.max(13, Math.min(30, 11 + Math.log2(Math.max(count, 2)) * 2.5));
+        const radius = Math.max(
+            CLUSTER_RADIUS_MIN,
+            Math.min(CLUSTER_RADIUS_MAX, CLUSTER_RADIUS_BASE + Math.log2(Math.max(count, 2)) * CLUSTER_RADIUS_SCALE)
+        );
         const marker = L.circleMarker([lat, lon], {
             renderer,
             pane: state.pane,
@@ -278,11 +341,12 @@
             color: "#ecfeff",
             weight: 2,
             fillColor: CLUSTER_COLOR,
-            fillOpacity: 0.88
+            fillOpacity: CLUSTER_FILL_OPACITY
         });
-        marker.bindTooltip(`${count.toLocaleString("es-EC")} siniestros registrados`, {
-            direction: "top",
-            className: "ant-cluster-tooltip"
+        marker.bindTooltip(compactNumber.format(count), {
+            permanent: true,
+            direction: "center",
+            className: "ant-cluster-label"
         });
         marker.on("click", () => {
             const expansionZoom = Math.min(18, state.worker ? state.map.getZoom() + 2 : state.map.getZoom() + 1);
@@ -304,6 +368,7 @@
             zoom: state.map.getZoom()
         };
         setStatus("ready", `${message.clusters.length.toLocaleString("es-EC")} agrupaciones o casos visibles. Cobertura: ${coverageText()}`);
+        trackReadyOnce();
     }
 
     function decodedCaseProperties(properties) {
@@ -398,6 +463,7 @@
             ? `${message.totalVisible.toLocaleString("es-EC")} casos están en la vista; se dibujan 6.000. Acerca el mapa para verlos todos.`
             : `${markers.length.toLocaleString("es-EC")} casos visibles. Cobertura: ${coverageText()}`;
         setStatus("ready", detail);
+        trackReadyOnce();
     }
 
     function topRows(counter, dictionaryName, limit = 5) {
@@ -535,7 +601,12 @@
 
     function setMode(mode) {
         if (!["heat", "clusters", "cases"].includes(mode)) return;
+        if (state.mode === mode) return;
         state.mode = mode;
+        state.activationStartedAt = performance.now();
+        state.activationCacheHit = true;
+        state.activationReadyTracked = false;
+        trackAntEvent("ant_layer_mode_change", { cache_hit: true });
         renderCurrentMode();
     }
 

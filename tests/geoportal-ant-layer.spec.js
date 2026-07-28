@@ -57,11 +57,32 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   expect(state.metrics.parseMs).toBeGreaterThanOrEqual(0);
   expect(state.metrics.indexMs).toBeGreaterThanOrEqual(0);
   expect(state.renderMetrics.heat.renderMs).toBeGreaterThanOrEqual(0);
+  let paneAudit = await page.evaluate(() => {
+    const territory = document.querySelector(".leaflet-territorio-pane");
+    const events = document.querySelector(".leaflet-event-pane");
+    return {
+      heatParent: document.querySelector(".leaflet-heatmap-layer")?.parentElement?.className || "",
+      territoryIndex: territory ? Array.from(territory.parentElement.children).indexOf(territory) : -1,
+      eventIndex: events ? Array.from(events.parentElement.children).indexOf(events) : -1
+    };
+  });
+  expect(paneAudit.heatParent).toContain("leaflet-event-pane");
+  expect(paneAudit.eventIndex).toBeGreaterThan(paneAudit.territoryIndex);
 
   await page.locator("[data-ant-mode='clusters']").click();
   await page.waitForFunction(() => Boolean(window.REDSAAntLayer.getAuditState().renderMetrics.clusters));
+  await expect(page.locator(".ant-cluster-label").first()).toBeVisible();
+  await expect(page.locator(".ant-cluster-label").first()).toHaveText(/^\d+(?:[,.]\d+)?\s*(?:mil|k)?$/i);
+  paneAudit = await page.evaluate(() => ({
+    clusterCanvasParent: document.querySelector(".leaflet-event-pane canvas")?.parentElement?.className || ""
+  }));
+  expect(paneAudit.clusterCanvasParent).toContain("leaflet-event-pane");
   await page.locator("[data-ant-mode='cases']").click();
   await page.waitForFunction(() => Boolean(window.REDSAAntLayer.getAuditState().renderMetrics.cases));
+  paneAudit = await page.evaluate(() => ({
+    caseCanvasParent: document.querySelector(".leaflet-event-pane canvas")?.parentElement?.className || ""
+  }));
+  expect(paneAudit.caseCanvasParent).toContain("leaflet-event-pane");
   state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.mode).toBe("cases");
   expect(state.renderMetrics.clusters.visibleObjects).toBeGreaterThan(0);

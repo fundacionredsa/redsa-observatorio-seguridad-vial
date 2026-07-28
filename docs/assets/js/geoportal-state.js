@@ -89,8 +89,9 @@
         const INITIAL_VIEW = GEO_CONFIG.initialView;
         const RUTA_PROVINCIAS_RELATIVA = "data/provincias_wgs84.geojson";
         const RUTA_CANTONES_RELATIVA = "data/cantones_wgs84.geojson";
+        const RUTA_CANTONES_INDICE_RELATIVA = "data/cantones_indice.json";
         const RUTA_PARROQUIAS_RELATIVA = "data/parroquias_wgs84.geojson";
-        const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.geojson";
+        const RUTA_HOTSPOTS_CANTONALES_RELATIVA = "data/hotspots_cantonales.json";
         const CENTRO_MAPA = INITIAL_VIEW.center;
         const ZOOM_INICIAL = INITIAL_VIEW.zoom;
         const ZOOM_PROVINCIAS_MAX = 7;
@@ -223,6 +224,8 @@
         let provinceData = null;
         let cantonLayer;
         let cantonData = null;
+        let cantonIndexData = null;
+        let cantonLoadPromise = null;
         let hotspotData = null;
         let nationalFatalitiesByYear = {};
         let selectedLayer = null;

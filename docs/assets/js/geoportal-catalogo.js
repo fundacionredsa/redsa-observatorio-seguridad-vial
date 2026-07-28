@@ -6,7 +6,10 @@
         parish: "data/parroquias_wgs84.geojson"
     };
     const GLOBAL_COUNTER = {
-        productionHost: "fundacionredsa.github.io",
+        productionHostnames: [
+            "geoportal.observatorio.fundacionredsa.org",
+            "fundacionredsa.github.io"
+        ],
         keyPrefix: "fundacionredsa_observatorio_seguridad_vial_v1_",
         totalKey: "catalogo_total",
         endpoint: "https://countapi.mileshilliard.com/api/v1"
@@ -15,7 +18,7 @@
     const globalCounts = new Map();
 
     function globalCounterEnabled() {
-        return window.location.hostname === GLOBAL_COUNTER.productionHost
+        return GLOBAL_COUNTER.productionHostnames.includes(window.location.hostname)
             || window.__REDSA_GLOBAL_COUNTER_ENABLED__ === true;
     }
 
@@ -123,6 +126,19 @@
         const count = addText(container, "p", "", "catalog-device-count");
         count.id = "catalog-global-download-total";
         addText(container, "p", "El conteo público es global y orientativo desde la publicación de esta función: registra descargas, no personas únicas, y no requiere identificar al usuario.", "catalog-device-note");
+        const trustCard = document.createElement("section");
+        trustCard.className = "catalog-trust-card";
+        trustCard.setAttribute("aria-labelledby", "catalog-trust-title");
+        trustCard.innerHTML = `
+            <h3 id="catalog-trust-title">¿Por qué confiar en estos datos?</h3>
+            <p>REDSA compara publicaciones oficiales independientes antes de integrarlas. ANT e INEC/ESTRA coincidieron exactamente en los tres cortes verificables; además, mantenemos visibles los registros que no pueden asignarse responsablemente a un cantón.</p>
+            <div class="catalog-crosscheck-table" role="table" aria-label="Control cruzado ANT e INEC ESTRA">
+                <div role="row"><strong role="cell">2024 anual</strong><span role="cell">21.220 siniestros · 18.312 lesionados · 2.302 fallecidos en sitio</span><b role="cell">Diferencia 0</b></div>
+                <div role="row"><strong role="cell">2025 I–IV</strong><span role="cell">20.346 siniestros · 17.932 lesionados · 2.354 fallecidos en sitio</span><b role="cell">Diferencia 0</b></div>
+                <div role="row"><strong role="cell">2026-I</strong><span role="cell">4.789 siniestros · 4.032 lesionados · 603 fallecidos en sitio</span><b role="cell">Diferencia 0</b></div>
+            </div>
+            <p class="catalog-trust-note">ANT/ESTRA registra fallecidos en sitio; no sustituye las defunciones del Registro Civil (EDG). <a href="metodologia/#control-cruzado">Ver método y fuentes</a>.</p>`;
+        container.appendChild(trustCard);
         updateDownloadCounters();
     }
 

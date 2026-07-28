@@ -10,7 +10,7 @@ Fecha de corte: 2026-07-27. Los comandos repetibles estan en
 | cantones_wgs84.geojson | 224 | codigos DPA unicos |
 | provincias_wgs84.geojson | 24 | suma cantonal = suma provincial |
 | parroquias_wgs84.geojson | 1.050 | codigos parroquiales/areas unicos |
-| hotspots_cantonales.geojson | 224 | mismo conjunto DPA cantonal |
+| hotspots_cantonales.json | 224 | mismo conjunto DPA cantonal, sin geometria duplicada |
 
 ## Conciliaciones nacionales
 

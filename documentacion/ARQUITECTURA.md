@@ -29,7 +29,8 @@ flowchart LR
     CANT[cantones_wgs84.geojson]
     PARR[parroquias_wgs84.geojson]
     PROVG[provincias_wgs84.geojson]
-    HOTG[hotspots_cantonales.geojson]
+    HOTG[hotspots_cantonales.json / atributos por DPA]
+    CIDX[cantones_indice.json / busqueda inicial]
     OSMG[capas OSM nacionales GeoJSON]
     MAPG[Mapillary Pichincha GeoJSON]
     WEB[docs/index.html / esqueleto]
@@ -53,6 +54,7 @@ flowchart LR
   EDG --> PAR
   CANT --> PROV --> PROVG
   CANT --> HOT --> HOTG
+  CANT --> CIDX
   VEH --> V --> CANT
   V --> PROVG
   OSM --> O --> OSMG
@@ -72,6 +74,20 @@ flowchart LR
   APP --> WEB
   WEB --> PAGES[GitHub Pages]
 ```
+
+## Carga territorial progresiva
+
+La vista inicial solicita la capa provincial y `cantones_indice.json`, que solo
+contiene códigos y nombres para búsqueda. `cantones_wgs84.geojson` y
+`hotspots_cantonales.json` se cargan una sola vez bajo demanda al entrar al
+nivel cantonal, seleccionar un cantón, abrir el ranking o activar una función
+que necesita geometría cantonal. El índice de hotspots no contiene geometría:
+sus resultados se unen por `DPA_CANTON` después de cargar la capa cantonal.
+
+La capa de eventos ANT mantiene telemetría agregada de activación en GA4:
+inicio, lista, cancelación, error y cambio de modo. Los eventos incluyen
+duración, año, modo, uso de caché y tipo general de conexión; nunca coordenadas
+ni nombres/códigos territoriales.
 
 ## Repositorios
 

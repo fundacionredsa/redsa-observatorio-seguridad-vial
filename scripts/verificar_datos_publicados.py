@@ -71,7 +71,7 @@ def main() -> None:
     cantons = load("cantones_wgs84.geojson")
     provinces = load("provincias_wgs84.geojson")
     parishes = load("parroquias_wgs84.geojson")
-    hotspots = load("hotspots_cantonales.geojson")
+    hotspots = load("hotspots_cantonales.json")
     osm_report = load("osm_cobertura_reporte.json")
     result: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -85,7 +85,6 @@ def main() -> None:
         "cantones_wgs84.geojson": (cantons, 224),
         "provincias_wgs84.geojson": (provinces, 26),
         "parroquias_wgs84.geojson": (parishes, 1050),
-        "hotspots_cantonales.geojson": (hotspots, 224),
         "vias_ecuador.geojson": (load("vias_ecuador.geojson"), 41_040),
     }
     for name, (payload, count) in expected.items():
@@ -98,6 +97,19 @@ def main() -> None:
         }
         if actual != count:
             result["failures"].append(f"{name}: {actual} features; esperados {count}")
+
+    hotspot_count = len(hotspots.get("por_dpa", {}))
+    hotspot_name = "hotspots_cantonales.json"
+    result["files"][hotspot_name] = {
+        "records": hotspot_count,
+        "expected_records": 224,
+        "bytes": (DATA / hotspot_name).stat().st_size,
+        "sha256": sha256(DATA / hotspot_name),
+    }
+    if hotspot_count != 224:
+        result["failures"].append(
+            f"{hotspot_name}: {hotspot_count} registros; esperados 224"
+        )
 
     for layer_name, layer_report in osm_report.get("capas", {}).items():
         name = layer_report["archivo"]

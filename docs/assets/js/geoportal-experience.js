@@ -744,8 +744,14 @@
         };
     }
 
+    function setCantonFeatures(features) {
+        state.cantonFeatures = Array.isArray(features) ? features : [];
+        populateSearch();
+    }
+
     window.REDSAExperience = Object.freeze({
         init,
+        setCantonFeatures,
         updateMapContext,
         updateSummary
     });

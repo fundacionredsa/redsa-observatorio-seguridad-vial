@@ -59,33 +59,31 @@
         }
 
         // Iniciar Fetch de datos y medición
-        document.getElementById("loader-status").textContent = "Descargando límites provinciales y cantonales...";
+        document.getElementById("loader-status").textContent = "Descargando límites provinciales e índice territorial...";
 
         Promise.all([
             fetch(RUTA_PROVINCIAS_RELATIVA).then(response => {
                 if (!response.ok) throw new Error("No se pudo cargar el GeoJSON provincial.");
                 return response.json();
             }),
-            fetch(RUTA_CANTONES_RELATIVA).then(response => {
-                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON cantonal.");
-                return response.json();
-            }),
-            fetch(RUTA_HOTSPOTS_CANTONALES_RELATIVA).then(response => {
-                if (!response.ok) throw new Error("No se pudo cargar el GeoJSON de hotspots cantonales.");
+            fetch(RUTA_CANTONES_INDICE_RELATIVA).then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el índice cantonal.");
                 return response.json();
             })
         ])
-            .then(([provinces, cantons, hotspots]) => {
+            .then(([provinces, cantonIndex]) => {
                 const tDownloadEnd = performance.now();
                 const tDownload = ((tDownloadEnd - tStart) / 1000).toFixed(2);
                 document.getElementById("diag-download").textContent = `${tDownload}s`;
-                document.getElementById("loader-status").textContent = "Procesando y renderizando límites territoriales...";
+                document.getElementById("loader-status").textContent = "Procesando y renderizando límites provinciales...";
                 const tRenderStart = performance.now();
                 provinceData = provinces;
-                cantonData = cantons;
-                hotspotData = hotspots;
-                mergeHotspotsIntoCantons(cantonData, hotspotData);
-                nationalFatalitiesByYear = calculateNationalFatalitiesByYear(cantonData);
+                cantonIndexData = cantonIndex;
+                const cantonIndexFeatures = (cantonIndexData.cantones || []).map(properties => ({
+                    type: "Feature",
+                    properties,
+                    geometry: null
+                }));
 
                 provinceLayer = L.geoJSON(provinceData, {
                     pane: "territorioPane",
@@ -96,22 +94,13 @@
                     onEachFeature: onEachProvinceFeature
                 });
 
-                cantonLayer = L.geoJSON(cantonData, {
-                    pane: "territorioPane",
-                    style: function(feature) {
-                        const isSelected = selectedLayer && selectedLayer.feature.properties.DPA_CANTON === feature.properties.DPA_CANTON;
-                        return getCantonStyle(feature, false, isSelected);
-                    },
-                    onEachFeature: onEachFeature
-                });
-
                 const tRenderEnd = performance.now();
                 const tRender = ((tRenderEnd - tRenderStart) / 1000).toFixed(2);
                 const tTotal = ((tRenderEnd - tStart) / 1000).toFixed(2);
 
                 document.getElementById("diag-render").textContent = `${tRender}s`;
                 document.getElementById("diag-total").textContent = `${tTotal}s`;
-                document.getElementById("diag-features").textContent = `${provinces.features ? provinces.features.length : 0} prov. / ${cantons.features ? cantons.features.length : 0} cant.`;
+                document.getElementById("diag-features").textContent = `${provinces.features ? provinces.features.length : 0} prov. / cantones bajo demanda`;
 
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
@@ -122,7 +111,8 @@
                     return selectTerritoryLayer("canton", foundLayer, { fitBounds: true, updateHash });
                 }
 
-                function selectCantonByCode(code, updateHash = true) {
+                async function selectCantonByCode(code, updateHash = true) {
+                    await ensureCantonLayer();
                     let foundLayer = null;
                     cantonLayer.eachLayer(layer => {
                         if (!foundLayer && String(layer.feature?.properties?.DPA_CANTON) === String(code)) foundLayer = layer;
@@ -132,23 +122,28 @@
 
                 window.REDSAExperience?.init({
                     provinceFeatures: provinceData.features,
-                    cantonFeatures: cantonData.features,
+                    cantonFeatures: cantonIndexFeatures,
                     selectCanton: code => selectCantonByCode(code, true),
                     openAnalysis: () => setMobilePanel("sidebar", true),
                     getSelectedYear: () => selectedYear
                 });
                 window.REDSAInstitutional?.init({
-                    cantonFeatures: cantonData.features,
+                    cantonFeatures: [],
+                    ensureCantonFeatures: async () => {
+                        await ensureCantonLayer();
+                        return cantonData.features;
+                    },
                     variables: VARIABLE_CONFIGS,
                     getState: () => ({ selectedVariable, selectedYear, selectedPeriodMode }),
                     getVariableValue: (properties, variable, year) => getVariableValue(properties, variable, year)
                 });
 
                 // Manejo de Hash Routing en carga inicial y cambios
-                const handleHash = () => {
+                const handleHash = async () => {
                     const hash = window.location.hash;
                     if (hash && hash.startsWith("#canton=")) {
                         const cantonName = decodeURIComponent(hash.substring(8)).trim().toUpperCase();
+                        await ensureCantonLayer();
                         let foundLayer = null;
 
                         cantonLayer.eachLayer(layer => {
@@ -228,8 +223,11 @@
                     placeholder._redsaConfigId = config.id;
                     const startLoad = () => {
                         if (placeholder._redsaLoadPromise) return placeholder._redsaLoadPromise;
-                        placeholder._redsaLoadPromise = fetchInfrastructureData(config.url)
-                            .then(data => {
+                        placeholder._redsaLoadPromise = Promise.all([
+                            fetchInfrastructureData(config.url),
+                            config.coverageMask ? ensureCantonLayer() : Promise.resolve(null)
+                        ])
+                            .then(([data]) => {
                                 const selectedFeatures = (data.features || []).filter(feature => !config.filterFeature || config.filterFeature(feature));
                                 const selectedData = { ...data, features: selectedFeatures };
                                 const layer = L.geoJSON(selectedData, layerOptionsFromConfig(config));
@@ -568,7 +566,9 @@
                     renderMs: Number(tRender) * 1000,
                     totalMs: Number(tTotal) * 1000,
                     provinceFeatures: provinceData.features.length,
-                    cantonFeatures: cantonData.features.length
+                    cantonFeatures: 0,
+                    cantonIndexFeatures: cantonIndexFeatures.length,
+                    cantonDeferred: true
                 };
                 window.__redsaAudit = {
                     findTerritoryLayer(level, code) {
@@ -582,13 +582,17 @@
                         });
                         return found;
                     },
-                    fireTerritoryEvent(level, code, eventName) {
+                    async fireTerritoryEvent(level, code, eventName) {
+                        if (level === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (level === "parish" && !parishLayer) await ensureParishLayer();
                         const found = this.findTerritoryLayer(level, code);
                         if (!found || !["click", "mouseover", "mouseout"].includes(eventName)) return false;
                         found.fire(eventName, { target: found });
                         return this.state();
                     },
-                    territoryStyle(level, code) {
+                    async territoryStyle(level, code) {
+                        if (level === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (level === "parish" && !parishLayer) await ensureParishLayer();
                         const found = this.findTerritoryLayer(level, code);
                         if (!found) return null;
                         return {
@@ -599,17 +603,29 @@
                             fillOpacity: found.options.fillOpacity
                         };
                     },
-                    setZoom(zoom) {
+                    async setZoom(zoom) {
                         map.setView(map.getCenter(), zoom, { animate: false });
+                        const desiredLevel = territoryLevelMode === "auto"
+                            ? getTerritoryLevelForZoom()
+                            : territoryLevelMode;
+                        if (desiredLevel === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (desiredLevel === "parish" && !parishLayer) await ensureParishLayer();
                         syncTerritoryLayerToZoom();
                         return this.state();
                     },
-                    setMapView(latitude, longitude, zoom) {
+                    async setMapView(latitude, longitude, zoom) {
                         map.setView([Number(latitude), Number(longitude)], Number(zoom), { animate: false });
+                        const desiredLevel = territoryLevelMode === "auto"
+                            ? getTerritoryLevelForZoom()
+                            : territoryLevelMode;
+                        if (desiredLevel === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (desiredLevel === "parish" && !parishLayer) await ensureParishLayer();
                         syncTerritoryLayerToZoom();
                         return this.state();
                     },
-                    prepareTerritoryTap(level, code) {
+                    async prepareTerritoryTap(level, code) {
+                        if (level === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (level === "parish" && !parishLayer) await ensureParishLayer();
                         const found = this.findTerritoryLayer(level, code);
                         if (!found) return null;
                         const zoomByLevel = { province: 6, canton: 9, parish: 12 };
@@ -642,8 +658,13 @@
                             code: String(code)
                         };
                     },
-                    setTerritoryLevelMode(mode) {
-                        return setTerritoryLevelMode(mode) ? this.state() : false;
+                    async setTerritoryLevelMode(mode) {
+                        if (!setTerritoryLevelMode(mode)) return false;
+                        const desiredLevel = mode === "auto" ? getTerritoryLevelForZoom() : mode;
+                        if (desiredLevel === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (desiredLevel === "parish" && !parishLayer) await ensureParishLayer();
+                        syncTerritoryLayerToZoom();
+                        return this.state();
                     },
                     selectVariable(variable) {
                         const select = document.getElementById("map-variable-select");
@@ -662,7 +683,9 @@
                         slider.dispatchEvent(new Event("input", { bubbles: true }));
                         return true;
                     },
-                    showTerritory(level, code) {
+                    async showTerritory(level, code) {
+                        if (level === "canton" && !cantonLayer) await ensureCantonLayer();
+                        if (level === "parish" && !parishLayer) await ensureParishLayer();
                         const layer = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
                         if (!layer) return false;
                         let found = null;

@@ -16,7 +16,7 @@ class PublishedDataContractTest(unittest.TestCase):
         cls.cantons = load("cantones_wgs84.geojson")
         cls.provinces = load("provincias_wgs84.geojson")
         cls.parishes = load("parroquias_wgs84.geojson")
-        cls.hotspots = load("hotspots_cantonales.geojson")
+        cls.hotspots = load("hotspots_cantonales.json")
         cls.osm_report = load("osm_cobertura_reporte.json")
 
     def test_feature_counts_and_unique_codes(self):
@@ -24,7 +24,6 @@ class PublishedDataContractTest(unittest.TestCase):
             (self.cantons, 224, "DPA_CANTON"),
             (self.provinces, 26, "DPA_PROVIN"),
             (self.parishes, 1050, "DPA_PARROQ"),
-            (self.hotspots, 224, "DPA_CANTON"),
         ]
         for data, expected, field in cases:
             with self.subTest(field=field):
@@ -34,7 +33,7 @@ class PublishedDataContractTest(unittest.TestCase):
 
     def test_canton_and_hotspot_codes_match(self):
         canton_codes = {feature["properties"]["DPA_CANTON"] for feature in self.cantons["features"]}
-        hotspot_codes = {feature["properties"]["DPA_CANTON"] for feature in self.hotspots["features"]}
+        hotspot_codes = set(self.hotspots["por_dpa"])
         self.assertEqual(canton_codes, hotspot_codes)
 
     def test_national_sums_match_province_sums(self):
@@ -269,8 +268,8 @@ class PublishedDataContractTest(unittest.TestCase):
         self.assertTrue(all(properties.get("txt") for properties in parish_special))
 
     def test_islands_never_have_inferential_values(self):
-        for feature in self.hotspots["features"]:
-            for result in (feature["properties"].get("hotspot_gi") or {}).values():
+        for record in self.hotspots["por_dpa"].values():
+            for result in (record.get("hotspot_gi") or {}).values():
                 if result.get("categoria") == "isla_sin_vecinos":
                     self.assertIsNone(result.get("z_score"))
                     self.assertIsNone(result.get("p_value"))

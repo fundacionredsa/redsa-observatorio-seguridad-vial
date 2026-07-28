@@ -84,10 +84,25 @@ def describe(path: str) -> tuple[str, str, str]:
 
 def main() -> None:
     records: dict[tuple[str, str], dict[str, Any]] = {}
-    for source in sorted(DATA_DIR.glob("*.geojson")):
+    sources = sorted(DATA_DIR.glob("*.geojson"))
+    hotspot_index = DATA_DIR / "hotspots_cantonales.json"
+    if hotspot_index.exists():
+        sources.append(hotspot_index)
+
+    for source in sources:
         data = json.loads(source.read_text(encoding="utf-8"))
-        for feature in data.get("features", []):
-            for field, value in flatten(feature.get("properties") or {}):
+        if source == hotspot_index:
+            properties_iterable = (
+                {"DPA_CANTON": dpa, **(properties or {})}
+                for dpa, properties in data.get("por_dpa", {}).items()
+            )
+        else:
+            properties_iterable = (
+                feature.get("properties") or {}
+                for feature in data.get("features", [])
+            )
+        for properties in properties_iterable:
+            for field, value in flatten(properties):
                 key = (source.name, field)
                 record = records.setdefault(
                     key,

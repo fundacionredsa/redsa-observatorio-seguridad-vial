@@ -847,58 +847,55 @@ cruces_ecuador.geojson,osm_id,integer,no,Identificador del objeto OpenStreetMap,
 cruces_ecuador.geojson,osm_type,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,node
 cruces_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 cruces_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
-hotspots_cantonales.geojson,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,0101
-hotspots_cantonales.geojson,DPA_DESCAN,string,no,Nombre de canton,texto,INEC/CONALI,CUENCA
-hotspots_cantonales.geojson,DPA_DESPRO,string,no,Nombre de provincia,texto,INEC/CONALI,AZUAY
-hotspots_cantonales.geojson,DPA_PROVIN,string,no,Codigo DPA provincial,codigo,INEC/CONALI,01
-hotspots_cantonales.geojson,hotspot_gi,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2019,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2019.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,sin_dato
-hotspots_cantonales.geojson,hotspot_gi.2019.p_value,null,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2019.z_score,null,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2021,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2021.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,hotspot_gi.2021.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.131
-hotspots_cantonales.geojson,hotspot_gi.2021.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.096291
-hotspots_cantonales.geojson,hotspot_gi.2022,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2022.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,hotspot_gi.2022.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.367
-hotspots_cantonales.geojson,hotspot_gi.2022.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.296796
-hotspots_cantonales.geojson,hotspot_gi.2023,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2023.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,hotspot_gi.2023.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.133
-hotspots_cantonales.geojson,hotspot_gi.2023.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.097739
-hotspots_cantonales.geojson,hotspot_gi.2024,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,hotspot_gi.2024.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,hotspot_gi.2024.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.17
-hotspots_cantonales.geojson,hotspot_gi.2024.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.507457
-hotspots_cantonales.geojson,local_moran,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2019,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2019.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,sin_dato
-hotspots_cantonales.geojson,local_moran.2019.i_local,null,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2019.p_value,null,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2021,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2021.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,local_moran.2021.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,-0.166984
-hotspots_cantonales.geojson,local_moran.2021.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.131
-hotspots_cantonales.geojson,local_moran.2022,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2022.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,local_moran.2022.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,-0.045759
-hotspots_cantonales.geojson,local_moran.2022.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.367
-hotspots_cantonales.geojson,local_moran.2023,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2023.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,local_moran.2023.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,-0.223586
-hotspots_cantonales.geojson,local_moran.2023.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.133
-hotspots_cantonales.geojson,local_moran.2024,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
-hotspots_cantonales.geojson,local_moran.2024.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
-hotspots_cantonales.geojson,local_moran.2024.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.206197
-hotspots_cantonales.geojson,local_moran.2024.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.17
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio,object,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2019,null,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2021,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,15.073
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2022,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,14.0391
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2023,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,15.7527
-hotspots_cantonales.geojson,tasa_fallecidos_100k_por_anio.2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,13.8777
+hotspots_cantonales.json,DPA_CANTON,string,no,Codigo DPA cantonal,codigo,INEC/CONALI,1001
+hotspots_cantonales.json,hotspot_gi,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2019,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2019.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,sin_dato
+hotspots_cantonales.json,hotspot_gi.2019.p_value,null,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2019.z_score,null,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2021,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2021.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,hotspot_gi.2021.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.161
+hotspots_cantonales.json,hotspot_gi.2021.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.522703
+hotspots_cantonales.json,hotspot_gi.2022,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2022.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,hotspot_gi.2022.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.268
+hotspots_cantonales.json,hotspot_gi.2022.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.500448
+hotspots_cantonales.json,hotspot_gi.2023,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2023.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,hotspot_gi.2023.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.339
+hotspots_cantonales.json,hotspot_gi.2023.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.33846
+hotspots_cantonales.json,hotspot_gi.2024,object,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,hotspot_gi.2024.categoria,string,no,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,hotspot_gi.2024.p_value,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,0.189
+hotspots_cantonales.json,hotspot_gi.2024.z_score,null/number,si,Resultado Getis-Ord Gi* por ano,estadistico/categoria,Derivado REDSA,-0.131293
+hotspots_cantonales.json,local_moran,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2019,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2019.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,sin_dato
+hotspots_cantonales.json,local_moran.2019.i_local,null,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2019.p_value,null,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2021,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2021.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,local_moran.2021.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.230442
+hotspots_cantonales.json,local_moran.2021.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.161
+hotspots_cantonales.json,local_moran.2022,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2022.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,local_moran.2022.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.173899
+hotspots_cantonales.json,local_moran.2022.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.268
+hotspots_cantonales.json,local_moran.2023,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2023.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,local_moran.2023.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.081871
+hotspots_cantonales.json,local_moran.2023.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.339
+hotspots_cantonales.json,local_moran.2024,object,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,
+hotspots_cantonales.json,local_moran.2024.categoria,string,no,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,no_significativo
+hotspots_cantonales.json,local_moran.2024.i_local,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,-0.187985
+hotspots_cantonales.json,local_moran.2024.p_value,null/number,si,Resultado Local Moran por ano,estadistico/categoria,Derivado REDSA,0.189
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio,object,no,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio.2019,null,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio.2021,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,11.7497
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio.2022,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,12.0781
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio.2023,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.8164
+hotspots_cantonales.json,tasa_fallecidos_100k_por_anio.2024,null/number,si,Tasa calculada; consultar metodologia para formula,tasa,Derivado REDSA,16.1994
 iluminacion_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
 iluminacion_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
 iluminacion_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"

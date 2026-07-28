@@ -148,7 +148,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(labelPosition.after).toBe(labelPosition.before);
         expect(labelPosition.scrollLeft).toBeGreaterThan(0);
 
-        const stylesBeforeYearChange = await page.evaluate(() => (
+        const stylesBeforeYearChange = await page.evaluate(() => Promise.all(
             ["01", "09", "17"].map(code => window.__redsaAudit.territoryStyle("province", code))
         ));
         const targetYear = yearBar.locator('button[data-year="2021"]');
@@ -157,7 +157,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('#map-year-slider')).toHaveValue('2021');
         expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2021);
         await expect(page.locator('.legend-panel')).toContainText('2021');
-        const stylesAfterYearChange = await page.evaluate(() => (
+        const stylesAfterYearChange = await page.evaluate(() => Promise.all(
             ["01", "09", "17"].map(code => window.__redsaAudit.territoryStyle("province", code))
         ));
         expect(stylesAfterYearChange).not.toEqual(stylesBeforeYearChange);

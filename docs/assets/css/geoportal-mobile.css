@@ -359,6 +359,31 @@
         padding: 12px;
     }
 
+    .catalog-content {
+        overflow: hidden;
+    }
+
+    .catalog-results {
+        min-height: 180px;
+        flex: 1 1 220px;
+        overflow-y: auto;
+        padding-right: 0;
+    }
+
+    .catalog-summary {
+        max-height: min(38dvh, 310px);
+        flex: 0 1 auto;
+        overflow-y: auto;
+    }
+
+    .catalog-crosscheck-table [role="row"] {
+        grid-template-columns: 74px minmax(0, 1fr);
+    }
+
+    .catalog-crosscheck-table [role="row"] b {
+        grid-column: 1 / -1;
+    }
+
     .ranking-heading {
         gap: 8px;
     }
@@ -534,7 +559,7 @@
 
     .legend-panel.mobile-legend-open {
         width: min(280px, calc(100vw - 20px));
-        max-height: min(52dvh, 360px);
+        max-height: var(--legend-max-height-mobile);
         overflow: hidden;
     }
 
@@ -546,7 +571,7 @@
 
     .legend-panel.mobile-legend-open .legend-content {
         display: block;
-        max-height: calc(min(52dvh, 360px) - 44px);
+        max-height: calc(var(--legend-max-height-mobile) - 44px);
         padding: 10px;
         overflow-x: hidden;
         overflow-y: auto;

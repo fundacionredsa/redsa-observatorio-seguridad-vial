@@ -145,12 +145,17 @@
         elements.searchStatus.textContent = "";
     }
 
-    function buildRanking() {
+    async function buildRanking() {
         if (!state.context) return;
         const elements = getElements();
         const selection = currentSelection();
         const config = state.context.variables?.[selection.selectedVariable];
-        const features = state.context.cantonFeatures || [];
+        let features = state.context.cantonFeatures || [];
+        if (!features.length && state.context.ensureCantonFeatures) {
+            elements.coverage.textContent = "Cargando datos cantonales para construir el ranking…";
+            features = await state.context.ensureCantonFeatures();
+            state.context.cantonFeatures = features;
+        }
         state.variable = selection.selectedVariable;
         state.year = Number(selection.selectedYear);
         state.periodMode = selection.selectedPeriodMode || "year";
@@ -341,5 +346,10 @@
         if (state.initialized && modal && !modal.hidden && state.activeTab === "ranking") buildRanking();
     }
 
-    window.REDSAInstitutional = Object.freeze({ init, open, close, refresh });
+    function setCantonFeatures(features) {
+        if (!state.context) return;
+        state.context.cantonFeatures = Array.isArray(features) ? features : [];
+    }
+
+    window.REDSAInstitutional = Object.freeze({ init, open, close, refresh, setCantonFeatures });
 })();

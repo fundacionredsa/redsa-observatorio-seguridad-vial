@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-28T12:01:54.085086+00:00",
+  "generated_at": "2026-07-28T14:10:32.388219+00:00",
   "status": "ok",
   "failures": [],
   "files": {
@@ -21,17 +21,17 @@
       "bytes": 10503308,
       "sha256": "c6d3ca5291e1358771c9dda366ec66eb583fb3f2bd88a259e1747e774af60107"
     },
-    "hotspots_cantonales.geojson": {
-      "features": 224,
-      "expected_features": 224,
-      "bytes": 5089005,
-      "sha256": "eae33128273d42f823c21660d9c3ad508d861999d7c7bfeb1ef781a25ed6fc2f"
-    },
     "vias_ecuador.geojson": {
       "features": 41040,
       "expected_features": 41040,
       "bytes": 28054348,
       "sha256": "59bc2d4bde6d6e9afbb0c462d86cac3228895d92b6765d553994345aa201ac60"
+    },
+    "hotspots_cantonales.json": {
+      "records": 224,
+      "expected_records": 224,
+      "bytes": 189988,
+      "sha256": "55d03da4dc9a22d535911c817a2c4fc0701f8d57ad89dedddc5fc26608491753"
     },
     "iluminacion_ecuador.geojson": {
       "features": 8191,

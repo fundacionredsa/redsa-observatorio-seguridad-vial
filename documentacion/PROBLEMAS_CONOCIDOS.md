@@ -41,9 +41,12 @@
     de disponibilidad/SRI o vendorizacion.
 14. GitHub Actions del Agente 1 puede competir con pushes humanos; conviene usar
     `concurrency` y PR automatizado en vez de push directo.
-15. La carga inicial solicita 13 GeoJSON y decodifica 48,86 MiB. La mediana local
-    queda bajo 3 s, pero una corrida movil supero 4 s; cargar capas tematicas bajo
-    demanda y separar geometria de series estadisticas tendria el mayor impacto.
+15. **MEJORADO, PENDIENTE DE SEGUIMIENTO REAL:** la carga inicial ya no duplica
+    geometria en `hotspots_cantonales` y carga solo provincias más un índice
+    cantonal mínimo. La geometría y las series cantonales se solicitan bajo
+    demanda al acercar el mapa, buscar, abrir el ranking o analizar un cantón.
+    TopoJSON y la separación adicional de geometría/estadísticas quedan
+    diferidos hasta evaluar esta ganancia aislada.
 16. En 390 px de ancho el sidebar ocupa casi todo el viewport inicial. Hace falta
     un modo movil colapsable que preserve acceso al mapa, selector y leyenda.
 17. **Cumplimiento REUSE parcial.** El pipeline ANT nuevo tiene SPDX,
@@ -57,3 +60,14 @@
     si se cargan varios anos simultaneamente o las metricas reales justifican
     la complejidad adicional. La prioridad inmediata es la carga inicial, que
     afecta a todas las visitas.
+19. **Brecha estructural para medir lesiones graves.** La auditoria de los
+    microdatos publicos de Egresos Hospitalarios del INEC para 2020, 2023 y
+    2024 no encontro codigos de causa externa CIE-10 V01-V89. El registro
+    publico conserva el diagnostico de egreso, pero no permite identificar de
+    forma reproducible cuales hospitalizaciones se originaron en siniestros de
+    transito. Por ello el Observatorio no publica hoy un indicador de
+    lesionados graves basado en egresos hospitalarios. La OMS recomienda
+    registrar conjuntamente la naturaleza de la lesion y su causa externa para
+    vigilancia de lesiones; queda pendiente consultar al INEC si prevé
+    incorporar esa codificacion al producto publico. Referencia:
+    [WHO, Injury surveillance guidelines](https://iris.who.int/handle/10665/42451).

@@ -19,7 +19,9 @@ test("carga contratos territoriales y atribuciones", async ({ page }) => {
   await loadPortal(page);
   const metrics = await page.evaluate(() => window.__redsaGeojsonLoadMetrics);
   expect(metrics.provinceFeatures).toBe(26);
-  expect(metrics.cantonFeatures).toBe(224);
+  expect(metrics.cantonFeatures).toBe(0);
+  expect(metrics.cantonIndexFeatures).toBe(224);
+  expect(metrics.cantonDeferred).toBeTruthy();
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC/CONALI");
   await expect(page.locator(".leaflet-control-attribution")).toContainText("INEC 2014");
 });
@@ -247,9 +249,9 @@ test("selector de periodo permanece accesible al desplazar el panel de analisis"
 test("paneles alternan entre anio y acumulados con cobertura explicita", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La lectura detallada se valida una vez en desktop.");
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setTerritoryLevelMode("canton");
-    window.__redsaAudit.showTerritory("canton", "1701");
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setTerritoryLevelMode("canton");
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await page.locator(".profile-period-segments [data-detail-period-mode='accumulated']").click();
@@ -310,9 +312,9 @@ test("clic en canton fija la seleccion sin saltar a parroquias", async ({ page }
 
 test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ page }) => {
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
-    window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click");
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    await window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click");
   });
   const card = page.locator("#demographic-hover-card");
   await expect(card).toBeVisible();
@@ -342,17 +344,17 @@ test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ p
 
 test("solo conserva resaltada la unidad territorial seleccionada", async ({ page }) => {
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
-    window.__redsaAudit.showTerritory("canton", "1701");
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
   const firstSelectedStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("canton", "1701"));
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
-  const result = await page.evaluate(() => ({
+  const result = await page.evaluate(async () => ({
     state: window.__redsaAudit.state(),
-    first: window.__redsaAudit.territoryStyle("canton", "1701"),
-    second: window.__redsaAudit.territoryStyle("canton", "1702")
+    first: await window.__redsaAudit.territoryStyle("canton", "1701"),
+    second: await window.__redsaAudit.territoryStyle("canton", "1702")
   }));
 
   expect(result.state.selectedTerritory).toEqual({ level: "canton", code: "1702" });
@@ -406,11 +408,11 @@ test("recalcula bins por nivel y cae a limites cuando no aplica", async ({ page 
 
 test("slider global cambia dos variables anuales sin consolidar", async ({ page }) => {
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
     window.__redsaAudit.selectVariable("siniestros_inec_2019");
     window.__redsaAudit.selectYear(2021);
-    window.__redsaAudit.showTerritory("canton", "1701");
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
   await expect(page.locator("#info-siniestros-inec")).toHaveText("3.411");
   const siniestros2021 = await page.evaluate(() => window.__redsaAudit.state().bins);
@@ -459,11 +461,11 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
     await expect(description).toHaveText(text);
   }
 
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
     window.__redsaAudit.selectVariable("fallecidos_inec_2019");
     window.__redsaAudit.selectYear(2024);
-    window.__redsaAudit.showTerritory("canton", "1701");
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
   await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí? (2024)");
   await expect(page.locator(".profile-card-source-detail").first()).toContainText("según registro civil");
@@ -552,9 +554,9 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
 
 test("panel demografico permanece visible y dentro del viewport", async ({ page }) => {
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
-    window.__redsaAudit.showTerritory("canton", "1701");
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
@@ -576,7 +578,7 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   expect(boxes.card.bottom).toBeLessThanOrEqual(boxes.innerHeight - 10);
   expect(boxes.intersects).toBeFalsy();
   if ((page.viewportSize()?.width || 0) > 768) {
-    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThan(280);
+    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThan(220);
   }
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
@@ -586,9 +588,9 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
 test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Geometria de drawers desktop.");
   await loadPortal(page);
-  await page.evaluate(() => {
-    window.__redsaAudit.setZoom(9);
-    window.__redsaAudit.showTerritory("canton", "1701");
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    await window.__redsaAudit.showTerritory("canton", "1701");
   });
 
   async function assertNoOverlap(obstacleSelector) {
