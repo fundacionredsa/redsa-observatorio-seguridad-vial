@@ -369,6 +369,7 @@
                         pane: "eventPane",
                         config: antEventConfig,
                         getYear: () => selectedYear,
+                        getPeriodMode: () => selectedPeriodMode,
                         setYear: year => setSelectedYearAndRefresh(year),
                         selectTerritoryBelow: selectTerritoryBelowInfrastructure,
                         onStateChange: () => updateLegend()
@@ -433,6 +434,7 @@
                     updateMapLevelNote(level);
                     updateLegend();
                     window.REDSAInstitutional?.refresh();
+                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
                 });
 
                 document.getElementById("map-year-slider").addEventListener("input", function() {
@@ -449,6 +451,7 @@
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncYear(selectedYear);
+                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
                 });
 
                 document.addEventListener("click", (e) => {

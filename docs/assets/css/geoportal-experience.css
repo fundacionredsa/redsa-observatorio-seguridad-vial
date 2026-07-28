@@ -1110,6 +1110,15 @@ body.technical-drawer-open .technical-drawer {
     margin: 0;
 }
 
+.event-layer-toggle.period-unavailable {
+    border-style: dashed;
+    opacity: 0.66;
+}
+
+.event-layer-toggle.period-unavailable > input {
+    cursor: not-allowed;
+}
+
 .event-layer-info {
     margin-left: auto;
     border: 0;

@@ -50,6 +50,7 @@
         initialized: false,
         active: false,
         mode: "heat",
+        periodMode: "year",
         year: null,
         loadedYear: null,
         status: "idle",
@@ -123,7 +124,11 @@
         if (Number(audit.invalidDate || 0) > 0) {
             details.push(`fecha no publicable: ${Number(audit.invalidDate).toLocaleString("es-EC")}`);
         }
-        return `${Number(audit.publishedLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} puntos publicados; ${details.join("; ")}.`;
+        return `${periodForYear(year)}: ${Number(audit.publishedLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} puntos publicados; ${details.join("; ")}.`;
+    }
+
+    function isAccumulatedMode() {
+        return state.periodMode === "accumulated";
     }
 
     function escapeHtml(value) {
@@ -217,10 +222,11 @@
         const statusNode = document.getElementById("ant-layer-status");
         if (statusNode) {
             const messages = {
-                idle: "Activa la capa para descargar únicamente el año seleccionado.",
+                idle: `Modo anual · ${periodForYear()}. Activa la capa para descargar únicamente este periodo.`,
                 loading: `Descargando y preparando ${state.year}…`,
                 ready: coverageText(),
                 unavailable: `Sin puntos para ${state.year}. Disponibles: ${availableYears().join(", ")}.`,
+                period_unavailable: "Esta capa se muestra solo por año; no está disponible en modo acumulado. Vuelve a “Año seleccionado” para activarla.",
                 error: "No se pudo cargar la capa. Intenta nuevamente.",
                 cancelled: "Carga cancelada al cambiar de año."
             };
@@ -233,14 +239,22 @@
     function syncControls() {
         const toggle = document.getElementById("ant-layer-toggle");
         const jumpButton = document.getElementById("ant-jump-year");
-        if (toggle) toggle.checked = state.active;
+        if (toggle) {
+            toggle.checked = state.active;
+            toggle.disabled = isAccumulatedMode();
+            toggle.setAttribute("aria-disabled", String(isAccumulatedMode()));
+            toggle.title = isAccumulatedMode()
+                ? "Disponible únicamente en modo Año seleccionado"
+                : "Mostrar los siniestros ANT del año seleccionado";
+        }
+        document.querySelector(".event-layer-toggle")?.classList.toggle("period-unavailable", isAccumulatedMode());
         const latestYear = Math.max(...availableYears());
-        if (jumpButton) jumpButton.hidden = !state.active || isYearAvailable() || state.year === latestYear;
+        if (jumpButton) jumpButton.hidden = isAccumulatedMode() || !state.active || isYearAvailable() || state.year === latestYear;
         document.querySelectorAll("[data-ant-mode]").forEach(button => {
             const active = button.dataset.antMode === state.mode;
             button.classList.toggle("active", active);
             button.setAttribute("aria-pressed", String(active));
-            button.disabled = !state.active || state.status !== "ready" || state.year !== state.loadedYear;
+            button.disabled = isAccumulatedMode() || !state.active || state.status !== "ready" || state.year !== state.loadedYear;
         });
     }
 
@@ -587,9 +601,11 @@
             return;
         }
         if (!state.active || state.status !== "ready" || state.year !== state.loadedYear || !state.worker) {
-            if (status) status.textContent = !isYearAvailable()
-                ? `Este análisis puntual está disponible en ${availableYears().join(", ")}.`
-                : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
+            if (status) status.textContent = isAccumulatedMode()
+                ? "El análisis de Siniestros (ANT) se muestra solo por año y no está disponible en modo acumulado."
+                : !isYearAvailable()
+                    ? `Este análisis puntual está disponible en ${availableYears().join(", ")}.`
+                    : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
             if (container) container.hidden = true;
             return;
         }
@@ -642,6 +658,14 @@
     }
 
     function setActive(active) {
+        if (active && isAccumulatedMode()) {
+            state.active = false;
+            removeCurrentLayer();
+            setStatus("period_unavailable");
+            syncControls();
+            document.getElementById("ant-mode-controls")?.toggleAttribute("hidden", true);
+            return;
+        }
         state.active = Boolean(active);
         if (!state.active) {
             cancelPending("cancelled");
@@ -678,6 +702,11 @@
 
     function syncYear(year) {
         state.year = Number(year);
+        if (isAccumulatedMode()) {
+            setStatus("period_unavailable");
+            syncControls();
+            return;
+        }
         if (!state.active) return;
         if (!isYearAvailable()) {
             cancelPending("cancelled");
@@ -697,6 +726,29 @@
         }
         syncControls();
         requestTerritorySummary();
+    }
+
+    function syncPeriodMode(mode) {
+        const nextMode = mode === "accumulated" ? "accumulated" : "year";
+        if (state.periodMode === nextMode) {
+            syncControls();
+            if (isAccumulatedMode()) setStatus("period_unavailable");
+            return;
+        }
+
+        state.periodMode = nextMode;
+        if (isAccumulatedMode()) {
+            cancelPending("cancelled");
+            state.active = false;
+            removeCurrentLayer();
+            setStatus("period_unavailable");
+            document.getElementById("ant-mode-controls")?.toggleAttribute("hidden", true);
+        } else {
+            setStatus("idle");
+        }
+        syncControls();
+        requestTerritorySummary();
+        window.REDSAOverlayState?.notify();
     }
 
     function legendEntry() {
@@ -737,6 +789,7 @@
         state.map = context.map;
         state.pane = context.pane || "eventPane";
         state.year = Number(context.getYear());
+        state.periodMode = context.getPeriodMode?.() === "accumulated" ? "accumulated" : "year";
         state.bandwidthProfile = HEAT_BANDWIDTH_PROFILES[context.config.heatBandwidthProfile]
             ? context.config.heatBandwidthProfile
             : "focused";
@@ -751,6 +804,7 @@
         state.map.on("mousemove", handleAntMapMouseMove);
         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
         setStatus("idle");
+        if (isAccumulatedMode()) setStatus("period_unavailable");
         syncControls();
     }
 
@@ -758,6 +812,7 @@
         return {
             active: state.active,
             mode: state.mode,
+            periodMode: state.periodMode,
             year: state.year,
             loadedYear: state.loadedYear,
             status: state.status,
@@ -773,6 +828,7 @@
     window.REDSAAntLayer = Object.freeze({
         init,
         syncYear,
+        syncPeriodMode,
         syncTerritory,
         setActive,
         setMode,

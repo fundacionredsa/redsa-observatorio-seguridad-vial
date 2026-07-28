@@ -510,6 +510,7 @@
                         : "Muestra únicamente el año marcado en la línea de tiempo.")
                     : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
             }
+            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
         }
 
         function getFatalitiesCoverageWarning(properties, year = selectedYear) {
@@ -585,6 +586,7 @@
             if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
             window.REDSAInstitutional?.refresh();
             window.REDSAAntLayer?.syncYear(selectedYear);
+            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
         }
 
         function advanceToNextTimelineYear() {

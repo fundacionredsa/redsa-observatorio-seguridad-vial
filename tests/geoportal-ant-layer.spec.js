@@ -131,6 +131,34 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
   expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe(before);
 });
 
+test("modo histórico desactiva Siniestros ANT sin dejar un año individual visible", async ({ page }, testInfo) => {
+  await waitForPortal(page);
+  await openTechnicalPanel(page, testInfo.project.name === "mobile");
+  await page.locator("#event-layer-disclosure summary").click();
+  await page.locator("#ant-layer-toggle").check();
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
+
+  await page.locator("[data-period-mode='accumulated']").click();
+  await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#ant-layer-toggle")).toBeDisabled();
+  await expect(page.locator("#ant-layer-toggle")).not.toBeChecked();
+  await expect(page.locator("#ant-layer-status")).toContainText("solo por año");
+  await expect(page.locator("#ant-layer-status")).toContainText("no está disponible en modo acumulado");
+
+  let state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  expect(state.periodMode).toBe("accumulated");
+  expect(state.active).toBe(false);
+  expect(state.status).toBe("period_unavailable");
+  expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
+
+  await page.locator("[data-period-mode='year']").click();
+  await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
+  await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");
+  state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  expect(state.periodMode).toBe("year");
+  expect(state.active).toBe(false);
+});
+
 test("el análisis territorial ANT usa el punto seleccionado y lenguaje metodológico", async ({ page }, testInfo) => {
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
