@@ -116,6 +116,7 @@
         map.getPane("infraestructuraPane").style.zIndex = "450";
         map.createPane("eventPane");
         map.getPane("eventPane").style.zIndex = "460";
+        map.getPane("eventPane").style.pointerEvents = "none";
 
         // Reposicionar el control de Zoom
         L.control.zoom({
@@ -347,15 +348,6 @@
 
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
-        openAnalysisButton?.addEventListener("click", () => {
-            if (mobileMediaQuery.matches) {
-                setMobilePanel("citizen", false);
-                setMobilePanel("sidebar", true);
-            } else {
-                const sidebar = document.getElementById("territory-sidebar");
-                sidebar?.scrollIntoView({ behavior: "smooth" });
-            }
-        });
         mobileSidebarToggle?.addEventListener("click", () => {
             setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
         });
@@ -714,6 +706,15 @@
             return "canton";
         }
 
+        function formatTooltipValue(val) {
+            if (val === null || val === undefined || !Number.isFinite(Number(val))) return "Sin dato";
+            const num = Number(val);
+            if (Number.isInteger(num)) {
+                return num.toLocaleString("es-EC");
+            }
+            return num.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        }
+
         function getTerritoryTooltipContent(feature, level) {
             const props = feature?.properties || {};
             const names = {
@@ -721,18 +722,34 @@
                 canton: props.DPA_DESCAN,
                 parish: props.DPA_DESPAR
             };
-            const config = VARIABLE_CONFIGS[getEffectiveVariable(level)] || VARIABLE_CONFIGS.normal;
-            const value = getVariableValue(props, getEffectiveVariable(level), selectedYear);
-            const valueText = getEffectiveVariable(level) === "normal"
+            const name = names[level] || "Unidad territorial";
+
+            const popRaw = props.poblacion_por_anio?.[String(selectedYear)];
+            const popText = (popRaw !== null && popRaw !== undefined && Number.isFinite(Number(popRaw)))
+                ? formatTooltipValue(popRaw)
+                : "Sin dato";
+
+            const sinRaw = props.siniestros_historico?.[String(selectedYear)]
+                ?? props.fallecidos_por_anio?.[String(selectedYear)]
+                ?? props.fallecidos_historico?.[String(selectedYear)]
+                ?? props.fallecidos_parroquial?.[String(selectedYear)];
+            const sinText = (sinRaw !== null && sinRaw !== undefined && Number.isFinite(Number(sinRaw)))
+                ? formatTooltipValue(sinRaw)
+                : "Sin dato";
+
+            const effectiveVar = getEffectiveVariable(level);
+            const config = VARIABLE_CONFIGS[effectiveVar] || VARIABLE_CONFIGS.normal;
+            const value = getVariableValue(props, effectiveVar, selectedYear);
+            const valueText = effectiveVar === "normal"
                 ? "Límite administrativo"
-                : `${config.label}: ${value === null || value === undefined ? "Sin dato" : formatNumber(value)}`;
+                : `${config.label}: ${value === null || value === undefined ? "Sin dato" : formatTooltipValue(value)}`;
             const coverageWarning = selectedVariable === "fallecidos_parroquial"
                 ? getFatalitiesCoverageWarning(props, selectedYear)
                 : "";
             const warningHtml = coverageWarning
                 ? `<br><span class="u-text-warning">${coverageWarning}</span>`
                 : "";
-            return `<strong>${names[level] || "Unidad territorial"}</strong><br>${valueText}${warningHtml}`;
+            return `<strong>${name}</strong><br>Población (${selectedYear}): ${popText}<br>Siniestros (${selectedYear}): ${sinText}<br>${valueText}${warningHtml}`;
         }
 
         function getEffectiveVariable(level = activeTerritoryLevel) {

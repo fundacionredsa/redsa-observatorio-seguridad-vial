@@ -162,6 +162,51 @@
         return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
     }
 
+    function disablePanePointerEvents() {
+        const pane = state.map?.getPane(state.pane);
+        if (pane) {
+            pane.style.pointerEvents = "none";
+            pane.querySelectorAll("canvas, div, svg").forEach(el => {
+                el.style.pointerEvents = "none";
+            });
+        }
+    }
+
+    function findAntMarkerAtLatLng(latlng) {
+        if (!state.active || !state.layer || state.mode === "heat" || !state.map || !latlng) return null;
+        const point = state.map.latLngToLayerPoint(latlng);
+        let found = null;
+        if (typeof state.layer.eachLayer === "function") {
+            state.layer.eachLayer(marker => {
+                if (!found && typeof marker._containsPoint === "function" && marker._containsPoint(point)) {
+                    found = marker;
+                }
+            });
+        }
+        return found;
+    }
+
+    function handleAntMapClick(e) {
+        if (!state.active || state.status !== "ready") return;
+        const marker = findAntMarkerAtLatLng(e.latlng);
+        if (marker) {
+            if (typeof marker.fire === "function") {
+                marker.fire("click", e);
+            }
+            if (e.originalEvent) {
+                L.DomEvent.stopPropagation(e.originalEvent);
+            }
+        }
+    }
+
+    function handleAntMapMouseMove(e) {
+        if (!state.active || state.status !== "ready") return;
+        const marker = findAntMarkerAtLatLng(e.latlng);
+        if (marker) {
+            state.map.getContainer().style.cursor = "pointer";
+        }
+    }
+
     function removeCurrentLayer() {
         if (state.layer && state.map.hasLayer(state.layer)) state.map.removeLayer(state.layer);
         state.layer = null;
@@ -310,6 +355,7 @@
             gradient: HEAT_GRADIENT
         }).addTo(state.map);
         state.layer.getPane?.()?.classList.add("ant-events-pane");
+        disablePanePointerEvents();
         state.renderMetrics.heat = {
             renderMs: performance.now() - started,
             zoom,
@@ -368,6 +414,8 @@
         removeCurrentLayer();
         const renderer = L.canvas({ padding: 0.5, pane: state.pane });
         state.layer = L.layerGroup(message.clusters.map(feature => clusterMarker(feature, renderer))).addTo(state.map);
+        disablePanePointerEvents();
+        if (renderer._container) renderer._container.style.pointerEvents = "none";
         state.renderMetrics.clusters = {
             renderMs: performance.now() - started,
             queryMs: message.queryMs,
@@ -460,6 +508,8 @@
             ));
         }));
         state.layer = L.layerGroup(markers).addTo(state.map);
+        disablePanePointerEvents();
+        if (renderer._container) renderer._container.style.pointerEvents = "none";
         state.renderMetrics.cases = {
             renderMs: performance.now() - started,
             queryMs: message.queryMs,
@@ -697,6 +747,8 @@
         });
         document.getElementById("ant-jump-year")?.addEventListener("click", () => context.setYear(Math.max(...availableYears())));
         state.map.on("moveend zoomend", scheduleViewportRender);
+        state.map.on("click", handleAntMapClick);
+        state.map.on("mousemove", handleAntMapMouseMove);
         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
         setStatus("idle");
         syncControls();

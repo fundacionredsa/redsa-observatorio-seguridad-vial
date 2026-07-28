@@ -124,7 +124,13 @@
                     provinceFeatures: provinceData.features,
                     cantonFeatures: cantonIndexFeatures,
                     selectCanton: code => selectCantonByCode(code, true),
-                    openAnalysis: () => setMobilePanel("sidebar", true),
+                    openAnalysis: () => {
+                        setMobilePanel("citizen", false);
+                        setMobilePanel("sidebar", true);
+                        if (!mobileMediaQuery.matches) {
+                            document.getElementById("territory-sidebar")?.scrollIntoView({ behavior: "smooth" });
+                        }
+                    },
                     getSelectedYear: () => selectedYear
                 });
                 window.REDSAInstitutional?.init({

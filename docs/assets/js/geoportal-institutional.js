@@ -325,11 +325,12 @@
             close,
             setTab,
             state() {
+                const selection = currentSelection();
                 return {
                     activeTab: state.activeTab,
-                    variable: state.variable,
-                    year: state.year,
-                    totalCount: state.totalCount,
+                    variable: state.variable || selection.selectedVariable,
+                    year: state.year || Number(selection.selectedYear),
+                    totalCount: state.totalCount || state.context?.cantonFeatures?.length || 0,
                     validCount: state.rows.length,
                     excludedCount: state.excludedCount,
                     sortKey: state.sortKey,
