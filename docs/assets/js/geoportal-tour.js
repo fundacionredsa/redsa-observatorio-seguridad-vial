@@ -35,6 +35,14 @@
 
         };
 
+        const prepareAntLayerForTour = () => {
+            if (isMobile && typeof window.setMobilePanel === "function") {
+                window.setMobilePanel("layers", true);
+            }
+            const disclosure = document.getElementById("event-layer-disclosure");
+            if (disclosure) disclosure.open = true;
+        };
+
         const driverObj = window.driver.js.driver({
             showProgress: true,
             allowClose: true,
@@ -101,6 +109,16 @@
                     popover: {
                         title: 'Capas de infraestructura y mapas base',
                         description: 'En el mismo panel puedes desplegar “Infraestructura vial” y activar varias capas a la vez. El control de capas del mapa permite escoger el mapa base.',
+                        side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#event-layer-disclosure',
+                    onHighlightStarted: prepareAntLayerForTour,
+                    popover: {
+                        title: 'Siniestros en el lugar donde ocurrieron',
+                        description: 'Activa “Siniestros (ANT)” para ver los mismos eventos de la estadística territorial como concentración, agrupaciones o casos. La cobertura de ubicaciones válidas siempre queda visible.',
                         side: "left",
                         align: 'start'
                     }

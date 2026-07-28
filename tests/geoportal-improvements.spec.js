@@ -79,13 +79,14 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 9,
+                stepCount: 10,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
             });
             expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
             expect(tourAudit.titles).toContain('Ficha PDF del territorio');
+            expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
@@ -125,6 +126,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '#open-analysis-button',
                 '#mobile-layers-toggle',
                 '#mobile-layers-toggle',
+                '#event-layer-disclosure',
                 '.legend-panel',
                 '#btn-catalog',
                 '#citizen-panel',
@@ -187,7 +189,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             // Wait for fetch to complete and render
             const results = modal.locator('#catalog-results > article');
-            await expect(results).toHaveCount(10, { timeout: 10000 });
+            await expect(results).toHaveCount(11, { timeout: 10000 });
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             // Excel plus GeoJSON provincial, cantonal and parroquial.
@@ -201,7 +203,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(modal).toContainText('Red de vías principales y secundarias');
             await expect(modal.locator('.catalog-category')).toHaveText(['Otras variables']);
             await modal.locator('#catalog-search').fill('');
-            await expect(results).toHaveCount(10);
+            await expect(results).toHaveCount(11);
 
             const geojsonDownload = page.waitForEvent('download');
             await results.first().locator('button.catalog-download').first().click();

@@ -619,6 +619,24 @@
             line-height: 1.25;
         }
 
+        .map-level-note-action {
+            min-height: 32px;
+            margin: 6px 0 0;
+            padding: 5px 9px;
+            border: 1px solid currentColor;
+            border-radius: 4px;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .map-level-note-action:focus-visible {
+            outline: 3px solid #38bdf8;
+            outline-offset: 2px;
+        }
+
         .timeline-control {
             margin-top: 9px;
             padding-top: 8px;

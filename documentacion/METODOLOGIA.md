@@ -66,6 +66,65 @@ los conteos territoriales principales de siniestros, lesionados y fallecidos
 por provincia, canton o parroquia: son cifras oficiales publicas y su
 supresion romperia la lectura territorial sin aportar proteccion adicional.
 
+### Capa puntual ANT 2024-2026
+
+Cada ano se publica y descarga por separado. En 2024 hay 21.213 eventos con
+ubicacion valida de 21.220; en 2025, 20.156 de 20.346; y en el corte parcial
+enero-junio de 2026, 10.748 de 10.752. Los eventos sin ubicacion publicable no
+se dibujan, pero permanecen en los agregados territoriales cuando su DPA es
+valido. El archivo del ano seleccionado se descarga de forma diferida solo al
+activar `Siniestros (ANT)`; el arranque normal del geoportal no solicita
+ninguno de los tres.
+
+La capa conserva exclusivamente mes, dia de semana, franja horaria, DPA, zona,
+tipo de siniestro, causa probable registrada, lesionados, fallecidos en sitio,
+tipos de vehiculo y estado de calidad de la coordenada. No publica placas,
+participantes individuales, direccion textual ni fecha exacta. Las coordenadas
+se redondean a cinco decimales.
+
+Un unico GeoJSON alimenta tres representaciones manuales:
+
+- calor, como patron visual de concentracion;
+- agrupaciones construidas con Supercluster;
+- casos individuales, con separacion radial cuando varias filas comparten
+  coordenada.
+
+El calor usa una paleta perceptualmente uniforme distinta de las coropletas y
+el perfil `focused`, seleccionado tras una prueba de sensibilidad nacional,
+cantonal y urbana. Sus anchos de banda son 18 km hasta zoom 6, 5,5 km hasta
+zoom 9, 1,5 km hasta zoom 12, 450 m hasta zoom 15 y 180 m en acercamientos
+mayores. La escala es adaptativa al ano: mejora la lectura interna, pero sus
+colores no son comparables entre anos. El calor no mide riesgo individual,
+calidad de la via ni exposicion al transito.
+
+GitHub Pages fue verificado con `Accept-Encoding: br,gzip` y entrega los
+GeoJSON con gzip, no Brotli. La migracion a PMTiles fue evaluada y diferida:
+el costo medido de 2,889 s corresponde a una capa opcional bajo una red
+sintetica de 1,6 Mbps, mientras la carga inicial del portal tiene un impacto
+considerablemente mayor y se prioriza para una auditoria separada.
+
+El panel territorial muestra distribuciones de una sola caracteristica. La
+expresion `causa probable registrada` conserva la atribucion administrativa de
+ANT y no establece responsabilidad. Cualquier cruce futuro de multiples
+atributos aplica el umbral SDC de 5.
+
+### Control cruzado ANT-INEC/ESTRA
+
+Tres cortes independientes coincidieron exactamente entre el registro
+administrativo ANT y su publicacion estadistica INEC/ESTRA:
+
+| Corte | Siniestros | Lesionados | Fallecidos en sitio | Diferencia |
+|---|---:|---:|---:|---:|
+| 2024 anual | 21.220 | 18.312 | 2.302 | 0 |
+| 2025, suma I-IV | 20.346 | 17.932 | 2.354 | 0 |
+| 2026-I | 4.789 | 4.032 | 603 | 0 |
+
+Este control demuestra consistencia entre ambas etapas de la misma cadena
+estadistica. No vuelve intercambiables estos resultados con EDG: ANT/ESTRA
+registra fallecidos en sitio, mientras EDG cuenta defunciones inscritas por
+causas CIE-10 V01-V89. Ninguna de estas tasas se presenta como el indicador
+oficial ODS 3.6.1.
+
 ## Fallecidos EDG y CIE-10
 
 Se toma el tallo de tres caracteres de `CAUSA` o `CAUSA4`. La expresion valida

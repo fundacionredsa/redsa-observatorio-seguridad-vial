@@ -24,12 +24,14 @@
             <strong>En esta página</strong>
             <a href="#principios">Principios</a>
             <a href="#fuentes">Fuentes oficiales</a>
+            <a href="#control-cruzado">Control cruzado</a>
             <a href="#mortalidad">Mortalidad</a>
             <a href="#vehiculos">Vehículos y tasas</a>
             <a href="#zonas-calientes">Zonas calientes</a>
             <a href="#cobertura-temporal">Cobertura temporal</a>
             <a href="#openstreetmap">OpenStreetMap</a>
             <a href="#vias-osm">Vías OSM</a>
+            <a href="#siniestros-ant-puntos">Siniestros en el mapa</a>
             <a href="#descargas">Descargas auditables</a>
         </nav>
         <main>
@@ -61,6 +63,18 @@
                 <p>La serie territorial cubre 2017–2025 como años completos. El corte 2026 es provisional y corresponde únicamente a enero–junio; su comparación válida es enero–junio de 2025, no el total anual.</p>
                 <aside class="warning"><strong>Zonas en estudio:</strong> entre 2021 y 2024, 72 registros se conservan en el total nacional, pero no se asignan a un cantón sin evidencia inequívoca. No se muestran como cero ni se reparten especulativamente.</aside>
                 <p>El umbral de control de divulgación de 5 se aplica a cruces de múltiples atributos. No se aplica a los conteos territoriales principales, que ya son cifras oficiales públicas.</p>
+            </section>
+
+            <section id="control-cruzado">
+                <p class="eyebrow">Verificación independiente</p>
+                <h2>Control cruzado ANT–INEC/ESTRA</h2>
+                <p>REDSA comparó el registro administrativo de la Agencia Nacional de Tránsito (ANT) con las publicaciones estadísticas de INEC/ESTRA. En los tres cortes comparables, las cifras coinciden exactamente en siniestros, personas lesionadas y fallecidos en sitio. La diferencia observada fue cero en las nueve comparaciones.</p>
+                <div class="source-table crosscheck-table" role="table" aria-label="Resultados del control cruzado ANT e INEC ESTRA">
+                    <div role="row"><strong role="cell">2024 anual</strong><span role="cell">21.220 siniestros · 18.312 lesionados · 2.302 fallecidos en sitio · diferencia 0</span><a role="cell" href="https://www.ecuadorencifras.gob.ec/transporte/">INEC/ESTRA</a></div>
+                    <div role="row"><strong role="cell">2025 I–IV</strong><span role="cell">20.346 siniestros · 17.932 lesionados · 2.354 fallecidos en sitio · diferencia 0</span><a role="cell" href="https://www.ecuadorencifras.gob.ec/siniestros-de-transito-iv-trimestre-2025/">INEC IV-2025</a></div>
+                    <div role="row"><strong role="cell">2026-I</strong><span role="cell">4.789 siniestros · 4.032 lesionados · 603 fallecidos en sitio · diferencia 0</span><a role="cell" href="https://www.ecuadorencifras.gob.ec/siniestros-transito-trimestral/">INEC trimestral</a></div>
+                </div>
+                <aside class="warning"><strong>No son cifras intercambiables con EDG.</strong> ANT/ESTRA registra fallecidos en el sitio del siniestro. EDG contabiliza defunciones inscritas en el Registro Civil con causas CIE-10 V01–V89 y puede incorporar muertes posteriores. La coincidencia demuestra consistencia de la cadena ANT–INEC/ESTRA, no equivalencia con la medición de mortalidad de EDG.</aside>
             </section>
 
             <section id="mortalidad">
@@ -102,6 +116,14 @@
                 <div class="callout"><strong>Prueba de completitud:</strong> OSM suma 11.897,384 km de vías principales frente a 9.858,600 km de Red Vial Estatal MTOP 2024 (120,68%). El valor superior a 100% no significa que OSM replique de más la red estatal: ambas clasificaciones miden universos distintos. La comparación sirve únicamente como control orientativo de magnitud.</div>
                 <p>Las capas muestran geometrías mapeadas de OpenStreetMap. No miden tráfico, estado, seguridad ni pertenencia jurídica a la Red Vial Estatal. La ausencia de una vía tampoco demuestra que no exista físicamente.</p>
                 <p><a href="https://www.openstreetmap.org/copyright/es">OpenStreetMap contributors, licencia ODbL</a> · corte: 22 de julio de 2026.</p>
+            </section>
+
+            <section id="siniestros-ant-puntos">
+                <p class="eyebrow">Ubicación de eventos</p>
+                <h2>Siniestros (ANT) en el mapa</h2>
+                <p>Las capas puntuales 2024–2026 representan los mismos siniestros de la serie territorial en el lugar donde ocurrieron. No son una fuente adicional y sus valores no deben sumarse a la coropleta. Tienen ubicación válida publicable 21.213 de 21.220 eventos en 2024, 20.156 de 20.346 en 2025 y 10.748 de 10.752 en el corte parcial enero–junio de 2026. Los restantes permanecen contabilizados en los agregados territoriales cuando su DPA es válido.</p>
+                <p>El derivado público conserva mes, día de semana, franja horaria, tipo de siniestro, causa probable registrada por la entidad de control, personas lesionadas, fallecidos en sitio, vehículos involucrados y calidad de coordenada. Excluye placas, participantes individuales, dirección textual y fecha exacta.</p>
+                <aside class="warning"><strong>Interpretación del calor:</strong> muestra concentración de registros, no riesgo individual, calidad de la vía ni exposición al tránsito. La escala cromática es adaptativa al año y no permite comparar colores entre años. El perfil Enfocado, elegido mediante pruebas de sensibilidad a escalas nacional, cantonal y urbana, usa anchos de banda dependientes del zoom.</aside>
             </section>
 
             <section id="descargas">

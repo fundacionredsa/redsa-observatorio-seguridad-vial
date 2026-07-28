@@ -356,6 +356,59 @@
         }
     ];
 
+    const eventLayers = [
+        {
+            id: "siniestros_ant",
+            label: "Siniestros (ANT)",
+            urlByYear: {
+                "2024": "data/siniestros_ant_2024.geojson",
+                "2025": "data/siniestros_ant_2025.geojson",
+                "2026": "data/siniestros_ant_2026.geojson"
+            },
+            temporal: {
+                tipo: "anual",
+                anios_disponibles: [2024, 2025, 2026],
+                etiquetas_periodo: {
+                    "2024": "2024 · año completo",
+                    "2025": "2025 · año completo",
+                    "2026": "2026 · parcial enero-junio"
+                },
+                fechas_corte: {
+                    "2024": "2024-12-31",
+                    "2025": "2025-12-31",
+                    "2026": "2026-06-30"
+                }
+            },
+            auditByYear: {
+                "2024": { totalEvents: 21220, validLocations: 21213, periodLabel: "año completo" },
+                "2025": { totalEvents: 20346, validLocations: 20156, periodLabel: "año completo" },
+                "2026": { totalEvents: 10752, validLocations: 10748, periodLabel: "parcial enero-junio" }
+            },
+            heatBandwidthProfile: "focused",
+            description: "Los mismos siniestros de la variable territorial, ubicados en el punto donde ocurrieron. No constituyen otra fuente ni deben sumarse a la coropleta.",
+            catalogEntry: {
+                id: "siniestros_ant_puntos",
+                label: "Siniestros (ANT) · ubicaciones 2024-2026",
+                description: "Derivados públicos sanitizados de siniestros registrados por ANT. Publican mes, día de semana, franja horaria, atributos del evento y coordenadas con precisión limitada; excluyen placas, participantes, dirección textual y fecha exacta. El corte 2026 es parcial enero-junio.",
+                fuente: "Agencia Nacional de Tránsito (ANT)",
+                unidad: "siniestros con ubicación válida",
+                metodologia: "Último corte acumulativo disponible de cada año, deduplicación por clave compuesta, normalización DPA y cuarentena de coordenadas no demostrables. Ubicaciones publicables: 21.213 de 21.220 en 2024; 20.156 de 20.346 en 2025; 10.748 de 10.752 en enero-junio de 2026.",
+                licencia: "Derivado REDSA CC BY 4.0; fuente ANT bajo condiciones originales sin licencia explícita identificada",
+                anios_disponibles: [2024, 2025, 2026],
+                referencias: [
+                    { label: "ANT · Visor de siniestralidad y estadísticas", url: "https://www.ant.gob.ec/visor-de-siniestralidad-estadisticas/" },
+                    { label: "INEC · Siniestros de tránsito IV trimestre 2025", url: "https://www.ecuadorencifras.gob.ec/siniestros-de-transito-iv-trimestre-2025/" },
+                    { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#siniestros-ant-puntos" }
+                ],
+                downloads: [
+                    { formato: "GeoJSON", etiqueta: "Ubicaciones sanitizadas 2024", url: "data/siniestros_ant_2024.geojson" },
+                    { formato: "GeoJSON", etiqueta: "Ubicaciones sanitizadas 2025", url: "data/siniestros_ant_2025.geojson" },
+                    { formato: "GeoJSON", etiqueta: "Ubicaciones sanitizadas 2026 (enero-junio)", url: "data/siniestros_ant_2026.geojson" }
+                ]
+            }
+        }
+    ];
+
     window.REDSA_GEO_CONFIG = Object.freeze({
         initialView: Object.freeze({
             bounds: [[-5.05, -81.2], [1.65, -75.1]],
@@ -365,6 +418,7 @@
             year: 2025
         }),
         variables: Object.freeze(variables),
-        infrastructureLayers: Object.freeze(infrastructureLayers)
+        infrastructureLayers: Object.freeze(infrastructureLayers),
+        eventLayers: Object.freeze(eventLayers)
     });
 })();

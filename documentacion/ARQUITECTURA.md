@@ -8,6 +8,7 @@ flowchart LR
     CONALI[CONALI / limites cantonales]
     INECP[INEC / limites parroquiales 2014]
     SIN[ANT / INEC-ESTRA siniestros 2017-2025 y 2026 parcial]
+    ANTP[ANT / ubicaciones sanitizadas 2024-2026]
     EDG[INEC EDG 2020-2024]
     POP[INEC poblacion 2010-2035]
     VEH[INEC ESTRA vehiculos 2024]
@@ -39,9 +40,12 @@ flowchart LR
     TERR[geoportal-territories.js / niveles]
     PAN[geoportal-panels.js / paneles]
     APP[geoportal-app.js / inicializacion]
+    ANTW[ant-layer-worker.js / descarga, parseo e indice]
+    ANTL[geoportal-ant-layer.js / calor, clusters y casos]
   end
   CONALI --> BASE --> CANT
   SIN --> BASE
+  ANTP --> ANTW --> ANTL --> WEB
   EDG --> BASE
   POP --> BASE
   SPPAT --> BASE
@@ -86,6 +90,10 @@ flowchart LR
   la frontera hacia el repositorio publico.
 - GitHub Pages sirve archivos estaticos. No hay backend, base de datos ni
   autenticacion en el geoportal actual.
+- La capa puntual ANT es estrictamente diferida: el navegador crea un Web
+  Worker al activarla, descarga un solo ano, analiza el GeoJSON y construye el
+  indice Supercluster fuera del hilo principal. La cache se limita a un ano y
+  una carga pendiente se cancela al cambiar el periodo global.
 
 ## Arquitectura frontend
 

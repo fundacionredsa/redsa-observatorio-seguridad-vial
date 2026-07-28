@@ -277,7 +277,9 @@ function onEachProvinceFeature(feature, layer) {
                     for (let i = 0; bins.length && i <= bins.length; i++) {
                         let label = "";
                         if (i === 0) {
-                            label = `<= ${formatFunc(displayBins[0])}`;
+                            label = config.zeroIsData && Number(displayBins[0]) === 0
+                                ? "0"
+                                : `<= ${formatFunc(displayBins[0])}`;
                         } else if (i === bins.length) {
                             label = `> ${formatFunc(displayBins[displayBins.length - 1])}`;
                         } else {
@@ -335,12 +337,18 @@ function onEachProvinceFeature(feature, layer) {
             }
 
             let hasActiveOsmLayer = false;
-            INFRASTRUCTURE_LAYER_CONFIGS.forEach(config => {
-                const layer = overlayMaps[config.label];
-                if (!layer || !map.hasLayer(layer)) return;
+            const overlayLegendEntries = window.REDSAOverlayState?.getLegendEntries?.() || [];
+            overlayLegendEntries.forEach(entry => {
                 hasItems = true;
-                hasActiveOsmLayer = hasActiveOsmLayer || Boolean(config.osmAudit);
-                const legendItems = (config.legend || []).map(item => {
+                hasActiveOsmLayer = hasActiveOsmLayer || Boolean(entry.osmAudit);
+                const legendItems = (entry.items || []).map(item => {
+                    if (item.shape === "gradient") {
+                        return `
+                            <div class="legend-item legend-gradient-item">
+                                <span class="legend-gradient" style="background:linear-gradient(90deg, ${(item.colors || []).join(",")});"></span>
+                                <span>${item.label}</span>
+                            </div>`;
+                    }
                     const shapeClass = item.shape === "circle" ? "legend-color-circle" : "legend-color-line";
                     return `
                         <div class="legend-item" style="padding-left:8px;">
@@ -348,9 +356,18 @@ function onEachProvinceFeature(feature, layer) {
                             <span>${item.label}</span>
                         </div>`;
                 }).join("");
+                const audit = entry.audit
+                    ? `<div class="legend-data-audit"><strong>${Number(entry.audit.valid).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} eventos con ubicación válida</strong></div>`
+                    : "";
+                const notes = (entry.notes || []).map(note => `<span>${note}</span>`).join("");
+                const noteBlock = notes ? `<div class="legend-overlay-notes" role="note">${notes}</div>` : "";
+                const loading = entry.status === "loading"
+                    ? `<div class="legend-overlay-status" role="status">Preparando la capa…</div>`
+                    : "";
                 container.innerHTML += `
-                    <div class="legend-item" style="font-weight:600;margin-top:4px;color:var(--text-primary);font-size:.75rem;text-transform:uppercase;">${config.label}</div>
-                    ${legendItems}`;
+                    <div class="legend-item legend-overlay-title">${entry.title}</div>
+                    ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
+                    ${legendItems}${audit}${loading}${noteBlock}`;
             });
 
             if (hasActiveOsmLayer) {
@@ -367,6 +384,7 @@ function onEachProvinceFeature(feature, layer) {
         // Registrar listeners para actualización de leyenda
         map.on('overlayadd', updateLegend);
         map.on('overlayremove', updateLegend);
+        window.REDSAOverlayState?.subscribe(updateLegend);
 
         function updateMapLevelNote(level = activeTerritoryLevel) {
             const note = document.getElementById("map-level-note");
@@ -378,13 +396,24 @@ function onEachProvinceFeature(feature, layer) {
                 note.textContent = `"${requestedConfig.label}" no está disponible en ${LEVEL_LABELS[level]}; se muestran solo límites.`;
                 note.style.display = "block";
             } else if (selectedPeriodMode !== "accumulated" && coverage?.tipo === "anual" && !coverage.anios_disponibles.includes(selectedYear)) {
-                note.textContent = `Sin cobertura de "${requestedConfig.label}" en ${selectedYear}; se muestra sin dato, sin sustituir otro año.`;
+                const latestYear = Math.max(...coverage.anios_disponibles.map(Number).filter(Number.isFinite));
+                note.innerHTML = `
+                    <span>Sin datos de "${requestedConfig.label}" en ${selectedYear}. Esta variable llega hasta ${latestYear}.</span>
+                    <button type="button" class="map-level-note-action" data-jump-latest-year="${latestYear}" aria-label="Mostrar ${latestYear}, último año disponible para ${requestedConfig.label}">Ver ${latestYear}</button>
+                `;
                 note.style.display = "block";
             } else {
-                note.textContent = "";
+                note.replaceChildren();
                 note.style.display = "none";
             }
         }
+
+        document.addEventListener("click", event => {
+            const jumpButton = event.target.closest("[data-jump-latest-year]");
+            if (!jumpButton) return;
+            const targetYear = Number(jumpButton.dataset.jumpLatestYear);
+            if (Number.isFinite(targetYear)) setSelectedYearAndRefresh(targetYear);
+        });
 
         function updateTerritoryLevelControl() {
             const status = document.getElementById("territory-level-status");

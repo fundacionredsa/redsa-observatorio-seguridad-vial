@@ -495,6 +495,58 @@
           }
         ]
       }
+    },
+    {
+      "id": "siniestros_ant_puntos",
+      "label": "Siniestros (ANT) · ubicaciones 2024-2026",
+      "categoria": "Siniestralidad",
+      "fuente": "Agencia Nacional de Tránsito (ANT)",
+      "descripcion": "Derivados públicos sanitizados de siniestros registrados por ANT. Publican mes, día de semana, franja horaria, atributos del evento y coordenadas con precisión limitada; excluyen placas, participantes, dirección textual y fecha exacta. El corte 2026 es parcial enero-junio.",
+      "unidad": "siniestros con ubicación válida",
+      "metodologia": "Último corte acumulativo disponible de cada año, deduplicación por clave compuesta, normalización DPA y cuarentena de coordenadas no demostrables. Ubicaciones publicables: 21.213 de 21.220 en 2024; 20.156 de 20.346 en 2025; 10.748 de 10.752 en enero-junio de 2026.",
+      "licencia": "Derivado REDSA CC BY 4.0; fuente ANT bajo condiciones originales sin licencia explícita identificada",
+      "referencias": [
+        {
+          "label": "ANT · Visor de siniestralidad y estadísticas",
+          "url": "https://www.ant.gob.ec/visor-de-siniestralidad-estadisticas/"
+        },
+        {
+          "label": "INEC · Siniestros de tránsito IV trimestre 2025",
+          "url": "https://www.ecuadorencifras.gob.ec/siniestros-de-transito-iv-trimestre-2025/"
+        },
+        {
+          "label": "Metodología publicada por REDSA",
+          "url": "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#siniestros-ant-puntos"
+        }
+      ],
+      "anios_disponibles": [
+        2024,
+        2025,
+        2026
+      ],
+      "nivel_territorial_disponible": [],
+      "tipo": "capa_eventos",
+      "descargas": {
+        "excel": null,
+        "geojson_niveles": [],
+        "archivos_directos": [
+          {
+            "formato": "GeoJSON",
+            "etiqueta": "Ubicaciones sanitizadas 2024",
+            "url": "data/siniestros_ant_2024.geojson"
+          },
+          {
+            "formato": "GeoJSON",
+            "etiqueta": "Ubicaciones sanitizadas 2025",
+            "url": "data/siniestros_ant_2025.geojson"
+          },
+          {
+            "formato": "GeoJSON",
+            "etiqueta": "Ubicaciones sanitizadas 2026 (enero-junio)",
+            "url": "data/siniestros_ant_2026.geojson"
+          }
+        ]
+      }
     }
   ]
 }

@@ -50,3 +50,10 @@
     `REUSE.toml` y textos de licencia, pero el repositorio historico completo
     contiene archivos anteriores cuya titularidad/licencia debe revisarse uno
     por uno antes de declarar conformidad REUSE total.
+18. **PMTiles evaluado y diferido para la capa ANT.** En el escenario movil
+    sintetico acordado, la activacion opcional de 2025 tarda 2,889 s y la
+    transferencia gzip explica 2,006 s. GitHub Pages no sirve Brotli para estos
+    GeoJSON. Se mantiene un archivo diferido por ano y se reconsiderara PMTiles
+    si se cargan varios anos simultaneamente o las metricas reales justifican
+    la complejidad adicional. La prioridad inmediata es la carga inicial, que
+    afecta a todas las visitas.

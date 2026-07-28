@@ -275,6 +275,14 @@
                     placeholder.on("remove", updateLegend);
                     placeholder._redsaStartLoad = startLoad;
                     overlayMaps[config.label] = placeholder;
+                    window.REDSAOverlayState?.register(`infra-${config.id}`, () => {
+                        if (!map.hasLayer(placeholder)) return null;
+                        return {
+                            title: config.label,
+                            items: config.legend || [],
+                            osmAudit: Boolean(config.osmAudit)
+                        };
+                    });
                     return placeholder;
                 }
 
@@ -350,6 +358,18 @@
                 });
                 new MapControl().addTo(map);
                 syncMobileLayerDrawer();
+                const antEventConfig = EVENT_LAYER_CONFIGS.find(config => config.id === "siniestros_ant");
+                if (antEventConfig) {
+                    window.REDSAAntLayer?.init({
+                        map,
+                        pane: "eventPane",
+                        config: antEventConfig,
+                        getYear: () => selectedYear,
+                        setYear: year => setSelectedYearAndRefresh(year),
+                        selectTerritoryBelow: selectTerritoryBelowInfrastructure,
+                        onStateChange: () => updateLegend()
+                    });
+                }
                 updateMapVariableDescription();
                 updatePeriodModeControl();
                 updateTimelineControl();
@@ -424,6 +444,7 @@
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     window.REDSAInstitutional?.refresh();
+                    window.REDSAAntLayer?.syncYear(selectedYear);
                 });
 
                 document.addEventListener("click", (e) => {
@@ -456,6 +477,7 @@
                     "INEC": "Instituto Nacional de Estadística y Censos de Ecuador.",
                     "CIE-10": "Clasificación Internacional de Enfermedades, 10ª revisión — estándar usado para causas de muerte por tránsito (códigos V01 a V89).",
                     "DPA": "División Político Administrativa — codificación oficial de provincias, cantones y parroquias del Ecuador.",
+                    "ANT_SINIESTROS": "Siniestros registrados por la Agencia Nacional de Tránsito. Son los mismos eventos de la variable territorial mostrados en su ubicación; no son una cifra adicional ni deben sumarse a la coropleta.",
                     "VEHICULOS_MATRICULADOS": "Vehículos Matriculados (INEC ESTRA 2024): registrados por residencia del propietario, no representa necesariamente donde circula el vehículo.",
                     "COBERTURA_OSM": "Cobertura de mapeo OSM: densidad de semáforos/rotondas, cruces y aceras registrados. Un cero significa sin elementos mapeados, no ausencia comprobada de infraestructura.",
                     "OSM_VIAS": "Vías de OpenStreetMap clasificadas por jerarquía funcional. No equivalen jurídicamente a la Red Vial Estatal del MTOP y su cobertura depende del mapeo colaborativo."
@@ -579,6 +601,11 @@
                     },
                     setZoom(zoom) {
                         map.setView(map.getCenter(), zoom, { animate: false });
+                        syncTerritoryLayerToZoom();
+                        return this.state();
+                    },
+                    setMapView(latitude, longitude, zoom) {
+                        map.setView([Number(latitude), Number(longitude)], Number(zoom), { animate: false });
                         syncTerritoryLayerToZoom();
                         return this.state();
                     },

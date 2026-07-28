@@ -10,6 +10,13 @@
 }
 
 @media (max-width: 768px) {
+    .ant-summary-totals {
+        grid-template-columns: 1fr;
+    }
+
+    .ant-summary-grid {
+        grid-template-columns: 1fr;
+    }
     :root {
         --sidebar-width: 0px;
         --ui-padding: 10px;
@@ -427,8 +434,28 @@
         order: 0;
     }
 
-    .infrastructure-disclosure {
+    .event-layer-disclosure {
         order: 1;
+    }
+
+    .infrastructure-disclosure {
+        order: 2;
+    }
+
+    .ant-mode-controls button,
+    .ant-jump-year,
+    .event-layer-toggle {
+        min-height: 44px;
+    }
+
+    .map-level-note {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .map-level-note-action {
+        width: 100%;
+        min-height: 44px;
     }
 
     .technical-controls-slot .leaflet-control-layers-list label {

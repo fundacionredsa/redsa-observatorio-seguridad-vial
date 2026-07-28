@@ -22,6 +22,15 @@ incluidos errores relevantes corregidos durante el desarrollo.
   ano activos, con busqueda y exclusion explicita de unidades sin dato.
 - Secciones institucionales sobre confianza, apertura y citacion con fecha de
   consulta generada en el navegador.
+- Capas puntuales ANT 2024-2026 con carga diferida por ano: 21.213 de 21.220
+  ubicaciones validas en 2024, 20.156 de 20.346 en 2025 y 10.748 de 10.752
+  en el corte parcial enero-junio de 2026; tres representaciones manuales
+  (calor, agrupaciones y casos) y analisis territorial con lenguaje Safe
+  System.
+- Aviso accesible que conserva el ano elegido cuando una variable no tiene
+  cobertura y ofrece ir, con una accion explicita, al ultimo ano disponible.
+- Control cruzado ANT-INEC/ESTRA publicado con tres reconciliaciones exactas y
+  la distincion metodologica frente a EDG.
 
 ### Fixed
 
@@ -40,6 +49,11 @@ incluidos errores relevantes corregidos durante el desarrollo.
 - El ano inicial del geoportal pasa de 2024 a 2025, ultimo ano completo de la
   serie territorial de siniestros; 2026 se mantiene identificado como corte
   parcial enero-junio.
+- El calor ANT fija el perfil Enfocado validado a escalas nacional, cantonal y
+  urbana. PMTiles queda evaluado y diferido porque el costo actual es opcional,
+  por ano y dominado por el limite fisico de transferencia gzip.
+- Las leyendas muestran `0` cuando cero es un valor valido, en lugar del rango
+  confuso `<= 0`.
 - Corredores priorizados por REDSA y Mapillary dejan de mostrarse en el control
   publico de capas mientras no aporten informacion validada al geoportal.
 

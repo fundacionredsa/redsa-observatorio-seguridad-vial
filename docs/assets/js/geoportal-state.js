@@ -113,6 +113,8 @@
         map.getPane("territorioPane").style.zIndex = "400";
         map.createPane("infraestructuraPane");
         map.getPane("infraestructuraPane").style.zIndex = "450";
+        map.createPane("eventPane");
+        map.getPane("eventPane").style.zIndex = "460";
 
         // Reposicionar el control de Zoom
         L.control.zoom({
@@ -421,6 +423,7 @@
 
         const VARIABLE_CONFIGS = GEO_CONFIG.variables;
         const INFRASTRUCTURE_LAYER_CONFIGS = GEO_CONFIG.infrastructureLayers;
+        const EVENT_LAYER_CONFIGS = GEO_CONFIG.eventLayers || [];
 
         const TEMPORAL_COVERAGE = Object.fromEntries(
             Object.entries(VARIABLE_CONFIGS).map(([id, config]) => [id, config.temporal])
@@ -586,6 +589,7 @@
             if (typeof updateSidebar === "function" && typeof currentProps !== "undefined" && currentProps) updateSidebar(currentProps);
             if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
             window.REDSAInstitutional?.refresh();
+            window.REDSAAntLayer?.syncYear(selectedYear);
         }
 
         function advanceToNextTimelineYear() {
@@ -981,6 +985,7 @@
             if (fitBounds) fitBoundsWithinTerritoryLevel(layer, level);
             updateSidebar(selectedTerritory.props);
             showProfileCard(selectedTerritory.props, { target: layer });
+            window.REDSAAntLayer?.syncTerritory(level, selectedTerritory.props);
 
             if (updateHash && level === "canton") {
                 window.location.hash = "canton=" + encodeURIComponent(selectedTerritory.props.DPA_DESCAN);
@@ -999,6 +1004,7 @@
             currentProps = null;
             currentProfileProps = null;
             updateSidebar(null);
+            window.REDSAAntLayer?.syncTerritory(null, null);
             document.body.classList.remove("profile-selection-active");
             const card = document.getElementById("demographic-hover-card");
             if (card) card.style.display = "none";

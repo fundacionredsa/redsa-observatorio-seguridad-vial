@@ -2077,6 +2077,45 @@ semaforos_rotondas_ecuador.geojson,osm_type,string,no,Campo observado; ver dicci
 semaforos_rotondas_ecuador.geojson,representacion,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,geometria_osm
 semaforos_rotondas_ecuador.geojson,sidewalk,string,no,Valor del tag OSM sidewalk,texto,OpenStreetMap,no
 semaforos_rotondas_ecuador.geojson,traffic_calming,string,no,Valor del tag OSM traffic_calming,texto,OpenStreetMap,hump
+siniestros_ant_2024.geojson,a,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,C23
+siniestros_ant_2024.geojson,c,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0101
+siniestros_ant_2024.geojson,f,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+siniestros_ant_2024.geojson,h,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,3
+siniestros_ant_2024.geojson,l,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+siniestros_ant_2024.geojson,m,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2024.geojson,p,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,010157
+siniestros_ant_2024.geojson,q,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2024.geojson,s,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2024.geojson,t,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,5
+siniestros_ant_2024.geojson,v,array,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+siniestros_ant_2024.geojson,w,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2024.geojson,z,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,a,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,C09
+siniestros_ant_2025.geojson,c,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0901
+siniestros_ant_2025.geojson,f,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+siniestros_ant_2025.geojson,h,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,l,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,m,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,p,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,090150
+siniestros_ant_2025.geojson,q,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,s,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2025.geojson,t,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,10
+siniestros_ant_2025.geojson,v,array,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+siniestros_ant_2025.geojson,w,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,3
+siniestros_ant_2025.geojson,z,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2
+siniestros_ant_2026.geojson,a,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,C12
+siniestros_ant_2026.geojson,c,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0919
+siniestros_ant_2026.geojson,f,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,0
+siniestros_ant_2026.geojson,h,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2026.geojson,l,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,3
+siniestros_ant_2026.geojson,m,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2026.geojson,p,string,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,091953
+siniestros_ant_2026.geojson,q,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2026.geojson,s,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,1
+siniestros_ant_2026.geojson,t,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,12
+siniestros_ant_2026.geojson,v,array,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,
+siniestros_ant_2026.geojson,w,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,4
+siniestros_ant_2026.geojson,z,integer,no,Campo observado; ver diccionario metodologico,segun campo,Ver procedencia de la capa,2
 velocidad_ecuador.geojson,DPA_CANTONES,array,no,Codigo DPA cantonal,codigo,INEC/CONALI,
 velocidad_ecuador.geojson,DPA_PROVINCIAS,array,no,Codigo DPA provincial,codigo,INEC/CONALI,
 velocidad_ecuador.geojson,attribution,string,no,Atribucion requerida por la fuente,texto,OpenStreetMap,"OpenStreetMap contributors, ODbL"

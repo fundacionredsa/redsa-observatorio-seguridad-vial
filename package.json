@@ -16,6 +16,8 @@
     "data:test": "python -m unittest discover -s tests_python -v"
   },
   "devDependencies": {
-    "@playwright/test": "1.61.1"
+    "@playwright/test": "1.61.1",
+    "leaflet.heat": "^0.2.0",
+    "supercluster": "^7.1.5"
   }
 }

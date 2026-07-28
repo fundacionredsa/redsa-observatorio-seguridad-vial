@@ -109,7 +109,10 @@ def run_node_extractor():
     const infrastructure = Object.values(window.REDSA_GEO_CONFIG.infrastructureLayers)
         .filter(config => config.catalogEntry)
         .map(config => config.catalogEntry);
-    console.log(JSON.stringify({ variables: results, infrastructure }));
+    const events = Object.values(window.REDSA_GEO_CONFIG.eventLayers || [])
+        .filter(config => config.catalogEntry)
+        .map(config => config.catalogEntry);
+    console.log(JSON.stringify({ variables: results, infrastructure, events }));
     """
     
     with open("temp_extractor.cjs", "w", encoding="utf-8") as f:
@@ -134,6 +137,7 @@ def main():
         extracted = run_node_extractor()
         raw_vars = extracted["variables"]
         infrastructure_entries = extracted["infrastructure"]
+        event_entries = extracted.get("events", [])
     except subprocess.CalledProcessError as e:
         print("Error ejecutando Node:", e.stderr)
         sys.exit(1)
@@ -208,6 +212,27 @@ def main():
             "anios_disponibles": [2026],
             "nivel_territorial_disponible": [],
             "tipo": "capa_infraestructura",
+            "descargas": {
+                "excel": None,
+                "geojson_niveles": [],
+                "archivos_directos": entry["downloads"],
+            },
+        })
+
+    for entry in event_entries:
+        catalogo.append({
+            "id": entry["id"],
+            "label": entry["label"],
+            "categoria": "Siniestralidad",
+            "fuente": entry["fuente"],
+            "descripcion": entry["description"],
+            "unidad": entry["unidad"],
+            "metodologia": entry["metodologia"],
+            "licencia": entry["licencia"],
+            "referencias": entry["referencias"],
+            "anios_disponibles": entry.get("anios_disponibles", [2025]),
+            "nivel_territorial_disponible": [],
+            "tipo": "capa_eventos",
             "descargas": {
                 "excel": None,
                 "geojson_niveles": [],

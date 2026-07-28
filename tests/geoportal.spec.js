@@ -541,7 +541,7 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
   await page.locator("#institutional-tab-trust").tap();
   await expect(page.locator("#institutional-panel-trust")).toContainText("Independencia institucional");
   await expect(page.locator("#institutional-panel-trust")).toContainText("224 cantones");
-  await expect(page.locator("#institutional-panel-trust a")).toHaveAttribute("href", "https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial");
+  await expect(page.locator("#institutional-panel-trust .institutional-open-note a")).toHaveAttribute("href", "https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial");
 
   await page.locator("#institutional-tab-citation").tap();
   await expect(page.locator("#institutional-panel-citation")).toContainText("Fundación REDSA (2026)");

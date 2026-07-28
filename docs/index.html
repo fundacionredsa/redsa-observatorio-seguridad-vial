@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.11">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.11">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.11">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.13">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.13">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.13">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -127,6 +127,25 @@
         </div>
         <div class="technical-controls-slot" id="technical-controls-slot">
             <div class="variable-controls-slot" id="variable-controls-slot"></div>
+            <details class="event-layer-disclosure" id="event-layer-disclosure">
+                <summary>
+                    <span>Siniestros en el mapa</span>
+                    <small>Representación puntual</small>
+                </summary>
+                <p class="event-layer-help">Complementa la variable territorial mostrando los mismos eventos en el lugar donde ocurrieron.</p>
+                <label class="event-layer-toggle" for="ant-layer-toggle">
+                    <input id="ant-layer-toggle" type="checkbox">
+                    <span>Siniestros (ANT)</span>
+                    <button type="button" class="sigla-tooltip-trigger event-layer-info" data-sigla="ANT_SINIESTROS" aria-label="Qué significa Siniestros ANT">ⓘ</button>
+                </label>
+                <div class="ant-mode-controls" id="ant-mode-controls" role="group" aria-label="Representación de los siniestros ANT" hidden>
+                    <button type="button" data-ant-mode="heat" aria-pressed="true">Calor</button>
+                    <button type="button" data-ant-mode="clusters" aria-pressed="false">Agrupaciones</button>
+                    <button type="button" data-ant-mode="cases" aria-pressed="false">Casos</button>
+                </div>
+                <p class="ant-layer-status" id="ant-layer-status" role="status" aria-live="polite"></p>
+                <button type="button" class="ant-jump-year" id="ant-jump-year">Ver último año disponible</button>
+            </details>
             <details class="infrastructure-disclosure" id="infrastructure-disclosure">
                 <summary>
                     <span>Infraestructura vial</span>
@@ -235,6 +254,11 @@
                     <i class="fas fa-shield-halved"></i>
                     <strong>Medición y privacidad:</strong> Este sitio usa Google Analytics para medir visitas de forma agregada y CounterAPI para contabilizar descargas globales sin identificar personas. No publicamos datos personales de usuarios ni de víctimas.
                 </p>
+                <article class="trust-crosscheck">
+                    <h4>Control cruzado de la estadística oficial</h4>
+                    <p>ANT e INEC/ESTRA coinciden exactamente en siniestros, personas lesionadas y fallecidos en sitio para 2024 anual, los cuatro trimestres de 2025 y 2026-I. Esta consistencia no sustituye a EDG: el Registro Civil mide defunciones y responde a otra metodología.</p>
+                    <a href="metodologia/#control-cruzado">Ver cifras, fuentes y diferencias metodológicas</a>
+                </article>
                 <p class="institutional-open-note">Todo el código, la metodología y los datos de este observatorio son <a href="https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial" target="_blank" rel="noopener">abiertos y auditables</a>.</p>
             </section>
 
@@ -376,6 +400,12 @@
                         <div id="inec-horapico" class="u-stats-value-compact">—</div>
                     </div>
 
+                    <details class="ant-territory-analysis" id="ant-territory-analysis">
+                        <summary>Patrones de los siniestros registrados por ANT (año seleccionado)</summary>
+                        <p id="ant-territory-analysis-status" class="ant-territory-analysis-status" role="status">Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.</p>
+                        <div id="ant-territory-analysis-content" hidden></div>
+                    </details>
+
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
                     <div class="section-title u-section-gap">Fallecidos en Siniestros de Tránsito</div>
                     <div class="detail-row">
@@ -469,22 +499,25 @@
 
     <!-- Third-party libraries -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="assets/js/vendor/leaflet-heat.js"></script>
     <script src="assets/js/vendor/simple-statistics.min.js"></script>
     <script src="assets/js/vendor/driver.min.js"></script>
     <script src="assets/js/vendor/html2canvas.min.js"></script>
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.11"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.11"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.13"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.13"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">
