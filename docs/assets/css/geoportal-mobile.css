@@ -82,7 +82,7 @@
     .drawer-close:focus-visible,
     .mobile-legend-toggle:focus-visible,
     .leaflet-control-layers input:focus-visible,
-    .map-selector-control select:focus-visible,
+    .variable-option input:focus-visible,
     #map-year-slider:focus-visible {
         outline: 3px solid #38bdf8;
         outline-offset: 2px;
@@ -513,7 +513,7 @@
         margin: 0;
     }
 
-    .map-selector-control select,
+    .variable-option,
     #map-year-slider,
     .period-mode-segments button,
     .detail-period-segments button,
@@ -521,8 +521,8 @@
         min-height: 44px;
     }
 
-    .map-selector-control select {
-        padding: 10px 8px;
+    .variable-option {
+        padding: 9px 8px;
         font-size: 0.82rem;
     }
 

@@ -1035,6 +1035,7 @@ body.technical-drawer-open .technical-drawer {
     min-width: 0;
 }
 
+.variable-disclosure,
 .infrastructure-disclosure,
 .event-layer-disclosure {
     border: 1px solid rgba(255, 255, 255, 0.13);
@@ -1042,6 +1043,7 @@ body.technical-drawer-open .technical-drawer {
     background: rgba(255, 255, 255, 0.04);
 }
 
+.variable-disclosure summary,
 .infrastructure-disclosure summary,
 .event-layer-disclosure summary {
     display: flex;
@@ -1057,11 +1059,13 @@ body.technical-drawer-open .technical-drawer {
     list-style: none;
 }
 
+.variable-disclosure summary::-webkit-details-marker,
 .infrastructure-disclosure summary::-webkit-details-marker,
 .event-layer-disclosure summary::-webkit-details-marker {
     display: none;
 }
 
+.variable-disclosure summary::after,
 .infrastructure-disclosure summary::after,
 .event-layer-disclosure summary::after {
     content: "+";
@@ -1069,17 +1073,74 @@ body.technical-drawer-open .technical-drawer {
     font-size: 1rem;
 }
 
+.variable-disclosure[open] summary::after,
 .infrastructure-disclosure[open] summary::after,
 .event-layer-disclosure[open] summary::after {
     content: "−";
 }
 
+.variable-disclosure summary small,
 .infrastructure-disclosure summary small,
 .event-layer-disclosure summary small {
     margin-left: auto;
     color: #b8c3cc;
     font-size: 0.6rem;
     font-weight: 600;
+}
+
+.variable-help {
+    margin: 0 11px 8px;
+    color: #b8c3cc;
+    font-size: 0.62rem;
+    line-height: 1.35;
+}
+
+.variable-options {
+    display: grid;
+    gap: 3px;
+    padding: 0 8px 4px;
+}
+
+.variable-option {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #dbe5ec;
+    font-size: 0.7rem;
+    line-height: 1.25;
+    cursor: pointer;
+}
+
+.variable-option:hover {
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.08);
+}
+
+.variable-option:has(input:checked) {
+    border-color: #2dd4bf;
+    background: rgba(13, 148, 136, 0.22);
+    color: #f0fdfa;
+}
+
+.variable-option input {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    margin: 0;
+    accent-color: #0d9488;
+}
+
+.variable-option:focus-within {
+    outline: 3px solid #38bdf8;
+    outline-offset: 2px;
+}
+
+.variable-disclosure .map-variable-description {
+    margin: 5px 8px 8px;
 }
 
 .event-layer-help,
@@ -1777,6 +1838,7 @@ body.light-theme .profile-section-title {
 
 body.light-theme .technical-controls-slot .map-selector-control,
 body.light-theme .technical-controls-slot .leaflet-control-layers,
+body.light-theme .variable-disclosure,
 body.light-theme .infrastructure-disclosure,
 body.light-theme .event-layer-disclosure,
 body.light-theme .territory-level-segments button,
@@ -1787,12 +1849,15 @@ body.light-theme .technical-action {
     color: #1e293b;
 }
 
+body.light-theme .variable-disclosure summary,
 body.light-theme .infrastructure-disclosure summary,
 body.light-theme .event-layer-disclosure summary,
 body.light-theme .event-layer-toggle {
     color: #1e293b;
 }
 
+body.light-theme .variable-disclosure summary small,
+body.light-theme .variable-help,
 body.light-theme .infrastructure-disclosure summary small,
 body.light-theme .infrastructure-help,
 body.light-theme .event-layer-disclosure summary small,
@@ -1801,6 +1866,21 @@ body.light-theme .ant-layer-status,
 body.light-theme .period-mode-label,
 body.light-theme .period-mode-note {
     color: #52606b;
+}
+
+body.light-theme .variable-option {
+    color: #334155;
+}
+
+body.light-theme .variable-option:hover {
+    border-color: #7dcbd3;
+    background: #effbfc;
+}
+
+body.light-theme .variable-option:has(input:checked) {
+    border-color: #087f8c;
+    background: #dff4f6;
+    color: #075d66;
 }
 
 body.light-theme .event-layer-toggle,
@@ -1865,12 +1945,6 @@ body.light-theme .detail-period-segments button.active {
     border-color: #087f8c;
     background: #dff4f6;
     color: #075d66;
-}
-
-body.light-theme .map-selector-control select {
-    border-color: #aeb8c0 !important;
-    background: #fff !important;
-    color: #1e293b !important;
 }
 
 body.light-theme .territory-level-segments button.active {

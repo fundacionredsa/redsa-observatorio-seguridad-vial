@@ -233,12 +233,12 @@ function onEachProvinceFeature(feature, layer) {
                         </div>
                     `;
                 } else if (effectiveVariable === 'normal') {
-                    const levelTitle = `Límites ${LEVEL_LABELS[currentLevel]}:`;
+                    const levelTitle = "Sin variable seleccionada";
                     container.innerHTML += `
                         <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${levelTitle}</div>
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                            <span>Limites administrativos</span>
+                            <span>Límites administrativos · ${LEVEL_LABELS[currentLevel]}</span>
                         </div>
                     `;
                 } else {

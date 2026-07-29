@@ -308,11 +308,30 @@
                     onAdd: function(map) {
                         const div = L.DomUtil.create('div', 'map-selector-control glass');
                         div.innerHTML = `
-                            <div style="font-weight: 600; font-size: 0.7rem; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Variables del Mapa</div>
-                            <select id="map-variable-select" style="background: rgba(15, 23, 42, 0.85); color: #f8fafc; border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px 6px; font-size: 0.75rem; cursor: pointer; outline: none; width: 100%;">
-                                ${Object.entries(VARIABLE_CONFIGS).map(([id, config]) => `<option value="${id}" ${id === selectedVariable ? "selected" : ""}>${config.label}</option>`).join("")}
-                            </select>
-                            <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
+                            <details class="variable-disclosure" id="variable-disclosure">
+                                <summary>
+                                    <span>Variables del mapa</span>
+                                    <small>Selección única</small>
+                                </summary>
+                                <p class="variable-help">Selecciona una variable territorial. Vuelve a activar la opción seleccionada para dejar solo los límites.</p>
+                                <div id="map-variable-options" class="variable-options" role="radiogroup" aria-label="Variable territorial del mapa">
+                                    ${Object.entries(VARIABLE_CONFIGS)
+                                        .filter(([id]) => id !== "normal")
+                                        .map(([id, config]) => `
+                                            <label class="variable-option" for="map-variable-${id}">
+                                                <input
+                                                    id="map-variable-${id}"
+                                                    type="radio"
+                                                    name="map-variable"
+                                                    value="${id}"
+                                                    ${id === selectedVariable ? "checked" : ""}
+                                                >
+                                                <span>${config.label}</span>
+                                            </label>
+                                        `).join("")}
+                                </div>
+                                <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
+                            </details>
                             <div class="period-mode-control" aria-label="Periodo mostrado">
                                 <div class="period-mode-label">Periodo mostrado</div>
                                 <div class="period-mode-segments" role="group" aria-label="Cambiar entre año y acumulado histórico">
@@ -389,12 +408,41 @@
                     }
                 });
 
-                document.addEventListener("change", (e) => {
-                    if (e.target && e.target.id === "map-variable-select") {
-                        selectedVariable = e.target.value;
-                        handleVariableChange();
-                    }
+                document.addEventListener("click", (event) => {
+                    const variableInput = event.target.closest("#variable-disclosure input[name='map-variable']");
+                    if (!variableInput) return;
+                    toggleMapVariable(variableInput.value);
                 });
+
+                document.addEventListener("keydown", (event) => {
+                    const variableInput = event.target.closest("#variable-disclosure input[name='map-variable']");
+                    if (!variableInput || !["Enter", " ", "Spacebar"].includes(event.key)) return;
+                    event.preventDefault();
+                    toggleMapVariable(variableInput.value);
+                });
+
+                function syncVariableSelectionUI() {
+                    document.querySelectorAll("#variable-disclosure input[name='map-variable']").forEach(input => {
+                        input.checked = selectedVariable !== "normal" && input.value === selectedVariable;
+                    });
+                    const disclosure = document.getElementById("variable-disclosure");
+                    if (disclosure) disclosure.dataset.selectedVariable = selectedVariable;
+                }
+
+                function toggleMapVariable(variable) {
+                    const isActiveVariable = selectedVariable === variable;
+                    const changed = selectMapVariable(isActiveVariable ? "normal" : variable);
+                    if (isActiveVariable) window.setTimeout(syncVariableSelectionUI, 0);
+                    return changed;
+                }
+
+                function selectMapVariable(variable) {
+                    if (!VARIABLE_CONFIGS[variable]) return false;
+                    selectedVariable = variable;
+                    syncVariableSelectionUI();
+                    handleVariableChange();
+                    return true;
+                }
 
                 function handleVariableChange() {
                     if (window.stopTimelinePlayback) window.stopTimelinePlayback();
@@ -676,12 +724,7 @@
                         return this.state();
                     },
                     selectVariable(variable) {
-                        const select = document.getElementById("map-variable-select");
-                        if (!select || !VARIABLE_CONFIGS[variable]) return false;
-                        select.value = variable;
-                        selectedVariable = variable;
-                        handleVariableChange();
-                        return true;
+                        return selectMapVariable(variable);
                     },
                     selectYear(year) {
                         const numericYear = Number(year);

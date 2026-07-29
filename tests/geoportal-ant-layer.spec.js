@@ -34,7 +34,7 @@ test("no descarga puntos ANT antes de activar la capa", async ({ page }) => {
 test("aviso accesible conserva el año y permite ir al último disponible", async ({ page }, testInfo) => {
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
-  await page.locator("#map-variable-select").selectOption("fallecidos_inec_2019");
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#timeline-badge")).toHaveText("2025");
   const action = page.locator("[data-jump-latest-year='2024']");
   await expect(action).toBeVisible();

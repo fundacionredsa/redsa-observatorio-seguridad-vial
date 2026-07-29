@@ -115,7 +115,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer-close")).toBeHidden();
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#map-variable-select option")).toHaveCount(10);
+  await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
+  await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
   await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
@@ -140,7 +141,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   });
   expect(persistentLayout.intersects).toBeFalsy();
 
-  await page.locator("#map-variable-select").selectOption("fallecidos_inec_2019");
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
@@ -161,6 +162,49 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
 });
 
+test("selector de variables permite selección única y deselección accesible", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  if (testInfo.project.name === "mobile") {
+    await page.locator("#mobile-layers-toggle").click();
+    await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  }
+
+  const disclosure = page.locator("#variable-disclosure");
+  const accidents = page.locator("#variable-disclosure input[value='siniestros_inec_2019']");
+  const fatalities = page.locator("#variable-disclosure input[value='fallecidos_inec_2019']");
+  await expect(disclosure).not.toHaveAttribute("open", "");
+  await expect(accidents).toBeChecked();
+  await expect(fatalities).not.toBeChecked();
+  await disclosure.locator("summary").click();
+  await expect(disclosure).toHaveAttribute("open", "");
+
+  const choroplethStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
+  await accidents.click();
+  await expect(accidents).not.toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
+  await expect(page.locator(".legend-panel")).toContainText("Sin variable seleccionada");
+  const boundaryStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
+  expect(boundaryStyle.fillOpacity).toBeLessThan(choroplethStyle.fillOpacity);
+
+  await fatalities.click();
+  await expect(fatalities).toBeChecked();
+  await expect(accidents).not.toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("fallecidos_inec_2019");
+
+  await fatalities.focus();
+  await fatalities.press("Space");
+  await expect(fatalities).not.toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
+
+  await accidents.focus();
+  await accidents.press("Enter");
+  await expect(accidents).toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
+  await accidents.press("Enter");
+  await expect(accidents).not.toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
+});
+
 test("carga vias OSM independientes y conserva la escala grafica", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Las capas viales nacionales se renderizan una vez.");
   let roadRequests = 0;
@@ -168,7 +212,7 @@ test("carga vias OSM independientes y conserva la escala grafica", async ({ page
     if (request.url().endsWith("/data/vias_ecuador.geojson")) roadRequests += 1;
   });
   await loadPortal(page);
-  await expect(page.locator("#map-variable-select option[value='densidad_vial_osm']")).toHaveCount(0);
+  await expect(page.locator("#variable-disclosure input[value='densidad_vial_osm']")).toHaveCount(0);
   const scaleNational = await page.locator(".road-scale-control .leaflet-control-scale-line").innerText();
   await page.evaluate(() => window.__redsaAudit.setZoom(11));
   await page.waitForTimeout(200);
@@ -782,7 +826,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
       ".mobile-sidebar-close",
       "#technical-drawer-close",
       ".leaflet-control-layers-list label",
-      "#map-variable-select",
+      ".variable-option",
       "#map-year-slider",
       ".territory-level-segments button",
       "#mobile-legend-toggle"
@@ -851,7 +895,7 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
-  await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_parroquial"));
   await page.waitForFunction(() => window.__redsaActiveBins && window.__redsaActiveBins.variable === "fallecidos_parroquial");
 
   const mobileLegendToggle = page.locator("#mobile-legend-toggle");
@@ -887,7 +931,7 @@ test("EDG parish-derived fatalities are available at province, canton and parish
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__redsaAudit !== undefined);
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
-  await page.locator("#map-variable-select").selectOption("fallecidos_parroquial");
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_parroquial"));
 
   for (const level of ["province", "canton", "parish"]) {
     await page.evaluate(value => window.__redsaAudit.setTerritoryLevelMode(value), level);
