@@ -915,6 +915,7 @@ test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines wi
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__redsaAudit !== undefined);
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
+  await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
 
   // 1. Territorio con siniestros_historico disponible (Quito cantón)
@@ -927,7 +928,9 @@ test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines wi
   expect(quitoTooltip).not.toContain("Siniestros (2024): Sin dato");
 
   // 2. Territorio sin siniestros_historico pero con fallecidos (parroquia Cuenca con fallecidos en 2021)
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await page.evaluate(() => window.__redsaAudit.selectYear(2021));
+  await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
   await page.waitForFunction(() => Boolean(window.__redsaAudit.findTerritoryLayer("parish", "010150")));
 
@@ -938,6 +941,38 @@ test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines wi
   expect(parishTooltip).toContain("Siniestros (2021): Sin dato");
   expect(parishTooltip).toContain("Fallecidos (2021): 59");
   expect(parishTooltip).not.toContain("Siniestros (2021): 59");
+});
+
+test("Territory tooltip deduplicates fixed lines by source field", async ({ page }) => {
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.__redsaAudit !== undefined);
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("province"));
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
+  const siniestrosTooltip = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("province", "17");
+    return window.getTerritoryTooltipContent(layer.feature, "province");
+  });
+  expect(siniestrosTooltip).toContain("Siniestros de tránsito reportados (ANT/INEC):");
+  expect(siniestrosTooltip).not.toContain("Siniestros (2024):");
+  expect((siniestrosTooltip.match(/Siniestros/gu) || []).length).toBe(1);
+
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("province", "17", "mouseover"));
+  const renderedSiniestrosTooltip = page.locator(".territory-hover-tooltip").last();
+  await expect(renderedSiniestrosTooltip).toBeVisible();
+  const renderedText = await renderedSiniestrosTooltip.textContent();
+  expect((renderedText.match(/Siniestros/gu) || []).length).toBe(1);
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("tasa_fallecidos_100k"));
+  const rateTooltip = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("province", "17");
+    return window.getTerritoryTooltipContent(layer.feature, "province");
+  });
+  expect(rateTooltip).toContain("Población (2024):");
+  expect(rateTooltip).toContain("Siniestros (2024):");
+  expect(rateTooltip).toContain("Fallecidos (2024):");
+  expect(rateTooltip).toContain("Fallecidos por cada 100.000 habitantes:");
 });
 
 

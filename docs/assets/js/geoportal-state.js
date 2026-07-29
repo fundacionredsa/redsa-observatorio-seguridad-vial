@@ -718,6 +718,36 @@
             return num.toLocaleString("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         }
 
+        const TERRITORY_TOOLTIP_FIXED_LINES = [
+            {
+                label: year => `Población (${year})`,
+                sourceFields: ["poblacion_por_anio"],
+                getValue: (props, year) => props.poblacion_por_anio?.[String(year)]
+            },
+            {
+                label: year => `Siniestros (${year})`,
+                sourceFields: ["siniestros_historico"],
+                getValue: (props, year) => props.siniestros_historico?.[String(year)]
+            },
+            {
+                label: year => `Fallecidos (${year})`,
+                sourceFields: ["fallecidos_historico", "fallecidos_por_anio", "fallecidos_parroquial"],
+                getValue: (props, year) => props.fallecidos_historico?.[String(year)]
+                    ?? props.fallecidos_por_anio?.[String(year)]
+                    ?? props.fallecidos_parroquial?.[String(year)]
+            }
+        ];
+
+        function getConfigSourceFields(config) {
+            if (Array.isArray(config?.sourceFields)) return config.sourceFields;
+            return config?.property ? [config.property] : [];
+        }
+
+        function sourceFieldsOverlap(firstFields, secondFields) {
+            const secondSet = new Set(secondFields);
+            return firstFields.some(field => secondSet.has(field));
+        }
+
         function getTerritoryTooltipContent(feature, level) {
             const props = feature?.properties || {};
             const names = {
@@ -727,25 +757,15 @@
             };
             const name = names[level] || "Unidad territorial";
 
-            const popRaw = props.poblacion_por_anio?.[String(selectedYear)];
-            const popText = (popRaw !== null && popRaw !== undefined && Number.isFinite(Number(popRaw)))
-                ? formatTooltipValue(popRaw)
-                : "Sin dato";
-
-            const sinRaw = props.siniestros_historico?.[String(selectedYear)];
-            const sinText = (sinRaw !== null && sinRaw !== undefined && Number.isFinite(Number(sinRaw)))
-                ? formatTooltipValue(sinRaw)
-                : "Sin dato";
-
-            const falRaw = props.fallecidos_historico?.[String(selectedYear)]
-                ?? props.fallecidos_por_anio?.[String(selectedYear)]
-                ?? props.fallecidos_parroquial?.[String(selectedYear)];
-            const falText = (falRaw !== null && falRaw !== undefined && Number.isFinite(Number(falRaw)))
-                ? formatTooltipValue(falRaw)
-                : "Sin dato";
-
             const effectiveVar = getEffectiveVariable(level);
             const config = VARIABLE_CONFIGS[effectiveVar] || VARIABLE_CONFIGS.normal;
+            const activeSourceFields = getConfigSourceFields(config);
+            const fixedLines = TERRITORY_TOOLTIP_FIXED_LINES
+                .filter(line => !sourceFieldsOverlap(activeSourceFields, line.sourceFields))
+                .map(line => {
+                    const rawValue = line.getValue(props, selectedYear);
+                    return `${line.label(selectedYear)}: ${formatTooltipValue(rawValue)}`;
+                });
             const value = getVariableValue(props, effectiveVar, selectedYear);
             const valueText = effectiveVar === "normal"
                 ? "Límite administrativo"
@@ -756,7 +776,7 @@
             const warningHtml = coverageWarning
                 ? `<br><span class="u-text-warning">${coverageWarning}</span>`
                 : "";
-            return `<strong>${name}</strong><br>Población (${selectedYear}): ${popText}<br>Siniestros (${selectedYear}): ${sinText}<br>Fallecidos (${selectedYear}): ${falText}<br>${valueText}${warningHtml}`;
+            return `<strong>${name}</strong><br>${[...fixedLines, valueText].join("<br>")}${warningHtml}`;
         }
 
         function getEffectiveVariable(level = activeTerritoryLevel) {

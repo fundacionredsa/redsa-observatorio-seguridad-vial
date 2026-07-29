@@ -19,6 +19,7 @@
                 { label: "INEC - Siniestros de tránsito trimestral 2026", url: "https://www.ecuadorencifras.gob.ec/siniestros-transito-trimestral/" }
             ],
             getValue: (props, year) => props.siniestros_historico?.[String(year)],
+            sourceFields: ["siniestros_historico"],
             levels: ["province", "canton", "parish"],
             temporal: {
                 tipo: "anual",
@@ -50,6 +51,7 @@
                 { label: "Metodología EDG 2024", url: "https://www.ecuadorencifras.gob.ec/documentos/web-inec/Poblacion_y_Demografia/Defunciones_Generales/2024/Metodologia_EDG_2024.pdf" }
             ],
             getValue: (props, year) => props.fallecidos_historico?.[String(year)],
+            sourceFields: ["fallecidos_historico"],
             levels: ["province", "canton"],
             temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
             aggregation: "sum",
@@ -160,6 +162,7 @@
                 { label: "Metodología publicada por REDSA", url: "https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/metodologia/#mortalidad" }
             ],
             getValue: (props, year) => props.fallecidos_parroquial?.[String(year)] ?? props.fallecidos_por_anio?.[String(year)],
+            sourceFields: ["fallecidos_parroquial", "fallecidos_por_anio", "fallecidos_historico"],
             levels: ["province", "canton", "parish"],
             temporal: { tipo: "anual", anios_disponibles: [2021, 2022, 2023, 2024] },
             aggregation: "sum",
