@@ -208,12 +208,21 @@
 
     function updateMapContext(config, year, levelLabel) {
         const title = document.getElementById("citizen-map-variable");
+        const metadata = document.getElementById("citizen-map-meta");
         const description = document.getElementById("citizen-map-description");
-        if (!title || !description || !config) return;
+        if (!title || !metadata || !description || !config) return;
         const periodText = config.temporal?.etiquetas_periodo?.[year] || year;
-        const yearLabel = config.temporal?.tipo === "anual" && year ? ` · ${periodText}` : "";
-        const level = levelLabel ? ` · ${levelLabel}` : "";
-        title.textContent = `${config.label}${yearLabel}${level}`;
+        const availableYears = config.temporal?.anios_disponibles || [];
+        const periodLabel = config.temporal?.tipo === "anual" && year
+            ? periodText
+            : (availableYears.length === 1 ? String(availableYears[0]) : "");
+        const metadataParts = [
+            levelLabel ? `Nivel: ${levelLabel}` : "",
+            periodLabel ? `Periodo: ${periodLabel}` : "",
+            config.fuente ? `Fuente: ${config.fuente}` : ""
+        ].filter(Boolean);
+        title.textContent = config.displayLabel || config.label;
+        metadata.textContent = metadataParts.join(" · ");
         description.textContent = config.description;
     }
 

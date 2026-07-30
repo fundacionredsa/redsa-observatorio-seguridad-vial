@@ -363,8 +363,9 @@
             // 1. Perfil de personas fallecidas según el registro civil
             html += `
                 <div class="profile-card-source-title">
-                    <span class="profile-card-citizen-title">¿Quiénes fallecieron en siniestros de tránsito aquí? (${edgPeriod})</span>
-                    <span class="profile-card-source-detail">Personas fallecidas en accidentes de tránsito, según registro civil (INEC ${siglaInfoIcon("INEC")}). Los iconos ⓘ explican los códigos técnicos: EDG ${siglaInfoIcon("EDG")} y CIE-10 ${siglaInfoIcon("CIE-10")} V01-V89.</span>
+                    <span class="profile-card-citizen-title">¿Quiénes fallecieron en siniestros de tránsito aquí?</span>
+                    <span class="profile-card-title-meta">Periodo: ${edgPeriod}</span>
+                    <span class="profile-card-source-detail">Personas fallecidas en siniestros de tránsito según el registro civil. ${siglaInfoIcon("INEC")} ${siglaInfoIcon("EDG")} ${siglaInfoIcon("CIE-10")}</span>
                 </div>
             `;
 
@@ -485,8 +486,9 @@
             const sppatTipoEntry = selectedDetailPeriodMode === "accumulated" ? mergeCategorySeries(props.sppat_por_tipo_accidente, sppatYears) : props.sppat_por_tipo_accidente?.[yearKey];
             html += `
                 <div class="profile-card-source-title">
-                    <span class="profile-card-citizen-title">Fallecidos registrados en reclamaciones del seguro (${sppatPeriod})</span>
-                    <span class="profile-card-source-detail">Fuente: Servicio Público para Pago de Accidentes de Tránsito (SPPAT ${siglaInfoIcon("SPPAT")}).</span>
+                    <span class="profile-card-citizen-title">Fallecidos registrados en reclamaciones del seguro</span>
+                    <span class="profile-card-title-meta">Periodo: ${sppatPeriod}</span>
+                    <span class="profile-card-source-detail">Personas fallecidas registradas en reclamaciones del seguro. ${siglaInfoIcon("SPPAT")}</span>
                 </div>
             `;
 

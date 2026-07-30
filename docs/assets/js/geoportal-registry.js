@@ -8,6 +8,7 @@
         },
         siniestros_inec_2019: {
             label: "Siniestros de tránsito reportados (ANT/INEC)",
+            displayLabel: "Siniestros de tránsito reportados",
             fuente: "ANT, registro administrativo primario; INEC/ESTRA, procesamiento estadístico oficial",
             description: "Número de siniestros de tránsito registrados oficialmente. ANT e INEC/ESTRA forman una sola cadena estadística y sus cifras no deben sumarse entre sí. Entre 2021 y 2024, 72 registros corresponden a zonas en estudio y permanecen en el total nacional sin asignarse a un cantón.",
             unidad: "accidentes reportados",
@@ -41,6 +42,7 @@
         },
         fallecidos_inec_2019: {
             label: "Personas fallecidas por accidentes (registro civil)",
+            displayLabel: "Personas fallecidas por accidentes",
             fuente: "INEC, Registro Estadístico de Defunciones Generales (EDG)",
             description: "Número de personas que murieron por accidentes de tránsito.",
             unidad: "personas fallecidas",
@@ -88,6 +90,7 @@
         },
         tasa_siniestros_1000_vehiculos_2024: {
             label: "Accidentes por cada 1.000 vehículos (2024)",
+            displayLabel: "Accidentes por cada 1.000 vehículos",
             fuente: "Cálculo REDSA con INEC ESTRA 2024",
             description: "Accidentes por cada 1.000 vehículos matriculados: mide el riesgo según la cantidad de vehículos, no solo de personas.",
             unidad: "accidentes por cada 1.000 vehículos matriculados",
@@ -109,6 +112,7 @@
         },
         tasa_motociclistas_1000_motos_2024: {
             label: "Motociclistas fallecidos por cada 1.000 motos (2024)",
+            displayLabel: "Motociclistas fallecidos por cada 1.000 motos",
             fuente: "Cálculo REDSA con INEC EDG 2024 e INEC ESTRA 2024",
             description: "Muertes de motociclistas por cada 1.000 motos matriculadas en la zona.",
             unidad: "motociclistas fallecidos por cada 1.000 motocicletas matriculadas",
@@ -131,6 +135,7 @@
         },
         fallecidos_sppat_2016_2021: {
             label: "Fallecidos según reclamos del seguro (SPPAT)",
+            displayLabel: "Fallecidos según reclamos del seguro",
             fuente: "Servicio Público para Pago de Accidentes de Tránsito (SPPAT)",
             description: "Fallecidos según reclamos del seguro obligatorio de accidentes de tránsito (2016-2021).",
             unidad: "personas fallecidas registradas en reclamaciones",
@@ -151,6 +156,7 @@
         },
         fallecidos_parroquial: {
             label: "Personas fallecidas (EDG)",
+            displayLabel: "Personas fallecidas",
             fuente: "INEC, Registro Estadístico de Defunciones Generales (EDG)",
             description: "Personas fallecidas por accidentes de tránsito según el registro civil (EDG), comparables entre provincia, cantón y parroquia.",
             unidad: "personas fallecidas",
@@ -173,6 +179,7 @@
         },
         porcentaje_motos_flota_2024: {
             label: "Porcentaje de vehículos que son motos (2024)",
+            displayLabel: "Porcentaje de vehículos que son motos",
             fuente: "Cálculo REDSA con INEC ESTRA 2024",
             description: "Qué porcentaje de todos los vehículos matriculados en la zona son motocicletas.",
             unidad: "porcentaje de vehículos matriculados",

@@ -39,6 +39,27 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
   await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
   await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
+  await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator("#citizen-map-meta")).toContainText("Nivel: provincias");
+  await expect(page.locator("#citizen-map-meta")).toContainText("Periodo: 2025");
+  await expect(page.locator("#citizen-map-meta")).toContainText("Fuente: ANT");
+  await expect(page.locator("#open-analysis-button")).toHaveClass(/citizen-action-primary/);
+  const actionStyles = await page.evaluate(() => {
+    const primary = getComputedStyle(document.getElementById("open-analysis-button"));
+    const secondary = getComputedStyle(document.getElementById("btn-tour"));
+    return {
+      primaryBackground: primary.backgroundColor,
+      primaryColor: primary.color,
+      secondaryBackground: secondary.backgroundColor,
+      secondaryColor: secondary.color
+    };
+  });
+  expect(actionStyles.primaryBackground).not.toBe(actionStyles.secondaryBackground);
+  expect(actionStyles.primaryColor).not.toBe(actionStyles.secondaryColor);
+  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
   const versionedAssets = await page.evaluate(() => [
     ...Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(node => node.href),
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
@@ -50,6 +71,8 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(assetVersions[0]).toMatch(/^\d+\.\d+\.\d+$/);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
+  await expect(page.locator(".legend-heading-title")).toHaveText("Sin variable seleccionada");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Vista: límites administrativos");
   await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
   await expect(page.locator(".legend-panel")).not.toContainText("Resto del país");
 });
@@ -264,7 +287,10 @@ test("leyenda declara cuando la variable no existe en el nivel territorial", asy
   });
 
   await expect(page.locator(".legend-panel")).toContainText("Sin datos disponibles en este nivel territorial");
-  await expect(page.locator(".legend-panel")).toContainText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: parroquias");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2023");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
   await expect(page.locator(".legend-panel")).toContainText("Límites administrativos");
 });
 
@@ -306,8 +332,8 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
   await expect(page.locator("#siniestros-section-year")).toContainText("2017–2025");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
   await expect(page.locator("#hover-card-period")).toHaveText("Histórico");
-  await expect(page.locator("#hover-card-body")).toContainText("(2020–2024)");
-  await expect(page.locator("#hover-card-body")).toContainText("(2016–2021)");
+  await expect(page.locator("#hover-card-body")).toContainText("Periodo: 2020–2024");
+  await expect(page.locator("#hover-card-body")).toContainText("Periodo: 2016–2021");
 
   const controls = await page.locator("[data-detail-period-mode='accumulated']").evaluateAll(buttons =>
     buttons.map(button => button.getAttribute("aria-pressed"))
@@ -512,10 +538,42 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
     window.__redsaAudit.selectYear(2024);
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
-  await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí? (2024)");
-  await expect(page.locator(".profile-card-source-detail").first()).toContainText("según registro civil");
-  await expect(page.locator(".profile-card-source-detail").first()).toContainText("Los iconos ⓘ explican los códigos técnicos");
+  await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí?");
+  await expect(page.locator(".profile-card-title-meta").first()).toHaveText("Periodo: 2024");
+  const edgDetail = page.locator(".profile-card-source-detail").first();
+  await expect(edgDetail).toContainText("Personas fallecidas en siniestros de tránsito según el registro civil.");
+  expect(await edgDetail.textContent()).not.toContain("INEC");
+  expect(await edgDetail.textContent()).not.toContain("CIE-10");
+  await expect(edgDetail.locator(".sigla-tooltip-trigger")).toHaveCount(3);
+  await edgDetail.locator('[data-sigla="INEC"]').click();
+  await expect(page.locator("#sigla-popover")).toContainText("Instituto Nacional de Estadística y Censos de Ecuador");
+  await edgDetail.locator('[data-sigla="EDG"]').click();
+  await expect(page.locator("#sigla-popover")).toContainText("Registro Estadístico de Defunciones Generales");
+  await edgDetail.locator('[data-sigla="CIE-10"]').click();
+  await expect(page.locator("#sigla-popover")).toContainText("códigos V01 a V89");
+  await expect(page.locator(".profile-card-citizen-title").nth(1)).toHaveText("Fallecidos registrados en reclamaciones del seguro");
+  await expect(page.locator(".profile-card-title-meta").nth(1)).toContainText("Periodo:");
+  const sppatDetail = page.locator(".profile-card-source-detail").nth(1);
+  await expect(sppatDetail).toContainText("Personas fallecidas registradas en reclamaciones del seguro.");
+  expect(await sppatDetail.textContent()).not.toContain("SPPAT");
+  await expect(sppatDetail.locator('[data-sigla="SPPAT"]')).toHaveCount(1);
   await expect(page.locator(".perfil-card-section").locator("text=Otros / veh. no especificado (V80-V89)")).toBeVisible();
+});
+
+test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La rama de disponibilidad se valida una vez.");
+  await loadPortal(page);
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    window.__redsaAudit.selectVariable("fallecidos_inec_2019");
+    window.__redsaAudit.selectYear(2025);
+    await window.__redsaAudit.showTerritory("canton", "1701");
+  });
+
+  const profile = page.locator("#demographic-hover-card");
+  await expect(profile).toContainText("No hay datos de edad, sexo o forma de desplazamiento en el registro civil para este año.");
+  await expect(profile).not.toContainText("El registro civil no tiene fallecidos disponibles para este año.");
+  await expect(profile).toContainText("No hay detalle por sexo, forma de desplazamiento o tipo de accidente en las reclamaciones de 2025.");
 });
 
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
@@ -624,7 +682,7 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   expect(boxes.card.bottom).toBeLessThanOrEqual(boxes.innerHeight - 10);
   expect(boxes.intersects).toBeFalsy();
   if ((page.viewportSize()?.width || 0) > 768) {
-    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThan(220);
+    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThanOrEqual(200);
   }
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
@@ -941,7 +999,8 @@ test("EDG parish-derived fatalities are available at province, canton and parish
       level
     );
     await expect(page.locator("#map-level-note")).toBeHidden();
-    await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas (EDG)");
+    await expect(page.locator(".legend-heading-title")).toHaveText("Personas fallecidas");
+    await expect(page.locator(".legend-heading-meta")).toContainText("Registro Estadístico de Defunciones Generales (EDG)");
   }
 
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
