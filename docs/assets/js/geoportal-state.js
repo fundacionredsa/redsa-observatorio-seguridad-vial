@@ -246,10 +246,13 @@
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
         const mobileCitizenToggle = document.getElementById("mobile-citizen-toggle");
         const mobileCitizenClose = document.getElementById("mobile-citizen-close");
+        const citizenPanelVisibilityToggle = document.getElementById("citizen-panel-visibility-toggle");
         const openAnalysisButton = document.getElementById("open-analysis-button");
         const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+        // Initial state only: narrower web windows recover map space but keep the edge toggle available.
+        const DESKTOP_CITIZEN_PANEL_MIN_WIDTH = 1280;
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
         const technicalDrawer = document.getElementById("technical-drawer");
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
@@ -274,27 +277,49 @@
             window.requestAnimationFrame(updateProfileCardLayout);
         }
 
+        function updateCitizenPanelControls(open) {
+            const isOpen = Boolean(open);
+            citizenPanel?.setAttribute("aria-hidden", String(!isOpen));
+            mobileCitizenToggle?.setAttribute("aria-expanded", String(isOpen));
+            citizenPanelVisibilityToggle?.setAttribute("aria-expanded", String(isOpen));
+            if (!citizenPanelVisibilityToggle) return;
+            const action = isOpen ? "Ocultar" : "Mostrar";
+            const accessibleLabel = `${action} panel de exploración territorial`;
+            citizenPanelVisibilityToggle.setAttribute("aria-label", accessibleLabel);
+            citizenPanelVisibilityToggle.setAttribute("title", accessibleLabel);
+            const icon = citizenPanelVisibilityToggle.querySelector("i");
+            icon?.classList.toggle("fa-chevron-left", isOpen);
+            icon?.classList.toggle("fa-chevron-right", !isOpen);
+        }
+
         function setMobilePanel(panel, open) {
             if (open) setMobileLegend(false);
             if (panel === "citizen") {
-                document.body.classList.toggle("mobile-citizen-open", open);
-                citizenPanel?.setAttribute("aria-hidden", String(!open));
-                if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", String(open));
-                if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-sidebar-open", "mobile-layers-open");
-                    if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
+                const shouldOpen = Boolean(open);
+                document.body.classList.toggle("citizen-panel-open", shouldOpen);
+                document.body.classList.toggle("mobile-citizen-open", shouldOpen && mobileMediaQuery.matches);
+                updateCitizenPanelControls(shouldOpen);
+                if (shouldOpen) {
+                    document.body.classList.remove("mobile-sidebar-open");
+                    territorySidebar?.setAttribute("aria-hidden", "true");
+                    mobileSidebarToggle?.setAttribute("aria-expanded", "false");
+                }
+                if (shouldOpen && mobileMediaQuery.matches) {
+                    document.body.classList.remove("mobile-layers-open");
                     if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
                     mobileCitizenClose?.focus({ preventScroll: true });
                 }
             }
             if (panel === "sidebar") {
+                if (open) setMobilePanel("citizen", false);
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open", "mobile-citizen-open");
+                    document.body.classList.remove("mobile-layers-open", "mobile-citizen-open", "citizen-panel-open");
                     if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
                     if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", "false");
+                    citizenPanelVisibilityToggle?.setAttribute("aria-expanded", "false");
                     if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
                     technicalDrawer?.setAttribute("aria-hidden", "true");
                     mobileSidebarClose?.focus({ preventScroll: true });
@@ -306,9 +331,10 @@
                 if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", String(open));
                 if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open");
+                    document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open", "citizen-panel-open");
                     if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", "false");
                     if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", "false");
+                    updateCitizenPanelControls(false);
                     territorySidebar?.setAttribute("aria-hidden", "true");
                     technicalDrawerClose?.focus({ preventScroll: true });
                 }
@@ -348,6 +374,16 @@
 
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
+        const toggleCitizenPanelVisibility = () => {
+            setMobilePanel("citizen", !document.body.classList.contains("citizen-panel-open"));
+        };
+        citizenPanelVisibilityToggle?.addEventListener("pointerdown", event => {
+            event.preventDefault();
+            toggleCitizenPanelVisibility();
+        });
+        citizenPanelVisibilityToggle?.addEventListener("click", event => {
+            if (event.detail === 0) toggleCitizenPanelVisibility();
+        });
         mobileSidebarToggle?.addEventListener("click", () => {
             setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
         });
@@ -384,11 +420,14 @@
         });
         mobileMediaQuery.addEventListener("change", (event) => {
             if (event.matches) {
+                setMobilePanel("citizen", false);
+                setMobilePanel("sidebar", false);
                 setDesktopTechnicalPanel(false);
             } else {
                 closeMobilePanels();
                 setMobileLegend(false);
                 setDesktopTechnicalPanel(true);
+                setMobilePanel("citizen", window.innerWidth >= DESKTOP_CITIZEN_PANEL_MIN_WIDTH);
             }
         });
 
@@ -396,6 +435,11 @@
             document.body.classList.add("technical-drawer-open");
             technicalDrawer?.setAttribute("aria-hidden", "false");
             technicalPanelToggle?.setAttribute("aria-expanded", "true");
+            const citizenOpenByDefault = window.innerWidth >= DESKTOP_CITIZEN_PANEL_MIN_WIDTH;
+            document.body.classList.toggle("citizen-panel-open", citizenOpenByDefault);
+            updateCitizenPanelControls(citizenOpenByDefault);
+        } else {
+            updateCitizenPanelControls(false);
         }
 
         let selectedVariable = INITIAL_VIEW.variable;

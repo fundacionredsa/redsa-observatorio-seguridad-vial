@@ -29,6 +29,10 @@
     transition: opacity 180ms ease, transform 180ms ease;
 }
 
+.citizen-panel-visibility-toggle {
+    display: none;
+}
+
 .citizen-brand {
     display: flex;
     align-items: flex-start;
@@ -1030,6 +1034,36 @@ body.technical-drawer-open .technical-drawer {
     gap: 10px;
 }
 
+.timeline-filter-block {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.timeline-filter-block .timeline-control {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.timeline-title-wrap {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+}
+
+.timeline-title-wrap > span {
+    line-height: 1.25;
+}
+
+.timeline-help {
+    margin: 5px 0 6px;
+    color: var(--text-secondary);
+    font-size: 0.62rem;
+    line-height: 1.35;
+}
+
 .variable-controls-slot,
 .infrastructure-controls-slot {
     min-width: 0;
@@ -1641,6 +1675,57 @@ body.mobile-layers-open .technical-toggle {
 }
 
 @media (min-width: 769px) {
+    .citizen-panel {
+        opacity: 0;
+        transform: translateX(calc(-100% - 40px));
+        pointer-events: none;
+    }
+
+    body.citizen-panel-open .citizen-panel {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+
+    .citizen-panel-visibility-toggle {
+        position: fixed;
+        z-index: calc(var(--z-drawer) + 1);
+        top: 50%;
+        left: 0;
+        display: inline-flex;
+        width: 44px;
+        min-height: 76px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 8px 5px;
+        border: 1px solid rgba(24, 33, 42, 0.2);
+        border-left: 0;
+        border-radius: 0 6px 6px 0;
+        background: var(--public-surface);
+        color: var(--public-ink);
+        box-shadow: 5px 8px 20px rgba(24, 33, 42, 0.18);
+        transform: translateY(-50%);
+        transition: background-color 160ms ease;
+        cursor: pointer;
+    }
+
+    .citizen-panel-visibility-toggle span {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        writing-mode: vertical-rl;
+    }
+
+    body.citizen-panel-open .citizen-panel-visibility-toggle {
+        left: calc(20px + var(--citizen-panel-width));
+    }
+
+    body.mobile-sidebar-open .citizen-panel-visibility-toggle {
+        left: var(--analysis-drawer-width);
+    }
+
     .mobile-level-bar,
     .mobile-year-bar,
     .mobile-citizen-toggle,
@@ -1726,6 +1811,12 @@ body.mobile-layers-open .technical-toggle {
     }
 
     body.mobile-layers-open .mobile-overlay-backdrop {
+        display: none;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    body.mobile-sidebar-open .mobile-overlay-backdrop {
         display: none;
         opacity: 0;
         pointer-events: none;
@@ -2004,6 +2095,7 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
 
 .citizen-search-button:focus-visible,
 .citizen-action:focus-visible,
+.citizen-panel-visibility-toggle:focus-visible,
 .institutional-entry:focus-visible,
 .institutional-close:focus-visible,
 .institutional-tabs button:focus-visible,

@@ -1,10 +1,16 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 
-async function openCitizenPanelOnMobile(page) {
-    if ((page.viewportSize()?.width || 0) > 768) return;
-    await page.locator('#mobile-citizen-toggle').click();
-    await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+async function openCitizenPanelWhenNeeded(page) {
+    if ((page.viewportSize()?.width || 0) <= 768) {
+        await page.locator('#mobile-citizen-toggle').click();
+        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+        return;
+    }
+    if (await page.locator('#citizen-panel').getAttribute('aria-hidden') === 'true') {
+        await page.locator('#citizen-panel-visibility-toggle').click();
+        await expect(page.locator('body')).toHaveClass(/citizen-panel-open/);
+    }
 }
 
 test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
@@ -70,6 +76,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover).toBeHidden();
 
             // Click manual tour button
+            await openCitizenPanelWhenNeeded(page);
             const btnTour = page.locator('#btn-tour');
             await expect(btnTour).toBeVisible();
             await btnTour.click();
@@ -179,7 +186,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block C: Data Catalog', () => {
         test('catalog modal opens and displays variables', async ({ page }) => {
-            await openCitizenPanelOnMobile(page);
+            await openCitizenPanelWhenNeeded(page);
             const btnCatalog = page.locator('#btn-catalog');
             await expect(btnCatalog).toBeVisible();
             await btnCatalog.click();
@@ -331,7 +338,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block E: UI Theme & Coordinates', () => {
         test('theme toggle changes body class and localstorage', async ({ page, isMobile }) => {
-            await openCitizenPanelOnMobile(page);
+            await openCitizenPanelWhenNeeded(page);
             const btnTheme = page.locator('#btn-theme-toggle');
             await expect(btnTheme).toBeVisible();
 
@@ -381,7 +388,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                     expect(Math.max(...textRgb)).toBeLessThan(100);
                 }
                 await page.locator('#technical-drawer-close').click();
-                await openCitizenPanelOnMobile(page);
+                await openCitizenPanelWhenNeeded(page);
             }
 
             // First click changes to dark and persists the choice.
@@ -429,7 +436,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('GA4 privacy notice is visible in "¿Por qué confiar?" section', async ({ page }) => {
-            await openCitizenPanelOnMobile(page);
+            await openCitizenPanelWhenNeeded(page);
             const openInstitutionalBtn = page.locator('#open-institutional-button');
             await openInstitutionalBtn.click();
             const btnTrust = page.locator('#institutional-tab-trust');
