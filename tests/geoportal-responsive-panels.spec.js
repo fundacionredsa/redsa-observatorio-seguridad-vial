@@ -28,6 +28,62 @@ async function box(page, selector) {
   });
 }
 
+function intersects(a, b) {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+}
+
+async function assertBasemapControlHasDedicatedSpace(page) {
+  const viewport = page.viewportSize();
+  const dock = page.locator(".basemap-control-dock");
+  const basemap = page.locator(".basemap-control");
+
+  await expect(dock).toHaveCSS("display", "block");
+  await expect(dock).toHaveCSS("position", "fixed");
+  await expect(basemap).toBeVisible();
+  await expect(basemap).toHaveAttribute("aria-label", "Seleccionar mapa base");
+  expect(await basemap.evaluate(element => element.parentElement?.classList.contains("basemap-control-dock"))).toBeTruthy();
+
+  const collapsed = await box(page, ".basemap-control");
+  const zoom = await box(page, ".leaflet-control-zoom");
+  const opacity = await box(page, ".opacity-control");
+  const legend = await box(page, ".legend-panel");
+  const technical = await box(page, "#technical-drawer");
+
+  expect(collapsed.width).toBe(44);
+  expect(collapsed.height).toBe(44);
+  expect(collapsed.left).toBeGreaterThanOrEqual(0);
+  expect(collapsed.right).toBeLessThanOrEqual(viewport.width);
+  expect(collapsed.right).toBeLessThan(technical.left);
+  expect(intersects(collapsed, zoom)).toBeFalsy();
+  expect(intersects(collapsed, opacity)).toBeFalsy();
+  expect(intersects(collapsed, legend)).toBeFalsy();
+  expect(intersects(collapsed, technical)).toBeFalsy();
+
+  expect(zoom.top).toBeLessThan(opacity.top);
+  expect(zoom.bottom).toBeLessThanOrEqual(opacity.top);
+
+  await basemap.hover();
+  await expect(basemap).toHaveClass(/leaflet-control-layers-expanded/);
+  const basemapOptions = basemap.locator(".leaflet-control-layers-base label");
+  await expect(basemapOptions).toHaveCount(4);
+  await expect(basemapOptions.first()).toBeVisible();
+  const expanded = await box(page, ".basemap-control");
+
+  expect(expanded.left).toBeGreaterThanOrEqual(0);
+  expect(expanded.right).toBeLessThanOrEqual(viewport.width);
+  expect(intersects(expanded, zoom)).toBeFalsy();
+  expect(intersects(expanded, opacity)).toBeFalsy();
+  expect(intersects(expanded, legend)).toBeFalsy();
+  expect(intersects(expanded, technical)).toBeFalsy();
+
+  const satelliteOption = basemapOptions.filter({ hasText: "Esri World Imagery" });
+  await expect(satelliteOption).toHaveCount(1);
+  await satelliteOption.click();
+  await expect(satelliteOption.locator("input")).toBeChecked();
+
+  return { collapsed, expanded, zoom, opacity, legend, technical };
+}
+
 test("panel ciudadano web conserva estado y no compite con la ficha territorial", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "La experiencia off-canvas móvil se cubre por separado.");
   await loadPortal(page);
@@ -143,6 +199,10 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   await loadPortal(page);
 
   await expect(page.locator("#citizen-panel-visibility-toggle")).toBeHidden();
+  await expect(page.locator(".basemap-control-dock")).toBeHidden();
+  expect(await page.locator(".basemap-control").evaluate(element =>
+    element.parentElement?.classList.contains("leaflet-right")
+  )).toBeTruthy();
   await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
   await page.locator("#mobile-citizen-toggle").click();
   await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
@@ -155,4 +215,21 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   const timelineBox = await box(page, ".timeline-control");
   const variablesBox = await box(page, "#variable-disclosure");
   expect(timelineBox.top).toBeLessThan(variablesBox.top);
+});
+
+test("mapas base tiene espacio propio en pantallas medianas y grandes", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Mobile conserva el corner Leaflet existente.");
+  if (testInfo.project.name === "desktop") {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+  }
+  await loadPortal(page);
+  await assertBasemapControlHasDedicatedSpace(page);
+});
+
+test("mapas base no se superpone en una ventana web angosta", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La ventana angosta se valida una vez.");
+  await page.setViewportSize({ width: 820, height: 800 });
+  await loadPortal(page);
+  await expect(page.locator("body")).not.toHaveClass(/citizen-panel-open/);
+  await assertBasemapControlHasDedicatedSpace(page);
 });

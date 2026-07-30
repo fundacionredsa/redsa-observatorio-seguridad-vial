@@ -3,6 +3,10 @@
     --citizen-panel-width: 390px;
     --analysis-drawer-width: 440px;
     --technical-drawer-width: 400px;
+    --basemap-dock-top: 20px;
+    --basemap-dock-right-clearance: 76px;
+    --basemap-toggle-size: 44px;
+    --basemap-expanded-width: 260px;
     --public-ink: #18212a;
     --public-muted: #59636d;
     --public-line: #d9dfe4;
@@ -30,6 +34,10 @@
 }
 
 .citizen-panel-visibility-toggle {
+    display: none;
+}
+
+.basemap-control-dock {
     display: none;
 }
 
@@ -1784,6 +1792,43 @@ body.mobile-layers-open .technical-toggle {
 }
 
 @media (min-width: 769px) {
+    .basemap-control-dock {
+        position: fixed;
+        z-index: calc(var(--z-map-controls) + 1);
+        top: var(--basemap-dock-top);
+        right: calc(var(--technical-drawer-width) + var(--basemap-dock-right-clearance));
+        display: block;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    .basemap-control-dock .basemap-control {
+        position: absolute;
+        top: 0;
+        right: 0;
+        float: none;
+        clear: none;
+        margin: 0 !important;
+        pointer-events: auto;
+    }
+
+    .basemap-control-dock .basemap-control:not(.leaflet-control-layers-expanded) {
+        width: var(--basemap-toggle-size);
+        height: var(--basemap-toggle-size);
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .basemap-control-dock .basemap-control:not(.leaflet-control-layers-expanded) .leaflet-control-layers-toggle {
+        width: calc(var(--basemap-toggle-size) - 2px);
+        height: calc(var(--basemap-toggle-size) - 2px);
+    }
+
+    .basemap-control-dock .basemap-control.leaflet-control-layers-expanded {
+        width: var(--basemap-expanded-width);
+    }
+
     .technical-drawer {
         transform: translateX(0);
         pointer-events: auto;

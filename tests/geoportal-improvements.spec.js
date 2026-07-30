@@ -317,8 +317,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(territoryPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
             await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
-            // Layer control should exist
-            const layerControl = page.locator('.leaflet-top .leaflet-control-layers').first();
+            // The basemap control lives in its own fixed dock on web viewports.
+            const layerControl = page.locator('.basemap-control');
             await expect(layerControl).toBeVisible();
 
             const controlsClearDrawer = await page.evaluate(() => {
