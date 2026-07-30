@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.18">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.18">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.18">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.19">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.19">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.19">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -98,14 +98,15 @@
             <div class="citizen-search-status" id="territory-search-status" role="status"></div>
         </form>
         <div class="citizen-map-context" aria-live="polite">
-            <strong id="citizen-map-variable">Accidentes de tránsito reportados · 2024</strong>
+            <strong id="citizen-map-variable">Siniestros de tránsito reportados</strong>
+            <span id="citizen-map-meta" class="citizen-map-meta">Nivel: Provincias · Periodo: 2025 · Fuente: ANT e INEC/ESTRA</span>
             <span id="citizen-map-description">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
         </div>
         <div class="citizen-summary" id="citizen-summary" aria-live="polite">
             <p class="citizen-summary-empty">Busca tu cantón para ver su situación y compararla con el país.</p>
         </div>
         <div class="citizen-actions">
-            <button class="citizen-action" id="open-analysis-button" type="button">Ver análisis completo</button>
+            <button class="citizen-action citizen-action-primary" id="open-analysis-button" type="button">Ver análisis completo</button>
             <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
             <button class="citizen-action" id="btn-catalog" type="button"><i class="fa-solid fa-database"></i> Catálogo de Datos</button>
             <button class="citizen-action" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro"><i class="fa-solid fa-sun"></i> Modo Claro</button>
@@ -534,18 +535,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.18"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.18"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.19"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.19"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

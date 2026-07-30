@@ -198,6 +198,30 @@ function onEachProvinceFeature(feature, layer) {
             }
         }
 
+        function getLegendPeriodLabel(config) {
+            const activePeriod = getActivePeriodLabel(config);
+            if (activePeriod) return activePeriod;
+            const years = config?.temporal?.anios_disponibles || [];
+            if (years.length === 1) return String(years[0]);
+            return years.length > 1 ? formatCoveredYears(years) : "";
+        }
+
+        function renderLegendHeading(title, metadataParts = [], technicalInfo = "") {
+            const metadata = metadataParts
+                .filter(Boolean)
+                .map(part => `<span class="legend-heading-meta-part">${part}</span>`)
+                .join('<span class="legend-heading-separator" aria-hidden="true">·</span>');
+            const secondaryLine = metadata || technicalInfo
+                ? `<div class="legend-heading-meta">${metadata}${technicalInfo ? `<span class="legend-heading-technical">${technicalInfo}</span>` : ""}</div>`
+                : "";
+            return `
+                <div class="legend-heading">
+                    <div class="legend-heading-title">${title}</div>
+                    ${secondaryLine}
+                </div>
+            `;
+        }
+
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
         function updateLegend() {
             const container = document.getElementById("legend-items");
@@ -220,9 +244,17 @@ function onEachProvinceFeature(feature, layer) {
 
                 if (unavailableAtLevel || noValuesAtLevel) {
                     const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";
-                    const temporalLabel = requestedConfig.temporal?.tipo === "anual" ? ` · ${getActivePeriodLabel(requestedConfig)}` : "";
+                    const technicalInfo = requestedConfig.infoSigla ? siglaInfoIcon(requestedConfig.infoSigla) : "";
                     container.innerHTML += `
-                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${requestedConfig.label} (Nivel: ${levelName})${temporalLabel}:</div>
+                        ${renderLegendHeading(
+                            requestedConfig.displayLabel || requestedConfig.label,
+                            [
+                                `Nivel: ${levelName}`,
+                                getLegendPeriodLabel(requestedConfig) ? `Periodo: ${getLegendPeriodLabel(requestedConfig)}` : "",
+                                requestedConfig.fuente ? `Fuente: ${requestedConfig.fuente}` : ""
+                            ],
+                            technicalInfo
+                        )}
                         <div class="legend-unavailable" role="status">
                             <strong>Sin datos disponibles en este nivel territorial.</strong>
                             <span>${unavailableAtLevel ? "La variable seleccionada no se publica para este nivel; se muestran únicamente los límites administrativos." : "No existen valores publicables para la combinación de nivel y periodo seleccionada."}</span>
@@ -235,15 +267,17 @@ function onEachProvinceFeature(feature, layer) {
                 } else if (effectiveVariable === 'normal') {
                     const levelTitle = "Sin variable seleccionada";
                     container.innerHTML += `
-                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${levelTitle}</div>
+                        ${renderLegendHeading(levelTitle, [
+                            `Nivel: ${LEVEL_LABELS[currentLevel]}`,
+                            "Vista: límites administrativos"
+                        ])}
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
-                            <span>Límites administrativos · ${LEVEL_LABELS[currentLevel]}</span>
+                            <span>Límites administrativos</span>
                         </div>
                     `;
                 } else {
                     const config = VARIABLE_CONFIGS[effectiveVariable];
-                    const temporalLabel = config.temporal?.tipo === "anual" ? ` · ${getActivePeriodLabel(config)}` : "";
                     
                     let classificationInfo = "";
                     if (activeVariableBins.method && activeVariableBins.method !== "Sin datos") {
@@ -254,16 +288,21 @@ function onEachProvinceFeature(feature, layer) {
                         classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}${scaleText}`)}`;
                     }
 
-                    const levelContext = config.legendLevelLabel
-                        ? ` (${config.legendLevelLabel})`
-                        : (LEVEL_LABELS[currentLevel] ? ` (Nivel: ${LEVEL_LABELS[currentLevel].charAt(0).toUpperCase() + LEVEL_LABELS[currentLevel].slice(1)})` : "");
-                    const title = `${config.label}${levelContext}${temporalLabel}${config.infoSigla ? ` ${siglaInfoIcon(config.infoSigla)}` : ""}${classificationInfo}:`;
+                    const technicalInfo = `${config.infoSigla ? siglaInfoIcon(config.infoSigla) : ""}${classificationInfo}`;
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const displayBins = activeVariableBins.displayBins || bins;
                     const colors = activeVariableBins.colors && activeVariableBins.colors.length > 0 ? activeVariableBins.colors : config.colors;
                     const formatFunc = config.format || (v => v.toString());
                     let itemsHtml = `
-                        <div class="legend-item" style="font-weight: 600; margin-bottom: 2px; color: var(--text-primary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">${title}</div>
+                        ${renderLegendHeading(
+                            config.displayLabel || config.label,
+                            [
+                                LEVEL_LABELS[currentLevel] ? `Nivel: ${LEVEL_LABELS[currentLevel]}` : "",
+                                getLegendPeriodLabel(config) ? `Periodo: ${getLegendPeriodLabel(config)}` : "",
+                                config.fuente ? `Fuente: ${config.fuente}` : ""
+                            ],
+                            technicalInfo
+                        )}
                     `;
 
                     for (let i = 0; bins.length && i <= bins.length; i++) {
