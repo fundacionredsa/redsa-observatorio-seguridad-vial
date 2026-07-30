@@ -232,12 +232,28 @@
         let selectedLayer = null;
         let selectedProvinceLayer = null;
         let layerControl = null;
+        const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
         const baseLayerControl = L.control.layers(baseMaps, {}, {
             position: 'topright',
             collapsed: true
         }).addTo(map);
-        baseLayerControl.getContainer()?.classList.add("basemap-control");
-        baseLayerControl.getContainer()?.setAttribute("aria-label", "Seleccionar mapa base");
+        const basemapControlContainer = baseLayerControl.getContainer();
+        const basemapLeafletCorner = basemapControlContainer?.parentElement || null;
+        const basemapControlDock = document.createElement("div");
+        basemapControlDock.className = "basemap-control-dock";
+        basemapControlDock.setAttribute("aria-label", "Mapas base");
+        document.body.appendChild(basemapControlDock);
+        basemapControlContainer?.classList.add("basemap-control");
+        basemapControlContainer?.setAttribute("aria-label", "Seleccionar mapa base");
+
+        function syncBasemapControlDock() {
+            if (!basemapControlContainer || !basemapLeafletCorner) return;
+            baseLayerControl.collapse?.();
+            const target = mobileMediaQuery.matches ? basemapLeafletCorner : basemapControlDock;
+            if (basemapControlContainer.parentElement !== target) target.appendChild(basemapControlContainer);
+        }
+
+        syncBasemapControlDock();
         let overlayMaps = {};
         let historicoChart = null;
 
@@ -250,7 +266,6 @@
         const openAnalysisButton = document.getElementById("open-analysis-button");
         const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
-        const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
         // Initial state only: narrower web windows recover map space but keep the edge toggle available.
         const DESKTOP_CITIZEN_PANEL_MIN_WIDTH = 1280;
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
@@ -419,6 +434,7 @@
             }
         });
         mobileMediaQuery.addEventListener("change", (event) => {
+            syncBasemapControlDock();
             if (event.matches) {
                 setMobilePanel("citizen", false);
                 setMobilePanel("sidebar", false);
