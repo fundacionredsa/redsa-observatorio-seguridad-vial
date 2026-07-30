@@ -608,7 +608,7 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
   const stableTarget = (page.viewportSize()?.width || 0) > 768
-    ? page.locator("#citizen-panel")
+    ? page.locator("#citizen-panel-visibility-toggle")
     : page.locator("#mobile-sidebar-toggle");
   await stableTarget.hover();
   await page.waitForTimeout(400);
