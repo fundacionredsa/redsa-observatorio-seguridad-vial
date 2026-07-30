@@ -1100,12 +1100,46 @@ body.technical-drawer-open .technical-drawer {
     min-width: 0;
 }
 
-.variable-disclosure,
-.infrastructure-disclosure,
-.event-layer-disclosure {
+.layers-card {
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.13);
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.04);
+}
+
+.layers-card-header {
+    padding: 11px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.layers-card-header h3 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.layers-card-header p {
+    margin: 3px 0 0;
+    color: #b8c3cc;
+    font-size: 0.62rem;
+    line-height: 1.35;
+}
+
+.layers-card-section {
+    min-width: 0;
+}
+
+.layers-card-section + .layers-card-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.variable-disclosure,
+.infrastructure-disclosure,
+.event-layer-disclosure {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
 }
 
 .variable-disclosure summary,
@@ -2106,15 +2140,26 @@ body.light-theme .profile-section-title {
 
 body.light-theme .technical-controls-slot .map-selector-control,
 body.light-theme .technical-controls-slot .leaflet-control-layers,
-body.light-theme .variable-disclosure,
-body.light-theme .infrastructure-disclosure,
-body.light-theme .event-layer-disclosure,
+body.light-theme .layers-card,
 body.light-theme .territory-level-segments button,
 body.light-theme .technical-links a,
 body.light-theme .technical-action {
     border-color: #cbd5e1;
     background: #f8fafc;
     color: #1e293b;
+}
+
+body.light-theme .layers-card-header,
+body.light-theme .layers-card-section + .layers-card-section {
+    border-color: #cbd5e1;
+}
+
+body.light-theme .layers-card-header h3 {
+    color: #1e293b;
+}
+
+body.light-theme .layers-card-header p {
+    color: #52606b;
 }
 
 body.light-theme .variable-disclosure summary,

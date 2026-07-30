@@ -274,6 +274,7 @@
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
         const technicalControlsSlot = document.getElementById("technical-controls-slot");
         const variableControlsSlot = document.getElementById("variable-controls-slot");
+        const mapVariableDisclosureSlot = document.getElementById("map-variable-disclosure-slot");
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
         const territorySidebar = document.getElementById("territory-sidebar");
         const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
@@ -384,6 +385,10 @@
             if (!technicalControlsSlot) return;
             if (selector && variableControlsSlot && selector.parentElement !== variableControlsSlot) {
                 variableControlsSlot.appendChild(selector);
+            }
+            const variableDisclosure = document.getElementById("variable-disclosure");
+            if (variableDisclosure && mapVariableDisclosureSlot && variableDisclosure.parentElement !== mapVariableDisclosureSlot) {
+                mapVariableDisclosureSlot.appendChild(variableDisclosure);
             }
             if (container && infrastructureControlsSlot && container.parentElement !== infrastructureControlsSlot) {
                 container.id = "mobile-layer-control";

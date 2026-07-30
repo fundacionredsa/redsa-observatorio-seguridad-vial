@@ -75,6 +75,57 @@ test("los controles laterales son iconos y la leyenda conserva su estado en cual
   await expect(legendContent).toBeVisible();
 });
 
+test("las tres capas del mapa comparten una sola tarjeta y conservan controles independientes", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  if (testInfo.project.name === "mobile") {
+    await page.locator("#mobile-layers-toggle").click();
+    await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  }
+
+  const card = page.locator("#layers-card");
+  const variables = page.locator("#variable-disclosure");
+  const events = page.locator("#event-layer-disclosure");
+  const infrastructure = page.locator("#infrastructure-disclosure");
+
+  await expect(card).toBeVisible();
+  await expect(card.locator("#variable-disclosure")).toHaveCount(1);
+  await expect(card.locator("#event-layer-disclosure")).toHaveCount(1);
+  await expect(card.locator("#infrastructure-disclosure")).toHaveCount(1);
+  await expect(card.locator(".layers-card-section")).toHaveCount(3);
+  await expect(card).toContainText("Capas del mapa");
+
+  for (const disclosure of [variables, events, infrastructure]) {
+    await expect(disclosure).not.toHaveAttribute("open", "");
+  }
+
+  await variables.locator("summary").click();
+  await expect(variables).toHaveAttribute("open", "");
+  await expect(events).not.toHaveAttribute("open", "");
+  await expect(infrastructure).not.toHaveAttribute("open", "");
+
+  await events.locator("summary").click();
+  await expect(variables).toHaveAttribute("open", "");
+  await expect(events).toHaveAttribute("open", "");
+  await expect(infrastructure).not.toHaveAttribute("open", "");
+
+  await infrastructure.locator("summary").click();
+  await expect(variables).toHaveAttribute("open", "");
+  await expect(events).toHaveAttribute("open", "");
+  await expect(infrastructure).toHaveAttribute("open", "");
+
+  const styles = await card.evaluate(element => {
+    const details = [...element.querySelectorAll("details")];
+    return {
+      cardBorder: getComputedStyle(element).borderTopWidth,
+      detailBorders: details.map(detail => getComputedStyle(detail).borderTopWidth),
+      detailBackgrounds: details.map(detail => getComputedStyle(detail).backgroundColor)
+    };
+  });
+  expect(styles.cardBorder).toBe("1px");
+  expect(styles.detailBorders).toEqual(["0px", "0px", "0px"]);
+  expect(styles.detailBackgrounds).toEqual(["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)"]);
+});
+
 async function assertBasemapControlHasDedicatedSpace(page) {
   const viewport = page.viewportSize();
   const dock = page.locator(".basemap-control-dock");

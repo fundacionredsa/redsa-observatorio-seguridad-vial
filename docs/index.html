@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.21">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.21">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.21">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.22">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.22">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.22">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -140,33 +140,46 @@
         </div>
         <div class="technical-controls-slot" id="technical-controls-slot">
             <div class="variable-controls-slot" id="variable-controls-slot"></div>
-            <details class="event-layer-disclosure" id="event-layer-disclosure">
-                <summary>
-                    <span>Siniestros en el mapa</span>
-                    <small>Representación puntual</small>
-                </summary>
-                <p class="event-layer-help">Complementa la variable territorial mostrando los mismos eventos en el lugar donde ocurrieron.</p>
-                <label class="event-layer-toggle" for="ant-layer-toggle">
-                    <input id="ant-layer-toggle" type="checkbox">
-                    <span>Siniestros (ANT)</span>
-                    <button type="button" class="sigla-tooltip-trigger event-layer-info" data-sigla="ANT_SINIESTROS" aria-label="Qué significa Siniestros ANT">ⓘ</button>
-                </label>
-                <div class="ant-mode-controls" id="ant-mode-controls" role="group" aria-label="Representación de los siniestros ANT" hidden>
-                    <button type="button" data-ant-mode="heat" aria-pressed="true">Calor</button>
-                    <button type="button" data-ant-mode="clusters" aria-pressed="false">Agrupaciones</button>
-                    <button type="button" data-ant-mode="cases" aria-pressed="false">Casos</button>
+            <section class="layers-card" id="layers-card" aria-labelledby="layers-card-title">
+                <header class="layers-card-header">
+                    <h3 id="layers-card-title">Capas del mapa</h3>
+                    <p>Elige qué información quieres ver y combinar en el mapa.</p>
+                </header>
+                <div class="layers-card-sections">
+                    <div class="layers-card-section layers-card-variable-slot" id="map-variable-disclosure-slot"></div>
+                    <div class="layers-card-section">
+                        <details class="event-layer-disclosure" id="event-layer-disclosure">
+                            <summary>
+                                <span>Siniestros en el mapa</span>
+                                <small>Representación puntual</small>
+                            </summary>
+                            <p class="event-layer-help">Complementa la variable territorial mostrando los mismos eventos en el lugar donde ocurrieron.</p>
+                            <label class="event-layer-toggle" for="ant-layer-toggle">
+                                <input id="ant-layer-toggle" type="checkbox">
+                                <span>Siniestros (ANT)</span>
+                                <button type="button" class="sigla-tooltip-trigger event-layer-info" data-sigla="ANT_SINIESTROS" aria-label="Qué significa Siniestros ANT">ⓘ</button>
+                            </label>
+                            <div class="ant-mode-controls" id="ant-mode-controls" role="group" aria-label="Representación de los siniestros ANT" hidden>
+                                <button type="button" data-ant-mode="heat" aria-pressed="true">Calor</button>
+                                <button type="button" data-ant-mode="clusters" aria-pressed="false">Agrupaciones</button>
+                                <button type="button" data-ant-mode="cases" aria-pressed="false">Casos</button>
+                            </div>
+                            <p class="ant-layer-status" id="ant-layer-status" role="status" aria-live="polite"></p>
+                            <button type="button" class="ant-jump-year" id="ant-jump-year">Ver último año disponible</button>
+                        </details>
+                    </div>
+                    <div class="layers-card-section">
+                        <details class="infrastructure-disclosure" id="infrastructure-disclosure">
+                            <summary>
+                                <span>Infraestructura vial</span>
+                                <small>Selección múltiple</small>
+                            </summary>
+                            <p class="infrastructure-help">Activa una o varias capas. El menú permanece abierto mientras haces tu selección.</p>
+                            <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
+                        </details>
+                    </div>
                 </div>
-                <p class="ant-layer-status" id="ant-layer-status" role="status" aria-live="polite"></p>
-                <button type="button" class="ant-jump-year" id="ant-jump-year">Ver último año disponible</button>
-            </details>
-            <details class="infrastructure-disclosure" id="infrastructure-disclosure">
-                <summary>
-                    <span>Infraestructura vial</span>
-                    <small>Selección múltiple</small>
-                </summary>
-                <p class="infrastructure-help">Activa una o varias capas. El menú permanece abierto mientras haces tu selección.</p>
-                <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
-            </details>
+            </section>
         </div>
         <div class="technical-section-title">Metodología</div>
         <nav class="technical-links" aria-label="Metodología del observatorio">
@@ -534,18 +547,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.21"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.21"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.22"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.22"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">
