@@ -53,6 +53,10 @@
         periodMode: "year",
         year: null,
         loadedYear: null,
+        heatLoadedYear: null,
+        fullLoadedYear: null,
+        dataSource: null,
+        loadKind: null,
         status: "idle",
         requestId: null,
         queryId: 0,
@@ -60,6 +64,9 @@
         heatPoints: null,
         metadata: null,
         metrics: null,
+        heatMetrics: null,
+        fullMetrics: null,
+        pointCount: 0,
         layer: null,
         map: null,
         pane: "eventPane",
@@ -94,7 +101,8 @@
         state.activationReadyTracked = true;
         trackAntEvent("ant_layer_ready", {
             duration_ms: Math.round(performance.now() - state.activationStartedAt),
-            cache_hit: state.activationCacheHit
+            cache_hit: state.activationCacheHit,
+            data_kind: state.metrics?.dataKind || state.dataSource || "unknown"
         });
     }
 
@@ -104,6 +112,18 @@
 
     function isYearAvailable(year = state.year) {
         return availableYears().includes(Number(year)) && Boolean(state.config?.urlByYear?.[String(year)]);
+    }
+
+    function hasHeatData(year = state.year) {
+        return Boolean(state.heatPoints) && state.heatLoadedYear === Number(year);
+    }
+
+    function hasFullData(year = state.year) {
+        return Boolean(state.worker) && state.fullLoadedYear === Number(year);
+    }
+
+    function dataReadyForMode(mode = state.mode, year = state.year) {
+        return mode === "heat" ? hasHeatData(year) : hasFullData(year);
     }
 
     function auditForYear(year = state.year) {
@@ -274,9 +294,27 @@
         }
     }
 
+    function clearCachedYear() {
+        state.worker?.terminate();
+        state.worker = null;
+        state.requestId = null;
+        state.loadedYear = null;
+        state.heatLoadedYear = null;
+        state.fullLoadedYear = null;
+        state.dataSource = null;
+        state.loadKind = null;
+        state.heatPoints = null;
+        state.metadata = null;
+        state.metrics = null;
+        state.heatMetrics = null;
+        state.fullMetrics = null;
+        state.pointCount = 0;
+        state.cacheYears = [];
+    }
+
     function createWorker() {
         state.worker?.terminate();
-        state.worker = new Worker("assets/js/ant-layer-worker.js");
+        state.worker = new Worker("assets/js/ant-layer-worker.js?v=0.10.23");
         state.worker.onmessage = handleWorkerMessage;
         state.worker.onerror = event => {
             console.error("Worker ANT:", event.message);
@@ -293,13 +331,24 @@
 
     function loadYear() {
         if (!state.active || !isYearAvailable()) return;
+        if (state.cacheYears.length && !state.cacheYears.includes(state.year)) {
+            clearCachedYear();
+        }
+        const requestedKind = state.mode === "heat" ? "heat" : "full";
+        const cached = dataReadyForMode();
         state.activationStartedAt = performance.now();
-        state.activationCacheHit = Boolean(
-            state.heatPoints && state.cacheYears.includes(state.year) && state.loadedYear === state.year
-        );
+        state.activationCacheHit = cached;
         state.activationReadyTracked = false;
-        trackAntEvent("ant_layer_activation_start", { cache_hit: state.activationCacheHit });
-        if (state.heatPoints && state.cacheYears.includes(state.year) && state.loadedYear === state.year) {
+        trackAntEvent("ant_layer_activation_start", {
+            cache_hit: state.activationCacheHit,
+            data_kind: cached
+                ? (hasFullData() ? "full-geojson" : "heat-compact")
+                : requestedKind
+        });
+        if (cached) {
+            state.loadedYear = state.year;
+            state.dataSource = hasFullData() ? "full-geojson" : "heat-compact";
+            state.metrics = hasFullData() ? state.fullMetrics : state.heatMetrics;
             setStatus("ready");
             syncControls();
             renderCurrentMode();
@@ -310,30 +359,64 @@
         setStatus("loading");
         syncControls();
         const requestedYear = state.year;
-        const requestId = `ant-${requestedYear}-${Date.now()}`;
+        const requestId = `ant-${requestedKind}-${requestedYear}-${Date.now()}`;
         state.requestId = requestId;
+        state.loadKind = requestedKind;
         const worker = createWorker();
+        const urlByYear = requestedKind === "heat"
+            ? state.config.heatUrlByYear
+            : state.config.urlByYear;
         worker.postMessage({
-            type: "load",
+            type: requestedKind === "heat" ? "load-heat" : "load-full",
             requestId,
             year: requestedYear,
-            url: new URL(state.config.urlByYear[String(requestedYear)], document.baseURI).href
+            url: new URL(urlByYear[String(requestedYear)], document.baseURI).href
         });
     }
 
     function handleWorkerMessage(event) {
         const message = event.data || {};
         if (message.requestId !== state.requestId) return;
-        if (message.type === "loaded") {
+        if (message.type === "heat-loaded") {
             if (Number(message.year) !== state.year) return;
-            state.metadata = message.metadata;
             state.heatPoints = message.heatPoints;
             state.metrics = message.metrics;
+            state.heatMetrics = message.metrics;
             state.loadedYear = Number(message.year);
+            state.heatLoadedYear = state.loadedYear;
+            state.fullLoadedYear = null;
+            state.dataSource = "heat-compact";
+            state.loadKind = null;
+            state.pointCount = Number(message.pointCount);
             state.cacheYears = [state.loadedYear].slice(-MAX_CACHED_YEARS);
             setStatus("ready");
             syncControls();
             renderCurrentMode();
+            return;
+        }
+        if (message.type === "full-loaded") {
+            if (Number(message.year) !== state.year) return;
+            if (hasHeatData(message.year) && state.heatPoints.length !== Number(message.pointCount)) {
+                console.error("El conteo ANT difiere entre el compacto de calor y el GeoJSON completo.");
+                setStatus("error");
+                syncControls();
+                return;
+            }
+            state.metadata = message.metadata;
+            state.heatPoints = message.heatPoints;
+            state.metrics = message.metrics;
+            state.fullMetrics = message.metrics;
+            state.loadedYear = Number(message.year);
+            state.heatLoadedYear = state.loadedYear;
+            state.fullLoadedYear = state.loadedYear;
+            state.dataSource = "full-geojson";
+            state.loadKind = null;
+            state.pointCount = Number(message.pointCount);
+            state.cacheYears = [state.loadedYear].slice(-MAX_CACHED_YEARS);
+            setStatus("ready");
+            syncControls();
+            renderCurrentMode();
+            requestTerritorySummary();
             return;
         }
         if (message.type === "clusters") renderClusters(message);
@@ -381,7 +464,7 @@
     }
 
     function requestViewport(type) {
-        if (!state.worker || state.status !== "ready") return;
+        if (!state.worker || state.status !== "ready" || !hasFullData()) return;
         state.queryId += 1;
         state.worker.postMessage({
             type,
@@ -600,12 +683,19 @@
             if (container) container.hidden = true;
             return;
         }
-        if (!state.active || state.status !== "ready" || state.year !== state.loadedYear || !state.worker) {
+        if (
+            !state.active
+            || state.status !== "ready"
+            || state.year !== state.loadedYear
+            || !hasFullData()
+        ) {
             if (status) status.textContent = isAccumulatedMode()
                 ? "El análisis de Siniestros (ANT) se muestra solo por año y no está disponible en modo acumulado."
                 : !isYearAvailable()
                     ? `Este análisis puntual está disponible en ${availableYears().join(", ")}.`
-                    : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
+                    : state.active && hasHeatData()
+                        ? "El detalle territorial se prepara al usar Agrupaciones o Casos."
+                        : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
             if (container) container.hidden = true;
             return;
         }
@@ -636,7 +726,7 @@
     }
 
     function renderCurrentMode() {
-        if (!state.active || state.year !== state.loadedYear || state.status !== "ready") {
+        if (!state.active || state.status !== "ready" || !dataReadyForMode()) {
             removeCurrentLayer();
             return;
         }
@@ -648,7 +738,7 @@
     }
 
     function scheduleViewportRender() {
-        if (!state.active || state.status !== "ready" || state.year !== state.loadedYear) return;
+        if (!state.active || state.status !== "ready" || !dataReadyForMode()) return;
         clearTimeout(state.queryTimer);
         state.queryTimer = setTimeout(() => {
             if (state.mode === "heat") renderHeat();
@@ -687,10 +777,14 @@
         if (state.mode === mode) return;
         state.mode = mode;
         state.activationStartedAt = performance.now();
-        state.activationCacheHit = true;
+        state.activationCacheHit = dataReadyForMode();
         state.activationReadyTracked = false;
-        trackAntEvent("ant_layer_mode_change", { cache_hit: true });
-        renderCurrentMode();
+        trackAntEvent("ant_layer_mode_change", { cache_hit: state.activationCacheHit });
+        if (state.active) {
+            loadYear();
+        } else {
+            syncControls();
+        }
     }
 
     function setHeatBandwidthProfile(profileName) {
@@ -713,13 +807,9 @@
             removeCurrentLayer();
             setStatus("unavailable");
         } else {
-            if (state.loadedYear !== state.year) {
+            if (state.loadedYear !== state.year || !state.cacheYears.includes(state.year)) {
                 cancelPending("cancelled");
-                state.heatPoints = null;
-                state.metadata = null;
-                state.metrics = null;
-                state.loadedYear = null;
-                state.cacheYears = [];
+                clearCachedYear();
                 removeCurrentLayer();
             }
             loadYear();
@@ -815,11 +905,18 @@
             periodMode: state.periodMode,
             year: state.year,
             loadedYear: state.loadedYear,
+            heatLoadedYear: state.heatLoadedYear,
+            fullLoadedYear: state.fullLoadedYear,
+            dataSource: state.dataSource,
+            loadKind: state.loadKind,
             status: state.status,
             metrics: state.metrics ? { ...state.metrics } : null,
+            heatMetrics: state.heatMetrics ? { ...state.heatMetrics } : null,
+            fullMetrics: state.fullMetrics ? { ...state.fullMetrics } : null,
             renderMetrics: JSON.parse(JSON.stringify(state.renderMetrics)),
             cacheYears: [...state.cacheYears],
             downloaded: Boolean(state.heatPoints),
+            pointCount: state.pointCount,
             bandwidthProfile: state.bandwidthProfile,
             bandwidthProfiles: HEAT_BANDWIDTH_PROFILES
         };

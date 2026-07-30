@@ -375,6 +375,11 @@
                 "2025": "data/siniestros_ant_2025.geojson",
                 "2026": "data/siniestros_ant_2026.geojson"
             },
+            heatUrlByYear: {
+                "2024": "data/siniestros_ant_2024_heat.json",
+                "2025": "data/siniestros_ant_2025_heat.json",
+                "2026": "data/siniestros_ant_2026_heat.json"
+            },
             temporal: {
                 tipo: "anual",
                 anios_disponibles: [2024, 2025, 2026],

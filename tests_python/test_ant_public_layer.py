@@ -21,6 +21,10 @@ class AntPublicLayerContractTest(unittest.TestCase):
             year: json.loads((DATA / f"siniestros_ant_{year}.geojson").read_text(encoding="utf-8"))
             for year in cls.expected
         }
+        cls.heat_layers = {
+            year: json.loads((DATA / f"siniestros_ant_{year}_heat.json").read_text(encoding="utf-8"))
+            for year in cls.expected
+        }
         cls.catalog = json.loads((DATA / "catalogo_metadatos.json").read_text(encoding="utf-8"))
 
     def test_public_layer_count_and_audit_metadata(self):
@@ -46,6 +50,22 @@ class AntPublicLayerContractTest(unittest.TestCase):
                     self.assertLessEqual(set(properties), ALLOWED_KEYS)
                 serialized_schema = json.dumps(layer["metadata"]["esquema_compacto"], ensure_ascii=False).lower()
                 self.assertFalse(FORBIDDEN_TERMS.intersection(serialized_schema.split()))
+
+    def test_heat_compact_is_exact_coordinate_projection(self):
+        for year, layer in self.layers.items():
+            with self.subTest(year=year):
+                compact = self.heat_layers[year]
+                self.assertEqual(compact["schema"], "redsa-ant-heat-v1")
+                self.assertEqual(compact["year"], year)
+                self.assertEqual(compact["scale"], 100_000)
+                self.assertEqual(compact["point_count"], len(layer["features"]))
+                expected_coordinates = []
+                for feature in layer["features"]:
+                    longitude, latitude = feature["geometry"]["coordinates"]
+                    expected_coordinates.extend(
+                        [round(latitude * compact["scale"]), round(longitude * compact["scale"])]
+                    )
+                self.assertEqual(compact["coordinates"], expected_coordinates)
 
     def test_catalog_declares_event_layer_source_period_and_download(self):
         entry = next(item for item in self.catalog["variables"] if item["id"] == "siniestros_ant_puntos")

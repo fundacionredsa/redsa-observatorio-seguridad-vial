@@ -12,6 +12,7 @@ let abortController = null;
 let features = [];
 let clusterIndex = null;
 let metadata = null;
+const HEAT_COORDINATE_SCHEMA = "redsa-ant-heat-v1";
 
 function matchesTerritory(feature, level, code) {
     const props = feature.properties || {};
@@ -66,13 +67,10 @@ function post(type, payload = {}) {
     self.postMessage({ type, requestId: activeRequestId, ...payload });
 }
 
-async function loadData(message) {
+async function fetchJsonBuffer(message) {
     activeRequestId = message.requestId;
     abortController?.abort();
     abortController = new AbortController();
-    features = [];
-    clusterIndex = null;
-    metadata = null;
 
     const transferStarted = performance.now();
     const response = await fetch(message.url, {
@@ -90,6 +88,64 @@ async function loadData(message) {
     const data = JSON.parse(text);
     const parseMs = performance.now() - parseStarted;
     if (message.requestId !== activeRequestId) return;
+    return {
+        data,
+        metrics: {
+            transferBytes: buffer.byteLength,
+            encodedTransferBytes,
+            transferMs,
+            parseMs
+        }
+    };
+}
+
+async function loadHeatData(message) {
+    const result = await fetchJsonBuffer(message);
+    if (!result || message.requestId !== activeRequestId) return;
+    const { data, metrics } = result;
+    if (data.schema !== HEAT_COORDINATE_SCHEMA) {
+        throw new Error("El derivado compacto ANT tiene un esquema no reconocido.");
+    }
+    if (Number(data.year) !== Number(message.year)) {
+        throw new Error("El derivado compacto ANT no corresponde al año solicitado.");
+    }
+    const scale = Number(data.scale);
+    const coordinates = data.coordinates;
+    const pointCount = Number(data.point_count);
+    if (!Number.isFinite(scale) || scale <= 0 || !Array.isArray(coordinates)) {
+        throw new Error("El derivado compacto ANT no contiene coordenadas válidas.");
+    }
+    if (coordinates.length !== pointCount * 2) {
+        throw new Error("El conteo del derivado compacto ANT no coincide con sus coordenadas.");
+    }
+    const heatPoints = new Array(pointCount);
+    for (let index = 0; index < pointCount; index += 1) {
+        heatPoints[index] = [
+            Number(coordinates[index * 2]) / scale,
+            Number(coordinates[index * 2 + 1]) / scale,
+            1
+        ];
+    }
+    post("heat-loaded", {
+        year: message.year,
+        pointCount,
+        heatPoints,
+        metrics: {
+            ...metrics,
+            indexMs: 0,
+            totalWorkerMs: metrics.transferMs + metrics.parseMs,
+            dataKind: "heat-compact"
+        }
+    });
+}
+
+async function loadFullData(message) {
+    features = [];
+    clusterIndex = null;
+    metadata = null;
+    const result = await fetchJsonBuffer(message);
+    if (!result || message.requestId !== activeRequestId) return;
+    const { data, metrics } = result;
 
     features = Array.isArray(data.features) ? data.features : [];
     metadata = data.metadata || {};
@@ -101,18 +157,16 @@ async function loadData(message) {
         return [lat, lon, 1];
     });
 
-    post("loaded", {
+    post("full-loaded", {
         year: message.year,
         metadata,
         pointCount: features.length,
         heatPoints,
         metrics: {
-            transferBytes: buffer.byteLength,
-            encodedTransferBytes,
-            transferMs,
-            parseMs,
+            ...metrics,
             indexMs,
-            totalWorkerMs: transferMs + parseMs + indexMs
+            totalWorkerMs: metrics.transferMs + metrics.parseMs + indexMs,
+            dataKind: "full-geojson"
         }
     });
 }
@@ -127,8 +181,12 @@ self.onmessage = async event => {
             }
             return;
         }
-        if (message.type === "load") {
-            await loadData(message);
+        if (message.type === "load-heat") {
+            await loadHeatData(message);
+            return;
+        }
+        if (message.type === "load-full") {
+            await loadFullData(message);
             return;
         }
         if (message.requestId !== activeRequestId || !clusterIndex) return;

@@ -90,12 +90,21 @@ tipos de vehiculo y estado de calidad de la coordenada. No publica placas,
 participantes individuales, direccion textual ni fecha exacta. Las coordenadas
 se redondean a cinco decimales.
 
-Un unico GeoJSON alimenta tres representaciones manuales:
+Las tres representaciones manuales parten del mismo conjunto de puntos
+sanitizados:
 
 - calor, como patron visual de concentracion;
 - agrupaciones construidas con Supercluster;
 - casos individuales, con separacion radial cuando varias filas comparten
   coordenada.
+
+Para acelerar la primera apertura de Calor, el pipeline genera ademas una
+proyeccion compacta que contiene exclusivamente las coordenadas del mismo
+GeoJSON, en el mismo orden y a la misma precision. Una validacion compara ambos
+artefactos punto por punto. Si el GeoJSON completo ya fue cargado por
+Agrupaciones o Casos, Calor reutiliza esas coordenadas y no descarga el
+compacto. Este mecanismo no cambia puntos, filtros, radios ni metodologia de
+visualizacion.
 
 El calor usa una paleta perceptualmente uniforme distinta de las coropletas y
 el perfil `focused`, seleccionado tras una prueba de sensibilidad nacional,
@@ -105,11 +114,13 @@ mayores. La escala es adaptativa al ano: mejora la lectura interna, pero sus
 colores no son comparables entre anos. El calor no mide riesgo individual,
 calidad de la via ni exposicion al transito.
 
-GitHub Pages fue verificado con `Accept-Encoding: br,gzip` y entrega los
-GeoJSON con gzip, no Brotli. La migracion a PMTiles fue evaluada y diferida:
-el costo medido de 2,889 s corresponde a una capa opcional bajo una red
-sintetica de 1,6 Mbps, mientras la carga inicial del portal tiene un impacto
-considerablemente mayor y se prioriza para una auditoria separada.
+GitHub Pages fue verificado con `Accept-Encoding: br,gzip` y entrega estos
+archivos con gzip, no Brotli. En el escenario movil sintetico acordado
+(390x844, CPU 4x, 1,6 Mbps y 150 ms de latencia), el compacto 2025 comprimido
+a 128.795 bytes dejo el modo Calor utilizable en 1.471 ms; el indice
+Supercluster no se construye hasta solicitar Agrupaciones o Casos. La
+migracion a PMTiles permanece diferida y se reconsiderara si se necesitan
+varios anos simultaneos.
 
 El panel territorial muestra distribuciones de una sola caracteristica. La
 expresion `causa probable registrada` conserva la atribucion administrativa de

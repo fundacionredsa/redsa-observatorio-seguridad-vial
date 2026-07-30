@@ -22,7 +22,7 @@ async function openTechnicalPanel(page, isMobile) {
 test("no descarga puntos ANT antes de activar la capa", async ({ page }) => {
   const requests = [];
   page.on("request", request => {
-    if (/siniestros_ant_20(24|25|26)\.geojson/.test(request.url())) requests.push(request.url());
+    if (/siniestros_ant_20(24|25|26)(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
   });
   await waitForPortal(page);
   expect(requests).toHaveLength(0);
@@ -45,7 +45,11 @@ test("aviso accesible conserva el año y permite ir al último disponible", asyn
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
 });
 
-test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ page }, testInfo) => {
+test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {
+  const requests = [];
+  page.on("request", request => {
+    if (/siniestros_ant_2025(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
+  });
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.locator("#event-layer-disclosure summary").click();
@@ -53,10 +57,17 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
 
   let state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
-  expect(state.metrics.transferBytes).toBeGreaterThan(3_000_000);
+  expect(state.dataSource).toBe("heat-compact");
+  expect(state.heatLoadedYear).toBe(2025);
+  expect(state.fullLoadedYear).toBeNull();
+  expect(state.pointCount).toBe(20_148);
+  expect(state.metrics.transferBytes).toBeGreaterThan(300_000);
+  expect(state.metrics.transferBytes).toBeLessThan(500_000);
   expect(state.metrics.parseMs).toBeGreaterThanOrEqual(0);
-  expect(state.metrics.indexMs).toBeGreaterThanOrEqual(0);
+  expect(state.metrics.indexMs).toBe(0);
   expect(state.renderMetrics.heat.renderMs).toBeGreaterThanOrEqual(0);
+  expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
+  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(0);
   let paneAudit = await page.evaluate(() => {
     const territory = document.querySelector(".leaflet-territorio-pane");
     const events = document.querySelector(".leaflet-event-pane");
@@ -70,7 +81,10 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   expect(paneAudit.eventIndex).toBeGreaterThan(paneAudit.territoryIndex);
 
   await page.locator("[data-ant-mode='clusters']").click();
-  await page.waitForFunction(() => Boolean(window.REDSAAntLayer.getAuditState().renderMetrics.clusters));
+  await page.waitForFunction(() => {
+    const audit = window.REDSAAntLayer.getAuditState();
+    return audit.fullLoadedYear === 2025 && Boolean(audit.renderMetrics.clusters);
+  }, null, { timeout: 90_000 });
   await expect(page.locator(".ant-cluster-label").first()).toBeVisible();
   await expect(page.locator(".ant-cluster-label").first()).toHaveText(/^\d+(?:[,.]\d+)?\s*(?:mil|k)?$/i);
   paneAudit = await page.evaluate(() => ({
@@ -85,8 +99,14 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   expect(paneAudit.caseCanvasParent).toContain("leaflet-event-pane");
   state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.mode).toBe("cases");
+  expect(state.dataSource).toBe("full-geojson");
+  expect(state.pointCount).toBe(20_148);
   expect(state.renderMetrics.clusters.visibleObjects).toBeGreaterThan(0);
   expect(state.renderMetrics.cases.visibleCases).toBeGreaterThan(0);
+  await page.locator("[data-ant-mode='heat']").click();
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().mode === "heat");
+  expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
+  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(1);
 
   await page.evaluate(() => window.setMobileLegend?.(true));
   const legend = page.locator("#legend-items");
@@ -96,8 +116,31 @@ test("capa ANT carga una vez y conmuta manualmente sus tres modos", async ({ pag
   await expect(legend).toContainText("no mide riesgo individual");
 });
 
+test("si el GeoJSON completo se cargó primero, Calor no solicita el compacto", async ({ page }, testInfo) => {
+  const requests = [];
+  page.on("request", request => {
+    if (/siniestros_ant_2025(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
+  });
+  await waitForPortal(page);
+  await openTechnicalPanel(page, testInfo.project.name === "mobile");
+  await page.locator("#event-layer-disclosure summary").click();
+  await page.evaluate(() => window.REDSAAntLayer.setMode("clusters"));
+  await page.locator("#ant-layer-toggle").check();
+  await page.waitForFunction(() => {
+    const audit = window.REDSAAntLayer.getAuditState();
+    return audit.status === "ready" && audit.fullLoadedYear === 2025;
+  }, null, { timeout: 90_000 });
+  await page.evaluate(() => window.REDSAAntLayer.setMode("heat"));
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().mode === "heat");
+  const state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  expect(state.dataSource).toBe("full-geojson");
+  expect(state.pointCount).toBe(20_148);
+  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(1);
+  expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(0);
+});
+
 test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo año en caché", async ({ page }, testInfo) => {
-  await page.route("**/siniestros_ant_2025.geojson", async route => {
+  await page.route("**/siniestros_ant_2025_heat.json", async route => {
     await new Promise(resolve => setTimeout(resolve, 1200));
     await route.continue();
   });
@@ -114,8 +157,10 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
   let state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.active).toBe(true);
   expect(state.loadedYear).toBe(2024);
+  expect(state.heatLoadedYear).toBe(2024);
+  expect(state.fullLoadedYear).toBeNull();
   expect(state.cacheYears).toEqual([2024]);
-  expect(state.metrics.transferBytes).toBeGreaterThan(4_000_000);
+  expect(state.metrics.transferBytes).toBeGreaterThan(300_000);
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2026));
   await page.waitForFunction(() => {
@@ -125,6 +170,7 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
   state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.cacheYears).toEqual([2026]);
   expect(state.cacheYears).toHaveLength(1);
+  expect(state.pointCount).toBe(10_747);
   await page.evaluate(() => window.setMobileLegend?.(true));
   await expect(page.locator("#legend-items")).toContainText("parcial enero-junio");
   await expect(page.locator("#legend-items")).toContainText("10.747 de 10.752");
@@ -165,6 +211,8 @@ test("el análisis territorial ANT usa el punto seleccionado y lenguaje metodol�
   await page.locator("#event-layer-disclosure summary").click();
   await page.locator("#ant-layer-toggle").check();
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
+  await page.locator("[data-ant-mode='clusters']").click();
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().fullLoadedYear === 2025, null, { timeout: 90_000 });
   await page.evaluate(async () => {
     window.__redsaAudit.setTerritoryLevelMode("canton");
     await window.__redsaAudit.showTerritory("canton", "1701");

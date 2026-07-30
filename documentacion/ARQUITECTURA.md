@@ -106,10 +106,13 @@ ni nombres/códigos territoriales.
   la frontera hacia el repositorio publico.
 - GitHub Pages sirve archivos estaticos. No hay backend, base de datos ni
   autenticacion en el geoportal actual.
-- La capa puntual ANT es estrictamente diferida: el navegador crea un Web
-  Worker al activarla, descarga un solo ano, analiza el GeoJSON y construye el
-  indice Supercluster fuera del hilo principal. La cache se limita a un ano y
-  una carga pendiente se cancela al cambiar el periodo global.
+- La capa puntual ANT es estrictamente diferida. En modo Calor, el Web Worker
+  solicita primero una proyeccion compacta que contiene solo las mismas
+  coordenadas publicables del ano. Agrupaciones y Casos descargan el GeoJSON
+  completo y construyen Supercluster fuera del hilo principal; si ese archivo
+  ya esta en memoria, Calor reutiliza sus coordenadas y no solicita el
+  compacto. La cache se limita a un ano y una carga pendiente se cancela al
+  cambiar el periodo global.
 
 ## Arquitectura frontend
 
