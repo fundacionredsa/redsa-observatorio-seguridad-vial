@@ -134,7 +134,9 @@
                     getSelectedYear: () => selectedYear
                 });
                 window.REDSAInstitutional?.init({
-                    cantonFeatures: cantonIndexFeatures,
+                    // El indice liviano sirve para buscar, pero no contiene las
+                    // series necesarias para construir el ranking nacional.
+                    cantonFeatures: [],
                     ensureCantonFeatures: async () => {
                         await ensureCantonLayer();
                         return cantonData.features;
