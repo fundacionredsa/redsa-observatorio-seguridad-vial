@@ -40,12 +40,13 @@ test("los controles laterales son iconos y la leyenda conserva su estado en cual
   expect((await citizenToggle.textContent()).trim()).toBe("");
 
   const legendToggle = page.locator("#mobile-legend-toggle");
+  const legendToggleLabel = legendToggle.locator(".legend-toggle-label");
   const legendContent = page.locator("#legend-content");
   const viewport = page.viewportSize();
 
   await expect(legendToggle).toBeVisible();
-  await expect(legendToggle.locator("span")).toHaveCount(0);
-  expect((await legendToggle.textContent()).trim()).toBe("");
+  await expect(legendToggleLabel).toHaveText("Leyenda");
+  await expect(legendToggleLabel).toBeHidden();
   await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
   await expect(legendToggle).toHaveAttribute("aria-label", "Ocultar leyenda");
   await expect(legendContent).toBeVisible();
@@ -60,8 +61,9 @@ test("los controles laterales son iconos y la leyenda conserva su estado en cual
   await expect(legendToggle).toHaveAttribute("aria-expanded", "false");
   await expect(legendToggle).toHaveAttribute("aria-label", "Mostrar leyenda");
   await expect(legendContent).toBeHidden();
+  await expect(legendToggleLabel).toBeVisible();
   const collapsedLegend = await box(page, ".legend-panel");
-  expect(collapsedLegend.width).toBeLessThanOrEqual(44);
+  expect(collapsedLegend.width).toBeLessThanOrEqual(92);
   expect(collapsedLegend.height).toBeLessThanOrEqual(44);
 
   const basemap = page.locator(".basemap-control");

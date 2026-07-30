@@ -135,6 +135,7 @@
 
                 div.innerHTML = `
                     <button class="mobile-legend-toggle" id="mobile-legend-toggle" type="button" aria-expanded="true" aria-controls="legend-content" aria-label="Ocultar leyenda" title="Ocultar leyenda">
+                        <span class="legend-toggle-label">Leyenda</span>
                         <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                     </button>
                     <div class="legend-content" id="legend-content">

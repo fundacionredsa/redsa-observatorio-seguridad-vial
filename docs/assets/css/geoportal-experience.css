@@ -1838,6 +1838,10 @@ body.mobile-layers-open .technical-toggle {
     cursor: pointer;
 }
 
+.legend-toggle-label {
+    display: none;
+}
+
 .mobile-legend-toggle:hover {
     background: var(--bg-glass-hover);
 }
@@ -1852,8 +1856,8 @@ body.mobile-layers-open .technical-toggle {
 }
 
 .legend-panel:not(.mobile-legend-open) {
-    width: 44px;
-    min-width: 44px;
+    width: 92px;
+    min-width: 92px;
     height: 44px;
     max-height: 44px;
     padding: 0;
@@ -1862,8 +1866,17 @@ body.mobile-layers-open .technical-toggle {
 
 .legend-panel:not(.mobile-legend-open) .mobile-legend-toggle {
     inset: 0;
-    width: 44px;
+    width: 92px;
     height: 44px;
+    gap: 8px;
+    padding: 0 12px;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.legend-panel:not(.mobile-legend-open) .legend-toggle-label {
+    display: inline;
 }
 
 .legend-panel:not(.mobile-legend-open) .legend-content {
