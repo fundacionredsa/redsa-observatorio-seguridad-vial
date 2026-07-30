@@ -5,10 +5,6 @@
  * Desktop and intermediate desktop/tablet rules remain in the core styles.
  */
 
-.mobile-legend-toggle {
-    display: none;
-}
-
 @media (max-width: 768px) {
     .ant-summary-totals {
         grid-template-columns: 1fr;
@@ -545,26 +541,11 @@
     }
 
     .mobile-legend-toggle {
-        display: flex;
-        min-width: 126px;
+        display: inline-flex;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
         min-height: 44px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 0 12px;
-        border: 0;
-        border-radius: 8px;
-        background: transparent;
-        color: var(--text-primary);
-        font: inherit;
-        font-weight: 800;
-        cursor: pointer;
-    }
-
-    .mobile-legend-state {
-        color: var(--accent-hover);
-        font-size: 0.62rem;
-        font-weight: 700;
     }
 
     .legend-content {
@@ -577,23 +558,17 @@
         overflow: hidden;
     }
 
-    .legend-panel.mobile-legend-open .mobile-legend-toggle {
-        width: 100%;
-        border-bottom: 1px solid var(--border-glass);
-        border-radius: 8px 8px 0 0;
-    }
-
     .legend-panel.mobile-legend-open .legend-content {
         display: block;
         max-height: calc(var(--legend-max-height-mobile) - 44px);
-        padding: 10px;
+        padding: 10px 42px 10px 10px;
         overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
     }
 
     .legend-panel.mobile-legend-open .legend-title {
-        display: none;
+        display: block;
     }
 
     body.mobile-legend-open .perfil-fallecidos-card,

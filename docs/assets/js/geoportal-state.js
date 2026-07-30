@@ -129,14 +129,13 @@
                 position: 'bottomright'
             },
             onAdd: function(map) {
-                const div = L.DomUtil.create('div', 'legend-panel');
+                const div = L.DomUtil.create('div', 'legend-panel mobile-legend-open');
                 L.DomEvent.disableClickPropagation(div);
                 L.DomEvent.disableScrollPropagation(div);
 
                 div.innerHTML = `
-                    <button class="mobile-legend-toggle" id="mobile-legend-toggle" type="button" aria-expanded="false" aria-controls="legend-content">
-                        <span>Leyenda</span>
-                        <span class="mobile-legend-state">Mostrar</span>
+                    <button class="mobile-legend-toggle" id="mobile-legend-toggle" type="button" aria-expanded="true" aria-controls="legend-content" aria-label="Ocultar leyenda" title="Ocultar leyenda">
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                     </button>
                     <div class="legend-content" id="legend-content">
                         <div class="legend-title">Leyenda</div>
@@ -157,6 +156,7 @@
 
         const legendControlInstance = new LegendControl();
         legendControlInstance.addTo(map);
+        document.body.classList.add("mobile-legend-open");
 
         // Definir Atribuciones Requeridas
         const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites provinciales y parroquiales: CONALI, vigencia 2025-02-20 y 2026-02-03, licencia CC-BY';
@@ -283,12 +283,16 @@
         citizenPanel?.addEventListener("transitionend", () => updateProfileCardLayout());
 
         function setMobileLegend(open) {
-            const shouldOpen = Boolean(open && mobileMediaQuery.matches);
+            const shouldOpen = Boolean(open);
             legendPanel?.classList.toggle("mobile-legend-open", shouldOpen);
             document.body.classList.toggle("mobile-legend-open", shouldOpen);
             mobileLegendToggle?.setAttribute("aria-expanded", String(shouldOpen));
-            const stateLabel = mobileLegendToggle?.querySelector(".mobile-legend-state");
-            if (stateLabel) stateLabel.textContent = shouldOpen ? "Ocultar" : "Mostrar";
+            const action = shouldOpen ? "Ocultar" : "Mostrar";
+            mobileLegendToggle?.setAttribute("aria-label", `${action} leyenda`);
+            mobileLegendToggle?.setAttribute("title", `${action} leyenda`);
+            const icon = mobileLegendToggle?.querySelector("i");
+            icon?.classList.toggle("fa-chevron-down", shouldOpen);
+            icon?.classList.toggle("fa-chevron-up", !shouldOpen);
             window.requestAnimationFrame(updateProfileCardLayout);
         }
 
@@ -308,7 +312,7 @@
         }
 
         function setMobilePanel(panel, open) {
-            if (open) setMobileLegend(false);
+            if (open && mobileMediaQuery.matches) setMobileLegend(false);
             if (panel === "citizen") {
                 const shouldOpen = Boolean(open);
                 document.body.classList.toggle("citizen-panel-open", shouldOpen);
@@ -441,7 +445,6 @@
                 setDesktopTechnicalPanel(false);
             } else {
                 closeMobilePanels();
-                setMobileLegend(false);
                 setDesktopTechnicalPanel(true);
                 setMobilePanel("citizen", window.innerWidth >= DESKTOP_CITIZEN_PANEL_MIN_WIDTH);
             }
@@ -1071,7 +1074,7 @@
 
         function selectTerritoryLayer(level, layer, options = {}) {
             if (!layer?.feature?.properties) return false;
-            setMobileLegend(false);
+            if (mobileMediaQuery.matches) setMobileLegend(false);
             const { fitBounds = true, updateHash = true } = options;
             const previousSelection = selectedTerritory;
             clearSelectedLayerReferences();

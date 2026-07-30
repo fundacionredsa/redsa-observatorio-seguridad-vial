@@ -32,6 +32,47 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
+test("los controles laterales son iconos y la leyenda conserva su estado en cualquier ancho", async ({ page }) => {
+  await loadPortal(page);
+
+  const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
+  await expect(citizenToggle.locator("span")).toHaveCount(0);
+  expect((await citizenToggle.textContent()).trim()).toBe("");
+
+  const legendToggle = page.locator("#mobile-legend-toggle");
+  const legendContent = page.locator("#legend-content");
+  const viewport = page.viewportSize();
+
+  await expect(legendToggle).toBeVisible();
+  await expect(legendToggle.locator("span")).toHaveCount(0);
+  expect((await legendToggle.textContent()).trim()).toBe("");
+  await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(legendToggle).toHaveAttribute("aria-label", "Ocultar leyenda");
+  await expect(legendContent).toBeVisible();
+
+  const openLegend = await box(page, ".legend-panel");
+  expect(openLegend.left).toBeGreaterThanOrEqual(0);
+  expect(openLegend.right).toBeLessThanOrEqual(viewport.width);
+  expect(openLegend.top).toBeGreaterThanOrEqual(0);
+  expect(openLegend.bottom).toBeLessThanOrEqual(viewport.height);
+
+  await legendToggle.click();
+  await expect(legendToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(legendToggle).toHaveAttribute("aria-label", "Mostrar leyenda");
+  await expect(legendContent).toBeHidden();
+  const collapsedLegend = await box(page, ".legend-panel");
+  expect(collapsedLegend.width).toBeLessThanOrEqual(44);
+  expect(collapsedLegend.height).toBeLessThanOrEqual(44);
+
+  const basemap = page.locator(".basemap-control");
+  await expect(basemap).toBeVisible();
+  expect(intersects(collapsedLegend, await box(page, ".basemap-control"))).toBeFalsy();
+
+  await legendToggle.click();
+  await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
+  await expect(legendContent).toBeVisible();
+});
+
 async function assertBasemapControlHasDedicatedSpace(page) {
   const viewport = page.viewportSize();
   const dock = page.locator(".basemap-control-dock");

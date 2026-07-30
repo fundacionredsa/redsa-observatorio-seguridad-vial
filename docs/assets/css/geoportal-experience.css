@@ -1810,11 +1810,68 @@ body.mobile-layers-open .technical-toggle {
 }
 
 .legend-panel {
+    position: relative;
     width: min(290px, calc(100vw - 40px));
     max-height: var(--legend-max-height-desktop);
     overflow-y: auto;
     padding: 12px;
     border-radius: 7px;
+}
+
+.mobile-legend-toggle {
+    position: absolute;
+    z-index: 2;
+    top: 4px;
+    right: 4px;
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.mobile-legend-toggle:hover {
+    background: var(--bg-glass-hover);
+}
+
+.mobile-legend-toggle:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.legend-panel .legend-title {
+    padding-right: 42px;
+}
+
+.legend-panel:not(.mobile-legend-open) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    max-height: 44px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.legend-panel:not(.mobile-legend-open) .mobile-legend-toggle {
+    inset: 0;
+    width: 44px;
+    height: 44px;
+}
+
+.legend-panel:not(.mobile-legend-open) .legend-content {
+    display: none;
+}
+
+.legend-panel.mobile-legend-open .legend-content {
+    display: block;
 }
 
 .ant-cluster-label {

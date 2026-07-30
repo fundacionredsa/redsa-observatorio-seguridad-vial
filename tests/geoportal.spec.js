@@ -752,6 +752,17 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
     await page.setViewportSize(viewport);
     await loadPortal(page);
 
+    const legendToggle = page.locator("#mobile-legend-toggle");
+    await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#legend-content")).toBeVisible();
+    const initiallyOpenLegend = await page.locator(".legend-panel").boundingBox();
+    expect(initiallyOpenLegend).not.toBeNull();
+    expect(initiallyOpenLegend.y).toBeGreaterThanOrEqual(0);
+    expect(initiallyOpenLegend.y + initiallyOpenLegend.height).toBeLessThanOrEqual(viewport.height);
+
+    await legendToggle.tap();
+    await expect(legendToggle).toHaveAttribute("aria-expanded", "false");
+
     const geometry = await page.evaluate(() => {
       const box = selector => {
         const element = document.querySelector(selector);
@@ -957,7 +968,7 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
   await page.waitForFunction(() => window.__redsaActiveBins && window.__redsaActiveBins.variable === "fallecidos_parroquial");
 
   const mobileLegendToggle = page.locator("#mobile-legend-toggle");
-  if (await mobileLegendToggle.isVisible()) {
+  if (await mobileLegendToggle.isVisible() && await mobileLegendToggle.getAttribute("aria-expanded") === "false") {
       await mobileLegendToggle.click();
   }
 
