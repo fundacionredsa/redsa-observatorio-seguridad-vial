@@ -57,18 +57,14 @@ test("el perfil focused conserva la vista macro y afina ciudad y calle", async (
   expect(bandwidthByZoom).toEqual({ 7: 5500, 13: 450, 15: 280, 17: 180 });
 });
 
-test("aviso accesible conserva el año y permite ir al último disponible", async ({ page }, testInfo) => {
+test("aviso accesible explica el ajuste al último año disponible", async ({ page }, testInfo) => {
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expect(page.locator("#timeline-badge")).toHaveText("2025");
-  const action = page.locator("[data-jump-latest-year='2024']");
-  await expect(action).toBeVisible();
-  await expect(action).toHaveAccessibleName(/Mostrar 2024, último año disponible/);
-  await action.focus();
-  await expect(action).toBeFocused();
-  await action.press("Enter");
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
+  await expect(page.locator("#timeline-year-adjustment-note")).toBeVisible();
+  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("El año cambió a 2024");
+  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("2020–2024");
 });
 
 test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {

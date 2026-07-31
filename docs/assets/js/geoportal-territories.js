@@ -144,6 +144,86 @@ function onEachProvinceFeature(feature, layer) {
             return totals;
         }
 
+        function getNationalMetadataValue(config, year) {
+            const metadataConfig = config?.nationalMetadata;
+            if (!metadataConfig || !provinceData?.metadata) return null;
+            const collection = provinceData.metadata[metadataConfig.collection];
+            const yearRecord = collection?.[metadataConfig.yearsField]?.[String(year)];
+            const value = yearRecord?.[metadataConfig.valueField];
+            return value === null || value === undefined || !Number.isFinite(Number(value))
+                ? null
+                : Number(value);
+        }
+
+        function getOfficialProvinceFeatures() {
+            return (provinceData?.features || []).filter(feature =>
+                isOfficialProvinceCode(feature?.properties?.DPA_PROVIN)
+            );
+        }
+
+        function calculateNationalVariableSummary(variable, year = selectedYear, periodMode = selectedPeriodMode) {
+            const config = VARIABLE_CONFIGS[variable];
+            const officialFeatures = getOfficialProvinceFeatures();
+            if (!config || variable === "normal" || officialFeatures.length !== 24) return null;
+
+            if (config.aggregation === "sum") {
+                const years = periodMode === "accumulated" && supportsHistoricalAccumulation(config)
+                    ? getAccumulationYears(config)
+                    : [Number(year)];
+                let nationalTotal = 0;
+
+                for (const coveredYear of years) {
+                    const metadataValue = getNationalMetadataValue(config, coveredYear);
+                    if (metadataValue !== null) {
+                        nationalTotal += metadataValue;
+                        continue;
+                    }
+                    const values = officialFeatures.map(feature =>
+                        getVariableValueForPeriod(feature.properties, variable, coveredYear, "year")
+                    );
+                    if (values.some(value => value === null || value === undefined || !Number.isFinite(Number(value)))) {
+                        return null;
+                    }
+                    nationalTotal += values.reduce((sum, value) => sum + Number(value), 0);
+                }
+
+                return {
+                    value: nationalTotal,
+                    method: "sum",
+                    contributingTerritories: officialFeatures.length
+                };
+            }
+
+            const ratio = config.nationalAggregation;
+            if (!ratio?.numerator || !ratio?.denominator || !Number.isFinite(Number(ratio.scale))) return null;
+            let numerator = 0;
+            let denominator = 0;
+            for (const feature of officialFeatures) {
+                const props = feature.properties || {};
+                const numeratorValue = ratio.numerator(props, year);
+                const denominatorValue = ratio.denominator(props, year);
+                if (
+                    numeratorValue === null || numeratorValue === undefined
+                    || denominatorValue === null || denominatorValue === undefined
+                    || !Number.isFinite(Number(numeratorValue))
+                    || !Number.isFinite(Number(denominatorValue))
+                    || Number(denominatorValue) <= 0
+                ) {
+                    return null;
+                }
+                numerator += Number(numeratorValue);
+                denominator += Number(denominatorValue);
+            }
+            if (denominator <= 0) return null;
+            return {
+                value: numerator / denominator * Number(ratio.scale),
+                method: "ratio",
+                numerator,
+                denominator,
+                contributingTerritories: officialFeatures.length
+            };
+        }
+
         const HOTSPOT_TEXT = {
             caliente: "Concentracion de fallecidos significativamente MAYOR de lo esperado para su poblacion (estadisticamente significativo).",
             frio: "Concentracion de fallecidos significativamente MENOR de lo esperado para su poblacion.",

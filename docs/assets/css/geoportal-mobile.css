@@ -172,7 +172,6 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .citizen-panel:not(.has-selection) .citizen-summary,
     .citizen-panel:not(.has-selection) #share-view-button,
     .citizen-panel:not(.has-selection) #download-summary-button {
         display: none;

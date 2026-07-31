@@ -3,9 +3,38 @@
         context: null,
         provinceFeatures: [],
         cantonFeatures: [],
+        parishFeatures: [],
+        parishLoadPromise: null,
         selectedProps: null,
         initialized: false
     };
+
+    const SEARCH_LEVELS = Object.freeze({
+        province: {
+            featuresKey: "provinceFeatures",
+            label: "Provincia",
+            pluralLabel: "provincias",
+            nameField: "DPA_DESPRO",
+            codeField: "DPA_PROVIN",
+            contextFields: []
+        },
+        canton: {
+            featuresKey: "cantonFeatures",
+            label: "Cantón",
+            pluralLabel: "cantones",
+            nameField: "DPA_DESCAN",
+            codeField: "DPA_CANTON",
+            contextFields: ["DPA_DESPRO"]
+        },
+        parish: {
+            featuresKey: "parishFeatures",
+            label: "Parroquia",
+            pluralLabel: "parroquias",
+            nameField: "DPA_DESPAR",
+            codeField: "DPA_PARROQ",
+            contextFields: ["DPA_DESCAN", "DPA_DESPRO"]
+        }
+    });
 
     function normalize(value) {
         return String(value || "")
@@ -20,6 +49,15 @@
             minimumFractionDigits: digits,
             maximumFractionDigits: digits
         });
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
     }
 
     function finiteNumber(value) {
@@ -148,62 +186,141 @@
         return groups.join(", ");
     }
 
+    function searchEntry(level, feature) {
+        const levelConfig = SEARCH_LEVELS[level];
+        const props = feature?.properties || {};
+        const name = props[levelConfig.nameField];
+        const context = levelConfig.contextFields.map(field => props[field]).filter(Boolean);
+        const display = [name, ...context, levelConfig.label].filter(Boolean).join(" — ");
+        const canonicalName = level === "canton"
+            ? normalize(name).replace(/^distrito metropolitano de\s+/, "")
+            : normalize(name);
+        const variants = [
+            display,
+            name,
+            canonicalName,
+            [name, ...context].filter(Boolean).join(" "),
+            [canonicalName, ...context.map(normalize)].filter(Boolean).join(" ")
+        ].map(normalize).filter(Boolean);
+        return {
+            level,
+            feature,
+            code: String(props[levelConfig.codeField] || ""),
+            display,
+            variants: [...new Set(variants)]
+        };
+    }
+
+    function getSearchEntries() {
+        return Object.entries(SEARCH_LEVELS).flatMap(([level, config]) =>
+            (state[config.featuresKey] || []).map(feature => searchEntry(level, feature))
+        );
+    }
+
     function populateSearch() {
         const datalist = document.getElementById("territory-search-list");
         if (!datalist) return;
         datalist.innerHTML = "";
-        state.cantonFeatures
-            .slice()
-            .sort((a, b) => String(a.properties?.DPA_DESCAN || "").localeCompare(String(b.properties?.DPA_DESCAN || ""), "es"))
-            .forEach(feature => {
-                const props = feature.properties || {};
+        getSearchEntries()
+            .sort((a, b) => a.display.localeCompare(b.display, "es"))
+            .forEach(entry => {
                 const option = document.createElement("option");
-                option.value = `${props.DPA_DESCAN} — ${props.DPA_DESPRO}`;
-                option.dataset.code = props.DPA_CANTON;
+                option.value = entry.display;
+                option.dataset.code = entry.code;
+                option.dataset.level = entry.level;
                 datalist.appendChild(option);
             });
     }
 
-    function findCanton(query) {
-        const rawParts = String(query || "").split(/\s+[—-]\s+/);
-        const cantonQuery = normalize(rawParts[0]);
-        const provinceQuery = normalize(rawParts[1]);
-        const canonicalCanton = value => normalize(value).replace(/^distrito metropolitano de\s+/, "");
-        const canonicalMatches = state.cantonFeatures.filter(feature => {
-            const props = feature.properties || {};
-            return canonicalCanton(props.DPA_DESCAN) === cantonQuery
-                && (!provinceQuery || normalize(props.DPA_DESPRO) === provinceQuery);
-        });
-        if (canonicalMatches.length === 1) return canonicalMatches[0];
-
+    function resolveTerritorySearch(query) {
         const normalizedQuery = normalize(query).replace(/\s+[—-]\s+/g, " ");
-        if (!normalizedQuery) return null;
-        const exact = state.cantonFeatures.filter(feature => {
-            const props = feature.properties || {};
-            const canton = normalize(props.DPA_DESCAN);
-            const combined = normalize(`${props.DPA_DESCAN} ${props.DPA_DESPRO}`);
-            return canton === normalizedQuery || combined === normalizedQuery;
-        });
-        if (exact.length === 1) return exact[0];
-        const partial = state.cantonFeatures.filter(feature => {
-            const props = feature.properties || {};
-            return normalize(`${props.DPA_DESCAN} ${props.DPA_DESPRO}`).includes(normalizedQuery);
-        });
-        return partial.length === 1 ? partial[0] : null;
+        if (!normalizedQuery) return { status: "empty", matches: [] };
+        const entries = getSearchEntries();
+        const displayMatch = entries.filter(entry => normalize(entry.display) === normalize(query));
+        if (displayMatch.length === 1) return { status: "resolved", match: displayMatch[0], matches: displayMatch };
+
+        const exact = entries.filter(entry => entry.variants.includes(normalizedQuery));
+        if (exact.length === 1) return { status: "resolved", match: exact[0], matches: exact };
+        if (exact.length > 1) return { status: "ambiguous", matches: exact };
+
+        const partial = entries.filter(entry => normalize(entry.display).includes(normalizedQuery));
+        if (partial.length === 1) return { status: "resolved", match: partial[0], matches: partial };
+        return { status: partial.length ? "ambiguous" : "not_found", matches: partial };
     }
 
-    function selectFromSearch() {
+    async function ensureParishSearchFeatures() {
+        if (state.parishFeatures.length) return state.parishFeatures;
+        if (!state.parishLoadPromise) {
+            state.parishLoadPromise = Promise.resolve(state.context?.ensureSearchFeatures?.("parish"))
+                .then(features => {
+                    state.parishFeatures = Array.isArray(features) ? features : [];
+                    populateSearch();
+                    return state.parishFeatures;
+                })
+                .finally(() => {
+                    state.parishLoadPromise = null;
+                });
+        }
+        return state.parishLoadPromise;
+    }
+
+    function updateSearchAdjustmentNotice(level) {
+        const note = document.getElementById("territory-search-adjustment-note");
+        if (!note) return;
+        if (!SEARCH_LEVELS[level]) {
+            clearSearchAdjustmentNotice();
+            return;
+        }
+        const variable = state.context?.getSelectedVariable?.();
+        const config = state.context?.getVariableConfig?.(variable);
+        if (variable && variable !== "normal" && config && !config.levels?.includes(level)) {
+            note.textContent = `La búsqueda cambió el mapa a ${SEARCH_LEVELS[level].pluralLabel}. Esta variable no tiene datos en ese nivel, por eso mostramos los límites.`;
+            note.hidden = false;
+            return;
+        }
+        note.textContent = "";
+        note.hidden = true;
+    }
+
+    function clearSearchAdjustmentNotice() {
+        const note = document.getElementById("territory-search-adjustment-note");
+        if (!note) return;
+        note.textContent = "";
+        note.hidden = true;
+    }
+
+    async function selectFromSearch() {
         const input = document.getElementById("territory-search-input");
         const status = document.getElementById("territory-search-status");
-        const feature = findCanton(input?.value);
-        if (!feature) {
-            if (status) status.textContent = "No encontramos un cantón único. Escribe también la provincia.";
+        const query = input?.value || "";
+        let resolution = resolveTerritorySearch(query);
+        if (resolution.status !== "resolved" && !state.parishFeatures.length) {
+            if (status) status.textContent = "Buscando también entre las parroquias…";
+            try {
+                await ensureParishSearchFeatures();
+                resolution = resolveTerritorySearch(query);
+            } catch (error) {
+                console.error("No se pudo ampliar la búsqueda a parroquias:", error);
+            }
+        }
+        if (resolution.status !== "resolved") {
+            if (status) {
+                status.textContent = resolution.status === "ambiguous"
+                    ? "Encontramos varias coincidencias. Elige una opción o escribe también el cantón y la provincia."
+                    : "No encontramos ese territorio. Revisa el nombre o elige una opción de la lista.";
+            }
             return false;
         }
+        const entry = resolution.match;
         if (status) status.textContent = "";
-        input.value = `${feature.properties.DPA_DESCAN} — ${feature.properties.DPA_DESPRO}`;
-        state.context?.selectCanton?.(feature.properties.DPA_CANTON);
-        return true;
+        input.value = entry.display;
+        const selected = await state.context?.selectTerritory?.(entry.level, entry.code);
+        if (!selected) {
+            if (status) status.textContent = "Encontramos el territorio, pero no pudimos abrir su ficha. Inténtalo de nuevo.";
+            return false;
+        }
+        updateSearchAdjustmentNotice(entry.level);
+        return selected;
     }
 
     function updateMapContext(config, year, levelLabel) {
@@ -226,6 +343,31 @@
         description.textContent = config.description;
     }
 
+    function formatNationalSummaryValue(summary, config) {
+        if (!summary || !Number.isFinite(Number(summary.value))) return null;
+        if (config?.aggregation === "sum") return formatNumber(summary.value);
+        if (typeof config?.format === "function") return config.format(Number(summary.value));
+        return formatNumber(summary.value, Number.isInteger(Number(summary.value)) ? 0 : 1);
+    }
+
+    function renderNationalReference() {
+        const variable = state.context?.getSelectedVariable?.();
+        const config = state.context?.getVariableConfig?.(variable);
+        const summary = state.context?.getNationalSummary?.();
+        const value = formatNationalSummaryValue(summary, config);
+        if (!config || variable === "normal" || value === null) return "";
+        const period = state.context?.getActivePeriodLabel?.() || "Periodo no especificado";
+        const infoIcon = variable === "siniestros_inec_2019"
+            ? `<button type="button" class="sigla-tooltip-trigger citizen-national-info" data-sigla="ANT_SINIESTROS" aria-label="Cómo se relacionan ANT e INEC en esta cifra">ⓘ</button>`
+            : "";
+        return `
+            <section class="citizen-national-reference" aria-label="Referencia nacional de la variable activa">
+                <span class="citizen-national-kicker">Referencia nacional</span>
+                <strong class="citizen-national-value">${escapeHtml(value)} <span>${escapeHtml(config.unidad || "")}</span></strong>
+                <span class="citizen-national-meta">${escapeHtml(period)} · Fuente: ${escapeHtml(config.fuente || "Fuente documentada en el catálogo")} ${infoIcon}</span>
+            </section>`;
+    }
+
     function updateSummary(props, requestedYear) {
         const summary = document.getElementById("citizen-summary");
         const panel = document.getElementById("citizen-panel");
@@ -235,7 +377,7 @@
         state.selectedProps = props || null;
         panel?.classList.toggle("has-selection", Boolean(props));
         if (!props) {
-            summary.innerHTML = `<p class="citizen-summary-empty">Busca tu cantón para ver los accidentes reportados, su evolución y una comparación orientativa con el país.</p>`;
+            summary.innerHTML = `${renderNationalReference()}<p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos, su evolución y una comparación orientativa con el país.</p>`;
             if (downloadButton) downloadButton.disabled = true;
             return;
         }
@@ -751,15 +893,25 @@
 
         window.__redsaExperienceAudit = {
             search(query) {
-                const feature = findCanton(query);
-                return feature ? feature.properties.DPA_CANTON : null;
+                const resolution = resolveTerritorySearch(query);
+                return resolution.match?.code || null;
+            },
+            async searchAll(query) {
+                await ensureParishSearchFeatures();
+                const resolution = resolveTerritorySearch(query);
+                return resolution.match
+                    ? { code: resolution.match.code, level: resolution.match.level, display: resolution.match.display }
+                    : { code: null, level: null, status: resolution.status, matches: resolution.matches.length };
             },
             state() {
                 return {
                     initialized: state.initialized,
+                    provinceOptions: state.provinceFeatures.length,
                     cantonOptions: state.cantonFeatures.length,
+                    parishOptions: state.parishFeatures.length,
                     selectedCanton: state.selectedProps?.DPA_CANTON || null,
-                    selectedName: state.selectedProps?.DPA_DESCAN || state.selectedProps?.DPA_DESPRO || null
+                    selectedParish: state.selectedProps?.DPA_PARROQ || null,
+                    selectedName: state.selectedProps?.DPA_DESPAR || state.selectedProps?.DPA_DESCAN || state.selectedProps?.DPA_DESPRO || null
                 };
             }
         };
@@ -773,6 +925,8 @@
     window.REDSAExperience = Object.freeze({
         init,
         setCantonFeatures,
+        clearSearchAdjustmentNotice,
+        updateSearchAdjustmentNotice,
         updateMapContext,
         updateSummary
     });

@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.29">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.29">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.29">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.30">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.30">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.30">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -89,11 +89,11 @@
         <p class="citizen-intro citizen-intro-mobile">Iniciativa ciudadana independiente de Fundación REDSA con datos oficiales.</p>
         <p class="citizen-question">¿Qué tan seguras son las vías donde vives?</p>
         <form id="territory-search-form" role="search">
-            <label class="citizen-search-label" for="territory-search-input">Busca tu cantón</label>
+            <label class="citizen-search-label" for="territory-search-input">Busca una provincia, cantón o parroquia</label>
             <div class="citizen-search-row">
-                <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
+                <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" aria-label="Buscar una provincia, cantón o parroquia" placeholder="Ej. Pichincha, Quito o Calderón">
                 <datalist id="territory-search-list"></datalist>
-                <button class="citizen-search-button" type="submit" aria-label="Buscar cantón">&#8981;</button>
+                <button class="citizen-search-button" type="submit" aria-label="Buscar territorio">&#8981;</button>
             </div>
             <div class="citizen-search-status" id="territory-search-status" role="status"></div>
         </form>
@@ -103,7 +103,7 @@
             <span id="citizen-map-description">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
         </div>
         <div class="citizen-summary" id="citizen-summary" aria-live="polite">
-            <p class="citizen-summary-empty">Busca tu cantón para ver su situación y compararla con el país.</p>
+            <p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos y compararlos con el país.</p>
         </div>
         <div class="citizen-actions">
             <button class="citizen-action citizen-action-primary" id="open-analysis-button" type="button">Ver análisis completo</button>
@@ -352,6 +352,7 @@
                 <span>Análisis del territorio</span>
                 <button type="button" class="mobile-sidebar-close" id="mobile-sidebar-close" aria-label="Cerrar informacion del territorio">&times;</button>
             </div>
+            <div id="territory-search-adjustment-note" class="territory-search-adjustment-note" role="status" aria-live="polite" hidden></div>
             <!-- Marca/Cabecera -->
             <div class="header-brand">
                 <h1>
@@ -548,18 +549,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.29"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.30"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.30"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

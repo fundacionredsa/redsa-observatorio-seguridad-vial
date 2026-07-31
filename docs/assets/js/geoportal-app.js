@@ -124,20 +124,61 @@
                     return selectCantonLayer(foundLayer, updateHash, selectionOptions);
                 }
 
-                function selectCantonFromSearch(code) {
+                function findTerritoryLayerByCode(level, code) {
+                    const group = level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
+                    const codeField = level === "province" ? "DPA_PROVIN" : (level === "parish" ? "DPA_PARROQ" : "DPA_CANTON");
+                    let foundLayer = null;
+                    group?.eachLayer(layer => {
+                        if (!foundLayer && String(layer.feature?.properties?.[codeField]) === String(code)) foundLayer = layer;
+                    });
+                    return foundLayer;
+                }
+
+                async function ensureTerritoryLayer(level) {
+                    if (level === "canton") await ensureCantonLayer();
+                    if (level === "parish") await ensureParishLayer();
+                    return level === "province" ? provinceLayer : (level === "parish" ? parishLayer : cantonLayer);
+                }
+
+                async function selectTerritoryFromSearch(level, code) {
+                    if (!['province', 'canton', 'parish'].includes(level)) return false;
+                    await ensureTerritoryLayer(level);
+                    setTerritoryLevelMode(level);
+                    activateTerritoryLevel(level);
+                    const foundLayer = findTerritoryLayerByCode(level, code);
+                    if (!foundLayer) return false;
                     setMobileLegend(false);
-                    if (mobileMediaQuery.matches) {
+                    const selected = selectTerritoryLayer(level, foundLayer, {
+                        fitBounds: true,
+                        updateHash: level === "canton",
+                        showProfile: false,
+                        searchSelection: true
+                    });
+                    if (selected) {
                         setMobilePanel("citizen", false);
-                    } else {
-                        setDesktopTechnicalPanel(false);
+                        setMobilePanel("sidebar", true);
                     }
-                    return selectCantonByCode(code, true, { showProfile: false });
+                    return selected;
+                }
+
+                function selectCantonFromSearch(code) {
+                    return selectTerritoryFromSearch("canton", code);
                 }
 
                 window.REDSAExperience?.init({
                     provinceFeatures: provinceData.features,
                     cantonFeatures: cantonIndexFeatures,
                     selectCanton: selectCantonFromSearch,
+                    selectTerritory: selectTerritoryFromSearch,
+                    ensureSearchFeatures: async level => {
+                        if (level === "province") return provinceData.features;
+                        if (level === "canton") return cantonIndexFeatures;
+                        if (level === "parish") {
+                            await ensureParishLayer();
+                            return parishData?.features || [];
+                        }
+                        return [];
+                    },
                     openAnalysis: () => {
                         setMobilePanel("citizen", false);
                         setMobilePanel("sidebar", true);
@@ -145,7 +186,11 @@
                             document.getElementById("territory-sidebar")?.scrollIntoView({ behavior: "smooth" });
                         }
                     },
-                    getSelectedYear: () => selectedYear
+                    getSelectedYear: () => selectedYear,
+                    getSelectedVariable: () => selectedVariable,
+                    getVariableConfig: variable => VARIABLE_CONFIGS[variable] || null,
+                    getActivePeriodLabel: () => getActivePeriodLabel(VARIABLE_CONFIGS[selectedVariable]),
+                    getNationalSummary: () => calculateNationalVariableSummary(selectedVariable, selectedYear, selectedPeriodMode)
                 });
                 window.REDSAInstitutional?.init({
                     // El indice liviano sirve para buscar, pero no contiene las
@@ -482,6 +527,8 @@
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                    refreshCitizenSummary();
+                    window.REDSAExperience?.updateSearchAdjustmentNotice?.(selectedTerritory?.level || null);
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncYear(selectedYear);
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
@@ -511,6 +558,7 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
+                    refreshCitizenSummary();
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
                 });
@@ -528,6 +576,7 @@
                     updateLegend();
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                    refreshCitizenSummary();
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncYear(selectedYear);
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);

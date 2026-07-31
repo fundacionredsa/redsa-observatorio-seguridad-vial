@@ -599,10 +599,10 @@
             return config?.temporal?.anios_acumulables || config?.temporal?.anios_disponibles || [];
         }
 
-        function getVariableValue(properties, variable, year = selectedYear) {
+        function getVariableValueForPeriod(properties, variable, year, periodMode) {
             const config = VARIABLE_CONFIGS[variable];
             if (!config || !properties) return null;
-            if (selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
+            if (periodMode === "accumulated" && supportsHistoricalAccumulation(config)) {
                 const values = getAccumulationYears(config)
                     .map(coveredYear => getSingleYearVariableValue(properties, config, coveredYear))
                     .filter(value => value !== null && value !== undefined && Number.isFinite(Number(value)))
@@ -610,6 +610,14 @@
                 return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
             }
             return getSingleYearVariableValue(properties, config, year);
+        }
+
+        function getVariableValue(properties, variable, year = selectedYear) {
+            return getVariableValueForPeriod(properties, variable, year, selectedPeriodMode);
+        }
+
+        function refreshCitizenSummary() {
+            window.REDSAExperience?.updateSummary(selectedTerritory?.props || null, selectedYear);
         }
 
         function formatCoveredYears(years = []) {
@@ -736,6 +744,7 @@
             window.REDSAInstitutional?.refresh();
             window.REDSAAntLayer?.syncYear(selectedYear);
             window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+            refreshCitizenSummary();
         }
 
         function advanceToNextTimelineYear() {
@@ -1251,7 +1260,8 @@
         function selectTerritoryLayer(level, layer, options = {}) {
             if (!layer?.feature?.properties) return false;
             if (mobileMediaQuery.matches) setMobileLegend(false);
-            const { fitBounds = true, updateHash = true, showProfile = true } = options;
+            const { fitBounds = true, updateHash = true, showProfile = true, searchSelection = false } = options;
+            if (!searchSelection) window.REDSAExperience?.clearSearchAdjustmentNotice?.();
             const previousSelection = selectedTerritory;
             clearSelectedLayerReferences();
             if (previousSelection?.layer && previousSelection.layer !== layer) {

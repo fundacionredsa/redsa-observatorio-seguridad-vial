@@ -458,6 +458,63 @@
     line-height: 1.4;
 }
 
+.citizen-national-reference {
+    display: grid;
+    gap: 3px;
+    padding: 10px 11px;
+    border-left: 3px solid #0891b2;
+    background: rgba(8, 145, 178, 0.08);
+}
+
+.citizen-national-kicker {
+    color: #075d66;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.citizen-national-value {
+    color: var(--public-ink);
+    font-size: 1.1rem;
+    line-height: 1.2;
+}
+
+.citizen-national-value span {
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.citizen-national-meta {
+    color: var(--public-muted);
+    font-size: 0.64rem;
+    line-height: 1.35;
+}
+
+.citizen-national-info {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #087f8c;
+    vertical-align: middle;
+}
+
+.territory-search-adjustment-note {
+    margin: 8px 14px 0;
+    padding: 8px 10px;
+    border-left: 3px solid var(--accent);
+    background: rgba(14, 165, 233, 0.12);
+    color: var(--text-primary);
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+.territory-search-adjustment-note[hidden] {
+    display: none;
+}
+
 .citizen-summary-title {
     color: var(--public-ink);
     font-size: 0.92rem;

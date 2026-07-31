@@ -35,6 +35,11 @@
                 fechas_corte: { 2025: "2025-12-31", 2026: "2026-06-30" }
             },
             aggregation: "sum",
+            nationalMetadata: {
+                collection: "siniestros_transito_territorial",
+                yearsField: "anios",
+                valueField: "total_nacional"
+            },
             dynamicBins: true,
             zeroIsData: true,
             colorFamily: "Oranges",
@@ -82,6 +87,11 @@
             },
             levels: ["province", "canton"],
             temporal: { tipo: "anual", anios_disponibles: [2020, 2021, 2022, 2023, 2024] },
+            nationalAggregation: {
+                numerator: (props, year) => props.fallecidos_historico?.[String(year)],
+                denominator: (props, year) => props.poblacion_por_anio?.[String(year)],
+                scale: 100000
+            },
             dynamicBins: true,
             zeroIsData: true,
             continuous: true,
@@ -103,6 +113,11 @@
             property: "tasa_siniestros_por_1000_vehiculos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
+            nationalAggregation: {
+                numerator: props => props.siniestros_historico?.["2024"],
+                denominator: props => props.vehiculos_matriculados_2024?.total,
+                scale: 1000
+            },
             dynamicBins: true,
             zeroIsData: true,
             continuous: true,
@@ -126,6 +141,11 @@
             property: "tasa_motociclistas_fallecidos_por_1000_motos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
+            nationalAggregation: {
+                numerator: props => props.fallecidos_detallado?.["2024"]?.usuario?.motociclista,
+                denominator: props => props.vehiculos_matriculados_2024?.por_clase?.MOTOCICLETA,
+                scale: 1000
+            },
             dynamicBins: true,
             zeroIsData: true,
             continuous: true,
@@ -192,6 +212,11 @@
             property: "porcentaje_motocicletas_vehiculos_2024",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2024] },
+            nationalAggregation: {
+                numerator: props => props.vehiculos_matriculados_2024?.por_clase?.MOTOCICLETA,
+                denominator: props => props.vehiculos_matriculados_2024?.total,
+                scale: 100
+            },
             dynamicBins: true,
             zeroIsData: true,
             continuous: true,
@@ -213,6 +238,11 @@
             property: "cobertura_mapeo_infraestructura_por_100k",
             levels: ["province", "canton"],
             temporal: { tipo: "foto_unica", anios_disponibles: [2026] },
+            nationalAggregation: {
+                numerator: props => props.cobertura_mapeo_osm?.elementos_total,
+                denominator: props => props.cobertura_mapeo_osm?.poblacion_referencia,
+                scale: 100000
+            },
             dynamicBins: true,
             zeroIsData: true,
             zeroAsNoMapping: true,

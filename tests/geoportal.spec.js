@@ -202,8 +202,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await loadPortal(page);
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
-  await expect(page.locator("#technical-panel-toggle")).toBeHidden();
-  await expect(page.locator("#technical-drawer-close")).toBeHidden();
+  await expect(page.locator("#technical-panel-toggle")).toBeVisible();
+  await expect(page.locator("#technical-drawer-close")).toBeVisible();
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);

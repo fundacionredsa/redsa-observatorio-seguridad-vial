@@ -221,13 +221,15 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   await expect(search).toHaveValue("Cayambe");
 
   await search.press("Tab");
-  await expect(body).toHaveClass(/profile-selection-active/);
-  const resolvedSearchValue = await search.inputValue();
-  await page.locator("#open-analysis-button").click();
   await expect(body).toHaveClass(/mobile-sidebar-open/);
   await expect(body).not.toHaveClass(/citizen-panel-open/);
   await expect(sidebar).toHaveAttribute("aria-hidden", "false");
   await expect(citizen).toHaveAttribute("aria-hidden", "true");
+  await expect.poll(async () => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({
+    level: "canton",
+    code: "1702"
+  });
+  const resolvedSearchValue = await search.inputValue();
   await expect.poll(async () => (await box(page, "#citizen-panel")).right).toBeLessThan(0);
   await expect.poll(async () => (await box(page, "#territory-sidebar")).left).toBeGreaterThanOrEqual(0);
 

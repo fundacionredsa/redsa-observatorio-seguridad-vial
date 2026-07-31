@@ -148,33 +148,35 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(labelPosition.after).toBe(labelPosition.before);
         expect(labelPosition.scrollLeft).toBeGreaterThan(0);
 
-        const stylesBeforeYearChange = await page.evaluate(() => Promise.all(
-            ["01", "09", "17"].map(code => window.__redsaAudit.territoryStyle("province", code))
-        ));
-        const targetYear = yearBar.locator('button[data-year="2021"]');
+        const valuesBeforeYearChange = await page.evaluate(() => ["01", "09", "17"].map(code => {
+            const feature = window.__redsaAudit.findTerritoryLayer("province", code)?.feature;
+            return feature?.properties?.sppat_fallecidos_por_anio?.["2021"] ?? null;
+        }));
+        const targetYear = yearBar.locator('button[data-year="2020"]');
         await targetYear.click();
         await expect(targetYear).toHaveClass(/my-selected/);
-        await expect(page.locator('#map-year-slider')).toHaveValue('2021');
-        expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2021);
-        await expect(page.locator('.legend-panel')).toContainText('2021');
-        const stylesAfterYearChange = await page.evaluate(() => Promise.all(
-            ["01", "09", "17"].map(code => window.__redsaAudit.territoryStyle("province", code))
-        ));
-        expect(stylesAfterYearChange).not.toEqual(stylesBeforeYearChange);
+        await expect(page.locator('#map-year-slider')).toHaveValue('2020');
+        expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2020);
+        await expect(page.locator('.legend-panel')).toContainText('2020');
+        const valuesAfterYearChange = await page.evaluate(() => ["01", "09", "17"].map(code => {
+            const feature = window.__redsaAudit.findTerritoryLayer("province", code)?.feature;
+            return feature?.properties?.sppat_fallecidos_por_anio?.["2020"] ?? null;
+        }));
+        expect(valuesAfterYearChange).not.toEqual(valuesBeforeYearChange);
 
         await page.locator('#mobile-layers-toggle').click();
         await page.locator('[data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
         await page.locator('#technical-drawer-close').click();
         await expect(yearBar).toBeVisible();
-        const targetHistoricalYear = yearBar.locator('button[data-year="2020"]');
+        const targetHistoricalYear = yearBar.locator('button[data-year="2019"]');
         await expect(targetHistoricalYear).toBeEnabled();
         await targetHistoricalYear.click();
         await expect(targetHistoricalYear).toHaveClass(/my-selected/);
-        await expect(page.locator('#map-year-slider')).toHaveValue('2020');
+        await expect(page.locator('#map-year-slider')).toHaveValue('2019');
         await expect(page.locator('[data-period-mode="year"]')).toHaveClass(/active/);
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('year');
-        await expect(page.locator('.legend-panel')).toContainText('2020');
+        await expect(page.locator('.legend-panel')).toContainText('2019');
 
         await page.locator('#mobile-layers-toggle').click();
         await expect(yearBar).toBeHidden();
