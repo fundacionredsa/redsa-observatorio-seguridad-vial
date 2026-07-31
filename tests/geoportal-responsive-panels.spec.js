@@ -250,6 +250,77 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   await expect(body).toHaveClass(/citizen-panel-open/);
 });
 
+test("ficha territorial conserva una medida legible y la escala ocupa el centro inferior", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setZoom(9);
+    await window.__redsaAudit.showTerritory("canton", "1701");
+  });
+
+  const card = page.locator("#demographic-hover-card");
+  await expect(card).toBeVisible();
+  const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
+  const viewport = page.viewportSize();
+
+  const measure = async () => {
+    const cardBox = await box(page, "#demographic-hover-card");
+    const scaleBox = await box(page, ".road-scale-control");
+    const attributionBox = await box(page, ".leaflet-control-attribution");
+    const legendBox = await box(page, ".legend-panel");
+    const maxWidth = await card.evaluate(element => Number.parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue("--perfil-card-max-width")
+    ));
+    return { cardBox, scaleBox, attributionBox, legendBox, maxWidth };
+  };
+
+  if (testInfo.project.name !== "mobile") {
+    if (await citizenToggle.getAttribute("aria-expanded") !== "true") {
+      await citizenToggle.click();
+      await page.waitForTimeout(650);
+    }
+    const open = await measure();
+    await testInfo.attach(`perfil-${testInfo.project.name}-panel-visible`, {
+      body: await page.screenshot(),
+      contentType: "image/png"
+    });
+
+    await citizenToggle.click();
+    await page.waitForTimeout(650);
+    const hidden = await measure();
+    await testInfo.attach(`perfil-${testInfo.project.name}-panel-oculto`, {
+      body: await page.screenshot(),
+      contentType: "image/png"
+    });
+
+    expect(open.cardBox.width).toBeLessThanOrEqual(open.maxWidth + 1);
+    expect(hidden.cardBox.width).toBeLessThanOrEqual(hidden.maxWidth + 1);
+    expect(Math.abs(hidden.cardBox.width - hidden.maxWidth)).toBeLessThanOrEqual(1);
+    expect(Math.abs(open.cardBox.left - hidden.cardBox.left)).toBeGreaterThan(20);
+    if (open.cardBox.width >= open.maxWidth - 1) {
+      expect(Math.abs(open.cardBox.width - hidden.cardBox.width)).toBeLessThanOrEqual(1);
+    } else {
+      expect(intersects(open.cardBox, open.legendBox)).toBeFalsy();
+    }
+  } else {
+    await testInfo.attach("perfil-mobile", {
+      body: await page.screenshot(),
+      contentType: "image/png"
+    });
+  }
+
+  const geometry = await measure();
+  const scaleCenter = (geometry.scaleBox.left + geometry.scaleBox.right) / 2;
+  expect(Math.abs(scaleCenter - viewport.width / 2)).toBeLessThanOrEqual(1);
+  expect(intersects(geometry.cardBox, geometry.scaleBox)).toBeFalsy();
+  expect(intersects(geometry.scaleBox, geometry.attributionBox)).toBeFalsy();
+  expect(intersects(geometry.scaleBox, geometry.legendBox)).toBeFalsy();
+  if (testInfo.project.name === "mobile") {
+    const mobileCitizenToggleBox = await box(page, "#mobile-citizen-toggle");
+    expect(intersects(geometry.scaleBox, mobileCitizenToggleBox)).toBeFalsy();
+  }
+  await expect(page.locator(".road-scale-control").locator("xpath=..")).toHaveClass(/leaflet-center/);
+});
+
 test("panel técnico mantiene orden global y propósito explícito del año", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "El orden móvil se valida dentro de su drawer.");
   await loadPortal(page);

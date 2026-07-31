@@ -21,6 +21,8 @@
         --mobile-top-offset: 66px;
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
         --perfil-card-max-height: 336px;
+        --road-scale-bottom-offset: 64px;
+        --legend-bottom-clearance: 86px;
     }
 
     .ui-container {

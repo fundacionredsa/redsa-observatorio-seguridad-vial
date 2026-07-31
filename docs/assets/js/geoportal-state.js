@@ -118,6 +118,16 @@
         map.getPane("eventPane").style.zIndex = "460";
         map.getPane("eventPane").style.pointerEvents = "none";
 
+        // Leaflet no incluye bottomcenter; registrar la esquina conserva un único control nativo.
+        function ensureControlCorner(position, className) {
+            if (map._controlCorners[position]) return map._controlCorners[position];
+            const corner = L.DomUtil.create("div", className, map._controlContainer);
+            map._controlCorners[position] = corner;
+            return corner;
+        }
+
+        ensureControlCorner("bottomcenter", "leaflet-bottom leaflet-center");
+
         // Reposicionar el control de Zoom
         L.control.zoom({
             position: 'topright'
@@ -148,7 +158,7 @@
         });
 
         const scaleControl = L.control.scale({
-            position: "bottomright",
+            position: "bottomcenter",
             imperial: false,
             metric: true,
             maxWidth: 130

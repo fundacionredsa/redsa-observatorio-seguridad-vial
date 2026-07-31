@@ -220,6 +220,7 @@
             const legend = document.querySelector(".legend-panel");
             const layerSelector = document.querySelector(".basemap-control");
             const selector = document.querySelector(".map-selector-control");
+            const scale = document.querySelector(".road-scale-control");
             const attribution = document.querySelector(".leaflet-control-attribution");
             const sidebar = document.querySelector(".sidebar");
             const citizenPanel = document.querySelector(".citizen-panel");
@@ -229,21 +230,25 @@
             const configuredMaxHeight = parseFloat(
                 window.getComputedStyle(root).getPropertyValue("--perfil-card-max-height")
             );
-            card.style.bottom = `${viewportMargin}px`;
-            card.style.left = `${viewportMargin}px`;
-            card.style.width = "";
+            const configuredMaxWidth = parseFloat(
+                window.getComputedStyle(root).getPropertyValue("--perfil-card-max-width")
+            );
             const legendVisible = isVisibleElement(legend);
             const legendRect = legendVisible ? legend.getBoundingClientRect() : null;
             const layerSelectorVisible = isVisibleElement(layerSelector);
             const layerSelectorRect = layerSelectorVisible ? layerSelector.getBoundingClientRect() : null;
             const selectorVisible = isVisibleElement(selector);
             const selectorRect = selectorVisible ? selector.getBoundingClientRect() : null;
+            const scaleVisible = isVisibleElement(scale);
+            const scaleRect = scaleVisible ? scale.getBoundingClientRect() : null;
             const attributionVisible = isVisibleElement(attribution);
             const attributionRect = attributionVisible ? attribution.getBoundingClientRect() : null;
             const sidebarRequestedOpen = document.body.classList.contains("mobile-sidebar-open");
             const sidebarVisible = sidebarRequestedOpen || isVisibleElement(sidebar);
             const sidebarRect = sidebarVisible ? sidebar.getBoundingClientRect() : null;
-            const citizenPanelVisible = isVisibleElement(citizenPanel);
+            const citizenPanelRequestedOpen = document.body.classList.contains("citizen-panel-open")
+                || document.body.classList.contains("mobile-citizen-open");
+            const citizenPanelVisible = citizenPanelRequestedOpen && isVisibleElement(citizenPanel);
             const citizenPanelRect = citizenPanelVisible ? citizenPanel.getBoundingClientRect() : null;
             const technicalDrawerRequestedOpen = document.body.classList.contains("mobile-layers-open")
                 || document.body.classList.contains("technical-drawer-open");
@@ -262,7 +267,10 @@
                 leftBoundary = Math.max(leftBoundary, sidebarBoundary + safetyMargin);
             }
             if (citizenPanelVisible && !sidebarVisible) {
-                leftBoundary = Math.max(leftBoundary, citizenPanelRect.right + safetyMargin);
+                const declaredLeft = parseFloat(window.getComputedStyle(citizenPanel).left);
+                const settledRight = (Number.isFinite(declaredLeft) ? declaredLeft : viewportMargin)
+                    + citizenPanelRect.width;
+                leftBoundary = Math.max(leftBoundary, settledRight + safetyMargin);
             }
 
             if (legendVisible) {
@@ -296,18 +304,32 @@
                 180,
                 rightBoundary - leftBoundary - (rightBoundary < viewportWidth ? safetyMargin : viewportMargin)
             );
-            const width = Math.floor(availableWidth);
+            const widthLimit = Number.isFinite(configuredMaxWidth) && configuredMaxWidth > 0
+                ? configuredMaxWidth
+                : availableWidth;
+            const width = Math.floor(Math.min(availableWidth, widthLimit));
+            const cardLeft = Math.floor(leftBoundary + Math.max(0, (availableWidth - width) / 2));
+            const cardRight = cardLeft + width;
+            const scaleOverlapsPanel = scaleVisible
+                && scaleRect.right > cardLeft
+                && scaleRect.left < cardRight;
+            if (scaleOverlapsPanel) {
+                bottomOffset = Math.max(
+                    bottomOffset,
+                    viewportHeight - scaleRect.top + safetyMargin
+                );
+            }
             const selectorOverlapsPanel = selectorVisible
-                && selectorRect.right > leftBoundary
-                && selectorRect.left < rightBoundary;
+                && selectorRect.right > cardLeft
+                && selectorRect.left < cardRight;
             const selectorBottom = selectorOverlapsPanel ? selectorRect.bottom : 0;
             const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
             const maxHeight = Math.floor(Math.max(100, Math.min(configuredMaxHeight, availableHeight)));
 
-            root.style.setProperty("--perfil-card-left", `${Math.floor(leftBoundary)}px`);
+            root.style.setProperty("--perfil-card-left", `${cardLeft}px`);
             root.style.setProperty("--perfil-card-width", `${width}px`);
             root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
-            card.style.left = `${Math.floor(leftBoundary)}px`;
+            card.style.left = `${cardLeft}px`;
             card.style.width = `${width}px`;
             card.style.bottom = `${Math.floor(bottomOffset)}px`;
 
