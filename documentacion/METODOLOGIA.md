@@ -189,6 +189,20 @@ subestimar a los motociclistas porque los codigos CIE-10 V80-V89, en especial
 V89, no siempre identifican el tipo de usuario vial. Los vehiculos reflejan
 residencia del propietario, no lugar de circulacion.
 
+### Poblacion y tasas a nivel parroquial
+
+El Observatorio no publica poblacion ni tasas por habitante a nivel parroquial.
+Primero, incluso si existiera una proyeccion para ese nivel, la poblacion
+residente seria un denominador inadecuado: la siniestralidad de los corredores
+tambien refleja transito de paso y no solo desplazamientos de residentes. Es el
+mismo problema de exposicion documentado para el indicador de motociclistas,
+amplificado por la escala parroquial.
+
+Segundo, el INEC no publica proyecciones de poblacion parroquial en la revision
+2024 posterior al Censo 2022; la serie llega hasta canton. No se incorporan
+fuentes alternas, no se mezclan temporalidades y no se imputan valores para
+completar ese nivel.
+
 ## Hotspots
 
 Para cada ano se calcula la tasa cantonal de fallecidos por 100.000 habitantes

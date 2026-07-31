@@ -31,6 +31,32 @@ test("no descarga puntos ANT antes de activar la capa", async ({ page }) => {
   expect(state.active).toBe(false);
 });
 
+test("el perfil focused conserva la vista macro y afina ciudad y calle", async ({ page }, testInfo) => {
+  await waitForPortal(page);
+  await openTechnicalPanel(page, testInfo.project.name === "mobile");
+  await page.locator("#event-layer-disclosure summary").click();
+  await page.locator("#ant-layer-toggle").check();
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
+
+  const profile = await page.evaluate(() => window.REDSAAntLayer.getAuditState().bandwidthProfiles.focused);
+  expect(profile).toEqual([
+    { maxZoom: 6, meters: 18000 },
+    { maxZoom: 9, meters: 5500 },
+    { maxZoom: 12, meters: 900 },
+    { maxZoom: 13, meters: 450 },
+    { maxZoom: 15, meters: 280 },
+    { maxZoom: 99, meters: 180 }
+  ]);
+
+  const bandwidthByZoom = {};
+  for (const zoom of [7, 13, 15, 17]) {
+    await page.evaluate(value => window.__redsaAudit.setMapView(-0.2, -78.43, value), zoom);
+    await page.waitForFunction(value => window.REDSAAntLayer.getAuditState().renderMetrics.heat?.zoom === value, zoom);
+    bandwidthByZoom[zoom] = await page.evaluate(() => window.REDSAAntLayer.getAuditState().renderMetrics.heat.bandwidthMeters);
+  }
+  expect(bandwidthByZoom).toEqual({ 7: 5500, 13: 450, 15: 280, 17: 180 });
+});
+
 test("aviso accesible conserva el año y permite ir al último disponible", async ({ page }, testInfo) => {
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");

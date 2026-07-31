@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.23">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.23">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.23">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.29">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.29">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.29">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -392,14 +392,15 @@
                         <div class="detail-label u-text-accent-strong">Personas fallecidas en esta parroquia <span class="source-label">(<span id="parroquia-sidebar-year">2024</span>)</span></div>
                         <div id="info-fallecidos-parroquia" class="detail-value empty u-text-accent-strong">—</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row" id="population-detail-row">
                         <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> <span id="info-poblacion-year">2024</span>)</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row" id="siniestros-rate-detail-row">
                         <div class="detail-label">Accidentes por cada 100.000 habitantes <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>, <span id="info-tasa-siniestros-year">sin dato</span>)</span></div>
                         <div id="info-tasa-siniestros" class="detail-value empty">Sin dato</div>
                     </div>
+                    <div class="detail-row u-source-row u-hidden" id="parish-population-note"></div>
                     <div class="detail-row u-source-row">
                         <span>Códigos territoriales oficiales (DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span>) <span id="dpa-label-prefix">Cantón / Provincia</span>:</span>
                         <span class="u-text-monospace-strong"><span id="info-cod-parroquia-span" class="u-hidden"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
@@ -461,7 +462,7 @@
                         <div class="detail-label">Vehículos Matriculados <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024, dato fijo)</span></div>
                         <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
                     </div>
-                    <div class="detail-row u-divider-row">
+                    <div class="detail-row u-divider-row" id="fallecidos-rate-detail-row">
                         <div class="detail-label">Fallecidos por cada 100.000 habitantes <span class="source-label">(registro civil INEC/EDG, <span id="tasa-fallecidos-year">2024</span>)</span></div>
                         <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
@@ -547,18 +548,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.23"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.23"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.29"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.29"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

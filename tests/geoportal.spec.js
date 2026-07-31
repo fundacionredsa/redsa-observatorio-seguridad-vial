@@ -89,8 +89,54 @@ test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async 
   await expect(page.locator("#citizen-summary")).toContainText("años con datos");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
+  await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#share-view-button")).toHaveCount(0);
   await expect(page.locator("#download-summary-button")).toBeEnabled();
+});
+
+test("busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "medium", "El caso reproduce el viewport mediano reportado.");
+  await loadPortal(page);
+  await page.locator("#citizen-panel-visibility-toggle").click();
+  await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
+
+  const search = page.locator("#territory-search-input");
+  await search.fill("Quito — Pichincha");
+  await search.press("Enter");
+  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#demographic-hover-card")).toBeHidden();
+  await page.waitForTimeout(700);
+
+  const geometry = await page.evaluate(() => {
+    const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
+    const map = document.getElementById("map").getBoundingClientRect();
+    const citizen = document.getElementById("citizen-panel").getBoundingClientRect();
+    const technical = document.getElementById("technical-drawer").getBoundingClientRect();
+    return {
+      territory,
+      visible: {
+        left: Math.max(map.left, citizen.right),
+        right: Math.min(map.right, technical.left),
+        top: map.top,
+        bottom: map.bottom
+      }
+    };
+  });
+
+  expect(geometry.territory.left).toBeGreaterThanOrEqual(geometry.visible.left - 2);
+  expect(geometry.territory.right).toBeLessThanOrEqual(geometry.visible.right + 2);
+  expect(geometry.territory.top).toBeGreaterThanOrEqual(geometry.visible.top - 2);
+  expect(geometry.territory.bottom).toBeLessThanOrEqual(geometry.visible.bottom + 2);
+
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click"));
+  await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  await page.waitForTimeout(700);
+  const withProfile = await page.evaluate(() => {
+    const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
+    const profile = document.getElementById("demographic-hover-card").getBoundingClientRect();
+    return { territory, profileTop: profile.top };
+  });
+  expect(withProfile.territory.bottom).toBeLessThanOrEqual(withProfile.profileTop + 2);
 });
 
 test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) => {
@@ -127,6 +173,28 @@ test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) =
   });
   expect(pdfAudit.pageCount).toBeGreaterThanOrEqual(2);
   await expect(page.locator("#territory-search-status")).toContainText("no se almacenó en el portal");
+});
+
+test("la ficha PDF parroquial omite el contexto de población y tasas", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La generación binaria se prueba una vez.");
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
+  await page.waitForFunction(() => Boolean(window.__redsaAudit.findTerritoryLayer("parish", "010150")));
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
+  await expect(page.locator("#download-summary-button")).toBeEnabled();
+
+  const downloadPromise = page.waitForEvent("download", { timeout: 60_000 });
+  await page.locator("#download-summary-button").click();
+  const download = await downloadPromise;
+  const savedPath = testInfo.outputPath("ficha-parroquial.pdf");
+  await download.saveAs(savedPath);
+  const bytes = await fs.readFile(savedPath);
+  expect(bytes.subarray(0, 5).toString("ascii")).toBe("%PDF-");
+  expect(bytes.length).toBeGreaterThan(20_000);
+  expect(await page.evaluate(() => window.__redsaLastPdfAudit)).toMatchObject({
+    territoryLevel: "Parroquia",
+    populationContextIncluded: false
+  });
 });
 
 test("modo tecnico conserva variables, capas, metodologia y estado todo apagado", async ({ page }, testInfo) => {
@@ -515,6 +583,64 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
   await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await expect(page.locator("#timeline-marks .timeline-mark")).toHaveCount(11);
   await expect(page.locator("#timeline-marks .timeline-mark.tm-unavailable")).toHaveCount(1);
+});
+
+test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío", async ({ page }) => {
+  await loadPortal(page);
+
+  const initial = await page.evaluate(() => window.__redsaAudit.state());
+  expect(initial.selectedVariable).toBe("siniestros_inec_2019");
+  expect(initial.selectedYear).toBe(2025);
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
+  let state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.selectedYear).toBe(2024);
+  expect(state.validValueCount).toBeGreaterThan(0);
+  expect(state.timelineYearAdjustment).toContain("cambió a 2024");
+  expect(state.timelineYearAdjustment).toContain("2020–2024");
+  await expect(page.locator("#timeline-year-adjustment-note")).toBeVisible();
+  expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().year)).toBe(2024);
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_sppat_2016_2021"));
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.selectedYear).toBe(2021);
+  expect(state.validValueCount).toBeGreaterThan(0);
+  expect(state.timelineYearAdjustment).toContain("cambió a 2021");
+  expect(state.timelineYearAdjustment).toContain("2016–2021");
+  expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().year)).toBe(2021);
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("tasa_siniestros_1000_vehiculos_2024"));
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.selectedYear).toBe(2024);
+  expect(state.validValueCount).toBeGreaterThan(0);
+  expect(state.timelineBadge).toContain("Dato fijo");
+  expect(state.timelineYearAdjustment).toContain("solo tiene datos de 2024");
+
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
+  state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.selectedYear).toBe(2024);
+  expect(state.validValueCount).toBeGreaterThan(0);
+  expect(state.timelineYearAdjustment).toBe("");
+  await expect(page.locator("#timeline-year-adjustment-note")).toBeHidden();
+});
+
+test("cambio de nivel resuelve el año de la variable efectiva", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La resolución temporal por nivel se valida una vez.");
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
+  await page.waitForFunction(() => window.__redsaAudit.state().level === "parish", null, { timeout: 90_000 });
+
+  expect(await page.evaluate(() => window.__redsaAudit.selectYear(2025))).toBeTruthy();
+  expect((await page.evaluate(() => window.__redsaAudit.state())).effectiveVariable).toBe("normal");
+
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+  await page.waitForFunction(() => window.__redsaAudit.state().level === "canton", null, { timeout: 90_000 });
+  const state = await page.evaluate(() => window.__redsaAudit.state());
+  expect(state.effectiveVariable).toBe("fallecidos_inec_2019");
+  expect(state.selectedYear).toBe(2024);
+  expect(state.validValueCount).toBeGreaterThan(0);
+  expect(state.timelineYearAdjustment).toContain("cambió a 2024");
 });
 
 test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
@@ -1037,6 +1163,7 @@ test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines wi
     const layer = window.__redsaAudit.findTerritoryLayer("canton", "1701");
     return window.getTerritoryTooltipContent ? window.getTerritoryTooltipContent(layer.feature, "canton") : null;
   });
+  expect(quitoTooltip).toContain("Población (2024):");
   expect(quitoTooltip).toContain("Siniestros (2024):");
   expect(quitoTooltip).toContain("Fallecidos (2024):");
   expect(quitoTooltip).not.toContain("Siniestros (2024): Sin dato");
@@ -1052,9 +1179,66 @@ test("Territory tooltip displays Siniestros and Fallecidos in dedicated lines wi
     const layer = window.__redsaAudit.findTerritoryLayer("parish", "010150");
     return window.getTerritoryTooltipContent ? window.getTerritoryTooltipContent(layer.feature, "parish") : null;
   });
+  expect(parishTooltip).not.toContain("Población");
   expect(parishTooltip).toContain("Siniestros (2021): Sin dato");
   expect(parishTooltip).toContain("Fallecidos (2021): 59");
   expect(parishTooltip).not.toContain("Siniestros (2021): 59");
+});
+
+test("la ficha parroquial omite población y tasas y explica el criterio", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));
+  await page.waitForFunction(() => Boolean(window.__redsaAudit.findTerritoryLayer("parish", "010150")));
+  await expect(page.locator("#population-detail-row")).toBeHidden();
+  await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();
+  await expect(page.locator("#fallecidos-rate-detail-row")).toBeHidden();
+  await expect(page.locator("#parish-population-note")).toBeVisible();
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "mouseover"));
+  const renderedParishTooltip = page.locator(".territory-hover-tooltip").last();
+  await expect(renderedParishTooltip).toBeVisible();
+  await expect(renderedParishTooltip).not.toContainText("Población");
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
+
+  await expect(page.locator("#population-detail-row")).toBeHidden();
+  await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();
+  await expect(page.locator("#fallecidos-rate-detail-row")).toBeHidden();
+  const parishNote = page.locator("#parish-population-note");
+  await expect(parishNote).toBeVisible();
+  await expect(parishNote).toContainText("Sobre población y tasas por habitante en parroquias");
+
+  const infoButton = parishNote.getByRole("button", {
+    name: "Por qué no se muestran población ni tasas parroquiales"
+  });
+  await expect(infoButton).toBeVisible();
+  await infoButton.focus();
+  await infoButton.press("Enter");
+  await expect(page.locator("#sigla-popover")).toContainText(
+    "El INEC no publica proyecciones de población a nivel parroquial."
+  );
+  await expect(page.locator("#citizen-summary")).not.toContainText("por cada 100.000 habitantes");
+
+  await page.evaluate(() => window.__redsaAudit.clearSelection());
+  await expect(page.locator("#population-detail-row")).toBeHidden();
+  await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();
+  await expect(page.locator("#fallecidos-rate-detail-row")).toBeHidden();
+  await expect(parishNote).toBeVisible();
+
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "0101", "mouseover"));
+  const renderedCantonTooltip = page.locator(".territory-hover-tooltip").last();
+  await expect(renderedCantonTooltip).toBeVisible();
+  await expect(renderedCantonTooltip).toContainText("Población");
+  await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "0101", "click"));
+  await expect(page.locator("#population-detail-row")).toBeVisible();
+  await expect(page.locator("#siniestros-rate-detail-row")).toBeVisible();
+  await expect(page.locator("#fallecidos-rate-detail-row")).toBeVisible();
+  await expect(parishNote).toBeHidden();
+
+  const cantonTooltip = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("canton", "0101");
+    return window.getTerritoryTooltipContent(layer.feature, "canton");
+  });
+  expect(cantonTooltip).toContain("Población (2025):");
 });
 
 test("Territory tooltip deduplicates fixed lines by source field", async ({ page }) => {

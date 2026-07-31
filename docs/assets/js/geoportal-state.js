@@ -280,9 +280,18 @@
         const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
         const legendPanel = document.querySelector(".legend-panel");
 
-        territorySidebar?.addEventListener("transitionend", () => updateProfileCardLayout());
-        technicalDrawer?.addEventListener("transitionend", () => updateProfileCardLayout());
-        citizenPanel?.addEventListener("transitionend", () => updateProfileCardLayout());
+        territorySidebar?.addEventListener("transitionend", () => {
+            updateProfileCardLayout();
+            scheduleSelectedTerritoryRefit();
+        });
+        technicalDrawer?.addEventListener("transitionend", () => {
+            updateProfileCardLayout();
+            scheduleSelectedTerritoryRefit();
+        });
+        citizenPanel?.addEventListener("transitionend", () => {
+            updateProfileCardLayout();
+            scheduleSelectedTerritoryRefit();
+        });
 
         function setMobileLegend(open) {
             const shouldOpen = Boolean(open);
@@ -502,6 +511,76 @@
             { length: TIMELINE_MAX_YEAR - TIMELINE_MIN_YEAR + 1 },
             (_, index) => TIMELINE_MIN_YEAR + index
         );
+        let yearAdjustmentNotice = null;
+
+        function getAvailableYearsForVariable(variable) {
+            return [...new Set(
+                (TEMPORAL_COVERAGE[variable]?.anios_disponibles || [])
+                    .map(Number)
+                    .filter(Number.isFinite)
+            )].sort((a, b) => a - b);
+        }
+
+        function resolveYearForVariable(variable, year) {
+            const availableYears = getAvailableYearsForVariable(variable);
+            const requestedYear = Number(year);
+            if (!availableYears.length || !Number.isFinite(requestedYear)) return requestedYear;
+            if (availableYears.includes(requestedYear)) return requestedYear;
+
+            const minimumYear = availableYears[0];
+            const maximumYear = availableYears[availableYears.length - 1];
+            if (requestedYear < minimumYear) return minimumYear;
+            if (requestedYear > maximumYear) return maximumYear;
+
+            return availableYears.reduce((nearestYear, candidateYear) => {
+                const candidateDistance = Math.abs(candidateYear - requestedYear);
+                const nearestDistance = Math.abs(nearestYear - requestedYear);
+                if (candidateDistance < nearestDistance) return candidateYear;
+                if (candidateDistance === nearestDistance && candidateYear > nearestYear) return candidateYear;
+                return nearestYear;
+            }, minimumYear);
+        }
+
+        function updateYearAdjustmentNotice() {
+            const note = document.getElementById("timeline-year-adjustment-note");
+            if (!note) return;
+            if (!yearAdjustmentNotice) {
+                note.textContent = "";
+                note.hidden = true;
+                return;
+            }
+
+            const { resolvedYear, availableYears } = yearAdjustmentNotice;
+            note.textContent = availableYears.length === 1
+                ? `El año cambió a ${resolvedYear} porque esta variable solo tiene datos de ${resolvedYear}.`
+                : `El año cambió a ${resolvedYear} porque esta variable cubre ${formatCoveredYears(availableYears)}.`;
+            note.hidden = false;
+        }
+
+        function clearYearAdjustmentNotice() {
+            yearAdjustmentNotice = null;
+            updateYearAdjustmentNotice();
+        }
+
+        function resolveSelectedYearForVariable(
+            variable = selectedVariable,
+            { announce = true, clearWhenUnchanged = true } = {}
+        ) {
+            const availableYears = getAvailableYearsForVariable(variable);
+            const requestedYear = Number(selectedYear);
+            const resolvedYear = resolveYearForVariable(variable, requestedYear);
+            const changed = Number.isFinite(resolvedYear) && resolvedYear !== requestedYear;
+
+            if (changed) selectedYear = resolvedYear;
+            if (announce && changed) {
+                yearAdjustmentNotice = { variable, requestedYear, resolvedYear, availableYears };
+            } else if (clearWhenUnchanged) {
+                yearAdjustmentNotice = null;
+            }
+            updateYearAdjustmentNotice();
+
+            return { changed, requestedYear, resolvedYear, availableYears };
+        }
 
         function getSingleYearVariableValue(properties, config, year) {
             if (config.temporal?.tipo === "anual" && !config.temporal.anios_disponibles.includes(Number(year))) {
@@ -639,8 +718,9 @@
             updateTimelinePlayControl();
         }
 
-        function setSelectedYearAndRefresh(newYear) {
+        function setSelectedYearAndRefresh(newYear, { preserveYearAdjustmentNotice = false } = {}) {
             selectedYear = Number(newYear);
+            if (!preserveYearAdjustmentNotice) clearYearAdjustmentNotice();
             const slider = document.getElementById("map-year-slider");
             if (slider) slider.value = String(selectedYear);
 
@@ -751,6 +831,7 @@
             }
 
             updateTimelinePlayControl();
+            updateYearAdjustmentNotice();
         }
 
         let activeVariableBins = {
@@ -790,16 +871,19 @@
         const TERRITORY_TOOLTIP_FIXED_LINES = [
             {
                 label: year => `Población (${year})`,
+                levels: ["province", "canton"],
                 sourceFields: ["poblacion_por_anio"],
                 getValue: (props, year) => props.poblacion_por_anio?.[String(year)]
             },
             {
                 label: year => `Siniestros (${year})`,
+                levels: ["province", "canton", "parish"],
                 sourceFields: ["siniestros_historico"],
                 getValue: (props, year) => props.siniestros_historico?.[String(year)]
             },
             {
                 label: year => `Fallecidos (${year})`,
+                levels: ["province", "canton", "parish"],
                 sourceFields: ["fallecidos_historico", "fallecidos_por_anio", "fallecidos_parroquial"],
                 getValue: (props, year) => props.fallecidos_historico?.[String(year)]
                     ?? props.fallecidos_por_anio?.[String(year)]
@@ -830,6 +914,7 @@
             const config = VARIABLE_CONFIGS[effectiveVar] || VARIABLE_CONFIGS.normal;
             const activeSourceFields = getConfigSourceFields(config);
             const fixedLines = TERRITORY_TOOLTIP_FIXED_LINES
+                .filter(line => line.levels.includes(level))
                 .filter(line => !sourceFieldsOverlap(activeSourceFields, line.sourceFields))
                 .map(line => {
                     const rawValue = line.getValue(props, selectedYear);
@@ -1051,17 +1136,96 @@
             selectedParishLayer = null;
         }
 
-        function fitBoundsWithinTerritoryLevel(layer, level) {
+        function getVisibleMapObstacleRect(selector) {
+            const element = document.querySelector(selector);
+            if (!element) return null;
+            const style = window.getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            const mapRect = map.getContainer().getBoundingClientRect();
+            const intersectsMap = rect.right > mapRect.left
+                && rect.left < mapRect.right
+                && rect.bottom > mapRect.top
+                && rect.top < mapRect.bottom;
+            if (
+                style.display === "none"
+                || style.visibility === "hidden"
+                || Number(style.opacity) === 0
+                || rect.width <= 0
+                || rect.height <= 0
+                || !intersectsMap
+            ) {
+                return null;
+            }
+            return rect;
+        }
+
+        function getTerritoryFitPadding() {
+            const mapRect = map.getContainer().getBoundingClientRect();
+            const margin = 18;
+            let left = 24;
+            let right = 24;
+            let top = 24;
+            let bottom = 24;
+
+            [".citizen-panel", ".sidebar"].forEach(selector => {
+                const rect = getVisibleMapObstacleRect(selector);
+                if (rect) left = Math.max(left, rect.right - mapRect.left + margin);
+            });
+            [".technical-drawer", ".legend-panel", ".basemap-control-dock"].forEach(selector => {
+                const rect = getVisibleMapObstacleRect(selector);
+                if (rect) right = Math.max(right, mapRect.right - rect.left + margin);
+            });
+
+            const profileRect = getVisibleMapObstacleRect("#demographic-hover-card");
+            if (profileRect) bottom = Math.max(bottom, mapRect.bottom - profileRect.top + margin);
+
+            const maximumHorizontalPadding = Math.max(0, mapRect.width - 220);
+            const horizontalPadding = left + right;
+            if (horizontalPadding > maximumHorizontalPadding && horizontalPadding > 0) {
+                const scale = maximumHorizontalPadding / horizontalPadding;
+                left *= scale;
+                right *= scale;
+            }
+
+            const maximumVerticalPadding = Math.max(0, mapRect.height - 180);
+            const verticalPadding = top + bottom;
+            if (verticalPadding > maximumVerticalPadding && verticalPadding > 0) {
+                const scale = maximumVerticalPadding / verticalPadding;
+                top *= scale;
+                bottom *= scale;
+            }
+
+            return {
+                paddingTopLeft: L.point(Math.round(left), Math.round(top)),
+                paddingBottomRight: L.point(Math.round(right), Math.round(bottom))
+            };
+        }
+
+        function fitBoundsWithinTerritoryLevel(layer, level, { animate = true } = {}) {
             const maxZoomByLevel = {
                 province: ZOOM_PROVINCIAS_MAX,
                 canton: ZOOM_CANTONES_MAX,
                 parish: map.getMaxZoom()
             };
+            const padding = getTerritoryFitPadding();
             map.fitBounds(layer.getBounds(), {
-                padding: [24, 24],
+                ...padding,
                 maxZoom: maxZoomByLevel[level],
-                animate: true
+                animate
             });
+        }
+
+        let selectedTerritoryRefitTimer = null;
+
+        function scheduleSelectedTerritoryRefit(delay = 80) {
+            if (!selectedTerritory?.layer || !selectedTerritory?.level) return;
+            if (selectedTerritoryRefitTimer) window.clearTimeout(selectedTerritoryRefitTimer);
+            selectedTerritoryRefitTimer = window.setTimeout(() => {
+                selectedTerritoryRefitTimer = null;
+                if (selectedTerritory?.layer && selectedTerritory?.level) {
+                    fitBoundsWithinTerritoryLevel(selectedTerritory.layer, selectedTerritory.level, { animate: false });
+                }
+            }, delay);
         }
 
         function preservePopupForSecondClick(layer) {
@@ -1071,6 +1235,12 @@
         function handleTerritoryClick(level, event) {
             const layer = event.target;
             if (selectedTerritory?.layer === layer) {
+                const profileCard = document.getElementById("demographic-hover-card");
+                if (!profileCard || window.getComputedStyle(profileCard).display === "none") {
+                    showProfileCard(selectedTerritory.props, { target: layer });
+                    fitBoundsWithinTerritoryLevel(layer, level);
+                    return true;
+                }
                 layer.openPopup?.();
                 return true;
             }
@@ -1081,7 +1251,7 @@
         function selectTerritoryLayer(level, layer, options = {}) {
             if (!layer?.feature?.properties) return false;
             if (mobileMediaQuery.matches) setMobileLegend(false);
-            const { fitBounds = true, updateHash = true } = options;
+            const { fitBounds = true, updateHash = true, showProfile = true } = options;
             const previousSelection = selectedTerritory;
             clearSelectedLayerReferences();
             if (previousSelection?.layer && previousSelection.layer !== layer) {
@@ -1098,9 +1268,13 @@
             layer.setStyle(getTerritoryStyle(layer.feature, level, false, true));
             layer.bringToFront?.();
 
-            if (fitBounds) fitBoundsWithinTerritoryLevel(layer, level);
             updateSidebar(selectedTerritory.props);
-            showProfileCard(selectedTerritory.props, { target: layer });
+            if (showProfile) {
+                showProfileCard(selectedTerritory.props, { target: layer });
+            } else if (typeof hideProfileCard === "function") {
+                hideProfileCard();
+            }
+            if (fitBounds) fitBoundsWithinTerritoryLevel(layer, level);
             window.REDSAAntLayer?.syncTerritory(level, selectedTerritory.props);
 
             if (updateHash && level === "canton") {

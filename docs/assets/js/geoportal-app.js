@@ -106,24 +106,38 @@
                 map.on('zoomend', syncTerritoryLayerToZoom);
                 map.on('zoomend', () => { if (typeof updateProfileCardLayout === "function") updateProfileCardLayout(); });
 
-                function selectCantonLayer(foundLayer, updateHash = true) {
+                function selectCantonLayer(foundLayer, updateHash = true, selectionOptions = {}) {
                     if (!foundLayer) return false;
-                    return selectTerritoryLayer("canton", foundLayer, { fitBounds: true, updateHash });
+                    return selectTerritoryLayer("canton", foundLayer, {
+                        ...selectionOptions,
+                        fitBounds: true,
+                        updateHash
+                    });
                 }
 
-                async function selectCantonByCode(code, updateHash = true) {
+                async function selectCantonByCode(code, updateHash = true, selectionOptions = {}) {
                     await ensureCantonLayer();
                     let foundLayer = null;
                     cantonLayer.eachLayer(layer => {
                         if (!foundLayer && String(layer.feature?.properties?.DPA_CANTON) === String(code)) foundLayer = layer;
                     });
-                    return selectCantonLayer(foundLayer, updateHash);
+                    return selectCantonLayer(foundLayer, updateHash, selectionOptions);
+                }
+
+                function selectCantonFromSearch(code) {
+                    setMobileLegend(false);
+                    if (mobileMediaQuery.matches) {
+                        setMobilePanel("citizen", false);
+                    } else {
+                        setDesktopTechnicalPanel(false);
+                    }
+                    return selectCantonByCode(code, true, { showProfile: false });
                 }
 
                 window.REDSAExperience?.init({
                     provinceFeatures: provinceData.features,
                     cantonFeatures: cantonIndexFeatures,
-                    selectCanton: code => selectCantonByCode(code, true),
+                    selectCanton: selectCantonFromSearch,
                     openAnalysis: () => {
                         setMobilePanel("citizen", false);
                         setMobilePanel("sidebar", true);
@@ -151,6 +165,10 @@
                     const hash = window.location.hash;
                     if (hash && hash.startsWith("#canton=")) {
                         const cantonName = decodeURIComponent(hash.substring(8)).trim().toUpperCase();
+                        const selectedCantonName = selectedTerritory?.level === "canton"
+                            ? String(selectedTerritory.props?.DPA_DESCAN || "").trim().toUpperCase()
+                            : "";
+                        if (selectedCantonName === cantonName) return;
                         await ensureCantonLayer();
                         let foundLayer = null;
 
@@ -161,7 +179,7 @@
                             }
                         });
 
-                        selectCantonLayer(foundLayer, false);
+                        selectCantonLayer(foundLayer, false, { showProfile: false });
                     }
                 };
 
@@ -322,6 +340,7 @@
                                         <span id="timeline-badge" class="timeline-badge">${selectedYear}</span>
                                     </div>
                                     <p class="timeline-help">Mueve el control para ver los datos de cada año.</p>
+                                    <p id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></p>
                                     <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año de los datos mostrados">
                                     <div id="timeline-marks" class="timeline-marks"></div>
                                 </div>
@@ -386,6 +405,7 @@
                 });
                 new MapControl().addTo(map);
                 syncMobileLayerDrawer();
+                resolveSelectedYearForVariable(selectedVariable, { announce: false });
                 const antEventConfig = EVENT_LAYER_CONFIGS.find(config => config.id === "siniestros_ant");
                 if (antEventConfig) {
                     window.REDSAAntLayer?.init({
@@ -452,6 +472,7 @@
                 function handleVariableChange() {
                     if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
+                    resolveSelectedYearForVariable(selectedVariable);
                     updateMapVariableDescription();
                     updatePeriodModeControl();
                     updateTimelineControl();
@@ -459,7 +480,11 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
+                    if (currentProps) updateSidebar(currentProps);
+                    if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     window.REDSAInstitutional?.refresh();
+                    window.REDSAAntLayer?.syncYear(selectedYear);
+                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
                 }
 
                 function updateMapVariableDescription() {
@@ -493,6 +518,7 @@
                 document.getElementById("map-year-slider").addEventListener("input", function() {
                     if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     selectedYear = Number(this.value);
+                    clearYearAdjustmentNotice();
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
                     updateTimelineControl();
@@ -665,6 +691,19 @@
                             fillOpacity: found.options.fillOpacity
                         };
                     },
+                    selectedTerritoryScreenBounds() {
+                        if (!selectedTerritory?.layer) return null;
+                        const bounds = selectedTerritory.layer.getBounds();
+                        const mapRect = map.getContainer().getBoundingClientRect();
+                        const northWest = map.latLngToContainerPoint(bounds.getNorthWest());
+                        const southEast = map.latLngToContainerPoint(bounds.getSouthEast());
+                        return {
+                            left: mapRect.left + northWest.x,
+                            right: mapRect.left + southEast.x,
+                            top: mapRect.top + northWest.y,
+                            bottom: mapRect.top + southEast.y
+                        };
+                    },
                     async setZoom(zoom) {
                         map.setView(map.getCenter(), zoom, { animate: false });
                         const desiredLevel = territoryLevelMode === "auto"
@@ -731,6 +770,7 @@
                     selectVariable(variable) {
                         return selectMapVariable(variable);
                     },
+                    resolveYearForVariable: (variable, year) => resolveYearForVariable(variable, year),
                     selectYear(year) {
                         const numericYear = Number(year);
                         const slider = document.getElementById("map-year-slider");
@@ -817,6 +857,7 @@
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
                             timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
                             timelineBadge: document.getElementById("timeline-badge")?.textContent,
+                            timelineYearAdjustment: document.getElementById("timeline-year-adjustment-note")?.textContent || "",
                             effectiveVariable: getEffectiveVariable(activeTerritoryLevel),
                             bins: [...activeVariableBins.bins],
                             validValueCount: activeVariableBins.validValueCount,

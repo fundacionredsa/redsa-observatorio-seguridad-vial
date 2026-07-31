@@ -242,11 +242,11 @@
 
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
+        const hasPopulationRate = level !== "Parroquia";
         const province = props.DPA_DESPRO || "";
         const year = resolveSummaryYear(props, requestedYear);
         const accidents = year ? Number(props.siniestros_historico?.[String(year)]) : null;
-        const population = year ? Number(props.poblacion_por_anio?.[String(year)]) : null;
-        const rate = year ? rateForFeature(props, year) : null;
+        const rate = hasPopulationRate && year ? rateForFeature(props, year) : null;
         const years = availableAccidentYears(props);
         const isPartial2026 = year === 2026;
         const previousYear = year ? years.filter(candidate => candidate < year).at(-1) : null;
@@ -256,7 +256,7 @@
         const change = Number.isFinite(accidents) && Number.isFinite(previousAccidents) && previousAccidents > 0
             ? (accidents - previousAccidents) / previousAccidents * 100
             : null;
-        const nationalMedian = year
+        const nationalMedian = hasPopulationRate && year
             ? median(state.cantonFeatures.map(feature => rateForFeature(feature, year)))
             : null;
         const completeYears = years.filter(candidate => candidate <= 2025);
@@ -268,7 +268,9 @@
             ? accidents / historicalTotal * 100
             : null;
 
-        let comparison = "No hay una serie comparable suficiente para este territorio.";
+        let comparison = hasPopulationRate
+            ? "No hay una serie comparable suficiente para este territorio."
+            : "La comparación usa conteos del mismo territorio y periodo.";
         if (Number.isFinite(rate) && Number.isFinite(nationalMedian)) {
             const direction = rate > nationalMedian ? "por encima" : (rate < nationalMedian ? "por debajo" : "en línea");
             comparison = `La tasa está ${direction} de la mediana de los cantones del país (${formatNumber(nationalMedian, 1)} por cada 100.000 habitantes).`;
@@ -287,10 +289,10 @@
                     <strong>${Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato"}</strong>
                     <span>siniestros reportados${year ? ` en ${isPartial2026 ? "enero-junio de 2026" : year}` : ""}</span>
                 </div>
-                <div class="citizen-summary-metric">
+                ${hasPopulationRate ? `<div class="citizen-summary-metric">
                     <strong>${Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato"}</strong>
                     <span>por cada 100.000 habitantes</span>
-                </div>
+                </div>` : ""}
             </div>
             <div class="citizen-summary-history">
                 <strong>Histórico de años completos: ${formatNumber(historicalTotal)} siniestros</strong>
@@ -381,21 +383,25 @@
 
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
+        const hasPopulationRate = level !== "Parroquia";
+        const deathAnnualSeries = props.fallecidos_historico || props.fallecidos_por_anio || {};
         const years = availableAccidentYears(props);
         const trendYears = completeTimelineYears(props, year);
         const accidentCoverage = coverageYears(props.siniestros_historico);
-        const deathCoverage = coverageYears(props.fallecidos_historico);
+        const deathCoverage = coverageYears(deathAnnualSeries);
         const latestAccident = latestAvailable(props.siniestros_historico);
-        const latestDeath = latestAvailable(props.fallecidos_historico);
+        const latestDeath = latestAvailable(deathAnnualSeries);
         const selectedAccidents = finiteNumber(props.siniestros_historico?.[String(year)]);
-        const selectedDeaths = finiteNumber(props.fallecidos_historico?.[String(year)]);
+        const selectedDeaths = finiteNumber(deathAnnualSeries[String(year)]);
         const accidentPeriod = selectedAccidents !== null ? { year, value: selectedAccidents } : latestAccident;
         const deathPeriod = selectedDeaths !== null ? { year, value: selectedDeaths } : latestDeath;
-        const population = finiteNumber(props.poblacion_por_anio?.[String(accidentPeriod?.year)]);
-        const rate = accidentPeriod ? rateForFeature(props, accidentPeriod.year) : null;
+        const population = hasPopulationRate
+            ? finiteNumber(props.poblacion_por_anio?.[String(accidentPeriod?.year)])
+            : null;
+        const rate = hasPopulationRate && accidentPeriod ? rateForFeature(props, accidentPeriod.year) : null;
         const completeAccidentYears = accidentCoverage.filter(candidate => candidate <= 2025);
         const historicalTotal = sumSeriesForYears(props.siniestros_historico, completeAccidentYears);
-        const historicalDeaths = sumSeries(props.fallecidos_historico);
+        const historicalDeaths = sumSeries(deathAnnualSeries);
         pdf.setFillColor(7, 93, 102);
         pdf.rect(0, 0, pageWidth, 32, "F");
         pdf.setTextColor(255, 255, 255);
@@ -432,9 +438,11 @@
             pdf.text(pdf.splitTextToSize(label, metricWidth - 6), x + 3, y + 12);
         });
         y += 24;
-        const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
-        const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
-        addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con ANT/INEC e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        if (hasPopulationRate) {
+            const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
+            const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
+            addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con ANT/INEC e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
+        }
         if (Number(year) === 2026 && accidentPeriod?.year === 2026) {
             const comparable2025 = finiteNumber(props.siniestros_enero_junio_2025);
             const change = comparable2025 !== null && comparable2025 > 0
@@ -654,7 +662,9 @@
         addParagraph("Siniestros: ANT, registro administrativo primario; INEC, Estadísticas de Transporte (ESTRA), procesamiento estadístico oficial. Son dos etapas de una misma cadena y no deben sumarse entre sí. Los conteos principales no se suprimen; el umbral SDC de 5 se aplica únicamente a cruces de múltiples atributos.");
         addParagraph("Cobertura temporal: 2025 es año completo semidefinitivo, reconciliado con los cuatro trimestres ESTRA. 2026 es provisional, enero-junio; el segundo trimestre aún no tenía publicación ESTRA al corte del 27 de julio de 2026.");
         addParagraph("Personas fallecidas: INEC, Estadísticas de Defunciones Generales (EDG), causas CIE-10 V01-V89. EDG registra el lugar de fallecimiento, que no necesariamente coincide con el lugar del siniestro.");
-        addParagraph("Límites: INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY. Las tasas se calculan como numerador / población del mismo año x 100.000. Los datos faltantes se declaran como sin dato.");
+        addParagraph(hasPopulationRate
+            ? "Límites: INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY. Las tasas se calculan como numerador / población del mismo año x 100.000. Los datos faltantes se declaran como sin dato."
+            : "Límites: INEC/CONALI vía datosabiertos.gob.ec, licencia CC BY. A nivel parroquial se omiten la población y las tasas por habitante; consulte la metodología.");
         addParagraph(`Metodología: ${new URL("metodologia/", window.location.href).href}`, { size: 8 });
         addParagraph(`Cita sugerida: Fundación REDSA (${new Date().getFullYear()}). Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible. Consulta: ${new Date().toLocaleDateString("es-EC")}.`, { size: 8 });
         addParagraph("Contacto institucional: info@fundacionredsa.org", { bold: true, color: teal, size: 9 });
@@ -679,6 +689,8 @@
             timelineEndYear: trendYears.at(-1),
             sourcesBySection: true,
             historicalComparison: true,
+            territoryLevel: level,
+            populationContextIncluded: hasPopulationRate,
             latestOfficialFallbacks: {
                 accidents: accidentPeriod?.year || null,
                 deaths: deathPeriod?.year || null,

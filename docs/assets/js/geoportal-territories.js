@@ -586,9 +586,16 @@ function onEachProvinceFeature(feature, layer) {
         function activateTerritoryLevel(level) {
             const targetLayer = getLayerForLevel(level);
             if (!targetLayer) return;
+            const effectiveVariable = getEffectiveVariable(level);
+            const yearResolution = resolveSelectedYearForVariable(effectiveVariable, {
+                clearWhenUnchanged: false
+            });
 
             if (activeTerritoryLevel === level && map.hasLayer(targetLayer)) {
                 updateTerritoryLevelControl();
+                if (yearResolution.changed) {
+                    setSelectedYearAndRefresh(selectedYear, { preserveYearAdjustmentNotice: true });
+                }
                 return;
             }
 
@@ -598,17 +605,30 @@ function onEachProvinceFeature(feature, layer) {
 
             activeTerritoryLevel = level;
             window.__redsaActiveTerritoryLevel = level;
+            if (yearResolution.changed) {
+                updateMapVariableDescription();
+                updateTimelineControl();
+            }
             recalculateActiveVariableBins(selectedVariable, level);
             targetLayer.addTo(map);
 
             domParroquiaRow.style.display = level === "parish" ? "flex" : "none";
             domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
+            if (typeof updateParishPopulationContext === "function") {
+                updateParishPopulationContext(level === "parish");
+            }
 
             refreshTerritoryLayerStyles();
             updateMapLevelNote(level);
             updateLegend();
             updateTerritoryLevelControl();
             if (selectedTerritory?.props) updateSidebar(selectedTerritory.props);
+            if (yearResolution.changed && currentProfileProps) showProfileCard(currentProfileProps, null);
+            if (yearResolution.changed) {
+                window.REDSAInstitutional?.refresh();
+                window.REDSAAntLayer?.syncYear(selectedYear);
+                window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+            }
             window.REDSAExperience?.updateMapContext(
                 VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal,
                 selectedYear,

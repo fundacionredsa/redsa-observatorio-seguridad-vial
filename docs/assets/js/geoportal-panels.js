@@ -21,6 +21,10 @@
         const domParroquiaRow = document.getElementById("parroquia-row");
         const domFallecidosParroquiaRow = document.getElementById("fallecidos-parroquia-row");
         const domWarningBox = document.getElementById("cabecera-warning-box");
+        const domPopulationRow = document.getElementById("population-detail-row");
+        const domSiniestrosRateRow = document.getElementById("siniestros-rate-detail-row");
+        const domFallecidosRateRow = document.getElementById("fallecidos-rate-detail-row");
+        const domParishPopulationNote = document.getElementById("parish-population-note");
 
         // Configuración de aviso de cabecera
         const CABECERA_SUFFIX = "50";
@@ -132,9 +136,23 @@
         function siglaInfoIcon(sigla, customText = null) {
             if (customText) {
                 const encodedText = customText.replace(/"/g, '&quot;');
-                return `<span class="sigla-tooltip-trigger" data-sigla="${sigla}" data-custom-text="${encodedText}">ⓘ</span>`;
+                return `<button type="button" class="sigla-tooltip-trigger" data-sigla="${sigla}" data-custom-text="${encodedText}" aria-label="Por qué no se muestran población ni tasas parroquiales">ⓘ</button>`;
             }
             return `<span class="sigla-tooltip-trigger" data-sigla="${sigla}">ⓘ</span>`;
+        }
+
+        function updateParishPopulationContext(isParish) {
+            [domPopulationRow, domSiniestrosRateRow, domFallecidosRateRow].forEach(row => {
+                row?.classList.toggle("u-hidden", isParish);
+            });
+            if (!domParishPopulationNote) return;
+            domParishPopulationNote.classList.toggle("u-hidden", !isParish);
+            domParishPopulationNote.innerHTML = isParish
+                ? `<span>Sobre población y tasas por habitante en parroquias ${siglaInfoIcon(
+                    "Población parroquial",
+                    "El INEC no publica proyecciones de población a nivel parroquial. Por eso el Observatorio no muestra población ni tasas por habitante en este nivel."
+                )}</span>`
+                : "";
         }
 
         // Helper to render dynamic progress bar
@@ -302,6 +320,13 @@
         }
 
         // --- TARJETA FIJA DE LA UNIDAD SELECCIONADA ---
+
+        function hideProfileCard() {
+            currentProfileProps = null;
+            document.body.classList.remove("profile-selection-active");
+            const card = document.getElementById("demographic-hover-card");
+            if (card) card.style.display = "none";
+        }
 
         function showProfileCard(props, e) {
             const card = document.getElementById("demographic-hover-card");
@@ -721,8 +746,9 @@
             let parishProps = null;
             if (props && props.DPA_PARROQ) {
                 parishProps = props;
-                props = getCantonProps(parishProps.DPA_CANTON);
+                props = getCantonProps(parishProps.DPA_CANTON) || parishProps;
             }
+            updateParishPopulationContext(Boolean(parishProps) || activeTerritoryLevel === "parish");
 
             if (parishProps) {
                 domParroquia.textContent = parishProps.DPA_DESPAR;
@@ -1107,5 +1133,5 @@
                 chartEmptyMsg.style.display = "block";
                 chartEmptyMsg.textContent = "Sin datos de serie histórica para este cantón";
             }
-            window.REDSAExperience?.updateSummary(props, selectedYear);
+            window.REDSAExperience?.updateSummary(parishProps || props, selectedYear);
         }

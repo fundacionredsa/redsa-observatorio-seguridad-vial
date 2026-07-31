@@ -26,8 +26,9 @@
         focused: [
             { maxZoom: 6, meters: 18000 },
             { maxZoom: 9, meters: 5500 },
-            { maxZoom: 12, meters: 1500 },
-            { maxZoom: 15, meters: 450 },
+            { maxZoom: 12, meters: 900 },
+            { maxZoom: 13, meters: 450 },
+            { maxZoom: 15, meters: 280 },
             { maxZoom: 99, meters: 180 }
         ],
         balanced_provisional: [
@@ -446,7 +447,7 @@
         state.layer = L.heatLayer(state.heatPoints, {
             pane: state.pane,
             radius,
-            blur: Math.max(12, Math.round(radius * 0.72)),
+            blur: Math.max(12, Math.round(radius * 0.50)),
             minOpacity: 0.18,
             maxZoom: 18,
             gradient: HEAT_GRADIENT

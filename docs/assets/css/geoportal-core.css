@@ -122,12 +122,20 @@
             vertical-align: middle;
             user-select: none;
             font-style: normal;
+            padding: 0;
+            font-family: inherit;
+            appearance: none;
         }
-        .sigla-tooltip-trigger:hover {
+        .sigla-tooltip-trigger:hover,
+        .sigla-tooltip-trigger:focus-visible {
             background: #38bdf8;
             color: #0f172a;
             border-color: #38bdf8;
             box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+        }
+        .sigla-tooltip-trigger:focus-visible {
+            outline: 2px solid #38bdf8;
+            outline-offset: 2px;
         }
 
         .sigla-popover {
