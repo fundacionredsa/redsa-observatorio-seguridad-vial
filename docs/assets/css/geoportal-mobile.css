@@ -20,8 +20,6 @@
         --mobile-edge: 10px;
         --mobile-top-offset: 66px;
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
-        --perfil-card-max-height: 336px;
-        --perfil-card-min-usable-width: 280px;
         --road-scale-bottom-offset: 64px;
         --legend-bottom-clearance: 86px;
     }
@@ -529,58 +527,24 @@
     }
 
     .legend-panel {
-        width: auto;
+        display: block;
+        width: 100%;
         min-width: 0;
         max-height: none;
-        margin-right: calc(var(--right-tool-rail-width) + 8px) !important;
+        margin: 0 !important;
         padding: 0;
         overflow: visible;
-        border-radius: 8px;
+        border: 0;
+        border-radius: 0;
         font-size: 0.68rem;
     }
 
-    .mobile-legend-toggle {
-        display: inline-flex;
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        min-height: 44px;
-    }
-
     .legend-content {
-        display: none;
-    }
-
-    .legend-panel.mobile-legend-open {
-        width: min(280px, calc(100vw - 20px));
-        max-height: var(--legend-max-height-mobile);
-        overflow: hidden;
-    }
-
-    .legend-panel.mobile-legend-open .legend-content {
         display: block;
-        max-height: calc(var(--legend-max-height-mobile) - 44px);
-        padding: 10px 42px 10px 10px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-
-    .legend-panel.mobile-legend-open .legend-title {
-        display: block;
-    }
-
-    body.mobile-legend-open .perfil-fallecidos-card,
-    body.mobile-sidebar-open .perfil-fallecidos-card,
-    body.mobile-layers-open .perfil-fallecidos-card {
-        visibility: hidden;
     }
 
     .perfil-fallecidos-card {
-        left: var(--perfil-card-left);
-        right: auto;
-        width: var(--perfil-card-width);
-        max-height: var(--perfil-card-max-height);
+        width: 100%;
     }
 
     .perfil-card-grid {
@@ -651,17 +615,21 @@
 }
 
 @media (max-width: 768px) {
-    .right-tools-rail {
-        top: var(--mobile-top-offset, 66px);
+    .right-control-shell {
+        top: var(--mobile-context-top);
         right: var(--mobile-edge, 10px);
+        max-width: calc(100vw - (2 * var(--mobile-edge, 10px)));
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+    }
+
+    .right-tools-rail {
         width: var(--right-tool-rail-width);
-        gap: 6px;
-        padding: 0;
+        gap: 0;
         transition: opacity 160ms ease, visibility 160ms ease;
     }
 
-    body.mobile-citizen-open .right-tools-rail,
-    body.mobile-sidebar-open .right-tools-rail {
+    body.mobile-citizen-open .right-control-shell,
+    body.mobile-sidebar-open .right-control-shell {
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
@@ -672,10 +640,9 @@
     }
 
     .right-context-host {
-        top: var(--mobile-context-top);
-        bottom: var(--mobile-context-bottom);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width));
+        flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
+        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
@@ -687,12 +654,6 @@
     .right-context-host .technical-drawer {
         height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         padding: 12px 12px 20px;
-    }
-
-    body.mobile-layers-open .right-context-host {
-        top: var(--mobile-context-top);
-        bottom: var(--mobile-context-bottom);
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
     body.mobile-layers-open .right-context-view,
@@ -709,15 +670,14 @@
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
     }
 
-    body.right-context-open .legend-panel {
-        visibility: hidden;
-        pointer-events: none;
-    }
-
     body.mobile-right-context-open .mobile-overlay-backdrop {
         display: block;
         opacity: 1;
         pointer-events: auto;
+    }
+
+    body.mobile-right-context-open .road-scale-control {
+        visibility: hidden;
     }
 
     body.mobile-legend-open .mobile-overlay-backdrop {

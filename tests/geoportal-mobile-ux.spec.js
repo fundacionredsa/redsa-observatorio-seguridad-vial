@@ -91,6 +91,10 @@ test.describe('Geoportal Mobile UX Improvements', () => {
                 expect(levelBarBox.y).toBeGreaterThanOrEqual(sidebarToggleBox.y + sidebarToggleBox.height);
             }
 
+            if (await page.locator('#right-context-host').isVisible()) {
+                await page.locator('#mobile-legend-toggle').click();
+                await expect(page.locator('#right-context-host')).toBeHidden();
+            }
             const provButton = mobileLevelBar.locator('button[data-level-mode="province"]');
             await provButton.click();
             await expect(provButton).toHaveClass(/active/);
@@ -148,6 +152,11 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(labelPosition.after).toBe(labelPosition.before);
         expect(labelPosition.scrollLeft).toBeGreaterThan(0);
 
+        if (await page.locator('#right-context-host').isVisible()) {
+            await page.locator('#mobile-legend-toggle').click();
+            await expect(page.locator('#right-context-host')).toBeHidden();
+        }
+
         const valuesBeforeYearChange = await page.evaluate(() => ["01", "09", "17"].map(code => {
             const feature = window.__redsaAudit.findTerritoryLayer("province", code)?.feature;
             return feature?.properties?.sppat_fallecidos_por_anio?.["2021"] ?? null;
@@ -167,7 +176,8 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.locator('[data-right-panel="layers"]').click();
         await page.locator('[data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
-        await page.locator('#technical-drawer-close').click();
+        await expect(page.locator('#right-context-host')).toHaveAttribute('data-active-panel', 'legend');
+        await page.locator('#mobile-legend-toggle').click();
         await expect(yearBar).toBeVisible();
         const targetHistoricalYear = yearBar.locator('button[data-year="2019"]');
         await expect(targetHistoricalYear).toBeEnabled();
@@ -219,12 +229,15 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const card = page.locator('#demographic-hover-card');
         await expect(card).toBeVisible();
         await expect(page.locator('#profile-card-close')).toBeInViewport();
-        const overflow = await card.evaluate(element => ({
-            clientWidth: element.clientWidth,
-            scrollWidth: element.scrollWidth,
-            clientHeight: element.clientHeight,
-            scrollHeight: element.scrollHeight
-        }));
+        const overflow = await card.evaluate(element => {
+            const scroll = element.closest('.legend-context-scroll');
+            return {
+                clientWidth: element.clientWidth,
+                scrollWidth: element.scrollWidth,
+                clientHeight: scroll.clientHeight,
+                scrollHeight: scroll.scrollHeight
+            };
+        });
         expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth);
         expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
     });

@@ -32,7 +32,7 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha abre un solo panel contextual y conserva la leyenda independiente", async ({ page }) => {
+test("la barra derecha controla un solo panel de cuatro pestañas con Leyenda por defecto", async ({ page }) => {
   await loadPortal(page);
 
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
@@ -40,35 +40,88 @@ test("la barra derecha abre un solo panel contextual y conserva la leyenda indep
   expect((await citizenToggle.textContent()).trim()).toBe("");
 
   const rail = page.locator("#right-tools-rail");
+  const legendButton = page.locator('[data-right-panel="legend"]');
   const layersButton = page.locator('[data-right-panel="layers"]');
   const basemapButton = page.locator('[data-right-panel="basemap"]');
   const methodologyButton = page.locator('[data-right-panel="methodology"]');
   const viewport = page.viewportSize();
 
   await expect(rail).toBeVisible();
-  await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(4);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
+    "Leyenda",
+    "Datos y capas",
+    "Mapas base",
+    "Metodología y fuentes"
+  ]);
+  await expect(legendButton).toHaveAttribute("aria-selected", "true");
+  await expect(legendButton).toHaveAttribute("aria-expanded", "true");
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
   await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
   await expect(methodologyButton).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#right-context-host")).toBeVisible();
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
-  if (viewport.width > 768) await expect(page.locator(".legend-panel")).toBeVisible();
-  else await expect(page.locator(".legend-panel")).not.toHaveClass(/mobile-legend-open/);
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await basemapButton.click();
   await expect(page.locator("#basemap-context-panel")).toBeVisible();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await basemapButton.press("ArrowUp");
   await expect(layersButton).toBeFocused();
+  await expect(page.locator("#technical-drawer")).toBeVisible();
   await methodologyButton.click();
   await expect(page.locator("#methodology-context-panel")).toBeVisible();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
   await methodologyButton.click();
   await expect(page.locator("#right-context-host")).toBeHidden();
+
+  await legendButton.click();
+  const panel = await box(page, "#right-context-host");
+  const railBox = await box(page, "#right-tools-rail");
+  expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
+  expect(intersects(panel, railBox)).toBeFalsy();
+  expect(panel.right).toBeLessThanOrEqual(viewport.width);
+});
+
+test("los cambios cartográficos y la selección territorial regresan a Leyenda", async ({ page }) => {
+  await loadPortal(page);
+  const host = page.locator("#right-context-host");
+  const basemapTab = page.locator('[data-right-panel="basemap"]');
+  const layersTab = page.locator('[data-right-panel="layers"]');
+  const expectLegend = async () => {
+    await expect(host).toBeVisible();
+    await expect(host).toHaveAttribute("data-active-panel", "legend");
+    await expect(page.locator("#legend-context-panel")).toBeVisible();
+  };
+
+  await basemapTab.click();
+  await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
+  await expectLegend();
+
+  await basemapTab.click();
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
+  await expectLegend();
+
+  await layersTab.click();
+  await page.locator('[data-period-mode="accumulated"]').click();
+  await expectLegend();
+
+  await layersTab.click();
+  await page.locator('[data-level-mode="canton"]').first().click();
+  await expectLegend();
+
+  await basemapTab.click();
+  await page.evaluate(() => window.__redsaAudit.showTerritory("province", "17"));
+  await expectLegend();
+  await expect(page.locator("#demographic-hover-card")).toBeVisible();
 });
 
 test("las tres capas del mapa comparten una sola tarjeta y conservan controles independientes", async ({ page }, testInfo) => {
@@ -224,7 +277,7 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   await expect(body).toHaveClass(/citizen-panel-open/);
 });
 
-test("ficha territorial conserva una medida legible y la escala ocupa el centro inferior", async ({ page }, testInfo) => {
+test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selección", async ({ page }, testInfo) => {
   await loadPortal(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
@@ -233,66 +286,54 @@ test("ficha territorial conserva una medida legible y la escala ocupa el centro 
 
   const card = page.locator("#demographic-hover-card");
   await expect(card).toBeVisible();
-  const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
   const viewport = page.viewportSize();
 
   const measure = async () => {
     const cardBox = await box(page, "#demographic-hover-card");
     const scaleBox = await box(page, ".road-scale-control");
     const attributionBox = await box(page, ".leaflet-control-attribution");
-    const legendBox = await box(page, ".legend-panel");
-    const maxWidth = await card.evaluate(element => Number.parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue("--perfil-card-max-width")
-    ));
-    return { cardBox, scaleBox, attributionBox, legendBox, maxWidth };
+    const hostBox = await box(page, "#right-context-host");
+    return { cardBox, scaleBox, attributionBox, hostBox };
   };
 
-  if (testInfo.project.name !== "mobile") {
-    if (await citizenToggle.getAttribute("aria-expanded") !== "true") {
-      await citizenToggle.click();
-      await page.waitForTimeout(650);
-    }
-    const open = await measure();
-    await testInfo.attach(`perfil-${testInfo.project.name}-panel-visible`, {
-      body: await page.screenshot(),
-      contentType: "image/png"
-    });
-
-    await citizenToggle.click();
-    await page.waitForTimeout(650);
-    const hidden = await measure();
-    await testInfo.attach(`perfil-${testInfo.project.name}-panel-oculto`, {
-      body: await page.screenshot(),
-      contentType: "image/png"
-    });
-
-    expect(open.cardBox.width).toBeLessThanOrEqual(open.maxWidth + 1);
-    expect(hidden.cardBox.width).toBeLessThanOrEqual(hidden.maxWidth + 1);
-    expect(Math.abs(hidden.cardBox.width - hidden.maxWidth)).toBeLessThanOrEqual(1);
-    expect(Math.abs(open.cardBox.left - hidden.cardBox.left)).toBeGreaterThan(20);
-    if (open.cardBox.width >= open.maxWidth - 1) {
-      expect(Math.abs(open.cardBox.width - hidden.cardBox.width)).toBeLessThanOrEqual(1);
-    } else {
-      expect(intersects(open.cardBox, open.legendBox)).toBeFalsy();
-    }
-  } else {
-    await testInfo.attach("perfil-mobile", {
-      body: await page.screenshot(),
-      contentType: "image/png"
-    });
-  }
-
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  expect(await card.evaluate(element => element.parentElement?.classList.contains("legend-context-scroll"))).toBeTruthy();
+  expect(await card.evaluate(element => getComputedStyle(element).position)).toBe("relative");
+  const legendFlow = await page.evaluate(() => {
+    const slot = document.getElementById("legend-context-slot");
+    const card = document.getElementById("demographic-hover-card");
+    return {
+      slotHeight: slot?.offsetHeight || 0,
+      cardTop: card?.offsetTop || 0,
+      slotBottom: (slot?.offsetTop || 0) + (slot?.offsetHeight || 0)
+    };
+  });
+  expect(legendFlow.slotHeight).toBeGreaterThan(0);
+  expect(legendFlow.cardTop).toBeGreaterThanOrEqual(legendFlow.slotBottom);
   const geometry = await measure();
-  const scaleCenter = (geometry.scaleBox.left + geometry.scaleBox.right) / 2;
-  expect(Math.abs(scaleCenter - viewport.width / 2)).toBeLessThanOrEqual(1);
-  expect(intersects(geometry.cardBox, geometry.scaleBox)).toBeFalsy();
-  expect(intersects(geometry.scaleBox, geometry.attributionBox)).toBeFalsy();
-  expect(intersects(geometry.scaleBox, geometry.legendBox)).toBeFalsy();
+  expect(geometry.cardBox.left).toBeGreaterThanOrEqual(geometry.hostBox.left);
+  expect(geometry.cardBox.right).toBeLessThanOrEqual(geometry.hostBox.right);
+  expect(geometry.cardBox.top).toBeGreaterThanOrEqual(geometry.hostBox.top);
+
+  await testInfo.attach(`leyenda-ficha-${testInfo.project.name}`, {
+    body: await page.screenshot(),
+    contentType: "image/png"
+  });
+
   if (testInfo.project.name === "mobile") {
-    const mobileCitizenToggleBox = await box(page, "#mobile-citizen-toggle");
-    expect(intersects(geometry.scaleBox, mobileCitizenToggleBox)).toBeFalsy();
+    await expect(page.locator(".road-scale-control")).toHaveCSS("visibility", "hidden");
+  } else {
+    const scaleCenter = (geometry.scaleBox.left + geometry.scaleBox.right) / 2;
+    expect(Math.abs(scaleCenter - viewport.width / 2)).toBeLessThanOrEqual(1);
+    expect(intersects(geometry.cardBox, geometry.scaleBox)).toBeFalsy();
+    expect(intersects(geometry.scaleBox, geometry.attributionBox)).toBeFalsy();
+    await expect(page.locator(".road-scale-control").locator("xpath=..")).toHaveClass(/leaflet-center/);
   }
-  await expect(page.locator(".road-scale-control").locator("xpath=..")).toHaveClass(/leaflet-center/);
+
+  await page.evaluate(() => window.__redsaAudit.clearSelection());
+  await expect(card).toBeHidden();
+  await expect(page.locator("#hover-card-body")).toBeEmpty();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
 });
 
 test("panel técnico mantiene orden global y propósito explícito del año", async ({ page }, testInfo) => {
@@ -322,7 +363,7 @@ test("panel técnico mantiene orden global y propósito explícito del año", as
   await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
 });
 
-test("pantalla grande abre el panel ciudadano y mantiene la leyenda independiente visible", async ({ page }, testInfo) => {
+test("pantalla grande abre el panel ciudadano y mantiene Leyenda como pestaña visible", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La comprobación 1920 px se ejecuta una vez.");
   await page.setViewportSize({ width: 1920, height: 1080 });
   await loadPortal(page);
@@ -330,6 +371,7 @@ test("pantalla grande abre el panel ciudadano y mantiene la leyenda independient
   await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
   await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator(".legend-panel")).toBeVisible();
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
   await expect(page.locator("#technical-drawer")).toBeHidden();
   const citizenBox = await box(page, "#citizen-panel");
   const railBox = await box(page, "#right-tools-rail");
@@ -400,7 +442,7 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   });
   await loadPortal(page);
 
-  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(3);
+  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
   await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(7);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();

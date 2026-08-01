@@ -23,11 +23,6 @@
             --z-drawer: 1400;
             --z-popover: 1500;
             --z-modal: 1600;
-            --perfil-card-left: calc(var(--ui-padding) + var(--sidebar-width) + var(--ui-gap));
-            --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
-            --perfil-card-max-width: 400px;
-            --perfil-card-max-height: 336px;
-            --perfil-card-min-usable-width: 320px;
             --road-scale-bottom-offset: 40px;
             --legend-bottom-clearance: 58px;
             --legend-max-height-desktop: min(460px, calc(100dvh - 120px));
@@ -39,7 +34,6 @@
             --right-context-gap: 0px;
             --right-context-top: 12px;
             --right-context-bottom: 12px;
-            --right-tool-rail-top: 72px;
             --right-tool-group-gap: 8px;
             --right-tools-status-width: 280px;
             --mobile-context-top: 66px;
@@ -990,24 +984,18 @@
         }
 
         .perfil-fallecidos-card {
-            display: none;
-            position: fixed;
-            bottom: 12px;
-            left: var(--perfil-card-left);
-            right: auto;
-            width: var(--perfil-card-width);
-            z-index: var(--z-profile-panel);
+            position: relative;
+            display: block;
+            width: 100%;
             pointer-events: auto;
-            max-height: var(--perfil-card-max-height);
-            overflow-y: auto;
-            padding: 14px 18px;
-            border-radius: 8px;
-            border: 1px solid var(--border-glass);
-            background: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.45);
-            overscroll-behavior: contain;
-            scrollbar-gutter: stable;
-            transition: left 180ms ease, width 180ms ease, bottom 180ms ease;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .perfil-fallecidos-card[hidden] {
+            display: none !important;
         }
 
         .perfil-card-grid {

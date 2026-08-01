@@ -26,8 +26,7 @@
         };
 
         const prepareLegendForTour = () => {
-            window.setRightContextPanel?.(null, false);
-            window.setMobileLegend?.(true);
+            window.setRightContextPanel?.("legend", true);
         };
 
         const prepareInfrastructureForTour = () => {
@@ -62,8 +61,7 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                window.setRightContextPanel?.(null, false);
-                window.setMobileLegend?.(true);
+                window.setRightContextPanel?.("legend", true);
                 if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
                 if (isMobile) window.setMobilePanel?.("sidebar", false);
             },
@@ -141,7 +139,7 @@
                     }
                 },
                 {
-                    element: '.legend-panel',
+                    element: '#legend-context-panel',
                     onHighlightStarted: prepareLegendForTour,
                     popover: {
                         title: 'Leyenda adaptativa',

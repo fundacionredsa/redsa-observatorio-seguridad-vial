@@ -193,186 +193,17 @@
             return `<svg class="profile-sparkline" viewBox="0 0 ${width} ${height}" role="img" aria-label="Tendencia 2020 a 2024"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${width}" cy="${points.split(" ").at(-1).split(",")[1]}" r="2.4" fill="${color}"/></svg>`;
         }
 
-        function isVisibleElement(el) {
-            if (!el) return false;
-            const style = window.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            return style.display !== "none"
-                && style.visibility !== "hidden"
-                && rect.width > 0
-                && rect.height > 0
-                && rect.right > 0
-                && rect.bottom > 0
-                && rect.left < window.innerWidth
-                && rect.top < window.innerHeight;
-        }
-
-        function updateProfileCardLayout() {
-            const card = document.getElementById("demographic-hover-card");
-            if (!card || card.style.display === "none") return;
-
-            const root = document.documentElement;
-            const safetyMargin = 16;
-            const viewportMargin = 12;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const legend = document.querySelector(".legend-panel");
-            const layerSelector = document.querySelector(".basemap-control");
-            const selector = document.querySelector(".map-selector-control");
-            const scale = document.querySelector(".road-scale-control");
-            const attribution = document.querySelector(".leaflet-control-attribution");
-            const sidebar = document.querySelector(".sidebar");
-            const citizenPanel = document.querySelector(".citizen-panel");
-            const technicalDrawer = document.querySelector(".technical-drawer");
-            const rightContextHost = document.getElementById("right-context-host");
-            const rightToolsRail = document.getElementById("right-tools-rail");
-
-            root.style.removeProperty("--perfil-card-max-height");
-            const configuredMaxHeight = parseFloat(
-                window.getComputedStyle(root).getPropertyValue("--perfil-card-max-height")
-            );
-            const configuredMaxWidth = parseFloat(
-                window.getComputedStyle(root).getPropertyValue("--perfil-card-max-width")
-            );
-            const configuredMinUsableWidth = parseFloat(
-                window.getComputedStyle(root).getPropertyValue("--perfil-card-min-usable-width")
-            );
-            const minUsableWidth = Number.isFinite(configuredMinUsableWidth)
-                ? configuredMinUsableWidth
-                : 320;
-            const legendVisible = isVisibleElement(legend);
-            const legendRect = legendVisible ? legend.getBoundingClientRect() : null;
-            const layerSelectorVisible = isVisibleElement(layerSelector);
-            const layerSelectorRect = layerSelectorVisible ? layerSelector.getBoundingClientRect() : null;
-            const selectorVisible = isVisibleElement(selector);
-            const selectorRect = selectorVisible ? selector.getBoundingClientRect() : null;
-            const scaleVisible = isVisibleElement(scale);
-            const scaleRect = scaleVisible ? scale.getBoundingClientRect() : null;
-            const attributionVisible = isVisibleElement(attribution);
-            const attributionRect = attributionVisible ? attribution.getBoundingClientRect() : null;
-            const sidebarRequestedOpen = document.body.classList.contains("mobile-sidebar-open");
-            const sidebarVisible = sidebarRequestedOpen || isVisibleElement(sidebar);
-            const sidebarRect = sidebarVisible ? sidebar.getBoundingClientRect() : null;
-            const citizenPanelRequestedOpen = document.body.classList.contains("citizen-panel-open")
-                || document.body.classList.contains("mobile-citizen-open");
-            const citizenPanelVisible = citizenPanelRequestedOpen && isVisibleElement(citizenPanel);
-            const citizenPanelRect = citizenPanelVisible ? citizenPanel.getBoundingClientRect() : null;
-            const technicalDrawerRequestedOpen = document.body.classList.contains("mobile-layers-open")
-                || document.body.classList.contains("technical-drawer-open");
-            const technicalDrawerVisible = technicalDrawerRequestedOpen || isVisibleElement(technicalDrawer);
-            const technicalDrawerRect = technicalDrawerVisible ? technicalDrawer.getBoundingClientRect() : null;
-            const rightContextHostVisible = isVisibleElement(rightContextHost);
-            const rightContextHostRect = rightContextHostVisible ? rightContextHost.getBoundingClientRect() : null;
-            const rightToolsRailRect = rightToolsRail?.getBoundingClientRect() || null;
-            // La barra conserva su espacio aunque una transición móvil la oculte por un instante.
-            const rightToolsRailVisible = Boolean(
-                rightToolsRailRect
-                && rightToolsRailRect.width > 0
-                && rightToolsRailRect.height > 0
-                && rightToolsRailRect.right > 0
-                && rightToolsRailRect.left < viewportWidth
-            );
-
-            let bottomOffset = attributionVisible
-                ? Math.max(viewportMargin, viewportHeight - attributionRect.top + viewportMargin)
-                : viewportMargin;
-            let leftBoundary = viewportMargin;
-            let rightBoundary = viewportWidth;
-            let technicalDrawerBoundary = viewportWidth;
-
-            if (sidebarVisible) {
-                const sidebarBoundary = sidebarRequestedOpen ? sidebarRect.width : sidebarRect.right;
-                leftBoundary = Math.max(leftBoundary, sidebarBoundary + safetyMargin);
-            }
-            if (citizenPanelVisible && !sidebarVisible) {
-                const declaredLeft = parseFloat(window.getComputedStyle(citizenPanel).left);
-                const settledRight = (Number.isFinite(declaredLeft) ? declaredLeft : viewportMargin)
-                    + citizenPanelRect.width;
-                leftBoundary = Math.max(leftBoundary, settledRight + safetyMargin);
-            }
-
-            if (legendVisible) {
-                rightBoundary = Math.min(rightBoundary, legendRect.left);
-            }
-            if (layerSelectorVisible) {
-                rightBoundary = Math.min(rightBoundary, layerSelectorRect.left);
-            }
-            if (technicalDrawerVisible) {
-                technicalDrawerBoundary = technicalDrawerRequestedOpen
-                    ? viewportWidth - technicalDrawerRect.width
-                    : technicalDrawerRect.left;
-                rightBoundary = Math.min(rightBoundary, technicalDrawerBoundary);
-            }
-            if (rightContextHostVisible) {
-                rightBoundary = Math.min(rightBoundary, rightContextHostRect.left);
-            }
-            if (rightToolsRailVisible) {
-                rightBoundary = Math.min(rightBoundary, rightToolsRailRect.left);
-            }
-
-            if (rightBoundary - leftBoundary < minUsableWidth) {
-                rightBoundary = Math.min(
-                    viewportWidth,
-                    technicalDrawerBoundary,
-                    layerSelectorVisible ? layerSelectorRect.left : viewportWidth,
-                    rightToolsRailVisible ? rightToolsRailRect.left : viewportWidth
-                );
-                if (legendVisible) {
-                    bottomOffset = Math.max(
-                        bottomOffset,
-                        viewportHeight - legendRect.top + safetyMargin
-                    );
-                }
-            }
-
-            const availableWidth = Math.max(
-                180,
-                rightBoundary - leftBoundary - (rightBoundary < viewportWidth ? safetyMargin : viewportMargin)
-            );
-            const widthLimit = Number.isFinite(configuredMaxWidth) && configuredMaxWidth > 0
-                ? configuredMaxWidth
-                : availableWidth;
-            const width = Math.floor(Math.min(availableWidth, widthLimit));
-            const cardLeft = Math.floor(leftBoundary + Math.max(0, (availableWidth - width) / 2));
-            const cardRight = cardLeft + width;
-            const scaleOverlapsPanel = scaleVisible
-                && scaleRect.right > cardLeft
-                && scaleRect.left < cardRight;
-            if (scaleOverlapsPanel) {
-                bottomOffset = Math.max(
-                    bottomOffset,
-                    viewportHeight - scaleRect.top + safetyMargin
-                );
-            }
-            const selectorOverlapsPanel = selectorVisible
-                && selectorRect.right > cardLeft
-                && selectorRect.left < cardRight;
-            const selectorBottom = selectorOverlapsPanel ? selectorRect.bottom : 0;
-            const availableHeight = viewportHeight - selectorBottom - bottomOffset - safetyMargin;
-            const maxHeight = Math.floor(Math.max(100, Math.min(configuredMaxHeight, availableHeight)));
-
-            root.style.setProperty("--perfil-card-left", `${cardLeft}px`);
-            root.style.setProperty("--perfil-card-width", `${width}px`);
-            root.style.setProperty("--perfil-card-max-height", `${maxHeight}px`);
-            card.style.left = `${cardLeft}px`;
-            card.style.width = `${width}px`;
-            card.style.bottom = `${Math.floor(bottomOffset)}px`;
-
-            const renderedRect = card.getBoundingClientRect();
-            const maxPanelBottom = viewportHeight - viewportMargin;
-            if (renderedRect.bottom > maxPanelBottom) {
-                bottomOffset += renderedRect.bottom - maxPanelBottom;
-                card.style.bottom = `${Math.ceil(bottomOffset)}px`;
-            }
-        }
-
-        // --- TARJETA FIJA DE LA UNIDAD SELECCIONADA ---
+        // --- FICHA TERRITORIAL DENTRO DE LA PESTAÑA LEYENDA ---
 
         function hideProfileCard() {
             currentProfileProps = null;
             document.body.classList.remove("profile-selection-active");
             const card = document.getElementById("demographic-hover-card");
-            if (card) card.style.display = "none";
+            if (card) card.hidden = true;
+            const body = document.getElementById("hover-card-body");
+            const title = document.getElementById("hover-card-title");
+            if (body) body.replaceChildren();
+            if (title) title.textContent = "Perfil de fallecidos";
         }
 
         function showProfileCard(props, e) {
@@ -389,9 +220,9 @@
                     : (Number(selectedYear) === 2026 ? "2026 ene-jun" : String(selectedYear));
             }
 
-            // Fixed lower panel; dynamic sizing prevents overlap with map controls.
-            card.style.display = "block";
+            card.hidden = false;
             document.body.classList.add("profile-selection-active");
+            window.showLegendForMapChange?.("territory-selection");
 
             // Caso 1: Parroquia
             if (props.DPA_PARROQ) {
@@ -412,9 +243,6 @@
                     </div>
                 `;
                 body.innerHTML = html;
-                updateProfileCardLayout();
-                window.requestAnimationFrame(updateProfileCardLayout);
-                window.setTimeout(updateProfileCardLayout, 120);
                 return;
             }
 
@@ -631,21 +459,9 @@
             `;
 
             body.innerHTML = html;
-            updateProfileCardLayout();
-            window.requestAnimationFrame(updateProfileCardLayout);
-            window.setTimeout(updateProfileCardLayout, 120);
         }
 
-        // Ajustar la tarjeta seleccionada al cambiar el viewport
         document.addEventListener("DOMContentLoaded", () => {
-            const hoverCard = document.getElementById("demographic-hover-card");
-            if (hoverCard) {
-                window.addEventListener("resize", updateProfileCardLayout);
-                if (window.visualViewport) {
-                    window.visualViewport.addEventListener("resize", updateProfileCardLayout);
-                    window.visualViewport.addEventListener("scroll", updateProfileCardLayout);
-                }
-            }
             document.getElementById("profile-card-close")?.addEventListener("click", clearTerritorySelection);
         });
 

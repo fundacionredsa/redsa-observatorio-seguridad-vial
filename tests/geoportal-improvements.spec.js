@@ -99,7 +99,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
                 if (expectedTitle === 'Leyenda adaptativa') {
                     const geometry = await page.evaluate(() => {
-                        const legendElement = document.querySelector('.legend-panel');
+                        const legendElement = document.querySelector('#legend-context-panel');
                         const targetElement = legendElement;
                         const legend = legendElement?.getBoundingClientRect();
                         const target = targetElement?.getBoundingClientRect();
@@ -135,7 +135,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '#infrastructure-disclosure',
                 '[data-right-panel="basemap"]',
                 '#event-layer-disclosure',
-                '.legend-panel',
+                '#legend-context-panel',
                 '[data-right-panel="methodology"]',
                 '#btn-catalog',
                 '#citizen-panel',
@@ -368,7 +368,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                     drawer: colors('#technical-drawer'),
                     selector: colors('.map-selector-control'),
                     profile: colors('.perfil-fallecidos-card'),
-                    legend: colors('.legend-panel')
+                    legend: colors('#right-context-host')
                 };
             });
             for (const surface of Object.values(lightSurfaces)) {

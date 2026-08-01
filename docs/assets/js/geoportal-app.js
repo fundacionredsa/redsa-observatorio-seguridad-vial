@@ -104,7 +104,6 @@
 
                 syncTerritoryLayerToZoom();
                 map.on('zoomend', syncTerritoryLayerToZoom);
-                map.on('zoomend', () => { if (typeof updateProfileCardLayout === "function") updateProfileCardLayout(); });
 
                 function selectCantonLayer(foundLayer, updateHash = true, selectionOptions = {}) {
                     if (!foundLayer) return false;
@@ -533,6 +532,7 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
+                    window.showLegendForMapChange?.("variable");
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     refreshCitizenSummary();
@@ -566,6 +566,7 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
+                    window.showLegendForMapChange?.("period");
                     refreshCitizenSummary();
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
@@ -582,6 +583,7 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
+                    window.showLegendForMapChange?.("year");
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     refreshCitizenSummary();
@@ -797,14 +799,21 @@
 
                         const mapRect = map.getContainer().getBoundingClientRect();
                         const citizen = document.getElementById("citizen-panel");
-                        const legend = document.querySelector(".legend-panel");
-                        const citizenRect = citizen && isVisibleElement(citizen) ? citizen.getBoundingClientRect() : null;
-                        const legendRect = legend && isVisibleElement(legend) ? legend.getBoundingClientRect() : null;
+                        const citizenBox = citizen?.getBoundingClientRect();
+                        const citizenStyles = citizen ? getComputedStyle(citizen) : null;
+                        const citizenRect = citizenBox
+                            && citizenStyles?.display !== "none"
+                            && citizenStyles?.visibility !== "hidden"
+                            && citizenBox.width > 0
+                            && citizenBox.height > 0
+                            && citizenBox.right > 0
+                            && citizenBox.left < window.innerWidth
+                            && citizenBox.bottom > 0
+                            && citizenBox.top < window.innerHeight
+                            ? citizenBox
+                            : null;
                         const freeTop = Math.max(76, citizenRect ? citizenRect.bottom + 20 : 76);
-                        const freeBottom = Math.min(
-                            mapRect.bottom - 70,
-                            legendRect ? legendRect.top - 20 : mapRect.bottom - 70
-                        );
+                        const freeBottom = mapRect.bottom - 70;
                         const targetY = Math.max(freeTop, Math.min((freeTop + freeBottom) / 2, freeBottom));
                         const currentPoint = map.latLngToContainerPoint(center);
                         map.panBy([0, currentPoint.y - (targetY - mapRect.top)], { animate: false });

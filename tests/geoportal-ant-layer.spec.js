@@ -65,9 +65,11 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
-  await expect(page.locator("#timeline-year-adjustment-note")).toBeVisible();
-  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("El año cambió a 2024");
-  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("2020–2024");
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#timeline-year-adjustment-note")).toBeHidden();
+  await expect(page.locator("#legend-year-adjustment-note")).toBeVisible();
+  await expect(page.locator("#legend-year-adjustment-note")).toContainText("El año cambió a 2024");
+  await expect(page.locator("#legend-year-adjustment-note")).toContainText("2020–2024");
 });
 
 test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {
@@ -234,6 +236,8 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
   expect(await page.locator(".leaflet-antHeat-pane canvas").count()).toBe(0);
 
+  await page.evaluate(() => window.setRightContextPanel("layers", true));
+  await expect(page.locator("#technical-drawer")).toBeVisible();
   await page.locator("[data-period-mode='year']").click();
   await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
   await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");

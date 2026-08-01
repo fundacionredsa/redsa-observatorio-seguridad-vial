@@ -215,7 +215,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator('[data-right-panel="layers"]')).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#technical-drawer-close")).toBeVisible();
   await expect(page.locator("#citizen-panel")).toBeVisible();
-  await expect(page.locator(".legend-panel")).toBeVisible();
+  await expect(page.locator(".legend-panel")).toBeHidden();
+  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
@@ -231,7 +232,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer")).not.toContainText("Descargar datos cantonales");
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
   await page.locator('[data-right-panel="methodology"]').click();
@@ -276,20 +278,24 @@ test("selector de variables permite selección única y deselección accesible",
   const boundaryStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
   expect(boundaryStyle.fillOpacity).toBeLessThan(choroplethStyle.fillOpacity);
 
+  await page.locator('[data-right-panel="layers"]').click();
   await fatalities.click();
   await expect(fatalities).toBeChecked();
   await expect(accidents).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("fallecidos_inec_2019");
 
+  await page.locator('[data-right-panel="layers"]').click();
   await fatalities.focus();
   await fatalities.press("Space");
   await expect(fatalities).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
 
+  await page.locator('[data-right-panel="layers"]').click();
   await accidents.focus();
   await accidents.press("Enter");
   await expect(accidents).toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
+  await page.locator('[data-right-panel="layers"]').click();
   await accidents.press("Enter");
   await expect(accidents).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
@@ -451,6 +457,7 @@ test("clic en canton fija la seleccion sin saltar a parroquias", async ({ page }
 test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ page }) => {
   await loadPortal(page);
   await page.evaluate(async () => {
+    window.__redsaAudit.selectYear(2024);
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click");
   });
@@ -464,7 +471,8 @@ test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ p
   });
   await expect(page.locator("#hover-card-title")).toHaveText(selectedTitle || "");
 
-  const scrollState = await card.evaluate(element => {
+  const legendScroll = page.locator(".legend-context-scroll");
+  const scrollState = await legendScroll.evaluate(element => {
     element.scrollTop = Math.max(1, element.scrollHeight - element.clientHeight);
     return { top: element.scrollTop, height: element.clientHeight, scrollHeight: element.scrollHeight };
   });
@@ -598,7 +606,7 @@ test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío"
   expect(state.validValueCount).toBeGreaterThan(0);
   expect(state.timelineYearAdjustment).toContain("cambió a 2024");
   expect(state.timelineYearAdjustment).toContain("2020–2024");
-  await expect(page.locator("#timeline-year-adjustment-note")).toBeVisible();
+  await expect(page.locator("#legend-year-adjustment-note")).toBeVisible();
   expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().year)).toBe(2024);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_sppat_2016_2021"));
@@ -621,7 +629,7 @@ test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío"
   expect(state.selectedYear).toBe(2024);
   expect(state.validValueCount).toBeGreaterThan(0);
   expect(state.timelineYearAdjustment).toBe("");
-  await expect(page.locator("#timeline-year-adjustment-note")).toBeHidden();
+  await expect(page.locator("#legend-year-adjustment-note")).toBeHidden();
 });
 
 test("cambio de nivel resuelve el año de la variable efectiva", async ({ page }, testInfo) => {
@@ -782,7 +790,7 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
   await expect(page.locator("#institutional-modal")).toBeHidden();
 });
 
-test("panel demografico permanece visible y dentro del viewport", async ({ page }) => {
+test("ficha territorial permanece visible dentro del panel Leyenda", async ({ page }) => {
   await loadPortal(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
@@ -801,56 +809,44 @@ test("panel demografico permanece visible y dentro del viewport", async ({ page 
 
   const boxes = await page.evaluate(() => {
     const cardRect = document.querySelector(".perfil-fallecidos-card").getBoundingClientRect();
-    const legendRect = document.querySelector(".legend-panel").getBoundingClientRect();
-    const intersects = !(cardRect.right <= legendRect.left || cardRect.left >= legendRect.right || cardRect.bottom <= legendRect.top || cardRect.top >= legendRect.bottom);
-    return { card: { top: cardRect.top, bottom: cardRect.bottom, left: cardRect.left, right: cardRect.right }, legend: { top: legendRect.top, bottom: legendRect.bottom, left: legendRect.left, right: legendRect.right }, intersects, innerHeight };
+    const hostRect = document.querySelector("#right-context-host").getBoundingClientRect();
+    return { card: { top: cardRect.top, bottom: cardRect.bottom, left: cardRect.left, right: cardRect.right }, host: { top: hostRect.top, bottom: hostRect.bottom, left: hostRect.left, right: hostRect.right }, parent: document.querySelector(".perfil-fallecidos-card").parentElement?.className, innerHeight };
   });
-  expect(boxes.card.bottom).toBeLessThanOrEqual(boxes.innerHeight - 10);
-  expect(boxes.intersects).toBeFalsy();
-  if ((page.viewportSize()?.width || 0) > 768) {
-    expect(boxes.card.bottom - boxes.card.top).toBeGreaterThanOrEqual(200);
-  }
+  expect(boxes.parent).toContain("legend-context-scroll");
+  expect(boxes.card.left).toBeGreaterThanOrEqual(boxes.host.left);
+  expect(boxes.card.right).toBeLessThanOrEqual(boxes.host.right);
+  expect(boxes.host.bottom).toBeLessThanOrEqual(boxes.innerHeight);
 
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1702"));
   await expect(card.locator("#hover-card-title")).not.toHaveText(before || "");
 });
 
-test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "Geometria de drawers desktop.");
+test("ficha territorial comparte solo el panel Leyenda y no crea otra región flotante", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Geometría del panel unificado desktop.");
   await loadPortal(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
 
-  async function assertNoOverlap(obstacleSelector) {
-    await page.waitForTimeout(280);
-    const geometry = await page.evaluate(selector => {
-      const box = element => {
-        const rect = document.querySelector(element).getBoundingClientRect();
-        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
-      };
-      const card = box("#demographic-hover-card");
-      const obstacle = box(selector);
-      const legend = box(".legend-panel");
-      const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
-      return { card, obstacle, legend, obstacleIntersection: intersects(card, obstacle), legendIntersection: intersects(card, legend), viewport: { width: innerWidth, height: innerHeight } };
-    }, obstacleSelector);
-    expect(geometry.obstacleIntersection, JSON.stringify(geometry)).toBeFalsy();
-    expect(geometry.legendIntersection, JSON.stringify(geometry)).toBeFalsy();
-    expect(geometry.card.left).toBeGreaterThanOrEqual(0);
-    expect(geometry.card.right).toBeLessThanOrEqual(geometry.viewport.width);
-    expect(geometry.card.bottom).toBeLessThanOrEqual(geometry.viewport.height - 10);
-  }
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
+  expect(await page.locator("#demographic-hover-card").evaluate(element => element.closest("[data-right-context-view]")?.id)).toBe("legend-context-panel");
 
   await page.locator("#open-analysis-button").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
-  await assertNoOverlap("#territory-sidebar");
+  const separated = await page.evaluate(() => {
+    const sidebar = document.querySelector("#territory-sidebar").getBoundingClientRect();
+    const host = document.querySelector("#right-context-host").getBoundingClientRect();
+    return sidebar.right <= host.left;
+  });
+  expect(separated).toBeTruthy();
   await page.locator("#mobile-sidebar-close").click();
 
   await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
-  await assertNoOverlap("#right-context-host");
+  await expect(page.locator("#demographic-hover-card")).toBeHidden();
+  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
 });
 
 test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }) => {
@@ -878,7 +874,7 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
   ]) {
     await page.setViewportSize(viewport);
     await loadPortal(page);
-    await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
+    await expect(page.locator('[data-right-panel="legend"]')).toBeVisible();
     await expect(page.locator(".legend-panel")).toBeVisible();
     const geometry = await page.evaluate(() => {
       const box = selector => {
@@ -896,7 +892,8 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
       expect(element.bottom).toBeLessThanOrEqual(viewport.height);
     }
     expect(boxesIntersect(geometry.host, geometry.rail)).toBeFalsy();
-    await expect(page.locator("#right-context-host")).toBeHidden();
+    await expect(page.locator("#right-context-host")).toBeVisible();
+    await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
   }
 });
 
@@ -1000,12 +997,17 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.touchscreen.tap(sliderBox.x + sliderBox.width * 0.6, sliderBox.y + sliderBox.height / 2);
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
 
-  await page.locator("#technical-drawer-close").tap();
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await page.locator("#mobile-legend-toggle").tap();
   await expect(page.locator("body")).not.toHaveClass(/mobile-layers-open/);
   await expect(page.locator("#right-context-host")).toBeHidden();
 
   const tapPoint = await page.evaluate(() => window.__redsaAudit.prepareTerritoryTap("canton", "1701"));
   expect(tapPoint).not.toBeNull();
+  if (await page.locator("#right-context-host").isVisible()) {
+    await page.locator("#mobile-legend-toggle").tap();
+    await expect(page.locator("#right-context-host")).toBeHidden();
+  }
   await page.touchscreen.tap(tapPoint.x, tapPoint.y);
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({ level: "canton", code: "1701" });
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
@@ -1019,27 +1021,20 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
       return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, visibility: styles.visibility };
     };
     const card = box("#demographic-hover-card");
-    const legend = box(".legend-panel");
-    const intersects = !(card.right <= legend.left || card.left >= legend.right || card.bottom <= legend.top || card.top >= legend.bottom);
-    return { card, legend, intersects };
+    const host = box("#right-context-host");
+    return { card, host, parentPanel: document.querySelector("#demographic-hover-card").closest("[data-right-context-view]")?.id };
   });
   expect(selected.card.top).toBeGreaterThanOrEqual(0);
-  expect(selected.card.bottom).toBeLessThanOrEqual(height - 10);
-  expect(selected.intersects).toBeFalsy();
+  expect(selected.card.left).toBeGreaterThanOrEqual(selected.host.left);
+  expect(selected.card.right).toBeLessThanOrEqual(selected.host.right);
+  expect(selected.parentPanel).toBe("legend-context-panel");
 
   await page.locator("#mobile-legend-toggle").tap();
-  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#right-context-host")).toBeHidden();
-  await expect(page.locator("#legend-content")).toBeVisible();
-  await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "hidden");
-  const openLegend = await page.locator(".legend-panel").boundingBox();
-  expect(openLegend).not.toBeNull();
-  expect(openLegend.y).toBeGreaterThanOrEqual(0);
-  expect(openLegend.y + openLegend.height).toBeLessThanOrEqual(height);
-
-  await page.locator("#mobile-legend-toggle").tap();
-  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "visible");
+  await page.locator('[data-right-panel="legend"]').tap();
+  await expect(page.locator("#right-context-host")).toBeVisible();
+  await expect(page.locator("#demographic-hover-card")).toBeVisible();
 });
 
 

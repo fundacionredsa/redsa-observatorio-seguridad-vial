@@ -503,7 +503,6 @@ function onEachProvinceFeature(feature, layer) {
                     </div>`;
             }
             panel.style.display = hasItems ? "block" : "none";
-            updateProfileCardLayout();
         }
 
         // Registrar listeners para actualización de leyenda
@@ -712,6 +711,7 @@ function onEachProvinceFeature(feature, layer) {
             refreshTerritoryLayerStyles();
             updateMapLevelNote(level);
             updateLegend();
+            window.showLegendForMapChange?.("territory-level");
             updateTerritoryLevelControl();
             if (selectedTerritory?.props) updateSidebar(selectedTerritory.props);
             if (yearResolution.changed && currentProfileProps) showProfileCard(currentProfileProps, null);
