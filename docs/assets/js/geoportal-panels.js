@@ -225,6 +225,8 @@
             const sidebar = document.querySelector(".sidebar");
             const citizenPanel = document.querySelector(".citizen-panel");
             const technicalDrawer = document.querySelector(".technical-drawer");
+            const rightContextHost = document.getElementById("right-context-host");
+            const rightToolsRail = document.getElementById("right-tools-rail");
 
             root.style.removeProperty("--perfil-card-max-height");
             const configuredMaxHeight = parseFloat(
@@ -254,6 +256,10 @@
                 || document.body.classList.contains("technical-drawer-open");
             const technicalDrawerVisible = technicalDrawerRequestedOpen || isVisibleElement(technicalDrawer);
             const technicalDrawerRect = technicalDrawerVisible ? technicalDrawer.getBoundingClientRect() : null;
+            const rightContextHostVisible = isVisibleElement(rightContextHost);
+            const rightContextHostRect = rightContextHostVisible ? rightContextHost.getBoundingClientRect() : null;
+            const rightToolsRailVisible = isVisibleElement(rightToolsRail);
+            const rightToolsRailRect = rightToolsRailVisible ? rightToolsRail.getBoundingClientRect() : null;
 
             let bottomOffset = attributionVisible
                 ? Math.max(viewportMargin, viewportHeight - attributionRect.top + viewportMargin)
@@ -284,6 +290,12 @@
                     ? viewportWidth - technicalDrawerRect.width
                     : technicalDrawerRect.left;
                 rightBoundary = Math.min(rightBoundary, technicalDrawerBoundary);
+            }
+            if (rightContextHostVisible) {
+                rightBoundary = Math.min(rightBoundary, rightContextHostRect.left);
+            }
+            if (rightToolsRailVisible) {
+                rightBoundary = Math.min(rightBoundary, rightToolsRailRect.left);
             }
 
             if (rightBoundary - leftBoundary < minUsableWidth) {

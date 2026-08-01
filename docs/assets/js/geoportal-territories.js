@@ -321,6 +321,17 @@ function onEachProvinceFeature(feature, layer) {
                 const noValuesAtLevel = !unavailableAtLevel
                     && effectiveVariable !== "normal"
                     && activeVariableBins.method === "Sin datos";
+                const territoryOpacityControl = document.getElementById("territory-opacity-control");
+                const territoryOpacityLabel = document.getElementById("territory-opacity-label");
+                const hasTerritorialSurface = effectiveVariable !== "normal" && !unavailableAtLevel && !noValuesAtLevel;
+                if (territoryOpacityControl) territoryOpacityControl.hidden = !hasTerritorialSurface;
+                if (territoryOpacityLabel && hasTerritorialSurface) {
+                    territoryOpacityLabel.textContent = `Opacidad de ${requestedConfig.displayLabel || requestedConfig.label}`;
+                    document.getElementById("territory-opacity-slider")?.setAttribute(
+                        "aria-label",
+                        `Opacidad de ${requestedConfig.displayLabel || requestedConfig.label}`
+                    );
+                }
 
                 if (unavailableAtLevel || noValuesAtLevel) {
                     const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";

@@ -2639,3 +2639,263 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     flex: 0 0 auto;
     color: var(--text-primary);
 }
+
+/* Barra de herramientas y panel contextual derecho. Solo una vista ocupa el host. */
+.right-tools-rail {
+    position: fixed;
+    z-index: var(--z-drawer);
+    top: var(--right-tool-rail-top);
+    right: var(--right-context-edge);
+    display: grid;
+    width: var(--right-tool-rail-width);
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: var(--shadow);
+}
+
+.right-tool-button {
+    position: relative;
+    display: inline-flex;
+    width: var(--right-tool-button-size);
+    height: var(--right-tool-button-size);
+    min-width: var(--right-tool-button-size);
+    min-height: var(--right-tool-button-size);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.right-tool-button:hover,
+.right-tool-button.active {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent);
+}
+
+.right-tool-button:focus-visible,
+.right-context-close:focus-visible,
+.contextual-opacity-control input:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.right-tool-button:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+.right-tool-label {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 10px);
+    width: max-content;
+    max-width: 220px;
+    padding: 6px 8px;
+    border-radius: 5px;
+    background: #17212b;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.25;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(4px, -50%);
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.right-tool-button:hover .right-tool-label,
+.right-tool-button:focus-visible .right-tool-label {
+    opacity: 1;
+    transform: translate(0, -50%);
+}
+
+.right-context-host {
+    position: fixed;
+    z-index: calc(var(--z-drawer) - 1);
+    top: var(--right-context-top);
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
+    width: min(var(--right-context-width), calc(100vw - var(--right-tool-rail-width) - (3 * var(--right-context-edge))));
+    max-height: calc(100dvh - var(--right-context-top) - var(--right-context-bottom));
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.right-context-host[hidden],
+.right-context-view[hidden] {
+    display: none !important;
+}
+
+.right-context-view {
+    position: relative;
+    width: 100%;
+    max-height: calc(100dvh - var(--right-context-top) - var(--right-context-bottom));
+    overflow: auto;
+}
+
+.right-context-host .technical-drawer {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: calc(100dvh - var(--right-context-top) - var(--right-context-bottom));
+    max-height: none;
+    padding: 16px;
+    box-shadow: none;
+    transform: none !important;
+    pointer-events: auto;
+}
+
+.right-context-host .drawer-close {
+    display: inline-flex !important;
+}
+
+.legend-context-panel {
+    overflow: hidden;
+}
+
+.legend-context-panel .legend-panel {
+    position: relative;
+    width: 100%;
+    max-height: var(--legend-max-height-desktop);
+    margin: 0 !important;
+    padding: 12px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: auto;
+}
+
+.right-context-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 14px 12px;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.right-context-section-header h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+}
+
+.right-context-section-header p {
+    margin: 3px 0 0;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    line-height: 1.35;
+}
+
+.right-context-close {
+    flex: 0 0 var(--right-tool-button-size);
+    width: var(--right-tool-button-size);
+    height: var(--right-tool-button-size);
+    padding: 0;
+    border: 1px solid var(--border-glass);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+}
+
+.basemap-context-slot {
+    padding: 12px;
+}
+
+.basemap-context-slot .basemap-control {
+    position: static;
+    float: none;
+    width: 100%;
+    margin: 0 !important;
+    border: 0;
+    box-shadow: none;
+}
+
+.basemap-context-slot .leaflet-control-layers-toggle {
+    display: none;
+}
+
+.basemap-context-slot .leaflet-control-layers-list {
+    display: block;
+    margin: 0;
+}
+
+.basemap-context-slot .leaflet-control-layers-base label {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.contextual-opacity-control {
+    margin: 10px 10px 8px;
+    padding: 10px;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-glass-hover) 62%, transparent);
+}
+
+.contextual-opacity-control[hidden] {
+    display: none;
+}
+
+.contextual-opacity-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    font-weight: 750;
+}
+
+.contextual-opacity-heading label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.contextual-opacity-heading output {
+    flex: 0 0 auto;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.contextual-opacity-control input[type="range"] {
+    width: 100%;
+    min-height: 24px;
+    cursor: pointer;
+}
+
+.technical-toggle,
+.basemap-control-dock,
+.opacity-control {
+    display: none !important;
+}
+
+.leaflet-top.leaflet-right {
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
+    transition: right 180ms ease;
+}
+
+body.right-context-open .leaflet-top.leaflet-right {
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap) + min(var(--right-context-width), calc(100vw - var(--right-tool-rail-width) - (3 * var(--right-context-edge)))) + var(--right-context-gap));
+}
+
+.leaflet-top.leaflet-right .leaflet-control-zoom {
+    margin-top: 0;
+}

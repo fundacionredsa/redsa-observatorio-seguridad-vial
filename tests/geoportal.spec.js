@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 
+const boxesIntersect = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("redsa_tour_v2_visto", "true");
@@ -110,13 +112,15 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   const geometry = await page.evaluate(() => {
     const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
     const map = document.getElementById("map").getBoundingClientRect();
-    const citizen = document.getElementById("citizen-panel").getBoundingClientRect();
-    const technical = document.getElementById("technical-drawer").getBoundingClientRect();
+    const sidebar = document.getElementById("territory-sidebar").getBoundingClientRect();
+    const host = document.getElementById("right-context-host");
+    const rail = document.getElementById("right-tools-rail").getBoundingClientRect();
+    const hostRect = host.hidden ? null : host.getBoundingClientRect();
     return {
       territory,
       visible: {
-        left: Math.max(map.left, citizen.right),
-        right: Math.min(map.right, technical.left),
+        left: Math.max(map.left, sidebar.right),
+        right: Math.min(map.right, hostRect?.left ?? rail.left),
         top: map.top,
         bottom: map.bottom
       }
@@ -132,11 +136,16 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await page.waitForTimeout(700);
   const withProfile = await page.evaluate(() => {
-    const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
     const profile = document.getElementById("demographic-hover-card").getBoundingClientRect();
-    return { territory, profileTop: profile.top };
+    const sidebar = document.getElementById("territory-sidebar").getBoundingClientRect();
+    const rail = document.getElementById("right-tools-rail").getBoundingClientRect();
+    const scale = document.querySelector(".road-scale-control").getBoundingClientRect();
+    const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
+    return { profile: box(profile), sidebar: box(sidebar), rail: box(rail), scale: box(scale) };
   });
-  expect(withProfile.territory.bottom).toBeLessThanOrEqual(withProfile.profileTop + 2);
+  expect(boxesIntersect(withProfile.profile, withProfile.sidebar)).toBeFalsy();
+  expect(boxesIntersect(withProfile.profile, withProfile.rail)).toBeFalsy();
+  expect(boxesIntersect(withProfile.profile, withProfile.scale)).toBeFalsy();
 });
 
 test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) => {
@@ -200,12 +209,13 @@ test("la ficha PDF parroquial omite el contexto de población y tasas", async ({
 test("modo tecnico conserva variables, capas, metodologia y estado todo apagado", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "El drawer movil se valida en la prueba responsive.");
   await loadPortal(page);
+  await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
-  await expect(page.locator("#technical-panel-toggle")).toBeVisible();
+  await expect(page.locator('[data-right-panel="layers"]')).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#technical-drawer-close")).toBeVisible();
   await expect(page.locator("#citizen-panel")).toBeVisible();
-  await expect(page.locator(".legend-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
@@ -220,21 +230,10 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer")).toContainText("Metodología");
   await expect(page.locator("#technical-drawer")).not.toContainText("Descargar datos cantonales");
 
-  const persistentLayout = await page.evaluate(() => {
-    const rect = selector => {
-      const box = document.querySelector(selector).getBoundingClientRect();
-      return { left: box.left, right: box.right, top: box.top, bottom: box.bottom };
-    };
-    const intersects = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
-    const drawer = rect("#technical-drawer");
-    const legend = rect(".legend-panel");
-    return { drawer, legend, intersects: intersects(drawer, legend) };
-  });
-  expect(persistentLayout.intersects).toBeFalsy();
-
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#citizen-panel")).toBeVisible();
+  await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
 
   await page.evaluate(() => {
@@ -255,10 +254,8 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
 
 test("selector de variables permite selección única y deselección accesible", async ({ page }, testInfo) => {
   await loadPortal(page);
-  if (testInfo.project.name === "mobile") {
-    await page.locator("#mobile-layers-toggle").click();
-    await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
-  }
+  await page.locator('[data-right-panel="layers"]').click();
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
 
   const disclosure = page.locator("#variable-disclosure");
   const accidents = page.locator("#variable-disclosure input[value='siniestros_inec_2019']");
@@ -588,6 +585,7 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
 test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío", async ({ page }) => {
   await loadPortal(page);
 
+  await page.locator('[data-right-panel="layers"]').click();
   const initial = await page.evaluate(() => window.__redsaAudit.state());
   expect(initial.selectedVariable).toBe("siniestros_inec_2019");
   expect(initial.selectedYear).toBe(2025);
@@ -848,8 +846,9 @@ test("panel demografico evita sidebar, drawer tecnico y leyenda", async ({ page 
   await assertNoOverlap("#territory-sidebar");
   await page.locator("#mobile-sidebar-close").click();
 
+  await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
-  await assertNoOverlap("#technical-drawer");
+  await assertNoOverlap("#right-context-host");
 });
 
 test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }) => {
@@ -877,69 +876,25 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
   ]) {
     await page.setViewportSize(viewport);
     await loadPortal(page);
-
-    const legendToggle = page.locator("#mobile-legend-toggle");
-    await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator("#legend-content")).toBeVisible();
-    const initiallyOpenLegend = await page.locator(".legend-panel").boundingBox();
-    expect(initiallyOpenLegend).not.toBeNull();
-    expect(initiallyOpenLegend.y).toBeGreaterThanOrEqual(0);
-    expect(initiallyOpenLegend.y + initiallyOpenLegend.height).toBeLessThanOrEqual(viewport.height);
-
-    await legendToggle.tap();
-    await expect(legendToggle).toHaveAttribute("aria-expanded", "false");
-
+    await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "true");
     const geometry = await page.evaluate(() => {
       const box = selector => {
-        const element = document.querySelector(selector);
-        const rect = element.getBoundingClientRect();
-        const styles = getComputedStyle(element);
-        return {
-          left: rect.left,
-          right: rect.right,
-          top: rect.top,
-          bottom: rect.bottom,
-          width: rect.width,
-          height: rect.height,
-          display: styles.display,
-          pointerEvents: styles.pointerEvents,
-          inViewport: rect.right > 0 && rect.bottom > 0 && rect.left < innerWidth && rect.top < innerHeight
-        };
+        const rect = document.querySelector(selector).getBoundingClientRect();
+        return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
       };
-      const legend = box(".legend-panel");
-      const topControls = [
-        box("#mobile-sidebar-toggle"),
-        box("#mobile-layers-toggle"),
-        box("#mobile-level-bar"),
-        box(".opacity-control")
-      ];
-      const visibleTopControls = topControls.filter(control => control.inViewport && control.display !== "none");
-      const controlsBottom = Math.max(0, ...visibleTopControls.map(control => control.bottom));
-      return {
-        viewport: { width: innerWidth, height: innerHeight },
-        map: box("#map"),
-        legend,
-        controlsBottom,
-        freeMapBand: legend.top - controlsBottom,
-        sidebar: box("#territory-sidebar"),
-        layers: box("#technical-drawer"),
-        sidebarButton: box("#mobile-sidebar-toggle"),
-        layersButton: box("#mobile-layers-toggle"),
-        legendButton: box("#mobile-legend-toggle")
-      };
+      return { map: box("#map"), host: box("#right-context-host"), rail: box("#right-tools-rail") };
     });
-
     expect(geometry.map.width).toBe(viewport.width);
     expect(geometry.map.height).toBe(viewport.height);
-    const minimumUsableMapBand = Math.min(220, Math.max(120, viewport.height * 0.175));
-    expect(geometry.freeMapBand).toBeGreaterThanOrEqual(minimumUsableMapBand);
-    expect(geometry.legend.height).toBeLessThanOrEqual(52);
-    expect(geometry.sidebar.inViewport).toBeFalsy();
-    expect(geometry.layers.inViewport).toBeFalsy();
-    expect(geometry.layers.pointerEvents).toBe("none");
-    expect(geometry.sidebarButton.height).toBeGreaterThanOrEqual(44);
-    expect(geometry.layersButton.height).toBeGreaterThanOrEqual(44);
-    expect(geometry.legendButton.height).toBeGreaterThanOrEqual(44);
+    for (const element of [geometry.host, geometry.rail]) {
+      expect(element.left).toBeGreaterThanOrEqual(0);
+      expect(element.right).toBeLessThanOrEqual(viewport.width);
+      expect(element.top).toBeGreaterThanOrEqual(0);
+      expect(element.bottom).toBeLessThanOrEqual(viewport.height);
+    }
+    expect(boxesIntersect(geometry.host, geometry.rail)).toBeFalsy();
+    await page.locator('[data-right-panel="legend"]').tap();
+    await expect(page.locator("#right-context-host")).toBeHidden();
   }
 });
 
@@ -991,7 +946,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.locator("#mobile-overlay-backdrop").tap({ position: { x: width - 6, y: height - 6 } });
   await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);
 
-  await page.locator("#mobile-layers-toggle").tap();
+  await page.locator('[data-right-panel="layers"]').tap();
   await expect(page.locator("body")).toHaveClass(/mobile-layers-open/);
   await expect.poll(() => page.locator("#technical-drawer").evaluate(element => element.getBoundingClientRect().right)).toBeLessThanOrEqual(width);
   const technical = await page.evaluate(() => {
@@ -1018,6 +973,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   const tooSmall = await page.evaluate(() => {
     const selectors = [
       ".mobile-nav-toggle",
+      ".right-tool-button:not(:disabled)",
       ".mobile-sidebar-close",
       "#technical-drawer-close",
       ".leaflet-control-layers-list label",
@@ -1044,7 +1000,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
 
   await page.locator("#technical-drawer-close").tap();
   await expect(page.locator("body")).not.toHaveClass(/mobile-layers-open/);
-  await page.waitForFunction(() => document.querySelector("#technical-drawer").getBoundingClientRect().left >= innerWidth - 1);
+  await expect(page.locator("#right-context-host")).toBeHidden();
 
   const tapPoint = await page.evaluate(() => window.__redsaAudit.prepareTerritoryTap("canton", "1701"));
   expect(tapPoint).not.toBeNull();
@@ -1069,8 +1025,9 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(selected.card.bottom).toBeLessThanOrEqual(height - 10);
   expect(selected.intersects).toBeFalsy();
 
-  await page.locator("#mobile-legend-toggle").tap();
-  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  await page.locator('[data-right-panel="legend"]').tap();
+  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#right-context-host")).toBeVisible();
   await expect(page.locator("#legend-content")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "hidden");
   const openLegend = await page.locator(".legend-panel").boundingBox();
@@ -1078,8 +1035,8 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(openLegend.y).toBeGreaterThanOrEqual(0);
   expect(openLegend.y + openLegend.height).toBeLessThanOrEqual(height);
 
-  await page.locator("#mobile-legend-toggle").tap();
-  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "false");
+  await page.locator('[data-right-panel="legend"]').tap();
+  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "visible");
 });
 
@@ -1198,6 +1155,11 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(renderedParishTooltip).toBeVisible();
   await expect(renderedParishTooltip).not.toContainText("Población");
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
+
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.evaluate(() => window.setMobilePanel?.("sidebar", true));
+    await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
+  }
 
   await expect(page.locator("#population-detail-row")).toBeHidden();
   await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();

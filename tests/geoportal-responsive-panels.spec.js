@@ -32,55 +32,50 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("los controles laterales son iconos y la leyenda conserva su estado en cualquier ancho", async ({ page }) => {
+test("la barra derecha abre una sola vista y la leyenda es el estado inicial", async ({ page }) => {
   await loadPortal(page);
 
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
   await expect(citizenToggle.locator("span")).toHaveCount(0);
   expect((await citizenToggle.textContent()).trim()).toBe("");
 
-  const legendToggle = page.locator("#mobile-legend-toggle");
-  const legendToggleLabel = legendToggle.locator(".legend-toggle-label");
-  const legendContent = page.locator("#legend-content");
+  const rail = page.locator("#right-tools-rail");
+  const legendButton = page.locator('[data-right-panel="legend"]');
+  const layersButton = page.locator('[data-right-panel="layers"]');
+  const basemapButton = page.locator('[data-right-panel="basemap"]');
   const viewport = page.viewportSize();
 
-  await expect(legendToggle).toBeVisible();
-  await expect(legendToggleLabel).toHaveText("Leyenda");
-  await expect(legendToggleLabel).toBeHidden();
-  await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
-  await expect(legendToggle).toHaveAttribute("aria-label", "Ocultar leyenda");
-  await expect(legendContent).toBeVisible();
+  await expect(rail).toBeVisible();
+  await expect(legendButton).toHaveAttribute("aria-expanded", "true");
+  await expect(layersButton).toHaveAttribute("aria-expanded", "false");
+  await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#technical-drawer")).toBeHidden();
+  await expect(page.locator("#basemap-context-panel")).toBeHidden();
 
-  const openLegend = await box(page, ".legend-panel");
+  const openLegend = await box(page, "#right-context-host");
   expect(openLegend.left).toBeGreaterThanOrEqual(0);
   expect(openLegend.right).toBeLessThanOrEqual(viewport.width);
   expect(openLegend.top).toBeGreaterThanOrEqual(0);
   expect(openLegend.bottom).toBeLessThanOrEqual(viewport.height);
 
-  await legendToggle.click();
-  await expect(legendToggle).toHaveAttribute("aria-expanded", "false");
-  await expect(legendToggle).toHaveAttribute("aria-label", "Mostrar leyenda");
-  await expect(legendContent).toBeHidden();
-  await expect(legendToggleLabel).toBeVisible();
-  const collapsedLegend = await box(page, ".legend-panel");
-  expect(collapsedLegend.width).toBeLessThanOrEqual(92);
-  expect(collapsedLegend.height).toBeLessThanOrEqual(44);
-
-  const basemap = page.locator(".basemap-control");
-  await expect(basemap).toBeVisible();
-  expect(intersects(collapsedLegend, await box(page, ".basemap-control"))).toBeFalsy();
-
-  await legendToggle.click();
-  await expect(legendToggle).toHaveAttribute("aria-expanded", "true");
-  await expect(legendContent).toBeVisible();
+  await layersButton.click();
+  await expect(page.locator("#technical-drawer")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await basemapButton.click();
+  await expect(page.locator("#basemap-context-panel")).toBeVisible();
+  await expect(page.locator("#technical-drawer")).toBeHidden();
+  await basemapButton.press("ArrowUp");
+  await expect(legendButton).toBeFocused();
+  await legendButton.click();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await legendButton.click();
+  await expect(page.locator("#right-context-host")).toBeHidden();
 });
 
 test("las tres capas del mapa comparten una sola tarjeta y conservan controles independientes", async ({ page }, testInfo) => {
   await loadPortal(page);
-  if (testInfo.project.name === "mobile") {
-    await page.locator("#mobile-layers-toggle").click();
-    await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
-  }
+  await page.locator('[data-right-panel="layers"]').click();
 
   const card = page.locator("#layers-card");
   const variables = page.locator("#variable-disclosure");
@@ -100,6 +95,9 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
 
   await variables.locator("summary").click();
   await expect(variables).toHaveAttribute("open", "");
+  await expect(page.locator("#territory-opacity-control")).toBeVisible();
+  await expect(page.locator("#territory-opacity-label")).toContainText("Siniestros de tránsito reportados");
+  await expect(page.locator(".opacity-control")).toHaveCount(0);
   await expect(events).not.toHaveAttribute("open", "");
   await expect(infrastructure).not.toHaveAttribute("open", "");
 
@@ -112,6 +110,7 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(variables).toHaveAttribute("open", "");
   await expect(events).toHaveAttribute("open", "");
   await expect(infrastructure).toHaveAttribute("open", "");
+  await expect(infrastructure.locator("input[type='range']")).toHaveCount(0);
 
   const styles = await card.evaluate(element => {
     const details = [...element.querySelectorAll("details")];
@@ -128,54 +127,34 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
 
 async function assertBasemapControlHasDedicatedSpace(page) {
   const viewport = page.viewportSize();
-  const dock = page.locator(".basemap-control-dock");
+  await page.locator('[data-right-panel="basemap"]').click();
+  const host = page.locator("#right-context-host");
+  const rail = page.locator("#right-tools-rail");
   const basemap = page.locator(".basemap-control");
 
-  await expect(dock).toHaveCSS("display", "block");
-  await expect(dock).toHaveCSS("position", "fixed");
+  await expect(host).toBeVisible();
   await expect(basemap).toBeVisible();
   await expect(basemap).toHaveAttribute("aria-label", "Seleccionar mapa base");
-  expect(await basemap.evaluate(element => element.parentElement?.classList.contains("basemap-control-dock"))).toBeTruthy();
+  expect(await basemap.evaluate(element => element.parentElement?.id)).toBe("basemap-context-slot");
 
-  const collapsed = await box(page, ".basemap-control");
+  const panel = await box(page, "#right-context-host");
+  const railBox = await box(page, "#right-tools-rail");
   const zoom = await box(page, ".leaflet-control-zoom");
-  const opacity = await box(page, ".opacity-control");
-  const legend = await box(page, ".legend-panel");
-  const technical = await box(page, "#technical-drawer");
-
-  expect(collapsed.width).toBe(44);
-  expect(collapsed.height).toBe(44);
-  expect(collapsed.left).toBeGreaterThanOrEqual(0);
-  expect(collapsed.right).toBeLessThanOrEqual(viewport.width);
-  expect(collapsed.right).toBeLessThan(technical.left);
-  expect(intersects(collapsed, zoom)).toBeFalsy();
-  expect(intersects(collapsed, opacity)).toBeFalsy();
-  expect(intersects(collapsed, legend)).toBeFalsy();
-  expect(intersects(collapsed, technical)).toBeFalsy();
-
-  expect(zoom.top).toBeLessThan(opacity.top);
-  expect(zoom.bottom).toBeLessThanOrEqual(opacity.top);
-
-  await basemap.hover();
-  await expect(basemap).toHaveClass(/leaflet-control-layers-expanded/);
+  expect(panel.left).toBeGreaterThanOrEqual(0);
+  expect(panel.right).toBeLessThanOrEqual(viewport.width);
+  expect(intersects(panel, railBox)).toBeFalsy();
+  expect(intersects(panel, zoom)).toBeFalsy();
+  expect(intersects(railBox, zoom)).toBeFalsy();
   const basemapOptions = basemap.locator(".leaflet-control-layers-base label");
   await expect(basemapOptions).toHaveCount(4);
   await expect(basemapOptions.first()).toBeVisible();
-  const expanded = await box(page, ".basemap-control");
-
-  expect(expanded.left).toBeGreaterThanOrEqual(0);
-  expect(expanded.right).toBeLessThanOrEqual(viewport.width);
-  expect(intersects(expanded, zoom)).toBeFalsy();
-  expect(intersects(expanded, opacity)).toBeFalsy();
-  expect(intersects(expanded, legend)).toBeFalsy();
-  expect(intersects(expanded, technical)).toBeFalsy();
 
   const satelliteOption = basemapOptions.filter({ hasText: "Esri World Imagery" });
   await expect(satelliteOption).toHaveCount(1);
   await satelliteOption.click();
   await expect(satelliteOption.locator("input")).toBeChecked();
 
-  return { collapsed, expanded, zoom, opacity, legend, technical };
+  return { panel, rail: railBox, zoom };
 }
 
 test("panel ciudadano web conserva estado y no compite con la ficha territorial", async ({ page }, testInfo) => {
@@ -187,15 +166,10 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   const citizen = page.locator("#citizen-panel");
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
   const sidebar = page.locator("#territory-sidebar");
-  const technical = page.locator("#technical-drawer");
   const search = page.locator("#territory-search-input");
 
   await expect(citizenToggle).toBeVisible();
-  await expect(technical).toHaveAttribute("aria-hidden", "false");
-  await expect(technical).toHaveCSS("position", "fixed");
-  const technicalBox = await box(page, "#technical-drawer");
-  expect(technicalBox.right).toBeLessThanOrEqual(viewport.width);
-  expect(technicalBox.left).toBeGreaterThanOrEqual(0);
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
 
   if (viewport.width < 1280) {
     await expect(body).not.toHaveClass(/citizen-panel-open/);
@@ -324,6 +298,7 @@ test("ficha territorial conserva una medida legible y la escala ocupa el centro 
 test("panel técnico mantiene orden global y propósito explícito del año", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "El orden móvil se valida dentro de su drawer.");
   await loadPortal(page);
+  await page.locator('[data-right-panel="layers"]').click();
 
   const order = await page.evaluate(() => {
     const top = selector => document.querySelector(selector).getBoundingClientRect().top;
@@ -347,18 +322,19 @@ test("panel técnico mantiene orden global y propósito explícito del año", as
   await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
 });
 
-test("pantalla grande abre el panel ciudadano y mantiene fijo el panel técnico", async ({ page }, testInfo) => {
+test("pantalla grande abre el panel ciudadano y mantiene la leyenda como vista derecha inicial", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La comprobación 1920 px se ejecuta una vez.");
   await page.setViewportSize({ width: 1920, height: 1080 });
   await loadPortal(page);
 
   await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
   await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
-  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#technical-drawer")).toBeHidden();
   const citizenBox = await box(page, "#citizen-panel");
-  const technicalBox = await box(page, "#technical-drawer");
-  expect(citizenBox.right).toBeLessThan(technicalBox.left);
-  expect(technicalBox.right).toBe(1920);
+  const rightPanelBox = await box(page, "#right-context-host");
+  expect(citizenBox.right).toBeLessThan(rightPanelBox.left);
+  expect(rightPanelBox.right).toBeLessThan(1920);
 });
 
 test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ page }, testInfo) => {
@@ -366,17 +342,16 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   await loadPortal(page);
 
   await expect(page.locator("#citizen-panel-visibility-toggle")).toBeHidden();
-  await expect(page.locator(".basemap-control-dock")).toBeHidden();
-  expect(await page.locator(".basemap-control").evaluate(element =>
-    element.parentElement?.classList.contains("leaflet-right")
-  )).toBeTruthy();
+  await expect(page.locator("#right-tools-rail")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
   await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
   await page.locator("#mobile-citizen-toggle").click();
   await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
+  await expect(page.locator("#right-context-host")).toBeHidden();
   await page.locator("#mobile-citizen-close").click();
   await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
 
-  await page.locator("#mobile-layers-toggle").click();
+  await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator(".timeline-control")).toContainText("Año de los datos mostrados");
   const timelineBox = await box(page, ".timeline-control");
@@ -384,8 +359,7 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   expect(timelineBox.top).toBeLessThan(variablesBox.top);
 });
 
-test("mapas base tiene espacio propio en pantallas medianas y grandes", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile", "Mobile conserva el corner Leaflet existente.");
+test("mapas base ocupa el panel contextual sin superponerse", async ({ page }, testInfo) => {
   if (testInfo.project.name === "desktop") {
     await page.setViewportSize({ width: 1920, height: 1080 });
   }

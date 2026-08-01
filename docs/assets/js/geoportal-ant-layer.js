@@ -70,7 +70,9 @@
         pointCount: 0,
         layer: null,
         map: null,
-        pane: "eventPane",
+        heatPane: "antHeatPane",
+        eventPane: "eventPane",
+        heatOpacity: 0.8,
         config: null,
         context: null,
         renderMetrics: {},
@@ -188,8 +190,8 @@
         return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
     }
 
-    function disablePanePointerEvents() {
-        const pane = state.map?.getPane(state.pane);
+    function disablePanePointerEvents(paneName) {
+        const pane = state.map?.getPane(paneName);
         if (pane) {
             pane.style.pointerEvents = "none";
             pane.querySelectorAll("canvas, div, svg").forEach(el => {
@@ -260,6 +262,7 @@
     function syncControls() {
         const toggle = document.getElementById("ant-layer-toggle");
         const jumpButton = document.getElementById("ant-jump-year");
+        const heatOpacityControl = document.getElementById("ant-heat-opacity-control");
         if (toggle) {
             toggle.checked = state.active;
             toggle.disabled = isAccumulatedMode();
@@ -277,6 +280,20 @@
             button.setAttribute("aria-pressed", String(active));
             button.disabled = isAccumulatedMode() || !state.active || state.status !== "ready" || state.year !== state.loadedYear;
         });
+        if (heatOpacityControl) heatOpacityControl.hidden = !(state.active && state.mode === "heat" && !isAccumulatedMode());
+    }
+
+    function setHeatOpacity(value) {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) return;
+        state.heatOpacity = Math.max(0.2, Math.min(1, numericValue));
+        const pane = state.map?.getPane(state.heatPane);
+        if (pane) pane.style.opacity = String(state.heatOpacity);
+        const percentage = Math.round(state.heatOpacity * 100);
+        const slider = document.getElementById("ant-heat-opacity-slider");
+        const output = document.getElementById("ant-heat-opacity-value");
+        if (slider && Number(slider.value) !== percentage) slider.value = String(percentage);
+        if (output) output.value = `${percentage}%`;
     }
 
     function cancelPending(reason = "cancelled") {
@@ -445,15 +462,17 @@
         const radius = metersToPixels(bandwidthMeters, zoom, centerLat);
         removeCurrentLayer();
         state.layer = L.heatLayer(state.heatPoints, {
-            pane: state.pane,
+            pane: state.heatPane,
             radius,
             blur: Math.max(12, Math.round(radius * 0.50)),
             minOpacity: 0.18,
             maxZoom: 18,
             gradient: HEAT_GRADIENT
         }).addTo(state.map);
-        state.layer.getPane?.()?.classList.add("ant-events-pane");
-        disablePanePointerEvents();
+        state.layer.getPane?.()?.classList.add("ant-heat-surface-pane");
+        const heatPane = state.map.getPane(state.heatPane);
+        if (heatPane) heatPane.style.opacity = String(state.heatOpacity);
+        disablePanePointerEvents(state.heatPane);
         state.renderMetrics.heat = {
             renderMs: performance.now() - started,
             zoom,
@@ -487,7 +506,7 @@
         );
         const marker = L.circleMarker([lat, lon], {
             renderer,
-            pane: state.pane,
+            pane: state.eventPane,
             radius,
             color: "#ecfeff",
             weight: 2,
@@ -510,9 +529,9 @@
         if (message.queryId !== state.queryId || state.mode !== "clusters") return;
         const started = performance.now();
         removeCurrentLayer();
-        const renderer = L.canvas({ padding: 0.5, pane: state.pane });
+        const renderer = L.canvas({ padding: 0.5, pane: state.eventPane });
         state.layer = L.layerGroup(message.clusters.map(feature => clusterMarker(feature, renderer))).addTo(state.map);
-        disablePanePointerEvents();
+        disablePanePointerEvents(state.eventPane);
         if (renderer._container) renderer._container.style.pointerEvents = "none";
         state.renderMetrics.clusters = {
             renderMs: performance.now() - started,
@@ -545,7 +564,7 @@
         const values = decodedCaseProperties(feature.properties || {});
         const marker = L.circleMarker(latlng, {
             renderer,
-            pane: state.pane,
+            pane: state.eventPane,
             radius: CASE_RADIUS_PX,
             color: "#fff7ed",
             weight: 1.2,
@@ -589,7 +608,7 @@
         if (message.queryId !== state.queryId || state.mode !== "cases") return;
         const started = performance.now();
         removeCurrentLayer();
-        const renderer = L.canvas({ padding: 0.5, pane: state.pane });
+        const renderer = L.canvas({ padding: 0.5, pane: state.eventPane });
         const groups = new Map();
         message.features.forEach(feature => {
             const key = feature.geometry.coordinates.join(",");
@@ -606,7 +625,7 @@
             ));
         }));
         state.layer = L.layerGroup(markers).addTo(state.map);
-        disablePanePointerEvents();
+        disablePanePointerEvents(state.eventPane);
         if (renderer._container) renderer._container.style.pointerEvents = "none";
         state.renderMetrics.cases = {
             renderMs: performance.now() - started,
@@ -781,6 +800,7 @@
         state.activationCacheHit = dataReadyForMode();
         state.activationReadyTracked = false;
         trackAntEvent("ant_layer_mode_change", { cache_hit: state.activationCacheHit });
+        syncControls();
         if (state.active) {
             loadYear();
         } else {
@@ -878,7 +898,8 @@
         state.context = context;
         state.config = context.config;
         state.map = context.map;
-        state.pane = context.pane || "eventPane";
+        state.heatPane = context.heatPane || "antHeatPane";
+        state.eventPane = context.eventPane || context.pane || "eventPane";
         state.year = Number(context.getYear());
         state.periodMode = context.getPeriodMode?.() === "accumulated" ? "accumulated" : "year";
         state.bandwidthProfile = HEAT_BANDWIDTH_PROFILES[context.config.heatBandwidthProfile]
@@ -889,12 +910,16 @@
         document.querySelectorAll("[data-ant-mode]").forEach(button => {
             button.addEventListener("click", () => setMode(button.dataset.antMode));
         });
+        document.getElementById("ant-heat-opacity-slider")?.addEventListener("input", event => {
+            setHeatOpacity(Number(event.target.value) / 100);
+        });
         document.getElementById("ant-jump-year")?.addEventListener("click", () => context.setYear(Math.max(...availableYears())));
         state.map.on("moveend zoomend", scheduleViewportRender);
         state.map.on("click", handleAntMapClick);
         state.map.on("mousemove", handleAntMapMouseMove);
         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
         setStatus("idle");
+        setHeatOpacity(state.heatOpacity);
         if (isAccumulatedMode()) setStatus("period_unavailable");
         syncControls();
     }
@@ -930,6 +955,7 @@
         syncTerritory,
         setActive,
         setMode,
+        setHeatOpacity,
         setHeatBandwidthProfile,
         getAuditState
     });

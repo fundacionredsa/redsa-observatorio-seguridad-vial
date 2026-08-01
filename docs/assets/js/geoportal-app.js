@@ -432,6 +432,13 @@
                                         `).join("")}
                                 </div>
                                 <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
+                                <div class="contextual-opacity-control" id="territory-opacity-control">
+                                    <div class="contextual-opacity-heading">
+                                        <label id="territory-opacity-label" for="territory-opacity-slider">Opacidad de la variable territorial</label>
+                                        <output id="territory-opacity-value" for="territory-opacity-slider">100%</output>
+                                    </div>
+                                    <input id="territory-opacity-slider" type="range" min="20" max="100" step="5" value="100" aria-label="Opacidad de la variable territorial">
+                                </div>
                             </details>
                         `;
                         L.DomEvent.disableClickPropagation(div);
@@ -455,7 +462,8 @@
                 if (antEventConfig) {
                     window.REDSAAntLayer?.init({
                         map,
-                        pane: "eventPane",
+                        heatPane: window.REDSA_MAP_PANES?.heatSurface?.name || "antHeatPane",
+                        eventPane: window.REDSA_MAP_PANES?.eventVector?.name || "eventPane",
                         config: antEventConfig,
                         getYear: () => selectedYear,
                         getPeriodMode: () => selectedPeriodMode,

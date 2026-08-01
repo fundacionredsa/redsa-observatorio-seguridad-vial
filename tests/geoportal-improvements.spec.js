@@ -131,8 +131,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 null,
                 '#territory-search-form',
                 '#open-analysis-button',
-                '#mobile-layers-toggle',
-                '#mobile-layers-toggle',
+                '[data-right-panel="layers"]',
+                '#infrastructure-disclosure',
                 '#event-layer-disclosure',
                 '.legend-panel',
                 '#btn-catalog',
@@ -299,8 +299,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
-            // Check that the opacity control is on the map
-            const slider = page.locator('.opacity-control input[type="range"]');
+            await page.locator('[data-right-panel="layers"]').click();
+            await page.locator('#variable-disclosure > summary').click();
+            const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
 
             // Set to 50%
@@ -317,22 +318,26 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(territoryPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
             await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
-            // The basemap control lives in its own fixed dock on web viewports.
-            const layerControl = page.locator('.basemap-control');
+            // Mapas base vive en el mismo host contextual, no como control flotante.
+            await page.locator('[data-right-panel="basemap"]').click();
+            const layerControl = page.locator('#basemap-context-panel .basemap-control');
             await expect(layerControl).toBeVisible();
 
             const controlsClearDrawer = await page.evaluate(() => {
-                const drawer = document.querySelector('#technical-drawer').getBoundingClientRect();
+                const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
+                const host = document.querySelector('#right-context-host').getBoundingClientRect();
+                const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
                 const zoom = document.querySelector('.leaflet-control-zoom').getBoundingClientRect();
-                const opacity = document.querySelector('.opacity-control').getBoundingClientRect();
                 return {
-                    zoomRight: zoom.right,
-                    opacityRight: opacity.right,
-                    drawerLeft: drawer.left
+                    zoom: box(zoom),
+                    host: box(host),
+                    rail: box(rail)
                 };
             });
-            expect(controlsClearDrawer.zoomRight).toBeLessThanOrEqual(controlsClearDrawer.drawerLeft);
-            expect(controlsClearDrawer.opacityRight).toBeLessThanOrEqual(controlsClearDrawer.drawerLeft);
+            const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBeFalsy();
+            expect(intersects(controlsClearDrawer.host, controlsClearDrawer.rail)).toBeFalsy();
+            await expect(page.locator('.opacity-control')).toHaveCount(0);
         });
     });
 
@@ -369,7 +374,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             }
 
             if (isMobile) {
-                await page.locator('#mobile-layers-toggle').click();
+                await page.locator('[data-right-panel="layers"]').click();
                 const mobileDrawerHeader = await page.evaluate(() => {
                     const colors = selector => {
                         const style = getComputedStyle(document.querySelector(selector));
@@ -452,6 +457,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block G: Timeline Playback & Color Transition', () => {
         test('timeline play button advances year, pauses on click and auto-stops on last year', async ({ page }) => {
+            await page.locator('[data-right-panel="layers"]').click();
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 
@@ -487,6 +493,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('timeline play button is disabled with tooltip for foto_unica variables', async ({ page }) => {
+            await page.locator('[data-right-panel="layers"]').click();
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 

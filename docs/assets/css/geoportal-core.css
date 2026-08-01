@@ -31,6 +31,17 @@
             --legend-bottom-clearance: 58px;
             --legend-max-height-desktop: min(460px, calc(100dvh - 120px));
             --legend-max-height-mobile: min(66dvh, 470px);
+            --right-tool-rail-width: 52px;
+            --right-tool-button-size: 44px;
+            --right-context-width: 400px;
+            --right-context-edge: 12px;
+            --right-context-gap: 8px;
+            --right-context-top: 12px;
+            --right-context-bottom: 12px;
+            --right-tool-rail-top: 72px;
+            --right-map-control-width: 44px;
+            --mobile-context-top: 168px;
+            --mobile-context-bottom: 108px;
         }
 
         body.light-theme {

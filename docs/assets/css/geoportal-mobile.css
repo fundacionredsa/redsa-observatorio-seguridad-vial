@@ -651,3 +651,77 @@
         padding-inline: 10px;
     }
 }
+
+@media (max-width: 768px) {
+    .right-tools-rail {
+        top: var(--mobile-top-offset, 66px);
+        right: var(--mobile-edge, 10px);
+        width: var(--right-tool-rail-width);
+        gap: 4px;
+        padding: 3px;
+    }
+
+    .right-tool-label {
+        display: none;
+    }
+
+    .right-context-host {
+        top: var(--mobile-context-top);
+        bottom: var(--mobile-context-bottom);
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + var(--right-context-gap));
+        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - var(--right-context-gap) - (3 * var(--mobile-edge, 10px))));
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+    }
+
+    .right-context-view,
+    .right-context-host .technical-drawer {
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+    }
+
+    .right-context-host .technical-drawer {
+        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        padding: 12px 12px 20px;
+    }
+
+    body.mobile-layers-open .right-context-host {
+        top: var(--mobile-edge, 10px);
+        bottom: var(--mobile-edge, 10px);
+        max-height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
+    }
+
+    body.mobile-layers-open .right-context-view,
+    body.mobile-layers-open .right-context-host .technical-drawer {
+        height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
+        max-height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
+    }
+
+    .legend-context-panel .legend-panel.mobile-legend-open {
+        width: 100%;
+        max-height: var(--legend-max-height-mobile);
+    }
+
+    #mobile-layers-toggle {
+        display: none;
+    }
+
+    .mobile-year-bar {
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + var(--right-context-gap) + var(--right-map-control-width) + var(--right-context-gap));
+    }
+
+    .leaflet-top.leaflet-right,
+    body.right-context-open .leaflet-top.leaflet-right {
+        right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
+    }
+
+    body.mobile-right-context-open .mobile-overlay-backdrop {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.mobile-legend-open .mobile-overlay-backdrop {
+        display: none;
+        opacity: 0;
+        pointer-events: none;
+    }
+}

@@ -8,8 +8,8 @@
         }
 
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        const variableTourTarget = isMobile ? "#mobile-layers-toggle" : "#variable-controls-slot";
-        const infrastructureTourTarget = isMobile ? "#mobile-layers-toggle" : "#infrastructure-disclosure";
+        const variableTourTarget = '[data-right-panel="layers"]';
+        const infrastructureTourTarget = "#infrastructure-disclosure";
 
         const openCitizenPanelForTour = () => {
             if (isMobile && typeof window.setMobilePanel === "function") {
@@ -17,9 +17,9 @@
             }
         };
 
-        const showMobileLayerToggleForTour = () => {
-            if (isMobile && typeof window.closeMobilePanels === "function") {
-                window.closeMobilePanels();
+        const prepareLayersPanelForTour = () => {
+            if (typeof window.setRightContextPanel === "function") {
+                window.setRightContextPanel("layers", true);
             }
         };
 
@@ -95,7 +95,7 @@
                 },
                 {
                     element: variableTourTarget,
-                    onHighlightStarted: showMobileLayerToggleForTour,
+                    onHighlightStarted: prepareLayersPanelForTour,
                     popover: {
                         title: 'Variables, años y nivel territorial',
                         description: 'En “Datos y capas” puedes elegir qué fenómeno representar, mover la línea de tiempo y cambiar entre provincias, cantones y parroquias. “Sin dato” nunca se interpreta como cero.',
@@ -105,7 +105,7 @@
                 },
                 {
                     element: infrastructureTourTarget,
-                    onHighlightStarted: showMobileLayerToggleForTour,
+                    onHighlightStarted: prepareLayersPanelForTour,
                     popover: {
                         title: 'Capas de infraestructura y mapas base',
                         description: 'En el mismo panel puedes desplegar “Infraestructura vial” y activar varias capas a la vez. El control de capas del mapa permite escoger el mapa base.',

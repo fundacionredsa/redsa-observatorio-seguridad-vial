@@ -14,8 +14,7 @@ async function waitForPortal(page) {
 async function openTechnicalPanel(page, isMobile) {
   const drawer = page.locator("#technical-drawer");
   if (await drawer.getAttribute("aria-hidden") === "false") return;
-  const button = isMobile ? page.locator("#mobile-layers-toggle") : page.locator("#technical-panel-toggle");
-  await button.click();
+  await page.locator('[data-right-panel="layers"]').click();
   await expect(drawer).toHaveAttribute("aria-hidden", "false");
 }
 
@@ -92,15 +91,25 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(0);
   let paneAudit = await page.evaluate(() => {
     const territory = document.querySelector(".leaflet-territorio-pane");
+    const heat = document.querySelector(".leaflet-antHeat-pane");
+    const infrastructure = document.querySelector(".leaflet-infraestructura-pane");
     const events = document.querySelector(".leaflet-event-pane");
     return {
       heatParent: document.querySelector(".leaflet-heatmap-layer")?.parentElement?.className || "",
       territoryIndex: territory ? Array.from(territory.parentElement.children).indexOf(territory) : -1,
+      heatIndex: heat ? Array.from(heat.parentElement.children).indexOf(heat) : -1,
+      infrastructureIndex: infrastructure ? Array.from(infrastructure.parentElement.children).indexOf(infrastructure) : -1,
       eventIndex: events ? Array.from(events.parentElement.children).indexOf(events) : -1
     };
   });
-  expect(paneAudit.heatParent).toContain("leaflet-event-pane");
-  expect(paneAudit.eventIndex).toBeGreaterThan(paneAudit.territoryIndex);
+  expect(paneAudit.heatParent).toContain("leaflet-antHeat-pane");
+  expect(paneAudit.territoryIndex).toBeLessThan(paneAudit.heatIndex);
+  expect(paneAudit.heatIndex).toBeLessThan(paneAudit.infrastructureIndex);
+  expect(paneAudit.infrastructureIndex).toBeLessThan(paneAudit.eventIndex);
+  await expect(page.locator("#ant-heat-opacity-control")).toBeVisible();
+  await page.locator("#ant-heat-opacity-slider").fill("60");
+  expect(await page.locator(".leaflet-antHeat-pane").evaluate(element => getComputedStyle(element).opacity)).toBe("0.6");
+  expect(await page.locator(".leaflet-territorio-pane").evaluate(element => getComputedStyle(element).opacity)).toBe("1");
 
   await page.locator("[data-ant-mode='clusters']").click();
   await page.waitForFunction(() => {
@@ -108,6 +117,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
     return audit.fullLoadedYear === 2025 && Boolean(audit.renderMetrics.clusters);
   }, null, { timeout: 90_000 });
   await expect(page.locator(".ant-cluster-label").first()).toBeVisible();
+  await expect(page.locator("#ant-heat-opacity-control")).toBeHidden();
   await expect(page.locator(".ant-cluster-label").first()).toHaveText(/^\d+(?:[,.]\d+)?\s*(?:mil|k)?$/i);
   paneAudit = await page.evaluate(() => ({
     clusterCanvasParent: document.querySelector(".leaflet-event-pane canvas")?.parentElement?.className || ""
@@ -218,6 +228,7 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   expect(state.active).toBe(false);
   expect(state.status).toBe("period_unavailable");
   expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
+  expect(await page.locator(".leaflet-antHeat-pane canvas").count()).toBe(0);
 
   await page.locator("[data-period-mode='year']").click();
   await expect(page.locator("#ant-layer-toggle")).toBeEnabled();

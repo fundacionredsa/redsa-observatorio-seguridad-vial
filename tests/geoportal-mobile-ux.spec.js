@@ -46,7 +46,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
         const mobileSidebarToggle = page.locator('#mobile-sidebar-toggle');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
-        const mobileLayersToggle = page.locator('#mobile-layers-toggle');
+        const layersToggle = page.locator('[data-right-panel="layers"]');
         const openAnalysisBtn = page.locator('#open-analysis-button');
 
         // Open citizen panel
@@ -65,7 +65,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('body')).not.toHaveClass(/mobile-sidebar-open/);
 
         // Open layers
-        await mobileLayersToggle.click();
+        await layersToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
 
         // Close layers drawer
@@ -126,17 +126,17 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
             const bar = toBox(document.querySelector('#mobile-year-bar'));
             const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
-            const opacity = toBox(document.querySelector('.opacity-control'));
+            const rail = toBox(document.querySelector('#right-tools-rail'));
             return {
                 bar,
                 zoom,
-                opacity,
+                rail,
                 overlapsZoom: intersects(bar, zoom),
-                overlapsOpacity: intersects(bar, opacity)
+                overlapsRail: intersects(bar, rail)
             };
         });
         expect(layout.overlapsZoom, JSON.stringify(layout)).toBeFalsy();
-        expect(layout.overlapsOpacity, JSON.stringify(layout)).toBeFalsy();
+        expect(layout.overlapsRail, JSON.stringify(layout)).toBeFalsy();
 
         const labelPosition = await page.evaluate(() => {
             const label = document.querySelector('.mobile-year-bar-label');
@@ -164,7 +164,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         }));
         expect(valuesAfterYearChange).not.toEqual(valuesBeforeYearChange);
 
-        await page.locator('#mobile-layers-toggle').click();
+        await page.locator('[data-right-panel="layers"]').click();
         await page.locator('[data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
         await page.locator('#technical-drawer-close').click();
@@ -178,7 +178,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('year');
         await expect(page.locator('.legend-panel')).toContainText('2019');
 
-        await page.locator('#mobile-layers-toggle').click();
+        await page.locator('[data-right-panel="layers"]').click();
         await expect(yearBar).toBeHidden();
         await page.locator('#technical-drawer-close').click();
         await expect(yearBar).toBeVisible();
@@ -192,17 +192,17 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
             const bar = toBox(document.querySelector('#mobile-year-bar'));
             const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
-            const opacity = toBox(document.querySelector('.opacity-control'));
+            const rail = toBox(document.querySelector('#right-tools-rail'));
             return {
                 bar,
                 zoom,
-                opacity,
+                rail,
                 overlapsZoom: intersects(bar, zoom),
-                overlapsOpacity: intersects(bar, opacity)
+                overlapsRail: intersects(bar, rail)
             };
         });
         expect(compactLayout.overlapsZoom, JSON.stringify(compactLayout)).toBeFalsy();
-        expect(compactLayout.overlapsOpacity, JSON.stringify(compactLayout)).toBeFalsy();
+        expect(compactLayout.overlapsRail, JSON.stringify(compactLayout)).toBeFalsy();
     });
 
     test('mobile demographic profile has no horizontal scroll and exposes its close button', async ({ page }) => {

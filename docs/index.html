@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.31">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.31">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.31">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.32">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.32">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.32">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -128,9 +128,29 @@
         <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
     </button>
 
-    <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="technical-drawer" aria-expanded="false">Datos y capas</button>
+    <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="right-context-host" aria-expanded="false">Datos y capas</button>
 
-    <aside class="technical-drawer" id="technical-drawer" aria-hidden="true" aria-label="Datos, capas y metodología">
+    <nav class="right-tools-rail" id="right-tools-rail" aria-label="Herramientas del mapa">
+        <button class="right-tool-button" type="button" data-right-panel="layers" aria-controls="technical-drawer" aria-expanded="false" aria-label="Datos y capas" title="Datos y capas">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            <span class="right-tool-label">Datos y capas</span>
+        </button>
+        <button class="right-tool-button" type="button" data-right-panel="legend" aria-controls="legend-context-panel" aria-expanded="true" aria-label="Leyenda" title="Leyenda">
+            <i class="fa-solid fa-list" aria-hidden="true"></i>
+            <span class="right-tool-label">Leyenda</span>
+        </button>
+        <button class="right-tool-button" type="button" data-right-panel="basemap" aria-controls="basemap-context-panel" aria-expanded="false" aria-label="Mapas base" title="Mapas base">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            <span class="right-tool-label">Mapas base</span>
+        </button>
+        <button class="right-tool-button" type="button" aria-disabled="true" disabled aria-label="Consultar elementos, próximamente" title="Consultar elementos, próximamente">
+            <i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i>
+            <span class="right-tool-label">Consultar elementos (próximamente)</span>
+        </button>
+    </nav>
+
+    <div class="right-context-host" id="right-context-host" data-active-panel="legend">
+    <aside class="technical-drawer right-context-view" id="technical-drawer" data-right-context-view="layers" hidden aria-hidden="true" aria-label="Datos, capas y metodología">
         <div class="drawer-header">
             <div>
                 <h2>Datos y capas</h2>
@@ -164,6 +184,13 @@
                                 <button type="button" data-ant-mode="clusters" aria-pressed="false">Agrupaciones</button>
                                 <button type="button" data-ant-mode="cases" aria-pressed="false">Casos</button>
                             </div>
+                            <div class="contextual-opacity-control" id="ant-heat-opacity-control" hidden>
+                                <div class="contextual-opacity-heading">
+                                    <label for="ant-heat-opacity-slider">Opacidad de Siniestros (ANT): calor</label>
+                                    <output id="ant-heat-opacity-value" for="ant-heat-opacity-slider">80%</output>
+                                </div>
+                                <input id="ant-heat-opacity-slider" type="range" min="20" max="100" step="5" value="80" aria-label="Opacidad del mapa de calor de Siniestros ANT">
+                            </div>
                             <p class="ant-layer-status" id="ant-layer-status" role="status" aria-live="polite"></p>
                             <button type="button" class="ant-jump-year" id="ant-jump-year">Ver último año disponible</button>
                         </details>
@@ -189,6 +216,20 @@
             <a href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
         </nav>
     </aside>
+    <section class="right-context-view legend-context-panel" id="legend-context-panel" data-right-context-view="legend" aria-label="Leyenda del mapa">
+        <div id="legend-context-slot"></div>
+    </section>
+    <section class="right-context-view basemap-context-panel" id="basemap-context-panel" data-right-context-view="basemap" hidden aria-hidden="true" aria-labelledby="basemap-context-title">
+        <header class="right-context-section-header">
+            <div>
+                <h2 id="basemap-context-title">Mapas base</h2>
+                <p>Elige el mapa de fondo para consultar el territorio.</p>
+            </div>
+            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar mapas base" title="Cerrar mapas base">&times;</button>
+        </header>
+        <div id="basemap-context-slot" class="basemap-context-slot"></div>
+    </section>
+    </div>
 
     <div id="mobile-level-bar" class="mobile-level-bar" role="group" aria-label="Nivel territorial">
         <button type="button" data-level-mode="auto" aria-pressed="true">Auto</button>
@@ -549,18 +590,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.31"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.31"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.32"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">
