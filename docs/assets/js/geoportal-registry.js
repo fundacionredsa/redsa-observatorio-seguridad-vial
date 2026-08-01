@@ -400,6 +400,7 @@
         {
             id: "siniestros_ant",
             label: "Siniestros (ANT)",
+            assetVersion: "ant-public-2026-07-31-location-audit-v1",
             urlByYear: {
                 "2024": "data/siniestros_ant_2024.geojson",
                 "2025": "data/siniestros_ant_2025.geojson",

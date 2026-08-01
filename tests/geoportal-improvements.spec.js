@@ -86,7 +86,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 10,
+                stepCount: 12,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
@@ -133,8 +133,10 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '#open-analysis-button',
                 '[data-right-panel="layers"]',
                 '#infrastructure-disclosure',
+                '[data-right-panel="basemap"]',
                 '#event-layer-disclosure',
                 '.legend-panel',
+                '[data-right-panel="methodology"]',
                 '#btn-catalog',
                 '#citizen-panel',
                 '#open-institutional-button'
@@ -286,11 +288,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('methodology links use the professional interface and drawer has no direct download', async ({ page }) => {
-            const links = page.locator('#technical-drawer .technical-links a');
+            await page.locator('[data-right-panel="methodology"]').click();
+            const links = page.locator('#methodology-context-panel .technical-links a');
             await expect(links).toHaveCount(4);
             const hrefs = await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
+            await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
             await expect(page.locator('#citizen-panel .citizen-intro-full')).toContainText('iniciativa independiente de la sociedad civil');
             await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
@@ -327,7 +331,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
                 const host = document.querySelector('#right-context-host').getBoundingClientRect();
                 const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
-                const zoom = document.querySelector('.leaflet-control-zoom').getBoundingClientRect();
+                const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
                 return {
                     zoom: box(zoom),
                     host: box(host),
@@ -337,6 +341,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
             expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBeFalsy();
             expect(intersects(controlsClearDrawer.host, controlsClearDrawer.rail)).toBeFalsy();
+            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.rail)).toBeTruthy();
             await expect(page.locator('.opacity-control')).toHaveCount(0);
         });
     });
@@ -374,6 +379,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             }
 
             if (isMobile) {
+                await page.evaluate(() => window.closeMobilePanels?.());
                 await page.locator('[data-right-panel="layers"]').click();
                 const mobileDrawerHeader = await page.evaluate(() => {
                     const colors = selector => {

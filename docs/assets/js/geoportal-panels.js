@@ -214,7 +214,6 @@
             const root = document.documentElement;
             const safetyMargin = 16;
             const viewportMargin = 12;
-            const minUsableWidth = 320;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             const legend = document.querySelector(".legend-panel");
@@ -235,6 +234,12 @@
             const configuredMaxWidth = parseFloat(
                 window.getComputedStyle(root).getPropertyValue("--perfil-card-max-width")
             );
+            const configuredMinUsableWidth = parseFloat(
+                window.getComputedStyle(root).getPropertyValue("--perfil-card-min-usable-width")
+            );
+            const minUsableWidth = Number.isFinite(configuredMinUsableWidth)
+                ? configuredMinUsableWidth
+                : 320;
             const legendVisible = isVisibleElement(legend);
             const legendRect = legendVisible ? legend.getBoundingClientRect() : null;
             const layerSelectorVisible = isVisibleElement(layerSelector);
@@ -258,8 +263,15 @@
             const technicalDrawerRect = technicalDrawerVisible ? technicalDrawer.getBoundingClientRect() : null;
             const rightContextHostVisible = isVisibleElement(rightContextHost);
             const rightContextHostRect = rightContextHostVisible ? rightContextHost.getBoundingClientRect() : null;
-            const rightToolsRailVisible = isVisibleElement(rightToolsRail);
-            const rightToolsRailRect = rightToolsRailVisible ? rightToolsRail.getBoundingClientRect() : null;
+            const rightToolsRailRect = rightToolsRail?.getBoundingClientRect() || null;
+            // La barra conserva su espacio aunque una transición móvil la oculte por un instante.
+            const rightToolsRailVisible = Boolean(
+                rightToolsRailRect
+                && rightToolsRailRect.width > 0
+                && rightToolsRailRect.height > 0
+                && rightToolsRailRect.right > 0
+                && rightToolsRailRect.left < viewportWidth
+            );
 
             let bottomOffset = attributionVisible
                 ? Math.max(viewportMargin, viewportHeight - attributionRect.top + viewportMargin)
@@ -302,7 +314,8 @@
                 rightBoundary = Math.min(
                     viewportWidth,
                     technicalDrawerBoundary,
-                    layerSelectorVisible ? layerSelectorRect.left : viewportWidth
+                    layerSelectorVisible ? layerSelectorRect.left : viewportWidth,
+                    rightToolsRailVisible ? rightToolsRailRect.left : viewportWidth
                 );
                 if (legendVisible) {
                     bottomOffset = Math.max(

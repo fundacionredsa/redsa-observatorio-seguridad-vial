@@ -27,6 +27,7 @@
             --perfil-card-width: calc(100vw - var(--ui-padding) - var(--sidebar-width) - var(--ui-gap));
             --perfil-card-max-width: 400px;
             --perfil-card-max-height: 336px;
+            --perfil-card-min-usable-width: 320px;
             --road-scale-bottom-offset: 40px;
             --legend-bottom-clearance: 58px;
             --legend-max-height-desktop: min(460px, calc(100dvh - 120px));
@@ -35,13 +36,19 @@
             --right-tool-button-size: 44px;
             --right-context-width: 400px;
             --right-context-edge: 12px;
-            --right-context-gap: 8px;
+            --right-context-gap: 0px;
             --right-context-top: 12px;
             --right-context-bottom: 12px;
             --right-tool-rail-top: 72px;
-            --right-map-control-width: 44px;
-            --mobile-context-top: 168px;
+            --right-tool-group-gap: 8px;
+            --right-tools-status-width: 280px;
+            --mobile-context-top: 66px;
             --mobile-context-bottom: 108px;
+            --redsa-panel-accent: #0ea5e9;
+            --redsa-panel-accent-soft: rgba(14, 165, 233, 0.13);
+            --redsa-panel-border: rgba(14, 165, 233, 0.34);
+            --map-location-fill: #0284c7;
+            --map-location-outline: #ffffff;
         }
 
         body.light-theme {
@@ -56,6 +63,9 @@
             --bg-panel: rgba(255, 255, 255, 0.98);
             --border-color: #cbd5e1;
             --text-color: #1e293b;
+            --redsa-panel-accent: #0284c7;
+            --redsa-panel-accent-soft: #e0f2fe;
+            --redsa-panel-border: #7dd3fc;
         }
 
         * {

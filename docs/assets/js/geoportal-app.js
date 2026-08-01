@@ -147,7 +147,7 @@
                     activateTerritoryLevel(level);
                     const foundLayer = findTerritoryLayerByCode(level, code);
                     if (!foundLayer) return false;
-                    setMobileLegend(false);
+                    if (mobileMediaQuery.matches) setMobileLegend(false);
                     const selected = selectTerritoryLayer(level, foundLayer, {
                         fitBounds: true,
                         updateHash: level === "canton",

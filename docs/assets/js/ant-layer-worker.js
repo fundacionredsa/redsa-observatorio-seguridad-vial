@@ -75,7 +75,8 @@ async function fetchJsonBuffer(message) {
     const transferStarted = performance.now();
     const response = await fetch(message.url, {
         signal: abortController.signal,
-        cache: "force-cache"
+        // Revalidar evita mezclar un GeoJSON antiguo con su compacto actualizado.
+        cache: "no-cache"
     });
     if (!response.ok) throw new Error(`No se pudo descargar la capa ANT (${response.status}).`);
     const buffer = await response.arrayBuffer();

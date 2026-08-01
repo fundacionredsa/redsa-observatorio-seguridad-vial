@@ -332,7 +332,9 @@
 
     function createWorker() {
         state.worker?.terminate();
-        state.worker = new Worker("assets/js/ant-layer-worker.js?v=0.10.23");
+        const workerUrl = new URL("assets/js/ant-layer-worker.js", document.baseURI);
+        workerUrl.searchParams.set("v", state.config?.assetVersion || "current");
+        state.worker = new Worker(workerUrl.href);
         state.worker.onmessage = handleWorkerMessage;
         state.worker.onerror = event => {
             console.error("Worker ANT:", event.message);
@@ -384,11 +386,13 @@
         const urlByYear = requestedKind === "heat"
             ? state.config.heatUrlByYear
             : state.config.urlByYear;
+        const dataUrl = new URL(urlByYear[String(requestedYear)], document.baseURI);
+        if (state.config?.assetVersion) dataUrl.searchParams.set("v", state.config.assetVersion);
         worker.postMessage({
             type: requestedKind === "heat" ? "load-heat" : "load-full",
             requestId,
             year: requestedYear,
-            url: new URL(urlByYear[String(requestedYear)], document.baseURI).href
+            url: dataUrl.href
         });
     }
 

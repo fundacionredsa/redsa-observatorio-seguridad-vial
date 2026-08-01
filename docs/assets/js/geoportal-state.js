@@ -106,6 +106,27 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "basemap", "methodology"]);
+        const MAP_ZOOM_STEP = 1;
+        const GEOLOCATION_OPTIONS = Object.freeze({
+            setView: false,
+            maxZoom: 15,
+            enableHighAccuracy: true,
+            timeout: 10000
+        });
+        const GEOLOCATION_MARKER_STYLE = Object.freeze({ radius: 7, weight: 3 });
+        const GEOLOCATION_STATUS_DURATION_MS = 6500;
+        const GEOLOCATION_MESSAGES = Object.freeze({
+            locating: "Buscando tu ubicación…",
+            found: "Ubicación encontrada. El mapa se centró en ese punto.",
+            unsupported: "Este navegador no ofrece geolocalización.",
+            errors: Object.freeze({
+                1: "No se concedió permiso para usar tu ubicación.",
+                2: "No fue posible determinar tu ubicación.",
+                3: "La búsqueda de ubicación tardó demasiado.",
+                default: "No se pudo obtener tu ubicación. Intenta nuevamente."
+            })
+        });
         // -------------------------------
 
         // Inicializar el Mapa
@@ -135,11 +156,6 @@
         }
 
         ensureControlCorner("bottomcenter", "leaflet-bottom leaflet-center");
-
-        // Reposicionar el control de Zoom
-        L.control.zoom({
-            position: 'topright'
-        }).addTo(map);
 
         // --- CONTROL DE LEYENDA (Glassmorphism) ---
         const LegendControl = L.Control.extend({
@@ -175,9 +191,7 @@
 
         const legendControlInstance = new LegendControl();
         legendControlInstance.addTo(map);
-        const legendContextSlot = document.getElementById("legend-context-slot");
         const legendControlContainer = legendControlInstance.getContainer();
-        if (legendContextSlot && legendControlContainer) legendContextSlot.appendChild(legendControlContainer);
         document.body.classList.add("mobile-legend-open");
 
         // Definir Atribuciones Requeridas
@@ -263,9 +277,18 @@
         const legendPanel = document.querySelector(".legend-panel");
         const rightContextHost = document.getElementById("right-context-host");
         const rightToolRail = document.getElementById("right-tools-rail");
+        const rightRailButtons = [...document.querySelectorAll(".right-tool-button")];
         const rightToolButtons = [...document.querySelectorAll("[data-right-panel]")];
         const rightContextViews = [...document.querySelectorAll("[data-right-context-view]")];
+        const zoomInButton = document.getElementById("map-zoom-in");
+        const zoomOutButton = document.getElementById("map-zoom-out");
+        const locateButton = document.getElementById("map-locate");
+        const rightToolsStatus = document.getElementById("right-tools-status");
         let activeRightPanel = null;
+        let legendOpen = true;
+        let geolocationPending = false;
+        let locationMarker = null;
+        let rightToolsStatusTimer = null;
 
         function refreshProfileLayoutWhenReady() {
             if (typeof updateProfileCardLayout === "function") updateProfileCardLayout();
@@ -289,7 +312,7 @@
         });
 
         function setRightContextPanel(panel, open = true, options = {}) {
-            const nextPanel = open && ["layers", "legend", "basemap"].includes(panel) ? panel : null;
+            const nextPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
             activeRightPanel = nextPanel;
             if (rightContextHost) {
                 rightContextHost.hidden = !nextPanel;
@@ -307,19 +330,16 @@
             });
 
             const layersOpen = nextPanel === "layers";
-            const legendOpen = nextPanel === "legend";
             document.body.classList.toggle("technical-drawer-open", layersOpen);
             document.body.classList.toggle("mobile-layers-open", layersOpen && mobileMediaQuery.matches);
-            document.body.classList.toggle("mobile-legend-open", legendOpen);
             document.body.classList.toggle("right-context-open", Boolean(nextPanel));
             document.body.classList.toggle("mobile-right-context-open", Boolean(nextPanel) && mobileMediaQuery.matches);
             technicalDrawer?.setAttribute("aria-hidden", String(!layersOpen));
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
             mobileLayersToggle?.setAttribute("aria-expanded", String(layersOpen));
-            legendPanel?.classList.toggle("mobile-legend-open", legendOpen);
-            mobileLegendToggle?.setAttribute("aria-expanded", String(legendOpen));
 
             if (nextPanel && mobileMediaQuery.matches) {
+                applyLegendState(false);
                 document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open", "citizen-panel-open");
                 territorySidebar?.setAttribute("aria-hidden", "true");
                 mobileSidebarToggle?.setAttribute("aria-expanded", "false");
@@ -334,15 +354,24 @@
             window.setTimeout(refreshProfileLayoutWhenReady, 240);
         }
 
-        function setMobileLegend(open) {
-            const shouldOpen = Boolean(open);
-            setRightContextPanel("legend", shouldOpen);
-            const action = shouldOpen ? "Ocultar" : "Mostrar";
+        function applyLegendState(open) {
+            legendOpen = Boolean(open);
+            document.body.classList.toggle("mobile-legend-open", legendOpen);
+            legendPanel?.classList.toggle("mobile-legend-open", legendOpen);
+            mobileLegendToggle?.setAttribute("aria-expanded", String(legendOpen));
+            const action = legendOpen ? "Ocultar" : "Mostrar";
             mobileLegendToggle?.setAttribute("aria-label", `${action} leyenda`);
             mobileLegendToggle?.setAttribute("title", `${action} leyenda`);
             const icon = mobileLegendToggle?.querySelector("i");
-            icon?.classList.toggle("fa-chevron-down", shouldOpen);
-            icon?.classList.toggle("fa-chevron-up", !shouldOpen);
+            icon?.classList.toggle("fa-chevron-down", legendOpen);
+            icon?.classList.toggle("fa-chevron-up", !legendOpen);
+            window.requestAnimationFrame(refreshProfileLayoutWhenReady);
+        }
+
+        function setMobileLegend(open) {
+            const shouldOpen = Boolean(open);
+            if (shouldOpen && mobileMediaQuery.matches) setRightContextPanel(null, false);
+            applyLegendState(shouldOpen);
         }
 
         function updateCitizenPanelControls(open) {
@@ -361,7 +390,10 @@
         }
 
         function setMobilePanel(panel, open) {
-            if (open && mobileMediaQuery.matches && panel !== "layers") setRightContextPanel(null, false);
+            if (open && mobileMediaQuery.matches && panel !== "layers") {
+                setRightContextPanel(null, false);
+                applyLegendState(false);
+            }
             if (panel === "citizen") {
                 const shouldOpen = Boolean(open);
                 document.body.classList.toggle("citizen-panel-open", shouldOpen);
@@ -437,6 +469,76 @@
             if (output) output.value = `${percentage}%`;
         });
 
+        function syncZoomButtons() {
+            if (zoomInButton) zoomInButton.disabled = map.getZoom() >= map.getMaxZoom();
+            if (zoomOutButton) zoomOutButton.disabled = map.getZoom() <= map.getMinZoom();
+        }
+
+        function showRightToolsStatus(message, tone = "info") {
+            if (!rightToolsStatus) return;
+            window.clearTimeout(rightToolsStatusTimer);
+            rightToolsStatus.textContent = message;
+            rightToolsStatus.dataset.tone = tone;
+            rightToolsStatus.hidden = false;
+            rightToolsStatusTimer = window.setTimeout(() => {
+                rightToolsStatus.hidden = true;
+            }, GEOLOCATION_STATUS_DURATION_MS);
+        }
+
+        function finishGeolocation() {
+            geolocationPending = false;
+            locateButton?.removeAttribute("aria-busy");
+            if (locateButton) locateButton.disabled = false;
+        }
+
+        function changeMapZoom(direction) {
+            const nextZoom = map.getZoom() + (MAP_ZOOM_STEP * direction);
+            map.setView(map.getCenter(), nextZoom, { animate: false });
+        }
+
+        zoomInButton?.addEventListener("click", () => changeMapZoom(1));
+        zoomOutButton?.addEventListener("click", () => changeMapZoom(-1));
+        map.on("zoomend", syncZoomButtons);
+        syncZoomButtons();
+
+        locateButton?.addEventListener("click", () => {
+            if (geolocationPending) return;
+            if (!navigator.geolocation) {
+                showRightToolsStatus(GEOLOCATION_MESSAGES.unsupported, "error");
+                return;
+            }
+            geolocationPending = true;
+            locateButton.disabled = true;
+            locateButton.setAttribute("aria-busy", "true");
+            showRightToolsStatus(GEOLOCATION_MESSAGES.locating);
+            map.locate(GEOLOCATION_OPTIONS);
+        });
+
+        map.on("locationfound", event => {
+            finishGeolocation();
+            const targetZoom = Math.min(GEOLOCATION_OPTIONS.maxZoom, map.getMaxZoom());
+            map.stop();
+            map.setView(event.latlng, targetZoom, { animate: false });
+            if (locationMarker) map.removeLayer(locationMarker);
+            const rootStyles = getComputedStyle(document.documentElement);
+            locationMarker = L.circleMarker(event.latlng, {
+                pane: MAP_PANE_STACK.eventVector.name,
+                ...GEOLOCATION_MARKER_STYLE,
+                color: rootStyles.getPropertyValue("--map-location-outline").trim(),
+                fillColor: rootStyles.getPropertyValue("--map-location-fill").trim(),
+                fillOpacity: 1,
+                interactive: false
+            }).addTo(map);
+            showRightToolsStatus(GEOLOCATION_MESSAGES.found, "success");
+        });
+
+        map.on("locationerror", event => {
+            finishGeolocation();
+            const message = GEOLOCATION_MESSAGES.errors[event.code]
+                || GEOLOCATION_MESSAGES.errors.default;
+            showRightToolsStatus(message, "error");
+        });
+
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
         const toggleCitizenPanelVisibility = () => {
@@ -471,7 +573,7 @@
         }));
         rightToolRail?.addEventListener("keydown", event => {
             if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
-            const buttons = rightToolButtons.filter(button => !button.disabled);
+            const buttons = rightRailButtons.filter(button => !button.disabled);
             if (!buttons.length) return;
             event.preventDefault();
             const currentIndex = Math.max(0, buttons.indexOf(document.activeElement));
@@ -486,11 +588,12 @@
         });
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
         mobileLegendToggle?.addEventListener("click", () => {
-            setMobileLegend(activeRightPanel !== "legend");
+            setMobileLegend(!legendOpen);
         });
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeMobilePanels();
+                applyLegendState(false);
             }
         });
         mobileMediaQuery.addEventListener("change", (event) => {
@@ -513,7 +616,8 @@
         } else {
             updateCitizenPanelControls(false);
         }
-        setRightContextPanel(INITIAL_VIEW.variable === "normal" ? null : "legend", INITIAL_VIEW.variable !== "normal");
+        setRightContextPanel(null, false);
+        applyLegendState(INITIAL_VIEW.variable !== "normal");
 
         let selectedVariable = INITIAL_VIEW.variable;
         let selectedYear = INITIAL_VIEW.year;

@@ -21,6 +21,7 @@
         --mobile-top-offset: 66px;
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
         --perfil-card-max-height: 336px;
+        --perfil-card-min-usable-width: 280px;
         --road-scale-bottom-offset: 64px;
         --legend-bottom-clearance: 86px;
     }
@@ -523,10 +524,6 @@
         font-size: 0.82rem;
     }
 
-    .leaflet-top.leaflet-right .leaflet-control-zoom {
-        margin-top: 72px;
-    }
-
     .zoom-control-container {
         display: none;
     }
@@ -535,6 +532,7 @@
         width: auto;
         min-width: 0;
         max-height: none;
+        margin-right: calc(var(--right-tool-rail-width) + 8px) !important;
         padding: 0;
         overflow: visible;
         border-radius: 8px;
@@ -657,8 +655,16 @@
         top: var(--mobile-top-offset, 66px);
         right: var(--mobile-edge, 10px);
         width: var(--right-tool-rail-width);
-        gap: 4px;
-        padding: 3px;
+        gap: 6px;
+        padding: 0;
+        transition: opacity 160ms ease, visibility 160ms ease;
+    }
+
+    body.mobile-citizen-open .right-tools-rail,
+    body.mobile-sidebar-open .right-tools-rail {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
     }
 
     .right-tool-label {
@@ -668,8 +674,8 @@
     .right-context-host {
         top: var(--mobile-context-top);
         bottom: var(--mobile-context-bottom);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + var(--right-context-gap));
-        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - var(--right-context-gap) - (3 * var(--mobile-edge, 10px))));
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width));
+        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
@@ -684,20 +690,15 @@
     }
 
     body.mobile-layers-open .right-context-host {
-        top: var(--mobile-edge, 10px);
-        bottom: var(--mobile-edge, 10px);
-        max-height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
+        top: var(--mobile-context-top);
+        bottom: var(--mobile-context-bottom);
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
     body.mobile-layers-open .right-context-view,
     body.mobile-layers-open .right-context-host .technical-drawer {
-        height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
-        max-height: calc(100dvh - (2 * var(--mobile-edge, 10px)));
-    }
-
-    .legend-context-panel .legend-panel.mobile-legend-open {
-        width: 100%;
-        max-height: var(--legend-max-height-mobile);
+        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
     #mobile-layers-toggle {
@@ -705,12 +706,12 @@
     }
 
     .mobile-year-bar {
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + var(--right-context-gap) + var(--right-map-control-width) + var(--right-context-gap));
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
     }
 
-    .leaflet-top.leaflet-right,
-    body.right-context-open .leaflet-top.leaflet-right {
-        right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
+    body.right-context-open .legend-panel {
+        visibility: hidden;
+        pointer-events: none;
     }
 
     body.mobile-right-context-open .mobile-overlay-backdrop {

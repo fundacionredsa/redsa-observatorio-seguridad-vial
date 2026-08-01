@@ -18,6 +18,10 @@ async function openTechnicalPanel(page, isMobile) {
   await expect(drawer).toHaveAttribute("aria-hidden", "false");
 }
 
+function isFullAntGeoJson(url) {
+  return new URL(url).pathname.endsWith(".geojson");
+}
+
 test("no descarga puntos ANT antes de activar la capa", async ({ page }) => {
   const requests = [];
   page.on("request", request => {
@@ -88,7 +92,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(state.metrics.indexMs).toBe(0);
   expect(state.renderMetrics.heat.renderMs).toBeGreaterThanOrEqual(0);
   expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
-  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(0);
+  expect(requests.filter(isFullAntGeoJson)).toHaveLength(0);
   let paneAudit = await page.evaluate(() => {
     const territory = document.querySelector(".leaflet-territorio-pane");
     const heat = document.querySelector(".leaflet-antHeat-pane");
@@ -138,7 +142,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   await page.locator("[data-ant-mode='heat']").click();
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().mode === "heat");
   expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
-  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(1);
+  expect(requests.filter(isFullAntGeoJson)).toHaveLength(1);
 
   await page.evaluate(() => window.setMobileLegend?.(true));
   const legend = page.locator("#legend-items");
@@ -167,7 +171,7 @@ test("si el GeoJSON completo se cargó primero, Calor no solicita el compacto", 
   const state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.dataSource).toBe("full-geojson");
   expect(state.pointCount).toBe(20_148);
-  expect(requests.filter(url => url.endsWith(".geojson"))).toHaveLength(1);
+  expect(requests.filter(isFullAntGeoJson)).toHaveLength(1);
   expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(0);
 });
 

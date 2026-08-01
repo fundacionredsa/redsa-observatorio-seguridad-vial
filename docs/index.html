@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.32">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.32">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.32">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.33">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.33">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.33">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -131,26 +131,45 @@
     <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="right-context-host" aria-expanded="false">Datos y capas</button>
 
     <nav class="right-tools-rail" id="right-tools-rail" aria-label="Herramientas del mapa">
-        <button class="right-tool-button" type="button" data-right-panel="layers" aria-controls="technical-drawer" aria-expanded="false" aria-label="Datos y capas" title="Datos y capas">
-            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-            <span class="right-tool-label">Datos y capas</span>
-        </button>
-        <button class="right-tool-button" type="button" data-right-panel="legend" aria-controls="legend-context-panel" aria-expanded="true" aria-label="Leyenda" title="Leyenda">
-            <i class="fa-solid fa-list" aria-hidden="true"></i>
-            <span class="right-tool-label">Leyenda</span>
-        </button>
-        <button class="right-tool-button" type="button" data-right-panel="basemap" aria-controls="basemap-context-panel" aria-expanded="false" aria-label="Mapas base" title="Mapas base">
-            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-            <span class="right-tool-label">Mapas base</span>
-        </button>
-        <button class="right-tool-button" type="button" aria-disabled="true" disabled aria-label="Consultar elementos, próximamente" title="Consultar elementos, próximamente">
-            <i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i>
-            <span class="right-tool-label">Consultar elementos (próximamente)</span>
-        </button>
+        <div class="right-tool-group" role="group" aria-label="Navegación del mapa">
+            <button class="right-tool-button" id="map-zoom-in" type="button" aria-label="Acercar mapa" title="Acercar mapa">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span class="right-tool-label">Acercar</span>
+            </button>
+            <button class="right-tool-button" id="map-zoom-out" type="button" aria-label="Alejar mapa" title="Alejar mapa">
+                <i class="fa-solid fa-minus" aria-hidden="true"></i>
+                <span class="right-tool-label">Alejar</span>
+            </button>
+            <button class="right-tool-button" id="map-locate" type="button" aria-label="Mostrar mi ubicación" title="Mostrar mi ubicación">
+                <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+                <span class="right-tool-label">Mi ubicación</span>
+            </button>
+        </div>
+        <div class="right-tool-group" role="group" aria-label="Contenido del mapa">
+            <button class="right-tool-button" type="button" data-right-panel="layers" aria-controls="technical-drawer" aria-expanded="false" aria-label="Datos y capas" title="Datos y capas">
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                <span class="right-tool-label">Datos y capas</span>
+            </button>
+            <button class="right-tool-button" type="button" data-right-panel="basemap" aria-controls="basemap-context-panel" aria-expanded="false" aria-label="Mapas base" title="Mapas base">
+                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                <span class="right-tool-label">Mapas base</span>
+            </button>
+            <button class="right-tool-button" type="button" aria-disabled="true" disabled aria-label="Consultar elementos, próximamente" title="Consultar elementos, próximamente">
+                <i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i>
+                <span class="right-tool-label">Consultar elementos (próximamente)</span>
+            </button>
+        </div>
+        <div class="right-tool-group" role="group" aria-label="Metodología y fuentes">
+            <button class="right-tool-button" type="button" data-right-panel="methodology" aria-controls="methodology-context-panel" aria-expanded="false" aria-label="Metodología y fuentes" title="Metodología y fuentes">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                <span class="right-tool-label">Metodología y fuentes</span>
+            </button>
+        </div>
     </nav>
+    <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
 
-    <div class="right-context-host" id="right-context-host" data-active-panel="legend">
-    <aside class="technical-drawer right-context-view" id="technical-drawer" data-right-context-view="layers" hidden aria-hidden="true" aria-label="Datos, capas y metodología">
+    <div class="right-context-host" id="right-context-host" data-active-panel="none" hidden>
+    <aside class="technical-drawer right-context-view" id="technical-drawer" data-right-context-view="layers" hidden aria-hidden="true" aria-label="Datos y capas">
         <div class="drawer-header">
             <div>
                 <h2>Datos y capas</h2>
@@ -208,17 +227,7 @@
                 </div>
             </section>
         </div>
-        <div class="technical-section-title">Metodología</div>
-        <nav class="technical-links" aria-label="Metodología del observatorio">
-            <a href="metodologia/#fuentes">Inventario y fuentes de datos</a>
-            <a href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
-            <a href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
-            <a href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
-        </nav>
     </aside>
-    <section class="right-context-view legend-context-panel" id="legend-context-panel" data-right-context-view="legend" aria-label="Leyenda del mapa">
-        <div id="legend-context-slot"></div>
-    </section>
     <section class="right-context-view basemap-context-panel" id="basemap-context-panel" data-right-context-view="basemap" hidden aria-hidden="true" aria-labelledby="basemap-context-title">
         <header class="right-context-section-header">
             <div>
@@ -228,6 +237,21 @@
             <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar mapas base" title="Cerrar mapas base">&times;</button>
         </header>
         <div id="basemap-context-slot" class="basemap-context-slot"></div>
+    </section>
+    <section class="right-context-view methodology-context-panel" id="methodology-context-panel" data-right-context-view="methodology" hidden aria-hidden="true" aria-labelledby="methodology-context-title">
+        <header class="right-context-section-header">
+            <div>
+                <h2 id="methodology-context-title">Metodología y fuentes</h2>
+                <p>Consulta cómo se preparan, comparan y documentan los datos.</p>
+            </div>
+            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar metodología y fuentes" title="Cerrar metodología y fuentes">&times;</button>
+        </header>
+        <nav class="technical-links methodology-context-links" aria-label="Metodología del observatorio">
+            <a href="metodologia/#fuentes">Inventario y fuentes de datos</a>
+            <a href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
+            <a href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
+            <a href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
+        </nav>
     </section>
     </div>
 
@@ -590,18 +614,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.32"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.32"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.33"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.33"></script>
     <!-- Fixed lower panel for Perfil de Fallecidos -->
     <div id="demographic-hover-card" class="demographic-card perfil-fallecidos-card glass">
         <div class="profile-card-header">

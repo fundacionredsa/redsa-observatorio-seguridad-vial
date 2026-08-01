@@ -1910,10 +1910,6 @@ body.mobile-layers-open .technical-toggle {
     }
 }
 
-.leaflet-top.leaflet-right .leaflet-control-zoom {
-    margin-top: 76px;
-}
-
 .legend-panel {
     position: relative;
     width: min(290px, calc(100vw - 40px));
@@ -2646,10 +2642,17 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     z-index: var(--z-drawer);
     top: var(--right-tool-rail-top);
     right: var(--right-context-edge);
-    display: grid;
+    display: flex;
+    flex-direction: column;
     width: var(--right-tool-rail-width);
-    gap: 6px;
-    padding: 4px;
+    gap: var(--right-tool-group-gap);
+    padding: 0;
+}
+
+.right-tool-group {
+    display: grid;
+    gap: 2px;
+    padding: 3px;
     border: 1px solid var(--border-glass);
     border-radius: 8px;
     background: var(--bg-panel, var(--bg-glass));
@@ -2679,6 +2682,10 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     border-color: color-mix(in srgb, var(--accent) 45%, transparent);
     background: color-mix(in srgb, var(--accent) 16%, transparent);
     color: var(--accent);
+}
+
+.right-tool-button.active {
+    box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .right-tool-button:focus-visible,
@@ -2722,11 +2729,11 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     position: fixed;
     z-index: calc(var(--z-drawer) - 1);
     top: var(--right-context-top);
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width));
     width: min(var(--right-context-width), calc(100vw - var(--right-tool-rail-width) - (3 * var(--right-context-edge))));
     max-height: calc(100dvh - var(--right-context-top) - var(--right-context-bottom));
     border: 1px solid var(--border-glass);
-    border-radius: 8px;
+    border-radius: 8px 0 0 8px;
     background: var(--bg-panel, var(--bg-glass));
     box-shadow: var(--shadow);
     color: var(--text-primary);
@@ -2759,22 +2766,6 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
 
 .right-context-host .drawer-close {
     display: inline-flex !important;
-}
-
-.legend-context-panel {
-    overflow: hidden;
-}
-
-.legend-context-panel .legend-panel {
-    position: relative;
-    width: 100%;
-    max-height: var(--legend-max-height-desktop);
-    margin: 0 !important;
-    padding: 12px;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    overflow: auto;
 }
 
 .right-context-section-header {
@@ -2812,6 +2803,36 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
 
 .basemap-context-slot {
     padding: 12px;
+}
+
+.methodology-context-links {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+}
+
+.right-tools-status {
+    position: fixed;
+    z-index: var(--z-popover);
+    top: var(--right-context-top);
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width));
+    width: min(var(--right-tools-status-width), calc(100vw - 2 * var(--right-context-edge) - var(--right-tool-rail-width)));
+    padding: 10px 12px;
+    border: 1px solid var(--redsa-panel-border);
+    border-radius: 7px 0 0 7px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.right-tools-status[data-tone="success"] {
+    border-color: #22c55e;
+}
+
+.right-tools-status[data-tone="error"] {
+    border-color: #ef4444;
 }
 
 .basemap-context-slot .basemap-control {
@@ -2887,15 +2908,25 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     display: none !important;
 }
 
-.leaflet-top.leaflet-right {
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap));
-    transition: right 180ms ease;
+body.right-context-open .legend-panel {
+    margin-right: calc(var(--right-context-width) + var(--right-tool-rail-width) + var(--right-context-edge)) !important;
 }
 
-body.right-context-open .leaflet-top.leaflet-right {
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-gap) + min(var(--right-context-width), calc(100vw - var(--right-tool-rail-width) - (3 * var(--right-context-edge)))) + var(--right-context-gap));
+body.light-theme .right-tool-group,
+body.light-theme .right-context-host,
+body.light-theme .legend-panel,
+body.light-theme .right-tools-status {
+    border-color: var(--redsa-panel-border);
+    background: #ffffff;
 }
 
-.leaflet-top.leaflet-right .leaflet-control-zoom {
-    margin-top: 0;
+body.light-theme .right-context-host,
+body.light-theme .legend-panel {
+    border-top: 3px solid var(--redsa-panel-accent);
+}
+
+body.light-theme .right-tool-button.active {
+    border-color: var(--redsa-panel-border);
+    background: var(--redsa-panel-accent-soft);
+    color: var(--redsa-panel-accent);
 }

@@ -10,9 +10,11 @@
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const variableTourTarget = '[data-right-panel="layers"]';
         const infrastructureTourTarget = "#infrastructure-disclosure";
+        const citizenWasOpen = document.body.classList.contains("citizen-panel-open");
 
         const openCitizenPanelForTour = () => {
-            if (isMobile && typeof window.setMobilePanel === "function") {
+            window.setRightContextPanel?.(null, false);
+            if (typeof window.setMobilePanel === "function") {
                 window.setMobilePanel("citizen", true);
             }
         };
@@ -24,21 +26,26 @@
         };
 
         const prepareLegendForTour = () => {
-            if (isMobile) {
-                if (typeof window.closeMobilePanels === "function") {
-                    window.closeMobilePanels();
-                }
-                if (typeof window.setMobileLegend === "function") {
-                    window.setMobileLegend(true);
-                }
-            }
+            window.setRightContextPanel?.(null, false);
+            window.setMobileLegend?.(true);
+        };
 
+        const prepareInfrastructureForTour = () => {
+            prepareLayersPanelForTour();
+            const disclosure = document.getElementById("infrastructure-disclosure");
+            if (disclosure) disclosure.open = true;
+        };
+
+        const prepareBasemapsForTour = () => {
+            window.setRightContextPanel?.("basemap", true);
+        };
+
+        const prepareMethodologyForTour = () => {
+            window.setRightContextPanel?.("methodology", true);
         };
 
         const prepareAntLayerForTour = () => {
-            if (isMobile && typeof window.setMobilePanel === "function") {
-                window.setMobilePanel("layers", true);
-            }
+            prepareLayersPanelForTour();
             const disclosure = document.getElementById("event-layer-disclosure");
             if (disclosure) disclosure.open = true;
         };
@@ -55,10 +62,10 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                if (isMobile) {
-                    window.setMobileLegend?.(false);
-                    window.closeMobilePanels?.();
-                }
+                window.setRightContextPanel?.(null, false);
+                window.setMobileLegend?.(true);
+                if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
+                if (isMobile) window.setMobilePanel?.("sidebar", false);
             },
             onDestroyStarted: () => {
                 if (!driverObj.hasNextStep() || confirm("¿Seguro que deseas omitir el resto del tour?")) {
@@ -78,7 +85,7 @@
                     onHighlightStarted: openCitizenPanelForTour,
                     popover: {
                         title: 'Busca tu territorio',
-                        description: 'Escribe un cantón para centrarlo y seleccionarlo. También puedes tocar directamente una provincia, cantón o parroquia en el mapa.',
+                        description: 'Escribe una provincia, un cantón o una parroquia para centrarla y seleccionarla. También puedes tocar directamente el territorio en el mapa.',
                         side: "bottom",
                         align: 'start'
                     }
@@ -105,10 +112,20 @@
                 },
                 {
                     element: infrastructureTourTarget,
-                    onHighlightStarted: prepareLayersPanelForTour,
+                    onHighlightStarted: prepareInfrastructureForTour,
                     popover: {
-                        title: 'Capas de infraestructura y mapas base',
-                        description: 'En el mismo panel puedes desplegar “Infraestructura vial” y activar varias capas a la vez. El control de capas del mapa permite escoger el mapa base.',
+                        title: 'Capas de infraestructura',
+                        description: 'Despliega “Infraestructura vial” para activar una o varias capas a la vez y compararlas con la variable territorial.',
+                        side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '[data-right-panel="basemap"]',
+                    onHighlightStarted: prepareBasemapsForTour,
+                    popover: {
+                        title: 'Mapas base',
+                        description: 'Cambia el mapa de fondo sin alterar los datos seleccionados ni el territorio que estás consultando.',
                         side: "left",
                         align: 'start'
                     }
@@ -131,6 +148,16 @@
                         description: 'La leyenda cambia según la variable, el año y el nivel territorial. También declara cuando no existen datos y su ícono informativo explica la clasificación.',
                         side: "left",
                         align: 'end'
+                    }
+                },
+                {
+                    element: '[data-right-panel="methodology"]',
+                    onHighlightStarted: prepareMethodologyForTour,
+                    popover: {
+                        title: 'Metodología y fuentes',
+                        description: 'Consulta las fuentes, los periodos disponibles, los cálculos y las limitaciones conocidas de los datos.',
+                        side: "left",
+                        align: 'start'
                     }
                 },
                 {

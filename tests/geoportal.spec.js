@@ -215,7 +215,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator('[data-right-panel="layers"]')).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#technical-drawer-close")).toBeVisible();
   await expect(page.locator("#citizen-panel")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
@@ -227,14 +227,16 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#clean-map-button")).toHaveCount(0);
   await expect(page.locator("#technical-drawer")).not.toContainText("Corredores priorizados por REDSA");
   await expect(page.locator("#technical-drawer")).not.toContainText("Mapillary");
-  await expect(page.locator("#technical-drawer")).toContainText("Metodología");
+  await expect(page.locator("#technical-drawer")).not.toContainText("Metodología");
   await expect(page.locator("#technical-drawer")).not.toContainText("Descargar datos cantonales");
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#citizen-panel")).toBeVisible();
-  await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
+  await page.locator('[data-right-panel="methodology"]').click();
+  await expect(page.locator("#methodology-context-panel")).toBeVisible();
+  await expect(page.locator("#methodology-context-panel")).toContainText("Metodología");
 
   await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
@@ -876,7 +878,8 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
   ]) {
     await page.setViewportSize(viewport);
     await loadPortal(page);
-    await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
+    await expect(page.locator(".legend-panel")).toBeVisible();
     const geometry = await page.evaluate(() => {
       const box = selector => {
         const rect = document.querySelector(selector).getBoundingClientRect();
@@ -893,7 +896,6 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
       expect(element.bottom).toBeLessThanOrEqual(viewport.height);
     }
     expect(boxesIntersect(geometry.host, geometry.rail)).toBeFalsy();
-    await page.locator('[data-right-panel="legend"]').tap();
     await expect(page.locator("#right-context-host")).toBeHidden();
   }
 });
@@ -1025,9 +1027,9 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(selected.card.bottom).toBeLessThanOrEqual(height - 10);
   expect(selected.intersects).toBeFalsy();
 
-  await page.locator('[data-right-panel="legend"]').tap();
-  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator("#right-context-host")).toBeVisible();
+  await page.locator("#mobile-legend-toggle").tap();
+  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#legend-content")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "hidden");
   const openLegend = await page.locator(".legend-panel").boundingBox();
@@ -1035,8 +1037,8 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(openLegend.y).toBeGreaterThanOrEqual(0);
   expect(openLegend.y + openLegend.height).toBeLessThanOrEqual(height);
 
-  await page.locator('[data-right-panel="legend"]').tap();
-  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "false");
+  await page.locator("#mobile-legend-toggle").tap();
+  await expect(page.locator("#mobile-legend-toggle")).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#demographic-hover-card")).toHaveCSS("visibility", "visible");
 });
 

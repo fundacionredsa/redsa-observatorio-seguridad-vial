@@ -125,7 +125,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             };
             const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
             const bar = toBox(document.querySelector('#mobile-year-bar'));
-            const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
+            const zoom = toBox(document.querySelector('#map-zoom-in'));
             const rail = toBox(document.querySelector('#right-tools-rail'));
             return {
                 bar,
@@ -191,7 +191,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             };
             const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
             const bar = toBox(document.querySelector('#mobile-year-bar'));
-            const zoom = toBox(document.querySelector('.leaflet-control-zoom'));
+            const zoom = toBox(document.querySelector('#map-zoom-in'));
             const rail = toBox(document.querySelector('#right-tools-rail'));
             return {
                 bar,

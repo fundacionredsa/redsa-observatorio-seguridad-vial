@@ -454,7 +454,7 @@
             allowTaint: false,
             logging: false,
             scale: 2,
-            ignoreElements: element => element.matches?.(".leaflet-control-zoom, .opacity-control, .basemap-control, .mobile-nav-toggle")
+            ignoreElements: element => element.matches?.("#right-tools-rail, #right-context-host, .opacity-control, .basemap-control, .mobile-nav-toggle")
         });
         return canvas.toDataURL("image/jpeg", 0.9);
     }
