@@ -74,8 +74,10 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
 
 test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {
   const requests = [];
+  const workerRequests = [];
   page.on("request", request => {
     if (/siniestros_ant_2025(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
+    if (/ant-layer-worker\.js/.test(request.url())) workerRequests.push(request.url());
   });
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
@@ -125,6 +127,11 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
     const audit = window.REDSAAntLayer.getAuditState();
     return audit.fullLoadedYear === 2025 && Boolean(audit.renderMetrics.clusters);
   }, null, { timeout: 90_000 });
+  const runtimeVersion = await page.locator('script[src*="geoportal-ant-layer.js"]').evaluate(script => (
+    new URL(script.src).searchParams.get("v")
+  ));
+  expect(workerRequests.length).toBeGreaterThan(0);
+  expect(new URL(workerRequests.at(-1)).searchParams.get("v")).toBe(runtimeVersion);
   await expect(page.locator(".ant-cluster-label").first()).toBeVisible();
   await expect(page.locator("#ant-heat-opacity-control")).toBeHidden();
   await expect(page.locator(".ant-cluster-label").first()).toHaveText(/^\d+(?:[,.]\d+)?\s*(?:mil|k)?$/i);

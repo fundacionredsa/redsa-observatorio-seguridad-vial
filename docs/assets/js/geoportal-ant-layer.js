@@ -1,4 +1,11 @@
 (function () {
+    // El worker forma parte del runtime de esta capa, no del dataset. Vincularlo
+    // a la version del script evita mezclar implementaciones tras un despliegue.
+    const ANT_LAYER_RUNTIME_VERSION = (() => {
+        const scriptUrl = document.currentScript?.src;
+        if (!scriptUrl) return "current";
+        return new URL(scriptUrl, document.baseURI).searchParams.get("v") || "current";
+    })();
     const MAX_CACHED_YEARS = 1;
     const CLUSTER_QUERY_DEBOUNCE_MS = 90;
     const SPIDERFY_RADIUS_PX = 18;
@@ -336,7 +343,7 @@
     function createWorker() {
         state.worker?.terminate();
         const workerUrl = new URL("assets/js/ant-layer-worker.js", document.baseURI);
-        workerUrl.searchParams.set("v", state.config?.assetVersion || "current");
+        workerUrl.searchParams.set("v", ANT_LAYER_RUNTIME_VERSION);
         state.worker = new Worker(workerUrl.href);
         state.worker.onmessage = handleWorkerMessage;
         state.worker.onerror = event => {
