@@ -312,7 +312,6 @@
         const technicalDrawer = document.getElementById("technical-drawer");
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
         const technicalControlsSlot = document.getElementById("technical-controls-slot");
-        const variableControlsSlot = document.getElementById("variable-controls-slot");
         const mapVariableDisclosureSlot = document.getElementById("map-variable-disclosure-slot");
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
         const legendLevelControlSlot = document.getElementById("legend-level-control-slot");
@@ -401,7 +400,8 @@
 
         function updateCitizenPanelControls(open) {
             const isOpen = Boolean(open);
-            citizenPanel?.setAttribute("aria-hidden", String(!isOpen));
+            const coveredByAnalysis = document.body.classList.contains("mobile-sidebar-open");
+            citizenPanel?.setAttribute("aria-hidden", String(!isOpen || coveredByAnalysis));
             mobileCitizenToggle?.setAttribute("aria-expanded", String(isOpen));
             citizenPanelVisibilityToggle?.setAttribute("aria-expanded", String(isOpen));
             if (!citizenPanelVisibilityToggle) return;
@@ -414,7 +414,7 @@
             icon?.classList.toggle("fa-chevron-right", !isOpen);
         }
 
-        function setMobilePanel(panel, open) {
+        function setMobilePanel(panel, open, options = {}) {
             if (open && mobileMediaQuery.matches && panel !== "layers") {
                 setRightContextPanel(null, false);
             }
@@ -423,7 +423,7 @@
                 document.body.classList.toggle("citizen-panel-open", shouldOpen);
                 document.body.classList.toggle("mobile-citizen-open", shouldOpen && mobileMediaQuery.matches);
                 updateCitizenPanelControls(shouldOpen);
-                if (shouldOpen) {
+                if (shouldOpen && !options.preserveSidebar) {
                     document.body.classList.remove("mobile-sidebar-open");
                     territorySidebar?.setAttribute("aria-hidden", "true");
                     mobileSidebarToggle?.setAttribute("aria-expanded", "false");
@@ -435,15 +435,17 @@
                 }
             }
             if (panel === "sidebar") {
-                if (open) setMobilePanel("citizen", false);
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
+                if (open) {
+                    citizenPanel?.setAttribute("aria-hidden", "true");
+                } else {
+                    updateCitizenPanelControls(document.body.classList.contains("citizen-panel-open"));
+                }
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open", "mobile-citizen-open", "citizen-panel-open");
+                    document.body.classList.remove("mobile-layers-open");
                     if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
-                    if (mobileCitizenToggle) mobileCitizenToggle.setAttribute("aria-expanded", "false");
-                    citizenPanelVisibilityToggle?.setAttribute("aria-expanded", "false");
                     if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
                     technicalDrawer?.setAttribute("aria-hidden", "true");
                     mobileSidebarClose?.focus({ preventScroll: true });
@@ -486,9 +488,6 @@
             if (antHeatOpacityControl && antOpacitySlot && antHeatOpacityControl.parentElement !== antOpacitySlot) {
                 antOpacitySlot.appendChild(antHeatOpacityControl);
             }
-            if (selector && variableControlsSlot && selector.parentElement !== variableControlsSlot) {
-                variableControlsSlot.appendChild(selector);
-            }
             const variableDisclosure = document.getElementById("variable-disclosure");
             if (variableDisclosure && mapVariableDisclosureSlot && variableDisclosure.parentElement !== mapVariableDisclosureSlot) {
                 mapVariableDisclosureSlot.appendChild(variableDisclosure);
@@ -497,7 +496,10 @@
                 container.id = "mobile-layer-control";
                 infrastructureControlsSlot.appendChild(container);
             }
-            if (selector && container) document.body.classList.add("technical-ready");
+            // Timeline, level and variable controls now live in their final panels.
+            // Remove the empty Leaflet shell so it cannot look like an inert search field.
+            if (selector && selector.childElementCount === 0) selector.remove();
+            if (container && variableDisclosure && timelineBlock) document.body.classList.add("technical-ready");
         }
 
         document.addEventListener("input", event => {
@@ -589,7 +591,7 @@
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
         const toggleCitizenPanelVisibility = () => {
-            setMobilePanel("citizen", !document.body.classList.contains("citizen-panel-open"));
+            setMobilePanel("citizen", !document.body.classList.contains("citizen-panel-open"), { preserveSidebar: true });
         };
         citizenPanelVisibilityToggle?.addEventListener("pointerdown", event => {
             event.preventDefault();

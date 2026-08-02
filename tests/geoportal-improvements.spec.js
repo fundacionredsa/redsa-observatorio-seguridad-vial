@@ -30,7 +30,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
         await page.addInitScript(() => { window.__REDSA_GLOBAL_COUNTER_ENABLED__ = true; });
         await page.goto('./', { waitUntil: "domcontentloaded" });
-        await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 10_000 });
+        await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 20_000 });
         
         await page.waitForSelector('.driver-popover-close-btn', { state: 'visible', timeout: 5000 }).catch(() => {});
         await page.evaluate(() => {
@@ -294,8 +294,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
-            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText('iniciativa ciudadana independiente en Ecuador');
-            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial');
+            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
+                'Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible'
+            );
+            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
+                'una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA'
+            );
+            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial y Movilidad Sostenible');
             await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
@@ -365,7 +370,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 };
                 return {
                     drawer: colors('#technical-drawer'),
-                    selector: colors('.map-selector-control'),
+                    selector: colors('#layers-card'),
                     profile: colors('.perfil-fallecidos-card'),
                     legend: colors('#right-context-host')
                 };

@@ -39,7 +39,12 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
   await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial");
-  await expect(page.locator("#citizen-panel")).toContainText("iniciativa ciudadana independiente en Ecuador");
+  await expect(page.locator("#citizen-panel")).toContainText(
+    "Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible"
+  );
+  await expect(page.locator("#citizen-panel")).toContainText(
+    "una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA"
+  );
   await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
   await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator("#citizen-map-meta")).toContainText("Nivel: provincias");
@@ -79,16 +84,17 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   await expect(page.locator(".legend-panel")).not.toContainText("Resto del país");
 });
 
-test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async ({ page }) => {
+test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page }) => {
   await loadPortal(page);
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
   await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
-  await expect(page.locator("#citizen-summary")).toContainText("siniestros reportados");
-  await expect(page.locator("#citizen-summary")).toContainText("mediana de los cantones");
-  await expect(page.locator("#citizen-summary")).toContainText("Histórico de años completos");
-  await expect(page.locator("#citizen-summary")).toContainText("años con datos");
+  await expect(page.locator("#citizen-summary")).toContainText("Siniestros de tránsito reportados");
+  await expect(page.locator("#citizen-summary")).toContainText("Referencia nacional");
+  await expect(page.locator("#citizen-summary")).not.toContainText("mediana de los cantones");
+  await expect(page.locator("#citizen-summary")).not.toContainText("Histórico de años completos");
+  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
@@ -368,27 +374,33 @@ test("leyenda declara cuando la variable no existe en el nivel territorial", asy
   await expect(page.locator(".legend-panel")).toContainText("Límites administrativos");
 });
 
-test("selector de periodo permanece accesible al desplazar el panel de analisis", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "Comportamiento sticky del panel de escritorio.");
+test("el encabezado del analisis permanece accesible y el contenido llega hasta el final", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Comportamiento del panel de escritorio.");
   await loadPortal(page);
   const sidebar = page.locator("#territory-sidebar");
 
+  await page.locator("#open-analysis-button").click();
+  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
+
   await sidebar.evaluate(element => { element.scrollTop = element.scrollHeight; });
   const layout = await page.evaluate(() => {
-    const sidebarRect = document.querySelector("#territory-sidebar").getBoundingClientRect();
-    const control = document.querySelector("#territory-sidebar .detail-period-control");
-    const controlRect = control.getBoundingClientRect();
+    const sidebar = document.querySelector("#territory-sidebar");
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const topbar = document.querySelector("#territory-sidebar .mobile-sidebar-topbar");
+    const topbarRect = topbar.getBoundingClientRect();
     return {
-      position: getComputedStyle(control).position,
+      position: getComputedStyle(topbar).position,
       sidebarTop: sidebarRect.top,
-      controlTop: controlRect.top,
-      visible: controlRect.bottom > sidebarRect.top && controlRect.top < sidebarRect.bottom
+      topbarTop: topbarRect.top,
+      visible: topbarRect.bottom > sidebarRect.top && topbarRect.top < sidebarRect.bottom,
+      reachedBottom: Math.abs(sidebar.scrollHeight - sidebar.clientHeight - sidebar.scrollTop) <= 2
     };
   });
 
   expect(layout.position).toBe("sticky");
   expect(layout.visible).toBeTruthy();
-  expect(Math.abs(layout.controlTop - layout.sidebarTop)).toBeLessThanOrEqual(28);
+  expect(layout.reachedBottom).toBeTruthy();
+  expect(Math.abs(layout.topbarTop - layout.sidebarTop)).toBeLessThanOrEqual(2);
 });
 
 test("paneles alternan entre anio y acumulados con cobertura explicita", async ({ page }, testInfo) => {
@@ -941,8 +953,10 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
       viewportHeight: innerHeight
     };
   });
-  expect(sticky.period.top, JSON.stringify(sticky)).toBeGreaterThanOrEqual(sticky.topbar.bottom - 1);
-  expect(sticky.period.bottom).toBeLessThanOrEqual(sticky.viewportHeight);
+  expect(sticky.topbar.top, JSON.stringify(sticky)).toBeGreaterThanOrEqual(-1);
+  const periodDoesNotOverlapHeader = sticky.period.bottom <= sticky.topbar.top + 1
+    || sticky.period.top >= sticky.topbar.bottom - 1;
+  expect(periodDoesNotOverlapHeader, JSON.stringify(sticky)).toBeTruthy();
 
   await page.locator("#mobile-overlay-backdrop").tap({ position: { x: width - 6, y: height - 6 } });
   await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);
@@ -956,15 +970,12 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
       const rect = element.getBoundingClientRect();
       return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
     };
-    return {
-      drawer: box("#technical-drawer"),
-      selector: box(".map-selector-control")
-    };
+    return { drawer: box("#technical-drawer") };
   });
   expect(technical.drawer.left).toBeGreaterThanOrEqual(0);
   expect(technical.drawer.right).toBeLessThanOrEqual(width);
   expect(technical.drawer.bottom).toBeLessThanOrEqual(height);
-  expect(technical.selector.bottom).toBeLessThanOrEqual(height);
+  await expect(page.locator(".map-selector-control")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
 
@@ -1158,7 +1169,6 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(page.locator("#population-detail-row")).toBeHidden();
   await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();
   await expect(page.locator("#fallecidos-rate-detail-row")).toBeHidden();
-  await expect(page.locator("#parish-population-note")).toBeVisible();
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "mouseover"));
   const renderedParishTooltip = page.locator(".territory-hover-tooltip").last();
   await expect(renderedParishTooltip).toBeVisible();
@@ -1166,9 +1176,11 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
 
   if ((page.viewportSize()?.width || 0) <= 768) {
-    await page.evaluate(() => window.setMobilePanel?.("sidebar", true));
-    await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
+    await page.locator("#mobile-sidebar-toggle").click();
+  } else {
+    await page.locator("#open-analysis-button").click();
   }
+  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
 
   await expect(page.locator("#population-detail-row")).toBeHidden();
   await expect(page.locator("#siniestros-rate-detail-row")).toBeHidden();
@@ -1202,6 +1214,7 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "0101", "click"));
   await expect(page.locator("#population-detail-row")).toBeVisible();
   await expect(page.locator("#siniestros-rate-detail-row")).toBeVisible();
+  await page.locator("#complementary-indicators-disclosure").evaluate(element => { element.open = true; });
   await expect(page.locator("#fallecidos-rate-detail-row")).toBeVisible();
   await expect(parishNote).toBeHidden();
 

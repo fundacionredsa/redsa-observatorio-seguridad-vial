@@ -212,7 +212,7 @@ async function assertBasemapControlHasDedicatedSpace(page) {
   return { panel, rail: railBox, zoom };
 }
 
-test("panel ciudadano web conserva estado y no compite con la ficha territorial", async ({ page }, testInfo) => {
+test("panel ciudadano web conserva estado y separa selección de análisis", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "La experiencia off-canvas móvil se cubre por separado.");
   await loadPortal(page);
 
@@ -245,16 +245,20 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   await expect(search).toHaveValue("Cayambe");
 
   await search.press("Tab");
-  await expect(body).toHaveClass(/mobile-sidebar-open/);
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
-  await expect(citizen).toHaveAttribute("aria-hidden", "true");
+  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
+  await expect(body).toHaveClass(/citizen-panel-open/);
+  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
+  await expect(citizen).toHaveAttribute("aria-hidden", "false");
   await expect.poll(async () => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({
     level: "canton",
     code: "1702"
   });
   const resolvedSearchValue = await search.inputValue();
-  await expect.poll(async () => (await box(page, "#citizen-panel")).right).toBeLessThan(0);
+  await page.locator("#open-analysis-button").click();
+  await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await expect(body).toHaveClass(/citizen-panel-open/);
+  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
+  await expect(citizen).toHaveAttribute("aria-hidden", "true");
   await expect.poll(async () => (await box(page, "#territory-sidebar")).left).toBeGreaterThanOrEqual(0);
 
   const toggleWhileSidebarOpen = await box(page, "#citizen-panel-visibility-toggle");
@@ -263,9 +267,17 @@ test("panel ciudadano web conserva estado y no compite con la ficha territorial"
   expect(toggleWhileSidebarOpen.right).toBeLessThanOrEqual(viewport.width);
 
   await citizenToggle.click();
+  await expect(body).not.toHaveClass(/citizen-panel-open/);
+  await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await citizenToggle.click();
   await expect(body).toHaveClass(/citizen-panel-open/);
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
+  await expect(body).toHaveClass(/mobile-sidebar-open/);
   await expect(search).toHaveValue(resolvedSearchValue);
+
+  await page.locator("#mobile-sidebar-close").click();
+  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
+  await expect(body).toHaveClass(/citizen-panel-open/);
+  await expect(citizen).toHaveAttribute("aria-hidden", "false");
 
   await citizenToggle.focus();
   await citizenToggle.press("Enter");
@@ -433,7 +445,7 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
 test("panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles", async ({ page }) => {
   await loadPortal(page);
 
-  await expect(page.locator(".citizen-brand h1")).toHaveText("Observatorio de Seguridad Vial");
+  await expect(page.locator(".citizen-brand h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
   await expect(page.locator("#citizen-map-description")).toHaveClass(/sr-only/);
   await expect(page.locator("#citizen-map-info")).toHaveAttribute("data-custom-text", /accidentes|siniestros/i);
   await expect(page.locator(".citizen-national-info")).toHaveAttribute("data-custom-text", /Fuente:/);
@@ -641,9 +653,8 @@ test("catálogo vive en la barra y el panel ciudadano conserva una jerarquía co
   await loadPortal(page);
   await expect(page.locator("#citizen-panel #btn-catalog")).toHaveCount(0);
   await expect(page.locator("#right-tools-rail #btn-catalog")).toBeVisible();
-  await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial");
-  await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toContainText("iniciativa ciudadana independiente en Ecuador");
-  await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toContainText("Fundación REDSA");
+  await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
+  await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toHaveText("Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.");
   await expect(page.locator("#citizen-panel .citizen-intro-full, #citizen-panel .citizen-intro-mobile")).toHaveCount(0);
   expect(await page.locator("#download-summary-button").evaluate(element => element.hidden)).toBeTruthy();
 

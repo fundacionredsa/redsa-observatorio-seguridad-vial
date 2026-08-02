@@ -479,6 +479,16 @@
         });
 
         let currentProps = null;
+
+        function getAnalysisChartTheme() {
+            const styles = getComputedStyle(document.documentElement);
+            return {
+                textPrimary: styles.getPropertyValue("--text-primary").trim() || "#f8fafc",
+                textMuted: styles.getPropertyValue("--text-muted").trim() || "#94a3b8",
+                grid: styles.getPropertyValue("--border-glass").trim() || "rgba(255, 255, 255, 0.1)",
+                pointOutline: document.body.classList.contains("light-theme") ? "#ffffff" : "#0f172a"
+            };
+        }
         let currentProfileProps = null;
 
         document.addEventListener("click", event => {
@@ -846,6 +856,7 @@
                 }
 
                 const ctx = document.getElementById('chart-historico').getContext('2d');
+                const chartTheme = getAnalysisChartTheme();
                 const selectedYearMarker = {
                     id: "selectedYearMarker",
                     afterDatasetsDraw(chart) {
@@ -855,7 +866,7 @@
                         const { top, bottom } = chart.chartArea;
                         const context = chart.ctx;
                         context.save();
-                        context.strokeStyle = "#f8fafc";
+                        context.strokeStyle = chartTheme.textPrimary;
                         context.lineWidth = 1;
                         context.setLineDash([3, 3]);
                         context.beginPath();
@@ -879,7 +890,7 @@
                                 tension: 0.15,
                                 fill: true,
                                 pointBackgroundColor: '#f59e0b',
-                                pointBorderColor: '#f8fafc',
+                                pointBorderColor: chartTheme.pointOutline,
                                 pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
                                 yAxisID: 'y'
                             },
@@ -892,7 +903,7 @@
                                 tension: 0.15,
                                 fill: true,
                                 pointBackgroundColor: '#0ea5e9',
-                                pointBorderColor: '#f8fafc',
+                                pointBorderColor: chartTheme.pointOutline,
                                 pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
                                 yAxisID: 'y1'
                             }
@@ -911,7 +922,7 @@
                                 display: true,
                                 position: 'top',
                                 labels: {
-                                    color: '#94a3b8',
+                                    color: chartTheme.textMuted,
                                     boxWidth: 8,
                                     boxHeight: 4,
                                     font: {
@@ -933,11 +944,11 @@
                         scales: {
                             x: {
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    color: chartTheme.grid,
                                     drawBorder: false
                                 },
                                 ticks: {
-                                    color: '#94a3b8',
+                                    color: chartTheme.textMuted,
                                     font: {
                                         size: 9,
                                         family: 'Inter'
@@ -959,7 +970,7 @@
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.05)',
+                                    color: chartTheme.grid,
                                     drawBorder: false
                                 },
                                 ticks: {
@@ -1011,3 +1022,7 @@
             }
             window.REDSAExperience?.updateSummary(parishProps || props, selectedYear);
         }
+
+        document.addEventListener("redsa:themechange", () => {
+            if (currentProps) updateSidebar(currentProps);
+        });

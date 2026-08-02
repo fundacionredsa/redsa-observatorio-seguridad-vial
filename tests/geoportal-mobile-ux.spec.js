@@ -44,7 +44,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         test.skip(!isMobile, 'Mobile-only test');
 
         const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
-        const mobileSidebarToggle = page.locator('#mobile-sidebar-toggle');
+        const mobileCitizenClose = page.locator('#mobile-citizen-close');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const layersToggle = page.locator('[data-right-panel="layers"]');
         const openAnalysisBtn = page.locator('#open-analysis-button');
@@ -54,19 +54,25 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
         await expect(openAnalysisBtn).toBeVisible();
 
-        // Click "Ver análisis completo" -> opens sidebar and closes citizen panel
+        // El análisis cubre el panel ciudadano sin alterar su preferencia abierta.
         await openAnalysisBtn.click();
         await expect(page.locator('body')).toHaveClass(/mobile-sidebar-open/);
-        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
+        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
         await expect(mobileSidebarClose).toBeInViewport();
 
         // Close sidebar
         await mobileSidebarClose.click();
         await expect(page.locator('body')).not.toHaveClass(/mobile-sidebar-open/);
+        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+
+        // El rail derecho reaparece al cerrar el panel ciudadano.
+        await mobileCitizenClose.click();
+        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
 
         // Open layers
         await layersToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
+        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
 
         // Close layers drawer
         await page.locator('#technical-drawer-close').click();
