@@ -206,6 +206,18 @@
             if (title) title.textContent = "Perfil de fallecidos";
         }
 
+        function ensureProfileHeaderVisible(card) {
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    card.querySelector("#profile-card-close")?.scrollIntoView({
+                        block: "nearest",
+                        inline: "nearest",
+                        behavior: "smooth"
+                    });
+                });
+            });
+        }
+
         function showProfileCard(props, e) {
             const card = document.getElementById("demographic-hover-card");
             const body = document.getElementById("hover-card-body");
@@ -223,6 +235,7 @@
             card.hidden = false;
             document.body.classList.add("profile-selection-active");
             window.showLegendForMapChange?.("territory-selection");
+            ensureProfileHeaderVisible(card);
 
             // Caso 1: Parroquia
             if (props.DPA_PARROQ) {

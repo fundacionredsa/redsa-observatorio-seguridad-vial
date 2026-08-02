@@ -378,7 +378,10 @@
         panel?.classList.toggle("has-selection", Boolean(props));
         if (!props) {
             summary.innerHTML = `${renderNationalReference()}<p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos, su evolución y una comparación orientativa con el país.</p>`;
-            if (downloadButton) downloadButton.disabled = true;
+            if (downloadButton) {
+                downloadButton.disabled = true;
+                downloadButton.hidden = true;
+            }
             return;
         }
 
@@ -442,7 +445,10 @@
             </div>
             <p class="citizen-comparison">${comparison}</p>
         `;
-        if (downloadButton) downloadButton.disabled = false;
+        if (downloadButton) {
+            downloadButton.hidden = false;
+            downloadButton.disabled = false;
+        }
     }
 
     async function captureMapImage() {

@@ -98,6 +98,9 @@
         const ZOOM_CANTONES_MIN = 8;
         const ZOOM_CANTONES_MAX = 10;
         const ZOOM_PARROQUIAS_MIN = 11;
+        // A partir de este acercamiento de barrio el mapa base aporta más detalle
+        // que un relleno uniforme dentro de una sola parroquia.
+        const ZOOM_SURFACE_AUTO_HIDE_MIN = 17;
         // Orden cartografico estable: superficies abajo y vectores arriba.
         // Los nombres se comparten con las capas para evitar z-index dispersos.
         const MAP_PANE_STACK = Object.freeze({
@@ -168,7 +171,14 @@
                 L.DomEvent.disableScrollPropagation(div);
 
                 div.innerHTML = `<div class="legend-content" id="legend-content">
-                    <div id="legend-items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="legend-items" class="legend-items-structured">
+                        <div id="legend-territory-items" class="legend-layer-items"></div>
+                        <div id="legend-territory-opacity-slot" class="legend-opacity-slot" data-legend-layer="territory"></div>
+                        <p id="territory-surface-auto-hide-note" class="territory-surface-auto-hide-note" role="status" hidden>Superficie oculta a este nivel de acercamiento; se prioriza el detalle del mapa base.</p>
+                        <div id="legend-overlay-items" class="legend-layer-items"></div>
+                        <div id="legend-ant-opacity-slot" class="legend-opacity-slot" data-legend-layer="siniestros_ant"></div>
+                        <div id="legend-overlay-notes" class="legend-overlay-notes"></div>
+                    </div>
                 </div>`;
                 return div;
             }
@@ -193,31 +203,66 @@
         // Definir Atribuciones Requeridas
         const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites provinciales y parroquiales: CONALI, vigencia 2025-02-20 y 2026-02-03, licencia CC-BY';
 
+        const BASEMAP_LABELS = Object.freeze({
+            positron: "CartoDB Positron (Claro)",
+            darkMatter: "CartoDB Dark Matter (Oscuro)",
+            osmStandard: "OpenStreetMap (Estándar)",
+            cyclosm: "CyclOSM (Ciclismo)",
+            relief: "OpenTopoMap (Relieve)"
+        });
+        const BASEMAP_TILE_URLS = Object.freeze({
+            positron: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            darkMatter: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            osmStandard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            cyclosm: "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+            relief: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+        });
+        const BASEMAP_ATTRIBUTIONS = Object.freeze({
+            carto: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            osm: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            cyclosm: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Tiles &copy; <a href="https://www.cyclosm.org/">CyclOSM</a>',
+            relief: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style &copy; <a href="https://opentopomap.org/">OpenTopoMap</a> (CC-BY-SA)'
+        });
+
         // Definición de Capas Base (Mapas de fondo)
         const baseMaps = {
-            "CartoDB Positron (Claro)": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' + attributionCantonales,
+            [BASEMAP_LABELS.positron]: L.tileLayer(BASEMAP_TILE_URLS.positron, {
+                attribution: BASEMAP_ATTRIBUTIONS.carto + attributionCantonales,
                 subdomains: 'abcd',
                 maxZoom: 20
             }),
-            "CartoDB Dark Matter (Oscuro)": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' + attributionCantonales,
+            [BASEMAP_LABELS.darkMatter]: L.tileLayer(BASEMAP_TILE_URLS.darkMatter, {
+                attribution: BASEMAP_ATTRIBUTIONS.carto + attributionCantonales,
                 subdomains: 'abcd',
                 maxZoom: 20
             }),
-            "OpenStreetMap (Estándar)": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' + attributionCantonales,
+            [BASEMAP_LABELS.osmStandard]: L.tileLayer(BASEMAP_TILE_URLS.osmStandard, {
+                attribution: BASEMAP_ATTRIBUTIONS.osm + attributionCantonales,
                 maxZoom: 19
             }),
-            "Esri World Imagery (Satélite)": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Source: &copy; <a href="https://www.esri.com/">Esri</a>, Vantor, Earthstar Geographics, and the GIS User Community' + attributionCantonales,
-                maxNativeZoom: 23,
-                maxZoom: 23
+            [BASEMAP_LABELS.cyclosm]: L.tileLayer(BASEMAP_TILE_URLS.cyclosm, {
+                attribution: BASEMAP_ATTRIBUTIONS.cyclosm + attributionCantonales,
+                subdomains: "abc",
+                maxZoom: 20
+            }),
+            [BASEMAP_LABELS.relief]: L.tileLayer(BASEMAP_TILE_URLS.relief, {
+                attribution: BASEMAP_ATTRIBUTIONS.relief + attributionCantonales,
+                subdomains: "abc",
+                maxNativeZoom: 17,
+                maxZoom: 20
             })
         };
 
         // Agregar mapa base por defecto (Positron)
-        baseMaps["CartoDB Positron (Claro)"].addTo(map);
+        baseMaps[BASEMAP_LABELS.positron].addTo(map);
+        document.body.dataset.basemap = "positron";
+        map.on("baselayerchange", event => {
+            const darkMatterActive = event.name === BASEMAP_LABELS.darkMatter;
+            document.body.classList.toggle("basemap-dark-matter", darkMatterActive);
+            document.body.dataset.basemap = darkMatterActive
+                ? "dark-matter"
+                : Object.entries(BASEMAP_LABELS).find(([, label]) => label === event.name)?.[0] || "custom";
+        });
 
         // Capa GeoJSON
         let provinceLayer = null;
@@ -260,7 +305,9 @@
         const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         // Initial state only: narrower web windows recover map space but keep the edge toggle available.
-        const DESKTOP_CITIZEN_PANEL_MIN_WIDTH = 1280;
+        // El perfil medium de pruebas (1180 px) conserva el panel ciudadano abierto;
+        // el breakpoint móvil sigue gobernado exclusivamente por mobileMediaQuery.
+        const WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH = 1180;
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
         const technicalDrawer = document.getElementById("technical-drawer");
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
@@ -268,6 +315,8 @@
         const variableControlsSlot = document.getElementById("variable-controls-slot");
         const mapVariableDisclosureSlot = document.getElementById("map-variable-disclosure-slot");
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
+        const legendLevelControlSlot = document.getElementById("legend-level-control-slot");
+        const legendTimelineControlSlot = document.getElementById("legend-timeline-control-slot");
         const territorySidebar = document.getElementById("territory-sidebar");
         const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
         const rightContextHost = document.getElementById("right-context-host");
@@ -419,6 +468,24 @@
             const container = layerControl?.getContainer?.();
             const selector = document.querySelector(".map-selector-control");
             if (!technicalControlsSlot) return;
+            const timelineBlock = selector?.querySelector(".timeline-filter-block");
+            const levelControl = document.getElementById("territory-level-control");
+            const territoryOpacityControl = document.getElementById("territory-opacity-control");
+            const antHeatOpacityControl = document.getElementById("ant-heat-opacity-control");
+            if (levelControl && legendLevelControlSlot && levelControl.parentElement !== legendLevelControlSlot) {
+                legendLevelControlSlot.appendChild(levelControl);
+            }
+            if (timelineBlock && legendTimelineControlSlot && timelineBlock.parentElement !== legendTimelineControlSlot) {
+                legendTimelineControlSlot.appendChild(timelineBlock);
+            }
+            const territoryOpacitySlot = document.getElementById("legend-territory-opacity-slot");
+            if (territoryOpacityControl && territoryOpacitySlot && territoryOpacityControl.parentElement !== territoryOpacitySlot) {
+                territoryOpacitySlot.appendChild(territoryOpacityControl);
+            }
+            const antOpacitySlot = document.getElementById("legend-ant-opacity-slot");
+            if (antHeatOpacityControl && antOpacitySlot && antHeatOpacityControl.parentElement !== antOpacitySlot) {
+                antOpacitySlot.appendChild(antHeatOpacityControl);
+            }
             if (selector && variableControlsSlot && selector.parentElement !== variableControlsSlot) {
                 variableControlsSlot.appendChild(selector);
             }
@@ -471,7 +538,14 @@
 
         zoomInButton?.addEventListener("click", () => changeMapZoom(1));
         zoomOutButton?.addEventListener("click", () => changeMapZoom(-1));
-        map.on("zoomend", syncZoomButtons);
+        map.on("zoomend", () => {
+            syncZoomButtons();
+            if (typeof refreshTerritoryLayerStyles === "function") {
+                refreshTerritoryLayerStyles(activeTerritoryLevel || getTerritoryLevelForZoom(), false);
+            }
+            syncTerritorySurfaceAutoHideNote();
+            if (typeof updateLegend === "function") updateLegend();
+        });
         syncZoomButtons();
 
         locateButton?.addEventListener("click", () => {
@@ -581,14 +655,14 @@
                 setMobilePanel("sidebar", false);
             } else {
                 setMobilePanel("sidebar", false);
-                setMobilePanel("citizen", window.innerWidth >= DESKTOP_CITIZEN_PANEL_MIN_WIDTH);
+                setMobilePanel("citizen", window.innerWidth >= WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH);
             }
             // Conservar la eleccion del usuario al cruzar el breakpoint, incluido el estado cerrado.
             setRightContextPanel(activeRightPanel, Boolean(activeRightPanel));
         });
 
         if (!mobileMediaQuery.matches) {
-            const citizenOpenByDefault = window.innerWidth >= DESKTOP_CITIZEN_PANEL_MIN_WIDTH;
+            const citizenOpenByDefault = window.innerWidth >= WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH;
             document.body.classList.toggle("citizen-panel-open", citizenOpenByDefault);
             updateCitizenPanelControls(citizenOpenByDefault);
         } else {
@@ -665,8 +739,14 @@
             const note = document.getElementById("timeline-year-adjustment-note");
             const legendNote = document.getElementById("legend-year-adjustment-note");
             if (!note && !legendNote) return;
+            // La línea de tiempo vive ahora dentro de Leyenda. Mantener su aviso
+            // interno oculto evita repetir el mismo mensaje dos veces en esa pestaña.
+            if (note) {
+                note.textContent = "";
+                note.hidden = true;
+            }
             if (!yearAdjustmentNotice) {
-                [note, legendNote].filter(Boolean).forEach(element => {
+                [legendNote].filter(Boolean).forEach(element => {
                     element.textContent = "";
                     element.hidden = true;
                 });
@@ -677,7 +757,7 @@
             const message = availableYears.length === 1
                 ? `El año cambió a ${resolvedYear} porque esta variable solo tiene datos de ${resolvedYear}.`
                 : `El año cambió a ${resolvedYear} porque esta variable cubre ${formatCoveredYears(availableYears)}.`;
-            [note, legendNote].filter(Boolean).forEach(element => {
+            [legendNote].filter(Boolean).forEach(element => {
                 element.textContent = message;
                 element.hidden = false;
             });
@@ -1237,10 +1317,24 @@
         function getTerritoryStyle(feature, level, isHovered = false, isSelected = false) {
             const effectiveVariable = getEffectiveVariable(level);
             const config = VARIABLE_CONFIGS[effectiveVariable] || VARIABLE_CONFIGS.normal;
-            if (effectiveVariable === "normal") {
-                return getBoundaryStyle(feature, level, isHovered, isSelected);
-            }
-            return getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
+            const style = effectiveVariable === "normal"
+                ? getBoundaryStyle(feature, level, isHovered, isSelected)
+                : getChoroplethStyle(feature, effectiveVariable, level, isHovered, isSelected);
+            if (isTerritorySurfaceAutoHidden(level)) style.fillOpacity = 0;
+            return style;
+        }
+
+        function isTerritorySurfaceAutoHidden(level = activeTerritoryLevel || getTerritoryLevelForZoom()) {
+            return map.getZoom() >= ZOOM_SURFACE_AUTO_HIDE_MIN
+                && getEffectiveVariable(level) !== "normal";
+        }
+
+        function syncTerritorySurfaceAutoHideNote(level = activeTerritoryLevel || getTerritoryLevelForZoom()) {
+            const hiddenByZoom = isTerritorySurfaceAutoHidden(level);
+            const note = document.getElementById("territory-surface-auto-hide-note");
+            if (note) note.hidden = !hiddenByZoom;
+            document.body.classList.toggle("territory-surface-auto-hidden", hiddenByZoom);
+            return hiddenByZoom;
         }
 
         function getProvinceStyle(feature, isHovered = false, isSelected = false) {

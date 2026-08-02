@@ -305,10 +305,15 @@ function onEachProvinceFeature(feature, layer) {
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
         function updateLegend() {
             const container = document.getElementById("legend-items");
+            const territoryContainer = document.getElementById("legend-territory-items") || container;
+            const overlayContainer = document.getElementById("legend-overlay-items") || container;
+            const overlayNotesContainer = document.getElementById("legend-overlay-notes") || overlayContainer;
             const panel = document.querySelector(".legend-panel");
             if (!container || !panel) return;
 
-            container.innerHTML = "";
+            territoryContainer.innerHTML = "";
+            if (overlayContainer !== territoryContainer) overlayContainer.innerHTML = "";
+            if (overlayNotesContainer !== overlayContainer) overlayNotesContainer.innerHTML = "";
             let hasItems = false;
 
             // 1. Límites territoriales automáticos o coropletas por nivel
@@ -336,7 +341,7 @@ function onEachProvinceFeature(feature, layer) {
                 if (unavailableAtLevel || noValuesAtLevel) {
                     const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";
                     const technicalInfo = requestedConfig.infoSigla ? siglaInfoIcon(requestedConfig.infoSigla) : "";
-                    container.innerHTML += `
+                    territoryContainer.innerHTML += `
                         ${renderLegendHeading(
                             requestedConfig.displayLabel || requestedConfig.label,
                             [
@@ -357,7 +362,7 @@ function onEachProvinceFeature(feature, layer) {
                     `;
                 } else if (effectiveVariable === 'normal') {
                     const levelTitle = "Sin variable seleccionada";
-                    container.innerHTML += `
+                    territoryContainer.innerHTML += `
                         ${renderLegendHeading(levelTitle, [
                             `Nivel: ${LEVEL_LABELS[currentLevel]}`,
                             "Vista: límites administrativos"
@@ -454,7 +459,7 @@ function onEachProvinceFeature(feature, layer) {
                             `;
                         }
                     }
-                    container.innerHTML += itemsHtml;
+                    territoryContainer.innerHTML += itemsHtml;
                 }
             }
 
@@ -489,18 +494,24 @@ function onEachProvinceFeature(feature, layer) {
                 const loading = entry.status === "loading"
                     ? `<div class="legend-overlay-status" role="status">Preparando la capa…</div>`
                     : "";
-                container.innerHTML += `
-                    <div class="legend-item legend-overlay-title">${entry.title}</div>
-                    ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
-                    ${legendItems}${audit}${loading}${noteBlock}`;
+                overlayContainer.innerHTML += `
+                    <section class="legend-overlay-block" data-legend-layer-id="${entry.id}">
+                        <div class="legend-item legend-overlay-title">${entry.title}</div>
+                        ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
+                        ${legendItems}${audit}${loading}${noteBlock}
+                    </section>`;
             });
 
             if (hasActiveOsmLayer) {
-                container.innerHTML += `
+                overlayNotesContainer.innerHTML += `
                     <div class="legend-item" style="margin-top:4px;padding-top:6px;border-top:1px dashed rgba(251,191,36,.25);color:#fbbf24;font-size:.67rem;line-height:1.3;align-items:flex-start;">
                         <span class="legend-color-line" style="flex:0 0 auto;background-color:rgba(148,163,184,.18);border:1px dashed #94a3b8;height:10px;width:14px;border-radius:2px;margin-top:2px;"></span>
                         <span>Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.</span>
                     </div>`;
+            }
+            if (typeof syncMobileLayerDrawer === "function") syncMobileLayerDrawer();
+            if (typeof syncTerritorySurfaceAutoHideNote === "function") {
+                syncTerritorySurfaceAutoHideNote(currentLevel);
             }
             panel.style.display = hasItems ? "block" : "none";
         }

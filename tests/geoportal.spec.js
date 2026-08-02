@@ -38,8 +38,8 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
-  await expect(page.locator("#citizen-panel")).toContainText("Observatorio Nacional");
-  await expect(page.locator("#citizen-panel")).toContainText("¿Qué tan seguras son las vías donde vives?");
+  await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial y Movilidad Sostenible");
+  await expect(page.locator("#citizen-panel")).toContainText("iniciativa ciudadana independiente en Ecuador");
   await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
   await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator("#citizen-map-meta")).toContainText("Nivel: provincias");
@@ -99,7 +99,6 @@ test("encuentra un canton y muestra tendencia ciudadana en dos acciones", async 
 test("busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "medium", "El caso reproduce el viewport mediano reportado.");
   await loadPortal(page);
-  await page.locator("#citizen-panel-visibility-toggle").click();
   await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
 
   const search = page.locator("#territory-search-input");
@@ -221,8 +220,10 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
   await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
-  await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(4);
-  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(1);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(5);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(0);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "CyclOSM" })).toHaveCount(1);
+  await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "OpenTopoMap" })).toHaveCount(1);
   await expect(page.locator("#infrastructure-disclosure")).not.toHaveAttribute("open", "");
   await expect(page.locator("#clear-infrastructure-button")).toHaveCount(0);
   await expect(page.locator("#clean-map-button")).toHaveCount(0);
@@ -859,6 +860,7 @@ test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", asyn
   const state = await page.evaluate(() => window.__redsaAudit.state().osmLayers["Ciclovías"]);
   expect(state.error).toBeNull();
   expect(state.features).toBeGreaterThan(0);
+  expect(state.rejectedGeometries).toBe(34);
   expect(state.unmappedCantons).not.toBeNull();
   await expect(page.locator(".legend-panel")).toContainText("tramado");
   await expect(page.locator(".legend-panel")).toContainText("no que la infraestructura no exista");
@@ -956,18 +958,28 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
     };
     return {
       drawer: box("#technical-drawer"),
-      selector: box(".map-selector-control"),
-      slider: box("#map-year-slider"),
-      level: box("#territory-level-control")
+      selector: box(".map-selector-control")
     };
   });
   expect(technical.drawer.left).toBeGreaterThanOrEqual(0);
   expect(technical.drawer.right).toBeLessThanOrEqual(width);
   expect(technical.drawer.bottom).toBeLessThanOrEqual(height);
   expect(technical.selector.bottom).toBeLessThanOrEqual(height);
-  expect(technical.slider.height).toBeGreaterThanOrEqual(44);
-  expect(technical.slider.bottom).toBeLessThanOrEqual(height);
-  expect(technical.level.bottom).toBeLessThanOrEqual(height);
+  await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
+  await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
+
+  await page.locator('[data-right-panel="legend"]').tap();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  const legendControls = await page.evaluate(() => {
+    const box = selector => {
+      const rect = document.querySelector(selector).getBoundingClientRect();
+      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+    };
+    return { slider: box("#map-year-slider"), level: box("#territory-level-control") };
+  });
+  expect(legendControls.slider.height).toBeGreaterThanOrEqual(44);
+  expect(legendControls.slider.bottom).toBeLessThanOrEqual(height);
+  expect(legendControls.level.bottom).toBeLessThanOrEqual(height);
 
   const tooSmall = await page.evaluate(() => {
     const selectors = [

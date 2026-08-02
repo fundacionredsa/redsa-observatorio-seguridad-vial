@@ -667,7 +667,13 @@
     }
 
     .mobile-year-bar {
+        left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+    }
+
+    body.mobile-right-context-open .mobile-year-bar {
+        left: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        right: var(--mobile-edge, 10px);
     }
 
     body.mobile-right-context-open .mobile-overlay-backdrop {

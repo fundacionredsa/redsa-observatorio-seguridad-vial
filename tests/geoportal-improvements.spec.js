@@ -188,7 +188,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block C: Data Catalog', () => {
         test('catalog modal opens and displays variables', async ({ page }) => {
-            await openCitizenPanelWhenNeeded(page);
             const btnCatalog = page.locator('#btn-catalog');
             await expect(btnCatalog).toBeVisible();
             await btnCatalog.click();
@@ -295,7 +294,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
-            await expect(page.locator('#citizen-panel .citizen-intro-full')).toContainText('iniciativa independiente de la sociedad civil');
+            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText('iniciativa ciudadana independiente en Ecuador');
+            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial y Movilidad Sostenible');
             await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
@@ -303,10 +303,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
-            await page.locator('[data-right-panel="layers"]').click();
-            await page.locator('#variable-disclosure > summary').click();
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
+            expect(await slider.evaluate(element => element.closest('.legend-opacity-slot')?.id)).toBe('legend-territory-opacity-slot');
 
             // Set to 50%
             await slider.fill('50');
@@ -463,7 +462,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block G: Timeline Playback & Color Transition', () => {
         test('timeline play button advances year, pauses on click and auto-stops on last year', async ({ page }) => {
-            await page.locator('[data-right-panel="layers"]').click();
+            await page.evaluate(() => window.setRightContextPanel("legend", true));
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 
@@ -499,7 +498,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('timeline play button is disabled with tooltip for foto_unica variables', async ({ page }) => {
-            await page.locator('[data-right-panel="layers"]').click();
+            await page.evaluate(() => window.setRightContextPanel("legend", true));
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 

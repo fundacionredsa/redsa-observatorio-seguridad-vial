@@ -43,6 +43,10 @@
             window.setRightContextPanel?.("methodology", true);
         };
 
+        const prepareCatalogForTour = () => {
+            window.setMobilePanel?.("citizen", false);
+        };
+
         const prepareAntLayerForTour = () => {
             prepareLayersPanelForTour();
             const disclosure = document.getElementById("event-layer-disclosure");
@@ -160,7 +164,7 @@
                 },
                 {
                     element: '#btn-catalog',
-                    onHighlightStarted: openCitizenPanelForTour,
+                    onHighlightStarted: prepareCatalogForTour,
                     popover: {
                         title: 'Catálogo y descarga de datos',
                         description: 'Consulta todas las variables, sus años, niveles, fuentes y metodología. Desde cada ficha puedes descargar datos tabulares y geográficos disponibles.',

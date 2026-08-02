@@ -112,11 +112,14 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(paneAudit.territoryIndex).toBeLessThan(paneAudit.heatIndex);
   expect(paneAudit.heatIndex).toBeLessThan(paneAudit.infrastructureIndex);
   expect(paneAudit.infrastructureIndex).toBeLessThan(paneAudit.eventIndex);
+  await page.evaluate(() => window.setRightContextPanel("legend", true));
   await expect(page.locator("#ant-heat-opacity-control")).toBeVisible();
+  expect(await page.locator("#ant-heat-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-ant-opacity-slot");
   await page.locator("#ant-heat-opacity-slider").fill("60");
   expect(await page.locator(".leaflet-antHeat-pane").evaluate(element => getComputedStyle(element).opacity)).toBe("0.6");
   expect(await page.locator(".leaflet-territorio-pane").evaluate(element => getComputedStyle(element).opacity)).toBe("1");
 
+  await page.evaluate(() => window.setRightContextPanel("layers", true));
   await page.locator("[data-ant-mode='clusters']").click();
   await page.waitForFunction(() => {
     const audit = window.REDSAAntLayer.getAuditState();
@@ -222,6 +225,7 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   await page.locator("#ant-layer-toggle").check();
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
 
+  await page.evaluate(() => window.setRightContextPanel("legend", true));
   await page.locator("[data-period-mode='accumulated']").click();
   await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#ant-layer-toggle")).toBeDisabled();
@@ -236,8 +240,7 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
   expect(await page.locator(".leaflet-antHeat-pane canvas").count()).toBe(0);
 
-  await page.evaluate(() => window.setRightContextPanel("layers", true));
-  await expect(page.locator("#technical-drawer")).toBeVisible();
+  await page.evaluate(() => window.setRightContextPanel("legend", true));
   await page.locator("[data-period-mode='year']").click();
   await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
   await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");
