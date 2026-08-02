@@ -865,12 +865,14 @@
                 button.disabled = mode === "accumulated" && !supported;
             });
             const note = document.getElementById("period-mode-note");
+            const info = document.getElementById("period-mode-info");
             if (note) {
                 note.textContent = supported
                     ? (selectedPeriodMode === "accumulated"
                         ? `Suma de años completos compatibles: ${formatCoveredYears(getAccumulationYears(config))}. Los cortes parciales no se mezclan con años completos.`
                         : "Muestra únicamente el año marcado en la línea de tiempo.")
                     : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
+                if (info) info.dataset.customText = note.textContent;
             }
             window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
         }

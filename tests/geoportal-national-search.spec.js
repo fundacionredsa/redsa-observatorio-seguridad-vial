@@ -33,8 +33,10 @@ test("el estado inicial muestra una referencia nacional que sigue variable, año
   await expect(reference).toBeVisible();
   await expect(reference).toContainText("20.346");
   await expect(reference).toContainText("2025");
-  await expect(reference).toContainText("ANT");
-  await expect(reference.getByRole("button", { name: /Cómo se relacionan ANT e INEC/i })).toBeVisible();
+  await expect(reference).not.toContainText("Fuente:");
+  const referenceInfo = reference.locator(".citizen-national-info");
+  await expect(referenceInfo).toBeVisible();
+  await expect(referenceInfo).toHaveAttribute("data-custom-text", /Fuente: ANT/);
   expect(await reference.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
@@ -43,7 +45,7 @@ test("el estado inicial muestra una referencia nacional que sigue variable, año
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("tasa_fallecidos_100k"));
   await expect(reference).toContainText("personas fallecidas por cada 100.000 habitantes");
-  await expect(reference).toContainText("Fuente: Cálculo REDSA");
+  await expect(reference.locator(".citizen-national-info")).toHaveAttribute("data-custom-text", /Fuente: Cálculo REDSA/);
   await expect(reference).not.toContainText("21.220");
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_sppat_2016_2021"));

@@ -646,6 +646,27 @@
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
 
+    .legend-context-controls .territory-level-label {
+        display: none;
+    }
+
+    .legend-context-controls .territory-level-segments button {
+        padding-inline: 2px;
+        font-size: var(--ui-secondary-font-size-mobile);
+        min-height: var(--ui-secondary-control-height-mobile);
+    }
+
+    .legend-context-controls .period-mode-segments button {
+        min-height: var(--ui-secondary-control-height-mobile);
+    }
+
+    .legend-context-controls .control-info-trigger {
+        width: var(--ui-secondary-info-size-mobile);
+        height: var(--ui-secondary-info-size-mobile);
+        min-width: var(--ui-secondary-info-size-mobile);
+        min-height: var(--ui-secondary-info-size-mobile);
+    }
+
     .right-context-view,
     .right-context-host .technical-drawer {
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
@@ -672,8 +693,8 @@
     }
 
     body.mobile-right-context-open .mobile-year-bar {
-        left: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
-        right: var(--mobile-edge, 10px);
+        left: var(--mobile-edge, 10px);
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
     }
 
     body.mobile-right-context-open .mobile-overlay-backdrop {

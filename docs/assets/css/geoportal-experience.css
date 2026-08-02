@@ -577,6 +577,23 @@
     grid-column: auto;
 }
 
+.citizen-map-context-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--ui-secondary-gap);
+}
+
+.citizen-map-context-heading strong {
+    min-width: 0;
+}
+
+.citizen-map-info,
+.citizen-national-info,
+.control-info-trigger {
+    flex: 0 0 auto;
+}
+
 .citizen-contact {
     display: flex;
     min-height: 34px;
@@ -2591,15 +2608,16 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     right: var(--right-context-edge);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "panel rail";
     max-width: calc(100vw - (2 * var(--right-context-edge)));
     max-height: calc(100dvh - var(--right-context-top) - var(--right-context-bottom));
     align-items: flex-start;
-    flex-direction: row-reverse;
     gap: 0;
     pointer-events: none;
 }
 
 .right-tools-rail {
+    grid-area: rail;
     position: relative;
     z-index: 2;
     display: flex;
@@ -2709,6 +2727,7 @@ body.right-context-open .right-tools-rail {
 }
 
 .right-context-host {
+    grid-area: panel;
     position: relative;
     z-index: 1;
     flex: 0 0 min(var(--right-context-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--right-context-edge))));
@@ -2756,9 +2775,9 @@ body.right-context-open .right-tools-rail {
 
 .legend-context-controls {
     display: grid;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
+    gap: 7px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border-glass);
 }
 
@@ -2776,7 +2795,7 @@ body.right-context-open .right-tools-rail {
 
 .legend-context-controls .timeline-filter-block {
     display: grid;
-    gap: 9px;
+    gap: 7px;
 }
 
 .legend-context-controls .timeline-control {
@@ -2788,6 +2807,71 @@ body.right-context-open .right-tools-rail {
 .legend-context-controls .period-mode-control,
 .legend-context-controls .territory-level-control {
     margin-top: 0;
+    padding: 0;
+    border: 0;
+}
+
+.legend-secondary-control-row {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: var(--ui-secondary-gap);
+    color: var(--text-muted);
+    font-size: var(--ui-secondary-font-size);
+}
+
+.legend-context-controls .territory-level-label,
+.legend-context-controls .period-mode-label,
+.legend-context-controls .timeline-title-wrap > span {
+    flex: 0 0 auto;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--ui-secondary-font-size);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.legend-context-controls .territory-level-segments,
+.legend-context-controls .period-mode-segments {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 3px;
+}
+
+.legend-context-controls .territory-level-segments button,
+.legend-context-controls .period-mode-segments button {
+    min-width: 0;
+    min-height: var(--ui-secondary-control-height);
+    flex: 1 1 0;
+    padding: 3px 4px;
+    font-size: var(--ui-secondary-font-size);
+    white-space: nowrap;
+}
+
+.legend-context-controls .timeline-header {
+    margin-bottom: 4px;
+}
+
+.legend-context-controls .timeline-title-wrap {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.control-info-trigger {
+    display: inline-flex;
+    width: var(--ui-secondary-info-size);
+    height: var(--ui-secondary-info-size);
+    min-width: var(--ui-secondary-info-size);
+    min-height: var(--ui-secondary-info-size);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.legend-context-controls .timeline-control input[type="range"] {
+    margin-top: 1px;
 }
 
 .legend-context-slot {
@@ -2808,6 +2892,14 @@ body.right-context-open .right-tools-rail {
     gap: 5px;
     padding-top: 8px;
     border-top: 1px solid var(--border-glass);
+}
+
+.legend-layer-unavailable > :not(.legend-overlay-title):not(.legend-overlay-subtitle):not(.legend-unavailable) {
+    opacity: 0.48;
+}
+
+.legend-overlay-title .sigla-tooltip-trigger {
+    margin-left: 5px;
 }
 
 .legend-overlay-notes:empty {
@@ -2983,8 +3075,8 @@ body.right-context-open .right-tools-rail {
 }
 
 .contextual-opacity-control {
-    margin: 10px 10px 8px;
-    padding: 10px;
+    margin: 6px 8px 8px;
+    padding: 8px;
     border: 1px solid var(--border-glass);
     border-radius: 6px;
     background: color-mix(in srgb, var(--bg-glass-hover) 62%, transparent);
@@ -3001,7 +3093,7 @@ body.right-context-open .right-tools-rail {
     gap: 10px;
     margin-bottom: 7px;
     color: var(--text-secondary);
-    font-size: 0.66rem;
+    font-size: var(--ui-secondary-font-size);
     font-weight: 750;
 }
 

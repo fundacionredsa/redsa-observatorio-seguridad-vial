@@ -81,7 +81,7 @@
         <div class="citizen-brand">
             <div class="citizen-brand-copy">
                 <p class="citizen-eyebrow">Fundación REDSA</p>
-                <h1>Observatorio de Seguridad Vial y Movilidad Sostenible</h1>
+                <h1>Observatorio de Seguridad Vial</h1>
             </div>
             <span class="citizen-national-badge">Ecuador</span>
         </div>
@@ -96,9 +96,12 @@
             <div class="citizen-search-status" id="territory-search-status" role="status"></div>
         </form>
         <div class="citizen-map-context" aria-live="polite">
-            <strong id="citizen-map-variable">Siniestros de tránsito reportados</strong>
+            <div class="citizen-map-context-heading">
+                <strong id="citizen-map-variable">Siniestros de tránsito reportados</strong>
+                <button type="button" id="citizen-map-info" class="sigla-tooltip-trigger citizen-map-info" data-sigla="Dato del mapa" aria-label="Explicación de la variable activa">ⓘ</button>
+            </div>
             <span id="citizen-map-meta" class="citizen-map-meta">Nivel: Provincias · Periodo: 2025 · Fuente: ANT e INEC/ESTRA</span>
-            <span id="citizen-map-description">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
+            <span id="citizen-map-description" class="sr-only">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
         </div>
         <div class="citizen-summary" id="citizen-summary" aria-live="polite">
             <p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos y compararlos con el país.</p>

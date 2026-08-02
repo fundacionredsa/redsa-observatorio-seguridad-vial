@@ -49,6 +49,13 @@
             --citizen-control-size: 0.72rem;
             --dark-basemap-surface-brightness: 1.16;
             --dark-basemap-vector-halo: rgba(255, 255, 255, 0.68);
+            --ui-secondary-font-size: 0.7rem;
+            --ui-secondary-font-size-mobile: 0.62rem;
+            --ui-secondary-control-height: 32px;
+            --ui-secondary-control-height-mobile: 44px;
+            --ui-secondary-info-size: 28px;
+            --ui-secondary-info-size-mobile: 24px;
+            --ui-secondary-gap: 6px;
         }
 
         body.light-theme {
@@ -998,6 +1005,18 @@
             border: 0;
             background: transparent;
             box-shadow: none;
+        }
+
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
         }
 
         .perfil-fallecidos-card[hidden] {

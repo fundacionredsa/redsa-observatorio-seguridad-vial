@@ -341,6 +341,8 @@
         title.textContent = config.displayLabel || config.label;
         metadata.textContent = metadataParts.join(" · ");
         description.textContent = config.description;
+        const info = document.getElementById("citizen-map-info");
+        if (info) info.dataset.customText = config.description;
     }
 
     function formatNationalSummaryValue(summary, config) {
@@ -357,14 +359,13 @@
         const value = formatNationalSummaryValue(summary, config);
         if (!config || variable === "normal" || value === null) return "";
         const period = state.context?.getActivePeriodLabel?.() || "Periodo no especificado";
-        const infoIcon = variable === "siniestros_inec_2019"
-            ? `<button type="button" class="sigla-tooltip-trigger citizen-national-info" data-sigla="ANT_SINIESTROS" aria-label="Cómo se relacionan ANT e INEC en esta cifra">ⓘ</button>`
-            : "";
+        const detail = `Fuente: ${config.fuente || "documentada en el catálogo"}. ${config.description || "La metodología está documentada en el catálogo de datos."}`;
+        const infoIcon = `<button type="button" class="sigla-tooltip-trigger citizen-national-info" data-sigla="Referencia nacional" data-custom-text="${escapeHtml(detail)}" aria-label="Fuente y metodología de la referencia nacional">ⓘ</button>`;
         return `
             <section class="citizen-national-reference" aria-label="Referencia nacional de la variable activa">
                 <span class="citizen-national-kicker">Referencia nacional</span>
                 <strong class="citizen-national-value">${escapeHtml(value)} <span>${escapeHtml(config.unidad || "")}</span></strong>
-                <span class="citizen-national-meta">${escapeHtml(period)} · Fuente: ${escapeHtml(config.fuente || "Fuente documentada en el catálogo")} ${infoIcon}</span>
+                <span class="citizen-national-meta">${escapeHtml(period)} ${infoIcon}</span>
             </section>`;
     }
 

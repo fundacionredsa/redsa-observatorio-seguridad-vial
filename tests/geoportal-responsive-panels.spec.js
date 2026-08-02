@@ -86,7 +86,7 @@ test("la barra derecha controla un solo panel de cuatro pestañas con Leyenda po
   await legendButton.click();
   const panel = await box(page, "#right-context-host");
   const railBox = await box(page, "#right-tools-rail");
-  expect(Math.abs(panel.left - railBox.right)).toBeLessThanOrEqual(1);
+  expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
   expect(intersects(panel, railBox)).toBeFalsy();
   expect(panel.right).toBeLessThanOrEqual(viewport.width);
 });
@@ -194,7 +194,7 @@ async function assertBasemapControlHasDedicatedSpace(page) {
   expect(panel.right).toBeLessThanOrEqual(viewport.width);
   expect(intersects(panel, railBox)).toBeFalsy();
   expect(intersects(panel, zoom)).toBeFalsy();
-  expect(Math.abs(panel.left - railBox.right)).toBeLessThanOrEqual(1);
+  expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
   expect(zoom.left).toBeGreaterThanOrEqual(railBox.left);
   expect(zoom.right).toBeLessThanOrEqual(railBox.right);
   const basemapOptions = basemap.locator(".leaflet-control-layers-base label");
@@ -386,9 +386,129 @@ test("Leyenda reúne nivel, año, escala y opacidad en ese orden", async ({ page
   await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #territory-opacity-control")).toHaveCount(0);
-  await expect(page.locator(".timeline-control")).toContainText("Año de los datos mostrados");
-  await expect(page.locator(".timeline-help")).toHaveText("Mueve el control para ver los datos de cada año.");
+  await expect(page.locator(".timeline-control")).toContainText("Año");
+  await expect(page.locator(".timeline-help")).toHaveCount(0);
+  await expect(page.locator('.control-info-trigger[data-sigla="Año de los datos"]')).toHaveAttribute("data-custom-text", /Mueve el control/);
   await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
+});
+
+test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  await expect(page.locator("#territory-level-status")).toHaveClass(/sr-only/);
+  await expect(page.locator("#period-mode-note")).toHaveClass(/sr-only/);
+  await expect(page.locator(".timeline-help")).toHaveCount(0);
+  await expect(page.locator("#territory-level-info")).toHaveAttribute("data-custom-text", /Nivel visible:/);
+  await expect(page.locator("#period-mode-info")).toHaveAttribute("data-custom-text", /Muestra únicamente/);
+
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
+  await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Ciclovías"].loaded, null, { timeout: 90_000 });
+  const infrastructureLegend = page.locator('[data-legend-layer-id="infra-ciclovias"]');
+  await expect(infrastructureLegend).toBeVisible();
+  await expect(infrastructureLegend.locator(".legend-overlay-title .sigla-tooltip-trigger")).toHaveAttribute(
+    "data-custom-text",
+    /No constituye una serie anual/
+  );
+
+  const typography = await page.evaluate(() => {
+    const style = selector => {
+      const computed = getComputedStyle(document.querySelector(selector));
+      return { size: parseFloat(computed.fontSize), weight: Number(computed.fontWeight) };
+    };
+    return {
+      territory: style(".legend-heading-title"),
+      infrastructure: style('[data-legend-layer-id="infra-ciclovias"] .legend-overlay-title'),
+      control: style("#territory-level-control")
+    };
+  });
+  expect(Math.abs(typography.territory.size - typography.infrastructure.size)).toBeLessThanOrEqual(0.5);
+  expect(typography.territory.weight).toBe(typography.infrastructure.weight);
+  expect(typography.control.size).toBeLessThan(typography.territory.size);
+
+  await testInfo.attach(`jerarquia-leyenda-${testInfo.project.name}`, {
+    body: await page.screenshot(),
+    contentType: "image/png"
+  });
+});
+
+test("panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles", async ({ page }) => {
+  await loadPortal(page);
+
+  await expect(page.locator(".citizen-brand h1")).toHaveText("Observatorio de Seguridad Vial");
+  await expect(page.locator("#citizen-map-description")).toHaveClass(/sr-only/);
+  await expect(page.locator("#citizen-map-info")).toHaveAttribute("data-custom-text", /accidentes|siniestros/i);
+  await expect(page.locator(".citizen-national-info")).toHaveAttribute("data-custom-text", /Fuente:/);
+  await expect(page.locator(".citizen-national-meta")).not.toContainText("Fuente:");
+
+  const hierarchy = await page.evaluate(() => {
+    const main = getComputedStyle(document.querySelector(".citizen-national-value"));
+    const support = getComputedStyle(document.querySelector("#citizen-map-meta"));
+    return {
+      mainSize: Number.parseFloat(main.fontSize),
+      supportSize: Number.parseFloat(support.fontSize),
+      supportColor: support.color
+    };
+  });
+  expect(hierarchy.mainSize).toBeGreaterThan(hierarchy.supportSize);
+  expect(hierarchy.supportColor).toBeTruthy();
+});
+
+test("variable territorial y Siniestros ANT explican los periodos no disponibles", async ({ page }) => {
+  await loadPortal(page);
+  await page.evaluate(() => {
+    window.__redsaAudit.selectVariable("fallecidos_inec_2019");
+    window.__redsaAudit.selectYear(2025);
+  });
+  await expect(page.locator("#legend-territory-items .legend-period-unavailable")).toContainText("No disponible para este periodo");
+
+  await page.evaluate(() => {
+    window.__redsaAudit.selectVariable("siniestros_inec_2019");
+    window.__redsaAudit.selectYear(2023);
+    window.REDSAAntLayer.setActive(true);
+  });
+  const antLegend = page.locator('[data-legend-layer-id="siniestros_ant"]');
+  await expect(antLegend).toContainText("No disponible para este periodo");
+  await expect(page.locator("#ant-layer-status")).toContainText("No disponible para este periodo");
+});
+
+test("infraestructura usa SVG compartido y conserva la interacción territorial", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
+  await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Ciclovías"].loaded, null, { timeout: 90_000 });
+
+  const renderer = await page.evaluate(() => {
+    const pane = window.geoportalMap.getPane("infraestructuraPane");
+    return {
+      svgCount: pane.querySelectorAll("svg").length,
+      canvasCount: pane.querySelectorAll("canvas").length,
+      interactivePaths: pane.querySelectorAll("path.leaflet-interactive").length
+    };
+  });
+  expect(renderer.svgCount).toBe(1);
+  expect(renderer.canvasCount).toBe(0);
+  expect(renderer.interactivePaths).toBeGreaterThan(0);
+
+  const point = await page.evaluate(() => {
+    const layer = window.__redsaAudit.findTerritoryLayer("province", "17");
+    const center = layer.getCenter();
+    return window.geoportalMap.latLngToContainerPoint(center);
+  });
+  if (testInfo.project.name === "mobile") {
+    await page.locator("#mobile-legend-toggle").click();
+    await expect(page.locator("#right-context-host")).toBeHidden();
+    await page.touchscreen.tap(point.x, point.y);
+    await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).not.toBeNull();
+  } else {
+    await page.mouse.move(point.x, point.y);
+    await expect(page.locator(".territory-hover-tooltip").last()).toBeVisible();
+  }
+
+  expect(await page.evaluate(() => window.__redsaAudit.fireOverlayClick("Ciclovías"))).toBeTruthy();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).not.toBeNull();
+
+  await testInfo.attach(`infraestructura-svg-hover-${testInfo.project.name}`, {
+    body: await page.screenshot(),
+    contentType: "image/png"
+  });
 });
 
 test("pantalla grande abre el panel ciudadano y mantiene Leyenda como pestaña visible", async ({ page }, testInfo) => {
@@ -425,7 +545,7 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   await expect(page.locator("#mobile-level-bar")).toBeVisible();
   await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator("#legend-context-panel")).toBeVisible();
-  await expect(page.locator(".timeline-control")).toContainText("Año de los datos mostrados");
+  await expect(page.locator(".timeline-control")).toContainText("Año");
   const timelineBox = await box(page, ".timeline-control");
   const legendBox = await box(page, "#legend-territory-items");
   expect(timelineBox.top).toBeLessThan(legendBox.top);
@@ -521,7 +641,7 @@ test("catálogo vive en la barra y el panel ciudadano conserva una jerarquía co
   await loadPortal(page);
   await expect(page.locator("#citizen-panel #btn-catalog")).toHaveCount(0);
   await expect(page.locator("#right-tools-rail #btn-catalog")).toBeVisible();
-  await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
+  await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial");
   await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toContainText("iniciativa ciudadana independiente en Ecuador");
   await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toContainText("Fundación REDSA");
   await expect(page.locator("#citizen-panel .citizen-intro-full, #citizen-panel .citizen-intro-mobile")).toHaveCount(0);

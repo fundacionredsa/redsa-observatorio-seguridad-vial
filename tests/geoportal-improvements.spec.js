@@ -295,7 +295,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
             await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText('iniciativa ciudadana independiente en Ecuador');
-            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial y Movilidad Sostenible');
+            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial');
             await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
