@@ -173,7 +173,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         }));
         expect(valuesAfterYearChange).not.toEqual(valuesBeforeYearChange);
 
-        await page.locator('[data-right-panel="layers"]').click();
+        await page.evaluate(() => window.setRightContextPanel("legend", true));
         await page.locator('[data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
         await expect(page.locator('#right-context-host')).toHaveAttribute('data-active-panel', 'legend');

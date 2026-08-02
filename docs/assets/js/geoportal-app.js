@@ -264,6 +264,17 @@
                     return options;
                 }
 
+                const INFRASTRUCTURE_GEOMETRY_TYPES = Object.freeze({
+                    line: new Set(["LineString", "MultiLineString"]),
+                    point: new Set(["Point", "MultiPoint"]),
+                    mixed: new Set(["LineString", "MultiLineString", "Point", "MultiPoint"])
+                });
+
+                function featureMatchesInfrastructureRender(feature, render) {
+                    const allowedTypes = INFRASTRUCTURE_GEOMETRY_TYPES[render];
+                    return Boolean(allowedTypes?.has(feature?.geometry?.type));
+                }
+
                 function selectTerritoryBelowInfrastructure(latlng) {
                     const territoryLayer = getLayerForLevel(activeTerritoryLevel);
                     if (!territoryLayer || !latlng) return;
@@ -298,7 +309,13 @@
                             config.coverageMask ? ensureCantonLayer() : Promise.resolve(null)
                         ])
                             .then(([data]) => {
-                                const selectedFeatures = (data.features || []).filter(feature => !config.filterFeature || config.filterFeature(feature));
+                                const sourceFeatures = data.features || [];
+                                const geometryCompatibleFeatures = sourceFeatures.filter(feature => (
+                                    featureMatchesInfrastructureRender(feature, config.render)
+                                ));
+                                const selectedFeatures = geometryCompatibleFeatures.filter(feature => (
+                                    !config.filterFeature || config.filterFeature(feature)
+                                ));
                                 const selectedData = { ...data, features: selectedFeatures };
                                 const layer = L.geoJSON(selectedData, layerOptionsFromConfig(config));
                                 const mappedCantons = new Set(
@@ -322,6 +339,7 @@
                                     }));
                                 }
                                 placeholder._redsaFeatureCount = selectedFeatures.length;
+                                placeholder._redsaRejectedGeometryCount = sourceFeatures.length - geometryCompatibleFeatures.length;
                                 placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
                                 placeholder._redsaLoaded = true;
                                 placeholder.addLayer(layer);
@@ -923,7 +941,10 @@
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
                             timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
                             timelineBadge: document.getElementById("timeline-badge")?.textContent,
-                            timelineYearAdjustment: document.getElementById("timeline-year-adjustment-note")?.textContent || "",
+                            timelineYearAdjustment: document.getElementById("legend-year-adjustment-note")?.textContent || "",
+                            basemap: document.body.dataset.basemap || "positron",
+                            territorySurfaceAutoHideZoom: ZOOM_SURFACE_AUTO_HIDE_MIN,
+                            territorySurfaceAutoHidden: isTerritorySurfaceAutoHidden(activeTerritoryLevel),
                             effectiveVariable: getEffectiveVariable(activeTerritoryLevel),
                             bins: [...activeVariableBins.bins],
                             validValueCount: activeVariableBins.validValueCount,
@@ -939,6 +960,7 @@
                                     visible: Boolean(layer && map.hasLayer(layer)),
                                     loaded: Boolean(layer?._redsaLoaded),
                                     features: layer?._redsaFeatureCount || 0,
+                                    rejectedGeometries: layer?._redsaRejectedGeometryCount || 0,
                                     unmappedCantons: layer?._redsaUnmappedCantonCount ?? null,
                                     error: layer?._redsaLoadError || null
                                 }];
