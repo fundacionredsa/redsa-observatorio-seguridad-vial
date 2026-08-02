@@ -612,25 +612,17 @@
         };
     }
 
-    function caseMarker(feature, latlng, renderer, displaced) {
+    function casePopupContent(feature, displaced) {
         const isCompact = Boolean(feature.properties?._compact);
-        const values = decodedCaseProperties(feature.properties || {});
-        const marker = L.circleMarker(latlng, {
-            renderer,
-            pane: state.eventPane,
-            radius: CASE_RADIUS_PX,
-            color: "#fff7ed",
-            weight: 1.2,
-            fillColor: CASE_COLOR,
-            fillOpacity: 0.88
-        });
-        marker.bindPopup(isCompact ? `
+        if (isCompact) return `
             <div class="ant-case-popup">
                 <strong>Siniestro registrado por ANT</strong>
                 <p>El caso ya está ubicado en el mapa. Preparando el detalle del registro…</p>
                 <small>Fuente: ANT.</small>
             </div>
-        ` : `
+        `;
+        const values = decodedCaseProperties(feature.properties || {});
+        return `
             <div class="ant-case-popup">
                 <strong>Siniestro registrado por ANT</strong>
                 <dl>
@@ -645,7 +637,22 @@
                 </dl>
                 <small>Fuente: ANT. La causa es un registro administrativo probable, no una conclusión causal.</small>
             </div>
-        `, { maxWidth: 340 });
+        `;
+    }
+
+    function caseMarker(feature, latlng, renderer, displaced) {
+        const marker = L.circleMarker(latlng, {
+            renderer,
+            pane: state.eventPane,
+            radius: CASE_RADIUS_PX,
+            color: "#fff7ed",
+            weight: 1.2,
+            fillColor: CASE_COLOR,
+            fillOpacity: 0.88
+        });
+        // Preparar 6.000 fichas completas bloqueaba el hilo principal. Leaflet
+        // acepta una función y construye el contenido solo al abrir el caso.
+        marker.bindPopup(() => casePopupContent(feature, displaced), { maxWidth: 340 });
         marker.on("click", event => state.context?.selectTerritoryBelow?.(event.latlng));
         return marker;
     }
