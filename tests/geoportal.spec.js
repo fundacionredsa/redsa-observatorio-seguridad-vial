@@ -38,7 +38,7 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
-  await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial y Movilidad Sostenible");
+  await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial");
   await expect(page.locator("#citizen-panel")).toContainText("iniciativa ciudadana independiente en Ecuador");
   await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
   await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");

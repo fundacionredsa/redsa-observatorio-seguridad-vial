@@ -323,6 +323,10 @@ function onEachProvinceFeature(feature, layer) {
                 hasItems = true;
                 const requestedConfig = VARIABLE_CONFIGS[selectedVariable] || VARIABLE_CONFIGS.normal;
                 const unavailableAtLevel = selectedVariable !== "normal" && effectiveVariable === "normal";
+                const yearUnavailable = selectedVariable !== "normal"
+                    && selectedPeriodMode !== "accumulated"
+                    && requestedConfig.temporal?.tipo === "anual"
+                    && !requestedConfig.temporal.anios_disponibles.map(Number).includes(Number(selectedYear));
                 const noValuesAtLevel = !unavailableAtLevel
                     && effectiveVariable !== "normal"
                     && activeVariableBins.method === "Sin datos";
@@ -338,7 +342,7 @@ function onEachProvinceFeature(feature, layer) {
                     );
                 }
 
-                if (unavailableAtLevel || noValuesAtLevel) {
+                if (unavailableAtLevel || noValuesAtLevel || yearUnavailable) {
                     const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";
                     const technicalInfo = requestedConfig.infoSigla ? siglaInfoIcon(requestedConfig.infoSigla) : "";
                     territoryContainer.innerHTML += `
@@ -351,9 +355,13 @@ function onEachProvinceFeature(feature, layer) {
                             ],
                             technicalInfo
                         )}
-                        <div class="legend-unavailable" role="status">
-                            <strong>Sin datos disponibles en este nivel territorial.</strong>
-                            <span>${unavailableAtLevel ? "La variable seleccionada no se publica para este nivel; se muestran únicamente los límites administrativos." : "No existen valores publicables para la combinación de nivel y periodo seleccionada."}</span>
+                        <div class="legend-unavailable ${yearUnavailable ? "legend-period-unavailable" : ""}" role="status">
+                            <strong>${yearUnavailable ? "No disponible para este periodo." : "Sin datos disponibles en este nivel territorial."}</strong>
+                            <span>${yearUnavailable
+                                ? `Esta variable tiene datos en ${formatCoveredYears(requestedConfig.temporal.anios_disponibles)}; se muestran únicamente los límites administrativos.`
+                                : unavailableAtLevel
+                                    ? "La variable seleccionada no se publica para este nivel; se muestran únicamente los límites administrativos."
+                                    : "No existen valores publicables para la combinación de nivel y periodo seleccionada."}</span>
                         </div>
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
@@ -494,11 +502,15 @@ function onEachProvinceFeature(feature, layer) {
                 const loading = entry.status === "loading"
                     ? `<div class="legend-overlay-status" role="status">Preparando la capa…</div>`
                     : "";
+                const unavailable = entry.available === false || entry.status === "unavailable"
+                    ? `<div class="legend-unavailable legend-period-unavailable" role="status"><strong>No disponible para este periodo.</strong><span>Elige un año con datos para volver a mostrar esta capa.</span></div>`
+                    : "";
+                const info = entry.infoText ? siglaInfoIcon("Información", entry.infoText) : "";
                 overlayContainer.innerHTML += `
-                    <section class="legend-overlay-block" data-legend-layer-id="${entry.id}">
-                        <div class="legend-item legend-overlay-title">${entry.title}</div>
+                    <section class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""}" data-legend-layer-id="${entry.id}">
+                        <div class="legend-item legend-overlay-title">${entry.title}${info}</div>
                         ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
-                        ${legendItems}${audit}${loading}${noteBlock}
+                        ${legendItems}${audit}${loading}${unavailable}${noteBlock}
                     </section>`;
             });
 
@@ -566,6 +578,8 @@ function onEachProvinceFeature(feature, layer) {
             if (status) {
                 const modeText = territoryLevelMode === "auto" ? "automático" : "fijado manualmente";
                 status.textContent = `Nivel visible: ${LEVEL_LABELS[activeTerritoryLevel] || "cargando"} · ${modeText}`;
+                const info = document.getElementById("territory-level-info");
+                if (info) info.dataset.customText = `${status.textContent}. El nivel territorial define los límites y la escala de color que se muestran.`;
             }
         }
 

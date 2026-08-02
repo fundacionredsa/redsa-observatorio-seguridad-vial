@@ -248,7 +248,7 @@
                 idle: `Modo anual · ${periodForYear()}. Activa la capa para descargar únicamente este periodo.`,
                 loading: `Descargando y preparando ${state.year}…`,
                 ready: coverageText(),
-                unavailable: `Sin puntos para ${state.year}. Disponibles: ${availableYears().join(", ")}.`,
+                unavailable: `No disponible para este periodo. Siniestros (ANT) tiene datos en ${availableYears().join(", ")}.`,
                 period_unavailable: "Esta capa se muestra solo por año; no está disponible en modo acumulado. Vuelve a “Año seleccionado” para activarla.",
                 error: "No se pudo cargar la capa. Intenta nuevamente.",
                 cancelled: "Carga cancelada al cambiar de año."
@@ -271,7 +271,10 @@
                 ? "Disponible únicamente en modo Año seleccionado"
                 : "Mostrar los siniestros ANT del año seleccionado";
         }
-        document.querySelector(".event-layer-toggle")?.classList.toggle("period-unavailable", isAccumulatedMode());
+        document.querySelector(".event-layer-toggle")?.classList.toggle(
+            "period-unavailable",
+            isAccumulatedMode() || (state.active && !isYearAvailable())
+        );
         const latestYear = Math.max(...availableYears());
         if (jumpButton) jumpButton.hidden = isAccumulatedMode() || !state.active || isYearAvailable() || state.year === latestYear;
         document.querySelectorAll("[data-ant-mode]").forEach(button => {
@@ -873,9 +876,12 @@
         const modeLabels = { heat: "Calor", clusters: "Agrupaciones", cases: "Casos individuales" };
         return {
             title: "Siniestros (ANT)",
-            subtitle: `${modeLabels[state.mode]} · ${state.year}${available ? ` (${periodForYear()})` : " · sin datos para este año"}`,
+            subtitle: `${modeLabels[state.mode]} · ${state.year}${available ? ` (${periodForYear()})` : " · No disponible para este periodo"}`,
             status: state.status,
-            items: state.mode === "heat"
+            available,
+            items: !available
+                ? []
+                : state.mode === "heat"
                 ? [{ shape: "gradient", colors: Object.values(HEAT_GRADIENT), label: "Menor a mayor concentración de registros" }]
                 : state.mode === "clusters"
                 ? [{ shape: "circle", color: CLUSTER_COLOR, label: "El tamaño indica cantidad agrupada" }]

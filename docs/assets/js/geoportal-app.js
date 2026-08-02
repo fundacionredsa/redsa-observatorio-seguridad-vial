@@ -230,9 +230,17 @@
                 handleHash();
                 window.addEventListener("hashchange", handleHash);
 
+                // Un renderer SVG compartido permite hit-testing solo sobre la geometría
+                // dibujada; el Canvas global interceptaba el hover en todo el mapa.
+                const infrastructureRenderer = L.svg({
+                    pane: "infraestructuraPane",
+                    padding: 0.5
+                });
+
                 function layerOptionsFromConfig(config) {
                     const options = {
                         pane: "infraestructuraPane",
+                        renderer: infrastructureRenderer,
                         filter: config.filterFeature,
                         onEachFeature(feature, layer) {
                             if (feature.properties && config.popup) layer.bindPopup(config.popup(feature.properties));
@@ -246,6 +254,7 @@
                                 fillColor: config.color,
                                 color: config.outlineColor || "#ffffff",
                                 pane: "infraestructuraPane",
+                                renderer: infrastructureRenderer,
                                 weight: 1,
                                 opacity: 1,
                                 fillOpacity: 0.82
@@ -327,6 +336,7 @@
                                 if (unmappedFeatures.length) {
                                     placeholder.addLayer(L.geoJSON({ type: "FeatureCollection", features: unmappedFeatures }, {
                                         pane: "infraestructuraPane",
+                                        renderer: infrastructureRenderer,
                                         interactive: false,
                                         style: {
                                             color: "#64748b",
@@ -339,6 +349,9 @@
                                     }));
                                 }
                                 placeholder._redsaFeatureCount = selectedFeatures.length;
+                                placeholder._redsaExtractionDates = [...new Set(selectedFeatures
+                                    .map(feature => feature.properties?.fecha_extraccion)
+                                    .filter(Boolean))].sort();
                                 placeholder._redsaRejectedGeometryCount = sourceFeatures.length - geometryCompatibleFeatures.length;
                                 placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
                                 placeholder._redsaLoaded = true;
@@ -366,7 +379,10 @@
                         return {
                             title: config.label,
                             items: config.legend || [],
-                            osmAudit: Boolean(config.osmAudit)
+                            osmAudit: Boolean(config.osmAudit),
+                            infoText: config.osmAudit
+                                ? `Fotografía del mapeo colaborativo OpenStreetMap${placeholder._redsaExtractionDates?.length ? `, extraída el ${placeholder._redsaExtractionDates.join(", ")}` : ""}. No constituye una serie anual y no cambia con el año seleccionado.`
+                                : ""
                         };
                     });
                     return placeholder;
@@ -392,37 +408,39 @@
                         div.innerHTML = `
                             <div class="timeline-filter-block" aria-label="Periodo y nivel territorial de los datos">
                                 <div class="timeline-control">
-                                    <div class="timeline-header">
+                                    <div class="timeline-header legend-secondary-control-row">
                                         <div class="timeline-title-wrap">
                                             <button type="button" id="timeline-play-button" class="timeline-play-btn" aria-label="Reproducir línea de tiempo" title="Reproducir animación año a año">
                                                 <i class="fa-solid fa-play" id="timeline-play-icon"></i>
                                             </button>
-                                            <span>Año de los datos mostrados</span>
+                                            <span>Año</span>
+                                            <button type="button" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Año de los datos" data-custom-text="Mueve el control para ver los datos de cada año. Los años atenuados no tienen datos para la variable activa." aria-label="Cómo funciona la línea de tiempo">ⓘ</button>
                                         </div>
                                         <span id="timeline-badge" class="timeline-badge">${selectedYear}</span>
                                     </div>
-                                    <p class="timeline-help">Mueve el control para ver los datos de cada año.</p>
                                     <p id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></p>
                                     <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año de los datos mostrados">
                                     <div id="timeline-marks" class="timeline-marks"></div>
                                 </div>
-                                <div class="period-mode-control" aria-label="Periodo mostrado">
-                                    <div class="period-mode-label">Periodo mostrado</div>
+                                <div class="period-mode-control legend-secondary-control-row" aria-label="Periodo mostrado">
+                                    <div class="period-mode-label">Periodo</div>
+                                    <button type="button" id="period-mode-info" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Periodo mostrado" aria-label="Explicación del periodo mostrado">ⓘ</button>
                                     <div class="period-mode-segments" role="group" aria-label="Cambiar entre año y acumulado histórico">
                                         <button type="button" data-period-mode="year" class="active" aria-pressed="true">Año seleccionado</button>
                                         <button type="button" data-period-mode="accumulated" aria-pressed="false">Acumulado histórico</button>
                                     </div>
-                                    <div id="period-mode-note" class="period-mode-note" aria-live="polite"></div>
+                                    <div id="period-mode-note" class="period-mode-note sr-only" aria-live="polite"></div>
                                 </div>
-                                <div id="territory-level-control" class="territory-level-control" aria-label="Nivel territorial visible">
-                                    <div class="territory-level-label">Nivel territorial</div>
+                                <div id="territory-level-control" class="territory-level-control legend-secondary-control-row" aria-label="Nivel territorial visible">
+                                    <div class="territory-level-label">Nivel</div>
+                                    <button type="button" id="territory-level-info" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Nivel territorial" aria-label="Explicación del nivel territorial">ⓘ</button>
                                     <div class="territory-level-segments" role="group" aria-label="Cambiar nivel territorial">
                                         <button type="button" data-level-mode="auto" aria-pressed="true">Auto</button>
                                         <button type="button" data-level-mode="province" aria-pressed="false">Provincias</button>
                                         <button type="button" data-level-mode="canton" aria-pressed="false">Cantones</button>
                                         <button type="button" data-level-mode="parish" aria-pressed="false">Parroquias</button>
                                     </div>
-                                    <div id="territory-level-status" class="territory-level-status" aria-live="polite"></div>
+                                    <div id="territory-level-status" class="territory-level-status sr-only" aria-live="polite"></div>
                                 </div>
                                 <div id="map-level-note" class="map-level-note"></div>
                             </div>
