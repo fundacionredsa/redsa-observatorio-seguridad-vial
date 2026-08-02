@@ -23,7 +23,8 @@ async function searchTerritory(page, query, expectedLevel, expectedCode) {
     level: expectedLevel,
     code: expectedCode
   });
-  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator("#citizen-summary")).toContainText(query.split("—")[0].trim(), { ignoreCase: true });
 }
 
 test("el estado inicial muestra una referencia nacional que sigue variable, año y periodo", async ({ page }) => {
@@ -55,7 +56,7 @@ test("el estado inicial muestra una referencia nacional que sigue variable, año
   expect(accumulatedText).not.toContain("21.220");
 });
 
-test("la búsqueda selecciona provincia, cantón y parroquia y abre su ficha", async ({ page }) => {
+test("la búsqueda selecciona provincia, cantón y parroquia sin abrir el análisis", async ({ page }) => {
   await loadPortal(page);
 
   await searchTerritory(page, "AZUAY — Provincia", "province", "01");
@@ -83,8 +84,8 @@ test("una búsqueda parroquial conserva la variable y muestra límites con aviso
   const state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.selectedVariable).toBe("tasa_fallecidos_100k");
   expect(state.effectiveVariable).toBe("normal");
-  await expect(page.locator("#territory-search-adjustment-note")).toBeVisible();
-  await expect(page.locator("#territory-search-adjustment-note")).toContainText(
+  await expect(page.locator("#territory-search-status")).toBeVisible();
+  await expect(page.locator("#territory-search-status")).toContainText(
     "Esta variable no tiene datos en ese nivel, por eso mostramos los límites."
   );
   await expect(page.locator("#map-level-note")).toContainText("se muestran solo límites");

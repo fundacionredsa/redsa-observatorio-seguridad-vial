@@ -266,6 +266,7 @@
 
     function updateSearchAdjustmentNotice(level) {
         const note = document.getElementById("territory-search-adjustment-note");
+        const searchStatus = document.getElementById("territory-search-status");
         if (!note) return;
         if (!SEARCH_LEVELS[level]) {
             clearSearchAdjustmentNotice();
@@ -274,19 +275,24 @@
         const variable = state.context?.getSelectedVariable?.();
         const config = state.context?.getVariableConfig?.(variable);
         if (variable && variable !== "normal" && config && !config.levels?.includes(level)) {
-            note.textContent = `La búsqueda cambió el mapa a ${SEARCH_LEVELS[level].pluralLabel}. Esta variable no tiene datos en ese nivel, por eso mostramos los límites.`;
+            const message = `La búsqueda cambió el mapa a ${SEARCH_LEVELS[level].pluralLabel}. Esta variable no tiene datos en ese nivel, por eso mostramos los límites.`;
+            note.textContent = message;
             note.hidden = false;
+            if (searchStatus) searchStatus.textContent = message;
             return;
         }
         note.textContent = "";
         note.hidden = true;
+        if (searchStatus) searchStatus.textContent = "";
     }
 
     function clearSearchAdjustmentNotice() {
         const note = document.getElementById("territory-search-adjustment-note");
+        const searchStatus = document.getElementById("territory-search-status");
         if (!note) return;
         note.textContent = "";
         note.hidden = true;
+        if (searchStatus) searchStatus.textContent = "";
     }
 
     async function selectFromSearch() {
@@ -342,7 +348,7 @@
         metadata.textContent = metadataParts.join(" · ");
         description.textContent = config.description;
         const info = document.getElementById("citizen-map-info");
-        if (info) info.dataset.customText = config.description;
+        if (info) info.dataset.customText = `Fuente: ${config.fuente || "documentada en el catálogo"}. ${config.description}`;
     }
 
     function formatNationalSummaryValue(summary, config) {
@@ -388,63 +394,24 @@
 
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
-        const hasPopulationRate = level !== "Parroquia";
         const province = props.DPA_DESPRO || "";
-        const year = resolveSummaryYear(props, requestedYear);
-        const accidents = year ? Number(props.siniestros_historico?.[String(year)]) : null;
-        const rate = hasPopulationRate && year ? rateForFeature(props, year) : null;
-        const years = availableAccidentYears(props);
-        const isPartial2026 = year === 2026;
-        const previousYear = year ? years.filter(candidate => candidate < year).at(-1) : null;
-        const previousAccidents = isPartial2026
-            ? finiteNumber(props.siniestros_enero_junio_2025)
-            : (previousYear ? Number(props.siniestros_historico?.[String(previousYear)]) : null);
-        const change = Number.isFinite(accidents) && Number.isFinite(previousAccidents) && previousAccidents > 0
-            ? (accidents - previousAccidents) / previousAccidents * 100
-            : null;
-        const nationalMedian = hasPopulationRate && year
-            ? median(state.cantonFeatures.map(feature => rateForFeature(feature, year)))
-            : null;
-        const completeYears = years.filter(candidate => candidate <= 2025);
-        const historicalTotal = completeYears.reduce((total, candidate) => {
-            const value = Number(props.siniestros_historico?.[String(candidate)]);
-            return Number.isFinite(value) ? total + value : total;
-        }, 0);
-        const currentShare = Number.isFinite(accidents) && historicalTotal > 0
-            ? accidents / historicalTotal * 100
-            : null;
-
-        let comparison = hasPopulationRate
-            ? "No hay una serie comparable suficiente para este territorio."
-            : "La comparación usa conteos del mismo territorio y periodo.";
-        if (Number.isFinite(rate) && Number.isFinite(nationalMedian)) {
-            const direction = rate > nationalMedian ? "por encima" : (rate < nationalMedian ? "por debajo" : "en línea");
-            comparison = `La tasa está ${direction} de la mediana de los cantones del país (${formatNumber(nationalMedian, 1)} por cada 100.000 habitantes).`;
-        }
-        if (Number.isFinite(change)) {
-            const movement = change > 0 ? "aumentó" : (change < 0 ? "disminuyó" : "no cambió");
-            const comparisonPeriod = isPartial2026 ? "enero-junio de 2025" : previousYear;
-            comparison += ` Frente a ${comparisonPeriod}, el número reportado ${movement} ${formatNumber(Math.abs(change), 1)}%.`;
-        }
+        const variable = state.context?.getSelectedVariable?.();
+        const config = state.context?.getVariableConfig?.(variable);
+        const territorySummary = state.context?.getTerritorySummary?.(props);
+        const value = formatNationalSummaryValue(territorySummary, config);
+        const period = territorySummary?.period || state.context?.getActivePeriodLabel?.() || requestedYear || "Periodo no especificado";
+        const detail = `Fuente: ${config?.fuente || "documentada en el catálogo"}. ${config?.description || "La metodología está documentada en el catálogo de datos."}`;
+        const infoIcon = `<button type="button" class="sigla-tooltip-trigger citizen-summary-info" data-sigla="Dato territorial" data-custom-text="${escapeHtml(detail)}" aria-label="Fuente y metodología del dato territorial">ⓘ</button>`;
 
         summary.innerHTML = `
             <div class="citizen-summary-title">${name} <span style="font-weight:500;">(${level})</span></div>
-            <div class="citizen-summary-province">${province}${year ? ` · ${isPartial2026 ? "datos parciales enero-junio 2026" : `datos ${year}`}` : ""}</div>
-            <div class="citizen-summary-metrics">
-                <div class="citizen-summary-metric">
-                    <strong>${Number.isFinite(accidents) ? formatNumber(accidents) : "Sin dato"}</strong>
-                    <span>siniestros reportados${year ? ` en ${isPartial2026 ? "enero-junio de 2026" : year}` : ""}</span>
-                </div>
-                ${hasPopulationRate ? `<div class="citizen-summary-metric">
-                    <strong>${Number.isFinite(rate) ? formatNumber(rate, 1) : "Sin dato"}</strong>
-                    <span>por cada 100.000 habitantes</span>
-                </div>` : ""}
-            </div>
-            <div class="citizen-summary-history">
-                <strong>Histórico de años completos: ${formatNumber(historicalTotal)} siniestros</strong>
-                <span>${formatYearCoverage(completeYears)} (${completeYears.length} ${completeYears.length === 1 ? "año con dato" : "años con datos"})${!isPartial2026 && Number.isFinite(currentShare) ? ` · ${year} representa ${formatNumber(currentShare, 1)}% del histórico` : ""}.${isPartial2026 ? " El corte 2026 no se suma a este histórico." : ""}</span>
-            </div>
-            <p class="citizen-comparison">${comparison}</p>
+            <div class="citizen-summary-province">${province}</div>
+            <section class="citizen-territory-reference" aria-label="Resumen de la variable activa en el territorio">
+                <span class="citizen-national-kicker">${escapeHtml(config?.displayLabel || config?.label || "Variable activa")}</span>
+                <strong class="citizen-national-value">${value ?? "Sin dato"} <span>${escapeHtml(config?.unidad || "")}</span></strong>
+                <span class="citizen-national-meta">${escapeHtml(period)} ${infoIcon}</span>
+            </section>
+            ${renderNationalReference()}
         `;
         if (downloadButton) {
             downloadButton.hidden = false;

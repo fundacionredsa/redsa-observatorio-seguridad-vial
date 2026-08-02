@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.39">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.39">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.39">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.40">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.40">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.40">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -81,11 +81,11 @@
         <div class="citizen-brand">
             <div class="citizen-brand-copy">
                 <p class="citizen-eyebrow">Fundación REDSA</p>
-                <h1>Observatorio de Seguridad Vial</h1>
+                <h1>Observatorio de Seguridad Vial y Movilidad Sostenible</h1>
             </div>
             <span class="citizen-national-badge">Ecuador</span>
         </div>
-        <p class="citizen-intro citizen-intro-prompt">Explora qué tan seguras son las vías donde vives con esta iniciativa ciudadana independiente en Ecuador, impulsada por Fundación REDSA.</p>
+        <p class="citizen-intro citizen-intro-prompt">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
         <form id="territory-search-form" role="search">
             <label class="citizen-search-label" for="territory-search-input">Busca una provincia, cantón o parroquia</label>
             <div class="citizen-search-row">
@@ -218,7 +218,6 @@
             <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar datos y capas">&times;</button>
         </div>
         <div class="technical-controls-slot" id="technical-controls-slot">
-            <div class="variable-controls-slot" id="variable-controls-slot"></div>
             <section class="layers-card" id="layers-card" aria-labelledby="layers-card-title">
                 <header class="layers-card-header">
                     <h3 id="layers-card-title">Capas del mapa</h3>
@@ -454,31 +453,25 @@
     <!-- Contenedor Principal de la Interfaz -->
     <div class="ui-container">
         <!-- Sidebar / Panel de Control -->
-        <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio">
+        <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio" aria-hidden="true">
             <div class="mobile-sidebar-topbar">
                 <span>Análisis del territorio</span>
-                <button type="button" class="mobile-sidebar-close" id="mobile-sidebar-close" aria-label="Cerrar informacion del territorio">&times;</button>
+                <button type="button" class="mobile-sidebar-close analysis-back-button" id="mobile-sidebar-close" aria-label="Volver al resumen territorial">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    <span>Volver</span>
+                </button>
             </div>
             <div id="territory-search-adjustment-note" class="territory-search-adjustment-note" role="status" aria-live="polite" hidden></div>
-            <!-- Marca/Cabecera -->
-            <div class="header-brand">
-                <h1>
-                    Fundación REDSA
-                    <span class="highlight">Observatorio de Seguridad Vial y Movilidad Sostenible</span>
-                </h1>
-                <p>Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
-            </div>
-
             <!-- Sección Informativa Dinámica -->
             <div class="info-section">
-                <div class="section-title">Información del Territorio</div>
+                <div class="section-title">Información del territorio</div>
                 <div class="detail-period-control" aria-label="Periodo de los datos del territorio">
-                    <span class="detail-period-label">Datos mostrados</span>
+                    <span class="detail-period-label">Datos mostrados <button type="button" class="sigla-tooltip-trigger" data-sigla="Periodo del análisis" data-custom-text="Año seleccionado muestra el periodo marcado en la línea de tiempo. Acumulado histórico suma únicamente conteos compatibles y conserva el periodo real de cada fuente; las tasas anuales no se suman." aria-label="Cómo funciona el periodo del análisis">ⓘ</button></span>
                     <div class="detail-period-segments" role="group" aria-label="Mostrar un año o el acumulado histórico">
                         <button type="button" data-detail-period-mode="year" class="active" aria-pressed="true">Año seleccionado</button>
                         <button type="button" data-detail-period-mode="accumulated" aria-pressed="false">Acumulado histórico</button>
                     </div>
-                    <div class="detail-period-note" data-detail-period-note aria-live="polite">Conteos del año marcado en la línea de tiempo.</div>
+                    <div class="detail-period-note sr-only" data-detail-period-note aria-live="polite">Conteos del año marcado en la línea de tiempo.</div>
                 </div>
                 
                 <div class="canton-details">
@@ -501,23 +494,26 @@
                         <div id="info-fallecidos-parroquia" class="detail-value empty u-text-accent-strong">—</div>
                     </div>
                     <div class="detail-row" id="population-detail-row">
-                        <div class="detail-label">Población <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> <span id="info-poblacion-year">2024</span>)</span></div>
+                        <div class="detail-label">Población <button type="button" class="sigla-tooltip-trigger" data-sigla="INEC" data-custom-text="Población oficial publicada por el INEC para el periodo mostrado." aria-label="Fuente de población">ⓘ</button><span id="info-poblacion-year" class="sr-only">2024</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
                     <div class="detail-row" id="siniestros-rate-detail-row">
-                        <div class="detail-label">Accidentes por cada 100.000 habitantes <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>, <span id="info-tasa-siniestros-year">sin dato</span>)</span></div>
+                        <div class="detail-label">Accidentes por cada 100.000 habitantes <button type="button" class="sigla-tooltip-trigger" data-sigla="Tasa territorial" data-custom-text="Indicador anual calculado con siniestros reportados y población oficial del mismo territorio y periodo. No se suman tasas entre territorios." aria-label="Metodología de la tasa territorial">ⓘ</button><span id="info-tasa-siniestros-year" class="sr-only">sin dato</span></div>
                         <div id="info-tasa-siniestros" class="detail-value empty">Sin dato</div>
                     </div>
                     <div class="detail-row u-source-row u-hidden" id="parish-population-note"></div>
-                    <div class="detail-row u-source-row">
-                        <span>Códigos territoriales oficiales (DPA <span class="sigla-tooltip-trigger" data-sigla="DPA">ⓘ</span>) <span id="dpa-label-prefix">Cantón / Provincia</span>:</span>
-                        <span class="u-text-monospace-strong"><span id="info-cod-parroquia-span" class="u-hidden"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
-                    </div>
+                    <details class="analysis-disclosure analysis-disclosure-secondary" id="territory-codes-disclosure">
+                        <summary>Códigos territoriales</summary>
+                        <div class="detail-row u-source-row">
+                            <span><span id="dpa-label-prefix">Cantón / Provincia</span> <button type="button" class="sigla-tooltip-trigger" data-sigla="DPA" aria-label="Definición de DPA">ⓘ</button></span>
+                            <span class="u-text-monospace-strong"><span id="info-cod-parroquia-span" class="u-hidden"><span id="info-cod-parroquia">—</span> / </span><span id="info-cod-canton">—</span> / <span id="info-cod-provincia">—</span></span>
+                        </div>
+                    </details>
 
                     <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
-                    <div class="section-title u-section-gap-large">Tendencia Histórica</div>
+                    <div class="section-title u-section-gap-large">Tendencia histórica</div>
                     <div id="chart-wrapper" class="u-chart-wrapper">
-                        <div class="detail-label u-muted-label">Personas fallecidas en accidentes de tránsito <span class="source-label">(registro civil INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>; clasificación CIE-10 <span class="sigla-tooltip-trigger" data-sigla="CIE-10">ⓘ</span>)</span></div>
+                        <div class="detail-label u-muted-label">Siniestros y personas fallecidas <button type="button" class="sigla-tooltip-trigger" data-sigla="Serie histórica" data-custom-text="Los siniestros provienen de ANT e INEC/ESTRA. Las personas fallecidas provienen del registro civil INEC/EDG y se identifican con códigos CIE-10 V01-V89. Son fuentes con metodologías distintas y no deben sumarse." aria-label="Fuentes de la tendencia histórica">ⓘ</button></div>
                         <div id="chart-container" class="u-chart-container">
                             <canvas id="chart-historico"></canvas>
                         </div>
@@ -525,7 +521,7 @@
                     </div>
 
                     <!-- SECCIÓN 3: SINIESTROS DE TRÁNSITO (INEC 2019 - 2024) -->
-                    <div class="section-title u-section-gap">Accidentes de tránsito reportados <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span>, <span id="siniestros-section-year">2024</span>)</span></div>
+                    <div class="section-title u-section-gap">Siniestros de tránsito reportados <button type="button" class="sigla-tooltip-trigger" data-sigla="ANT e INEC/ESTRA" data-custom-text="ANT registra administrativamente los siniestros e INEC/ESTRA publica su procesamiento estadístico. Se muestran como una sola cadena estadística, no como cifras para sumar." aria-label="Fuente de siniestros reportados">ⓘ</button> <span id="siniestros-section-year" class="analysis-period-badge">2024</span></div>
                     <div class="detail-row">
                         <div class="detail-label">Accidentes registrados</div>
                         <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
@@ -536,19 +532,19 @@
                     </div>
                     
                     <!-- INEC Detailed sub-panel (rendered dynamically in JS) -->
-                    <div id="inec-detailed-stats" class="u-stats-block">
-                        <div class="u-stats-heading">Zona donde ocurrieron:</div>
-                        <div id="inec-zona-ratio" class="u-stats-value">—</div>
-                        
-                        <div class="u-stats-heading">Tipos de accidente:</div>
-                        <div id="inec-clase-list" class="u-list-gap">—</div>
-                        
-                        <div class="u-stats-heading">Principales Causas Probables:</div>
-                        <div id="inec-causa-list" class="u-list-gap">—</div>
-                        
-                        <div class="u-stats-heading">Horario con más siniestros:</div>
-                        <div id="inec-horapico" class="u-stats-value-compact">—</div>
-                    </div>
+                    <details id="inec-detailed-stats" class="analysis-disclosure u-stats-block">
+                        <summary>Desglose del periodo</summary>
+                        <div class="analysis-disclosure-content">
+                            <div class="u-stats-heading">Zona donde ocurrieron</div>
+                            <div id="inec-zona-ratio" class="u-stats-value">—</div>
+                            <div class="u-stats-heading">Tipos de siniestro</div>
+                            <div id="inec-clase-list" class="u-list-gap">—</div>
+                            <div class="u-stats-heading">Causas probables registradas</div>
+                            <div id="inec-causa-list" class="u-list-gap">—</div>
+                            <div class="u-stats-heading">Horario con más siniestros</div>
+                            <div id="inec-horapico" class="u-stats-value-compact">—</div>
+                        </div>
+                    </details>
 
                     <details class="ant-territory-analysis" id="ant-territory-analysis">
                         <summary>Patrones de los siniestros registrados por ANT (año seleccionado)</summary>
@@ -557,34 +553,30 @@
                     </details>
 
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
-                    <div class="section-title u-section-gap">Fallecidos en Siniestros de Tránsito</div>
+                    <div class="section-title u-section-gap">Personas fallecidas</div>
                     <div class="detail-row">
-                        <div class="detail-label">Fallecidos según reclamaciones del seguro <span class="source-label">(SPPAT <span class="sigla-tooltip-trigger" data-sigla="SPPAT">ⓘ</span>, <span id="sppat-sidebar-year">2024</span>)</span></div>
+                        <div class="detail-label">Según reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button><span id="sppat-sidebar-year" class="sr-only">2024</span></div>
                         <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
                     </div>
                     <div class="detail-row">
-                        <div class="detail-label">Fallecidos según registro civil <span class="source-label">(INEC/EDG <span class="sigla-tooltip-trigger" data-sigla="EDG">ⓘ</span>, <span id="edg-sidebar-year">2024</span>)</span></div>
+                        <div class="detail-label">Según registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button><span id="edg-sidebar-year" class="sr-only">2024</span></div>
                         <div id="info-fallecidos-inec" class="detail-value empty">—</div>
                     </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Vehículos Matriculados <span class="source-label">(INEC <span class="sigla-tooltip-trigger" data-sigla="INEC">ⓘ</span> 2024, dato fijo)</span></div>
-                        <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
-                    </div>
-                    <div class="detail-row u-divider-row" id="fallecidos-rate-detail-row">
-                        <div class="detail-label">Fallecidos por cada 100.000 habitantes <span class="source-label">(registro civil INEC/EDG, <span id="tasa-fallecidos-year">2024</span>)</span></div>
-                        <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
-                    </div>
+                    <details class="analysis-disclosure analysis-disclosure-secondary" id="complementary-indicators-disclosure">
+                        <summary>Indicadores complementarios</summary>
+                        <div class="analysis-disclosure-content">
+                            <div class="detail-row">
+                                <div class="detail-label">Vehículos matriculados <button type="button" class="sigla-tooltip-trigger" data-sigla="Vehículos matriculados" data-custom-text="Fuente: INEC ESTRA 2024. Es un dato fijo por residencia del propietario y no representa necesariamente dónde circula el vehículo." aria-label="Fuente de vehículos matriculados">ⓘ</button></div>
+                                <div id="info-matriculados-prov" class="detail-value secondary empty">—</div>
+                            </div>
+                            <div class="detail-row" id="fallecidos-rate-detail-row">
+                                <div class="detail-label">Fallecidos por cada 100.000 habitantes <button type="button" class="sigla-tooltip-trigger" data-sigla="Tasa de fallecidos" data-custom-text="Indicador anual calculado con defunciones del registro civil INEC/EDG y población oficial del mismo periodo." aria-label="Metodología de la tasa de fallecidos">ⓘ</button><span id="tasa-fallecidos-year" class="sr-only">2024</span></div>
+                                <div id="info-tasa-fallecidos" class="detail-value empty">Dato no disponible a este nivel</div>
+                            </div>
+                        </div>
+                    </details>
 
-                    <!-- Nota metodológica sobre fuentes de Fallecidos -->
-                    <div class="note-box u-methodology-note">
-                        <strong class="u-text-primary"><i class="fas fa-info-circle u-icon-accent"></i> Nota sobre fuentes de Fallecidos:</strong>
-                        <ul class="u-glossary-list">
-                            <li><strong>SPPAT (2016-2021):</strong> Reclamaciones de seguro pagadas (puede subestimar el total por rezagos administrativos).</li>
-                            <li><strong>ANT / INEC-ESTRA (2017-2026):</strong> ANT es el registro administrativo primario de siniestros e INEC/ESTRA publica su procesamiento estadístico. El corte 2026 cubre enero-junio y es provisional.</li>
-                            <li><strong>EDG / Perfil (2020-2024):</strong> Registro Civil de defunciones por causa de muerte (CIE-10), la fuente más completa y con serie histórica.</li>
-                        </ul>
-                        <div class="u-glossary-emphasis">* No se deben sumar ni promediar entre sí al usar metodologías y periodos distintos.</div>
-                    </div>
+                    <button type="button" class="analysis-method-info sigla-tooltip-trigger" data-sigla="Comparabilidad de fuentes" data-custom-text="SPPAT (2016-2021) registra reclamaciones del seguro pagadas. ANT e INEC/ESTRA (2017-2026) forman una sola cadena estadística de siniestros y fallecidos en sitio; 2026 cubre enero-junio y es provisional. EDG (2020-2024) usa el registro civil y códigos CIE-10. Estas fuentes tienen metodologías y periodos distintos: no deben sumarse ni promediarse entre sí." aria-label="Comparabilidad de las fuentes de personas fallecidas">ⓘ Fuentes y comparabilidad</button>
 
                     <!-- Perfil de Fallecidos removido del sidebar (ahora es tarjeta flotante) -->
 
@@ -656,17 +648,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.39"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.39"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.40"></script>
 </body>
 </html>

@@ -56,6 +56,14 @@
             --ui-secondary-info-size: 28px;
             --ui-secondary-info-size-mobile: 24px;
             --ui-secondary-gap: 6px;
+            --analysis-drawer-padding: 20px;
+            --analysis-drawer-bottom-padding: 40px;
+            --analysis-card-bg: rgba(255, 255, 255, 0.035);
+            --analysis-card-border: rgba(255, 255, 255, 0.09);
+            --analysis-header-bg: #172235;
+            --analysis-secondary-font-size: 0.7rem;
+            --analysis-primary-value-size: 1.1rem;
+            --analysis-disclosure-radius: 6px;
         }
 
         body.light-theme {
@@ -73,6 +81,9 @@
             --redsa-panel-accent: #0284c7;
             --redsa-panel-accent-soft: #e0f2fe;
             --redsa-panel-border: #7dd3fc;
+            --analysis-card-bg: #f8fafc;
+            --analysis-card-border: #d6dee5;
+            --analysis-header-bg: rgba(255, 255, 255, 0.98);
         }
 
         * {
@@ -245,26 +256,25 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
         }
 
         .section-title {
             font-family: var(--font-display);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent);
-            font-weight: 600;
+            font-size: var(--analysis-secondary-font-size);
+            letter-spacing: 0;
+            color: var(--text-muted);
+            font-weight: 750;
         }
 
         .canton-details {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 18px;
+            background: var(--analysis-card-bg);
+            border: 1px solid var(--analysis-card-border);
+            border-radius: 8px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 11px;
         }
 
         .detail-row {
@@ -274,14 +284,13 @@
         }
 
         .detail-label {
-            font-size: 0.75rem;
+            font-size: var(--analysis-secondary-font-size);
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0;
         }
 
         .detail-value {
-            font-size: 1.1rem;
+            font-size: var(--analysis-primary-value-size);
             font-weight: 600;
             color: var(--text-primary);
             line-height: 1.35;
@@ -297,6 +306,73 @@
             font-style: italic;
             font-weight: 400;
             font-size: 0.95rem;
+        }
+
+        .analysis-disclosure {
+            border: 1px solid var(--analysis-card-border);
+            border-radius: var(--analysis-disclosure-radius);
+            background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+        }
+
+        .analysis-disclosure > summary {
+            display: flex;
+            min-height: 36px;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 10px;
+            color: var(--text-secondary);
+            font-size: var(--analysis-secondary-font-size);
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .analysis-disclosure > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .analysis-disclosure > summary::after {
+            content: '+';
+            margin-left: auto;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .analysis-disclosure[open] > summary::after {
+            content: '−';
+        }
+
+        .analysis-disclosure > summary:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .analysis-disclosure-content,
+        .analysis-disclosure > .detail-row {
+            padding: 4px 10px 10px;
+        }
+
+        .analysis-method-info {
+            display: inline-flex;
+            width: auto;
+            min-width: 0;
+            height: auto;
+            min-height: 30px;
+            justify-content: flex-start;
+            gap: 5px;
+            margin: 0;
+            padding: 5px 8px;
+            border-radius: var(--analysis-disclosure-radius);
+            color: var(--text-secondary);
+            font-size: var(--analysis-secondary-font-size);
+        }
+
+        .analysis-period-badge {
+            display: inline-flex;
+            margin-left: 4px;
+            color: var(--text-muted);
+            font-size: var(--analysis-secondary-font-size);
+            font-weight: 600;
         }
 
         /* Panel de Leyenda (Glassmorphism) */
@@ -1052,7 +1128,7 @@
         .u-chart-wrapper { display: flex; flex-direction: column; align-items: stretch; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-glass); }
         .u-chart-container { position: relative; display: none; width: 100%; height: 180px; }
         .u-chart-empty { padding: 15px 0; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
-        .u-stats-block { display: none; margin-top: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border-glass); }
+        .u-stats-block { display: none; margin-top: 4px; }
         .u-divider-row { padding-bottom: 12px; border-bottom: 1px solid var(--border-glass); }
         .u-methodology-note { margin: 10px 0 12px; padding: 10px; border: 1px solid var(--border-glass); border-radius: 6px; background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); font-size: 0.68rem; line-height: 1.3; }
         .u-warning-box { display: none; margin: 6px 0 8px; padding: 10px; border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 6px; background: rgba(239, 68, 68, 0.08); color: #fca5a5; font-size: 0.7rem; line-height: 1.35; }

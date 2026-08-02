@@ -153,9 +153,8 @@
                         showProfile: false,
                         searchSelection: true
                     });
-                    if (selected) {
-                        setMobilePanel("citizen", false);
-                        setMobilePanel("sidebar", true);
+                    if (selected && mobileMediaQuery.matches) {
+                        setMobilePanel("citizen", true);
                     }
                     return selected;
                 }
@@ -179,7 +178,6 @@
                         return [];
                     },
                     openAnalysis: () => {
-                        setMobilePanel("citizen", false);
                         setMobilePanel("sidebar", true);
                         if (!mobileMediaQuery.matches) {
                             document.getElementById("territory-sidebar")?.scrollIntoView({ behavior: "smooth" });
@@ -189,7 +187,12 @@
                     getSelectedVariable: () => selectedVariable,
                     getVariableConfig: variable => VARIABLE_CONFIGS[variable] || null,
                     getActivePeriodLabel: () => getActivePeriodLabel(VARIABLE_CONFIGS[selectedVariable]),
-                    getNationalSummary: () => calculateNationalVariableSummary(selectedVariable, selectedYear, selectedPeriodMode)
+                    getNationalSummary: () => calculateNationalVariableSummary(selectedVariable, selectedYear, selectedPeriodMode),
+                    getTerritorySummary: properties => ({
+                        variable: selectedVariable,
+                        value: getVariableValue(properties, selectedVariable, selectedYear),
+                        period: getActivePeriodLabel(VARIABLE_CONFIGS[selectedVariable])
+                    })
                 });
                 window.REDSAInstitutional?.init({
                     // El indice liviano sirve para buscar, pero no contiene las
@@ -1020,6 +1023,9 @@
                     btnTheme.innerHTML = currentlyLight 
                         ? '<i class="fa-solid fa-moon"></i> Modo Oscuro' 
                         : '<i class="fa-solid fa-sun"></i> Modo Claro';
+                    document.dispatchEvent(new CustomEvent('redsa:themechange', {
+                        detail: { theme: currentlyLight ? 'light' : 'dark' }
+                    }));
                 });
             }
         });
