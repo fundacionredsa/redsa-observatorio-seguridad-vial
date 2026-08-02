@@ -89,7 +89,8 @@
         bandwidthProfile: "focused",
         activationStartedAt: null,
         activationCacheHit: false,
-        activationReadyTracked: false
+        activationReadyTracked: false,
+        fullLoadPending: false
     };
 
     function connectionType() {
@@ -133,7 +134,7 @@
     }
 
     function dataReadyForMode(mode = state.mode, year = state.year) {
-        return mode === "heat" ? hasHeatData(year) : hasFullData(year);
+        return mode === "heat" ? hasHeatData(year) : hasHeatData(year) || hasFullData(year);
     }
 
     function auditForYear(year = state.year) {
@@ -307,11 +308,12 @@
     }
 
     function cancelPending(reason = "cancelled") {
-        if (state.worker && state.requestId && state.status === "loading") {
+        if (state.worker && state.requestId && (state.status === "loading" || state.fullLoadPending)) {
             state.worker.postMessage({ type: "cancel", requestId: state.requestId });
             state.worker.terminate();
             state.worker = null;
             state.requestId = null;
+            state.fullLoadPending = false;
             trackAntEvent("ant_layer_load_cancelled", {
                 duration_ms: Number.isFinite(state.activationStartedAt)
                     ? Math.round(performance.now() - state.activationStartedAt)
@@ -338,6 +340,7 @@
         state.fullMetrics = null;
         state.pointCount = 0;
         state.cacheYears = [];
+        state.fullLoadPending = false;
     }
 
     function createWorker() {
@@ -364,7 +367,9 @@
         if (state.cacheYears.length && !state.cacheYears.includes(state.year)) {
             clearCachedYear();
         }
-        const requestedKind = state.mode === "heat" ? "heat" : "full";
+        // El compacto permite el primer dibujo de cualquier modo. Los
+        // atributos completos se incorporan luego sin bloquear el mapa.
+        const requestedKind = hasHeatData() || hasFullData() ? "full" : "heat";
         const cached = dataReadyForMode();
         state.activationStartedAt = performance.now();
         state.activationCacheHit = cached;
@@ -383,6 +388,7 @@
             syncControls();
             renderCurrentMode();
             requestTerritorySummary();
+            ensureFullDetails();
             return;
         }
         removeCurrentLayer();
@@ -406,6 +412,28 @@
         });
     }
 
+    function ensureFullDetails() {
+        if (
+            !state.active
+            || state.mode === "heat"
+            || !hasHeatData()
+            || hasFullData()
+            || state.fullLoadPending
+            || !state.worker
+            || !state.requestId
+        ) return;
+        const dataUrl = new URL(state.config.urlByYear[String(state.year)], document.baseURI);
+        if (state.config?.assetVersion) dataUrl.searchParams.set("v", state.config.assetVersion);
+        state.fullLoadPending = true;
+        state.loadKind = "full-background";
+        state.worker.postMessage({
+            type: "load-full",
+            requestId: state.requestId,
+            year: state.year,
+            url: dataUrl.href
+        });
+    }
+
     function handleWorkerMessage(event) {
         const message = event.data || {};
         if (message.requestId !== state.requestId) return;
@@ -424,10 +452,12 @@
             setStatus("ready");
             syncControls();
             renderCurrentMode();
+            ensureFullDetails();
             return;
         }
         if (message.type === "full-loaded") {
             if (Number(message.year) !== state.year) return;
+            state.fullLoadPending = false;
             if (hasHeatData(message.year) && state.heatPoints.length !== Number(message.pointCount)) {
                 console.error("El conteo ANT difiere entre el compacto de calor y el GeoJSON completo.");
                 setStatus("error");
@@ -456,6 +486,13 @@
         if (message.type === "summary") renderTerritorySummary(message);
         if (message.type === "error") {
             console.error(message.message);
+            if (state.fullLoadPending && hasHeatData()) {
+                state.fullLoadPending = false;
+                state.loadKind = null;
+                setStatus("ready", `La vista está disponible. No se pudo cargar el detalle; puedes volver a intentarlo cambiando de modo. Cobertura: ${coverageText()}`);
+                syncControls();
+                return;
+            }
             trackAntEvent("ant_layer_load_error", {
                 duration_ms: Number.isFinite(state.activationStartedAt)
                     ? Math.round(performance.now() - state.activationStartedAt)
@@ -498,7 +535,7 @@
     }
 
     function requestViewport(type) {
-        if (!state.worker || state.status !== "ready" || !hasFullData()) return;
+        if (!state.worker || state.status !== "ready" || !hasHeatData()) return;
         state.queryId += 1;
         state.worker.postMessage({
             type,
@@ -553,7 +590,8 @@
             visibleObjects: message.clusters.length,
             zoom: state.map.getZoom()
         };
-        setStatus("ready", `${message.clusters.length.toLocaleString("es-EC")} agrupaciones o casos visibles. Cobertura: ${coverageText()}`);
+        const detailStatus = message.detailReady ? "" : " Preparando el detalle en segundo plano.";
+        setStatus("ready", `${message.clusters.length.toLocaleString("es-EC")} agrupaciones o casos visibles. Cobertura: ${coverageText()}${detailStatus}`);
         trackReadyOnce();
     }
 
@@ -575,6 +613,7 @@
     }
 
     function caseMarker(feature, latlng, renderer, displaced) {
+        const isCompact = Boolean(feature.properties?._compact);
         const values = decodedCaseProperties(feature.properties || {});
         const marker = L.circleMarker(latlng, {
             renderer,
@@ -585,7 +624,13 @@
             fillColor: CASE_COLOR,
             fillOpacity: 0.88
         });
-        marker.bindPopup(`
+        marker.bindPopup(isCompact ? `
+            <div class="ant-case-popup">
+                <strong>Siniestro registrado por ANT</strong>
+                <p>El caso ya está ubicado en el mapa. Preparando el detalle del registro…</p>
+                <small>Fuente: ANT.</small>
+            </div>
+        ` : `
             <div class="ant-case-popup">
                 <strong>Siniestro registrado por ANT</strong>
                 <dl>
@@ -649,7 +694,9 @@
             truncated: message.truncated,
             zoom: state.map.getZoom()
         };
-        const detail = message.truncated
+        const detail = !message.detailReady
+            ? `${markers.length.toLocaleString("es-EC")} casos visibles. Preparando el detalle en segundo plano.`
+            : message.truncated
             ? `${message.totalVisible.toLocaleString("es-EC")} casos están en la vista; se dibujan 6.000. Acerca el mapa para verlos todos.`
             : `${markers.length.toLocaleString("es-EC")} casos visibles. Cobertura: ${coverageText()}`;
         setStatus("ready", detail);
@@ -956,6 +1003,7 @@
             metrics: state.metrics ? { ...state.metrics } : null,
             heatMetrics: state.heatMetrics ? { ...state.heatMetrics } : null,
             fullMetrics: state.fullMetrics ? { ...state.fullMetrics } : null,
+            fullLoadPending: state.fullLoadPending,
             renderMetrics: JSON.parse(JSON.stringify(state.renderMetrics)),
             cacheYears: [...state.cacheYears],
             downloaded: Boolean(state.heatPoints),

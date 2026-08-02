@@ -12,6 +12,7 @@ let abortController = null;
 let features = [];
 let clusterIndex = null;
 let metadata = null;
+let fullDataReady = false;
 const HEAT_COORDINATE_SCHEMA = "redsa-ant-heat-v1";
 
 function matchesTerritory(feature, level, code) {
@@ -75,8 +76,9 @@ async function fetchJsonBuffer(message) {
     const transferStarted = performance.now();
     const response = await fetch(message.url, {
         signal: abortController.signal,
-        // Revalidar evita mezclar un GeoJSON antiguo con su compacto actualizado.
-        cache: "no-cache"
+        // Las URLs llevan la version del dataset; la cache puede reutilizarse
+        // sin mezclar un GeoJSON antiguo con su compacto actualizado.
+        cache: "default"
     });
     if (!response.ok) throw new Error(`No se pudo descargar la capa ANT (${response.status}).`);
     const buffer = await response.arrayBuffer();
@@ -120,13 +122,21 @@ async function loadHeatData(message) {
         throw new Error("El conteo del derivado compacto ANT no coincide con sus coordenadas.");
     }
     const heatPoints = new Array(pointCount);
+    const compactFeatures = new Array(pointCount);
     for (let index = 0; index < pointCount; index += 1) {
-        heatPoints[index] = [
-            Number(coordinates[index * 2]) / scale,
-            Number(coordinates[index * 2 + 1]) / scale,
-            1
-        ];
+        const latitude = Number(coordinates[index * 2]) / scale;
+        const longitude = Number(coordinates[index * 2 + 1]) / scale;
+        heatPoints[index] = [latitude, longitude, 1];
+        compactFeatures[index] = {
+            type: "Feature",
+            geometry: { type: "Point", coordinates: [longitude, latitude] },
+            properties: { _compact: 1 }
+        };
     }
+    features = compactFeatures;
+    clusterIndex = null;
+    metadata = {};
+    fullDataReady = false;
     post("heat-loaded", {
         year: message.year,
         pointCount,
@@ -141,9 +151,6 @@ async function loadHeatData(message) {
 }
 
 async function loadFullData(message) {
-    features = [];
-    clusterIndex = null;
-    metadata = null;
     const result = await fetchJsonBuffer(message);
     if (!result || message.requestId !== activeRequestId) return;
     const { data, metrics } = result;
@@ -152,6 +159,7 @@ async function loadFullData(message) {
     metadata = data.metadata || {};
     const indexStarted = performance.now();
     clusterIndex = new Supercluster(SUPERCLUSTER_OPTIONS).load(features);
+    fullDataReady = true;
     const indexMs = performance.now() - indexStarted;
     const heatPoints = features.map(feature => {
         const [lon, lat] = feature.geometry.coordinates;
@@ -190,13 +198,17 @@ self.onmessage = async event => {
             await loadFullData(message);
             return;
         }
-        if (message.requestId !== activeRequestId || !clusterIndex) return;
+        if (message.requestId !== activeRequestId || !features.length) return;
         if (message.type === "clusters") {
             const started = performance.now();
+            if (!clusterIndex) {
+                clusterIndex = new Supercluster(SUPERCLUSTER_OPTIONS).load(features);
+            }
             const clusters = clusterIndex.getClusters(message.bbox, Math.max(0, Math.min(18, message.zoom)));
             post("clusters", {
                 queryId: message.queryId,
                 clusters,
+                detailReady: fullDataReady,
                 queryMs: performance.now() - started
             });
             return;
@@ -209,11 +221,13 @@ self.onmessage = async event => {
                 totalVisible: matching.length,
                 truncated: matching.length > MAX_CASES_PER_QUERY,
                 features: matching.slice(0, MAX_CASES_PER_QUERY),
+                detailReady: fullDataReady,
                 queryMs: performance.now() - started
             });
             return;
         }
         if (message.type === "summary") {
+            if (!fullDataReady) return;
             const started = performance.now();
             post("summary", {
                 queryId: message.queryId,

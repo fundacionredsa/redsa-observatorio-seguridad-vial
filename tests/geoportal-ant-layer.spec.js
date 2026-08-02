@@ -75,6 +75,10 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
 test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {
   const requests = [];
   const workerRequests = [];
+  await page.route("**/siniestros_ant_2025.geojson*", async route => {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    await route.continue();
+  });
   page.on("request", request => {
     if (/siniestros_ant_2025(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
     if (/ant-layer-worker\.js/.test(request.url())) workerRequests.push(request.url());
@@ -125,8 +129,11 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   await page.locator("[data-ant-mode='clusters']").click();
   await page.waitForFunction(() => {
     const audit = window.REDSAAntLayer.getAuditState();
-    return audit.fullLoadedYear === 2025 && Boolean(audit.renderMetrics.clusters);
+    return audit.fullLoadPending && audit.fullLoadedYear === null && Boolean(audit.renderMetrics.clusters);
   }, null, { timeout: 90_000 });
+  state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  expect(state.dataSource).toBe("heat-compact");
+  await expect(page.locator("#ant-layer-status")).toContainText("Preparando el detalle en segundo plano");
   const runtimeVersion = await page.locator('script[src*="geoportal-ant-layer.js"]').evaluate(script => (
     new URL(script.src).searchParams.get("v")
   ));
@@ -139,6 +146,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
     clusterCanvasParent: document.querySelector(".leaflet-event-pane canvas")?.parentElement?.className || ""
   }));
   expect(paneAudit.clusterCanvasParent).toContain("leaflet-event-pane");
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().fullLoadedYear === 2025, null, { timeout: 90_000 });
   await page.locator("[data-ant-mode='cases']").click();
   await page.waitForFunction(() => Boolean(window.REDSAAntLayer.getAuditState().renderMetrics.cases));
   paneAudit = await page.evaluate(() => ({
@@ -164,27 +172,39 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   await expect(legend).toContainText("no mide riesgo individual");
 });
 
-test("si el GeoJSON completo se cargó primero, Calor no solicita el compacto", async ({ page }, testInfo) => {
+test("Casos se dibuja con el compacto antes de completar sus atributos", async ({ page }, testInfo) => {
   const requests = [];
+  await page.route("**/siniestros_ant_2025.geojson*", async route => {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    await route.continue();
+  });
   page.on("request", request => {
     if (/siniestros_ant_2025(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
   });
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.locator("#event-layer-disclosure summary").click();
-  await page.evaluate(() => window.REDSAAntLayer.setMode("clusters"));
+  await page.evaluate(() => window.REDSAAntLayer.setMode("cases"));
   await page.locator("#ant-layer-toggle").check();
   await page.waitForFunction(() => {
     const audit = window.REDSAAntLayer.getAuditState();
-    return audit.status === "ready" && audit.fullLoadedYear === 2025;
+    return audit.status === "ready"
+      && audit.fullLoadPending
+      && audit.fullLoadedYear === null
+      && Boolean(audit.renderMetrics.cases);
   }, null, { timeout: 90_000 });
+  let state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  expect(state.dataSource).toBe("heat-compact");
+  expect(state.renderMetrics.cases.visibleCases).toBeGreaterThan(0);
+  await expect(page.locator("#ant-layer-status")).toContainText("Preparando el detalle en segundo plano");
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().fullLoadedYear === 2025, null, { timeout: 90_000 });
   await page.evaluate(() => window.REDSAAntLayer.setMode("heat"));
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().mode === "heat");
-  const state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
+  state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
   expect(state.dataSource).toBe("full-geojson");
   expect(state.pointCount).toBe(20_148);
   expect(requests.filter(isFullAntGeoJson)).toHaveLength(1);
-  expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(0);
+  expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
 });
 
 test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo año en caché", async ({ page }, testInfo) => {
