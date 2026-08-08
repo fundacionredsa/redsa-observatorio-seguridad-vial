@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.40">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.40">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.40">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.41">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.41">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.41">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -69,8 +69,16 @@
 
     <!-- Loader Overlay -->
     <div id="loader" class="loader-overlay">
-        <div class="spinner"></div>
+        <div class="loader-mark" aria-hidden="true">
+            <svg viewBox="0 0 360 400" focusable="false">
+                <use class="loader-mark-contour" href="assets/img/loader-ecuador-contorno.svg#loader-contour-path"></use>
+                <use class="loader-mark-roads" href="assets/img/loader-vias-principales.svg#loader-roads-path"></use>
+            </svg>
+        </div>
         <div class="loader-text">Cargando Geoportal...</div>
+        <div class="loader-progress" role="progressbar" aria-label="Carga del geoportal en curso">
+            <span class="loader-progress-track"></span>
+        </div>
         <div id="loader-status" class="loader-subtext">Descargando datos territoriales...</div>
     </div>
 
@@ -190,6 +198,13 @@
                 <div id="legend-timeline-control-slot" class="legend-control-slot legend-timeline-control-slot"></div>
             </div>
             <div id="legend-context-slot" class="legend-context-slot"></div>
+            <section id="legend-active-layers-card" class="legend-active-layers-card" aria-labelledby="legend-active-layers-title">
+                <header class="legend-active-layers-header">
+                    <h3 id="legend-active-layers-title">Leyenda activa</h3>
+                    <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
+                </header>
+                <div id="legend-active-layers-list" class="legend-active-layers-list" aria-live="polite"></div>
+            </section>
             <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
                 <div class="profile-card-header">
                     <div class="profile-card-heading-wrap">
@@ -337,18 +352,18 @@
 
             <section class="institutional-panel ranking-panel" id="institutional-panel-ranking" role="tabpanel" aria-labelledby="institutional-tab-ranking" data-institutional-panel="ranking">
                 <div class="ranking-heading">
-                    <div>
-                        <h3 id="ranking-variable-title">Ranking nacional</h3>
-                        <p id="ranking-variable-description"></p>
-                    </div>
+                    <p id="ranking-variable-description"></p>
                     <span class="ranking-period" id="ranking-period"></span>
                 </div>
                 <p class="ranking-coverage" id="ranking-coverage" aria-live="polite"></p>
-                <div class="ranking-search-wrap">
-                    <label for="ranking-search-input">Busca tu cantón</label>
-                    <input id="ranking-search-input" type="search" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
-                    <p id="ranking-search-status" role="status" aria-live="polite"></p>
+                <div class="ranking-toolbar">
+                    <div class="ranking-search-wrap">
+                        <label for="ranking-search-input">Busca tu cantón</label>
+                        <input id="ranking-search-input" type="search" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
+                    </div>
+                    <output id="ranking-variable-title" class="ranking-variable-chip" aria-label="Variable activa">Ranking nacional</output>
                 </div>
+                <p id="ranking-search-status" role="status" aria-live="polite"></p>
                 <div class="ranking-table-wrap" id="ranking-table-wrap">
                     <table class="ranking-table">
                         <thead>
@@ -362,6 +377,9 @@
                         <tbody id="ranking-table-body"></tbody>
                     </table>
                 </div>
+                <footer class="ranking-table-footer" id="ranking-table-footer">
+                    <span id="ranking-count" aria-live="polite"></span>
+                </footer>
                 <div class="ranking-empty" id="ranking-empty" hidden></div>
             </section>
 
@@ -648,17 +666,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.40"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.40"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.41"></script>
 </body>
 </html>

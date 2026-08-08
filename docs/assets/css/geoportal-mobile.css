@@ -418,6 +418,19 @@
         gap: 4px;
     }
 
+    .ranking-toolbar {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .ranking-variable-chip {
+        max-width: none;
+        justify-self: stretch;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
     .ranking-table-wrap {
         max-height: calc(100dvh - 340px);
     }

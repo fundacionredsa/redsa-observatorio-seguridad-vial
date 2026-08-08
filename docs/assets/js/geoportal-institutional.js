@@ -38,6 +38,8 @@
             searchStatus: document.getElementById("ranking-search-status"),
             tableWrap: document.getElementById("ranking-table-wrap"),
             tableBody: document.getElementById("ranking-table-body"),
+            tableFooter: document.getElementById("ranking-table-footer"),
+            count: document.getElementById("ranking-count"),
             empty: document.getElementById("ranking-empty"),
             citationDate: document.getElementById("citation-current-date")
         };
@@ -125,6 +127,11 @@
         } else {
             elements.searchStatus.textContent = `${filtered.length} coincidencias. La posición conserva el orden nacional de la variable activa.`;
         }
+        if (elements.count) {
+            elements.count.textContent = query
+                ? `${filtered.length} de ${state.rows.length} cantones con dato`
+                : `${state.rows.length} cantones con dato comparable`;
+        }
         updateSortState();
     }
 
@@ -139,6 +146,7 @@
         elements.coverage.textContent = `${state.totalCount} cantones excluidos: no existe un valor cantonal comparable para esta selección.`;
         elements.searchWrap.hidden = true;
         elements.tableWrap.hidden = true;
+        if (elements.tableFooter) elements.tableFooter.hidden = true;
         elements.empty.hidden = false;
         elements.empty.textContent = reason;
         elements.tableBody.innerHTML = "";
@@ -198,6 +206,7 @@
         elements.coverage.textContent = `${validRows.length} cantones con dato comparable. ${state.excludedCount} cantones sin dato fueron excluidos del ranking; no se trataron como cero.`;
         elements.searchWrap.hidden = false;
         elements.tableWrap.hidden = !validRows.length;
+        if (elements.tableFooter) elements.tableFooter.hidden = !validRows.length;
         elements.empty.hidden = Boolean(validRows.length);
         elements.empty.textContent = validRows.length
             ? ""
