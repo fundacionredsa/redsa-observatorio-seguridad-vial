@@ -243,9 +243,9 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
   await expect(page.locator("#citizen-panel")).toBeVisible();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
-  await page.locator('[data-right-panel="methodology"]').click();
-  await expect(page.locator("#methodology-context-panel")).toBeVisible();
-  await expect(page.locator("#methodology-context-panel")).toContainText("Metodología");
+  await page.locator("#site-methodology-toggle").click();
+  await expect(page.locator("#site-methodology-menu")).toBeVisible();
+  await expect(page.locator("#site-methodology-menu")).toContainText("Metodología");
 
   await page.evaluate(() => {
     window.__redsaAudit.setOverlay("Ciclovías", true);
@@ -774,8 +774,8 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
   test.skip(testInfo.project.name !== "mobile", "Geometria y lectura movil del modal institucional.");
   await page.setViewportSize({ width: 390, height: 844 });
   await loadPortal(page);
-  await page.locator("#mobile-citizen-toggle").tap();
-  await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
+  await page.locator("#site-topbar-menu-toggle").tap();
+  await expect(page.locator("#site-topbar-actions")).toBeVisible();
   await page.locator("#open-institutional-button").tap();
 
   const geometry = await page.locator("#institutional-modal .institutional-dialog").boundingBox();

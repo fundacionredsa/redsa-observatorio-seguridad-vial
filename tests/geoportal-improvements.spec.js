@@ -13,6 +13,13 @@ async function openCitizenPanelWhenNeeded(page) {
     }
 }
 
+async function openSiteMenuWhenNeeded(page) {
+    if ((page.viewportSize()?.width || 0) <= 768 && !await page.locator('#site-topbar-actions').isVisible()) {
+        await page.locator('#site-topbar-menu-toggle').click();
+        await expect(page.locator('#site-topbar-actions')).toBeVisible();
+    }
+}
+
 test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -122,6 +129,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             test.skip(!isMobile, 'Tour test is for mobile');
 
             await page.evaluate(() => window.setMobilePanel?.('citizen', true));
+            await openSiteMenuWhenNeeded(page);
             await page.locator('#btn-tour').click();
 
             const popover = page.locator('.driver-popover');
@@ -136,7 +144,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '[data-right-panel="basemap"]',
                 '#event-layer-disclosure',
                 '#legend-context-panel',
-                '[data-right-panel="methodology"]',
+                '#site-methodology-toggle',
                 '#btn-catalog',
                 '#citizen-panel',
                 '#open-institutional-button'
@@ -188,6 +196,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block C: Data Catalog', () => {
         test('catalog modal opens and displays variables', async ({ page }) => {
+            await openSiteMenuWhenNeeded(page);
             const btnCatalog = page.locator('#btn-catalog');
             await expect(btnCatalog).toBeVisible();
             await btnCatalog.click();
@@ -279,6 +288,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const closeBtn = modal.locator('#catalog-modal-close');
             await closeBtn.click();
             await expect(modal).toBeHidden();
+            await openSiteMenuWhenNeeded(page);
             await btnCatalog.click();
             await expect(modal).toBeVisible();
             await expect(variablesTab).toHaveAttribute('aria-selected', 'true');
@@ -287,8 +297,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('methodology links use the professional interface and drawer has no direct download', async ({ page }) => {
-            await page.locator('[data-right-panel="methodology"]').click();
-            const links = page.locator('#methodology-context-panel .technical-links a');
+            if ((page.viewportSize()?.width || 0) <= 768) await page.locator('#site-topbar-menu-toggle').click();
+            await page.locator('#site-methodology-toggle').click();
+            const links = page.locator('#site-methodology-menu a');
             await expect(links).toHaveCount(4);
             const hrefs = await links.evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
@@ -452,6 +463,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
         test('GA4 privacy notice is visible in "¿Por qué confiar?" section', async ({ page }) => {
             await openCitizenPanelWhenNeeded(page);
+            await openSiteMenuWhenNeeded(page);
             const openInstitutionalBtn = page.locator('#open-institutional-button');
             await openInstitutionalBtn.click();
             const btnTrust = page.locator('#institutional-tab-trust');

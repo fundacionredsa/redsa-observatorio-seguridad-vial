@@ -32,7 +32,7 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha controla un solo panel de cuatro pestañas con Leyenda por defecto", async ({ page }) => {
+test("la barra derecha controla un solo panel de tres pestañas con Leyenda por defecto", async ({ page }) => {
   await loadPortal(page);
 
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
@@ -43,22 +43,19 @@ test("la barra derecha controla un solo panel de cuatro pestañas con Leyenda po
   const legendButton = page.locator('[data-right-panel="legend"]');
   const layersButton = page.locator('[data-right-panel="layers"]');
   const basemapButton = page.locator('[data-right-panel="basemap"]');
-  const methodologyButton = page.locator('[data-right-panel="methodology"]');
   const viewport = page.viewportSize();
 
   await expect(rail).toBeVisible();
-  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(4);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(3);
   await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
     "Leyenda",
     "Datos y capas",
-    "Mapas base",
-    "Metodología y fuentes"
+    "Mapas base"
   ]);
   await expect(legendButton).toHaveAttribute("aria-selected", "true");
   await expect(legendButton).toHaveAttribute("aria-expanded", "true");
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
   await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
-  await expect(methodologyButton).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("#right-context-host")).toBeVisible();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
@@ -77,18 +74,53 @@ test("la barra derecha controla un solo panel de cuatro pestañas con Leyenda po
   await basemapButton.press("ArrowUp");
   await expect(layersButton).toBeFocused();
   await expect(page.locator("#technical-drawer")).toBeVisible();
-  await methodologyButton.click();
-  await expect(page.locator("#methodology-context-panel")).toBeVisible();
-  await expect(page.locator("#basemap-context-panel")).toBeHidden();
-  await methodologyButton.click();
-  await expect(page.locator("#right-context-host")).toBeHidden();
-
   await legendButton.click();
   const panel = await box(page, "#right-context-host");
   const railBox = await box(page, "#right-tools-rail");
   expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
   expect(intersects(panel, railBox)).toBeFalsy();
   expect(panel.right).toBeLessThanOrEqual(viewport.width);
+});
+
+test("la barra superior concentra accesos y el buscador refleja capas extra en vivo", async ({ page }) => {
+  await loadPortal(page);
+  const isMobile = (page.viewportSize()?.width || 0) <= 768;
+
+  await expect(page.locator("#site-topbar #open-institutional-button")).toHaveCount(1);
+  await expect(page.locator("#site-topbar #btn-catalog")).toHaveCount(1);
+  await expect(page.locator("#site-topbar #site-methodology-toggle")).toHaveCount(1);
+  await expect(page.locator("#site-topbar #btn-tour")).toHaveCount(1);
+  await expect(page.locator("#citizen-panel #open-institutional-button, #citizen-panel #btn-tour")).toHaveCount(0);
+  await expect(page.locator("#right-tools-rail #btn-catalog, #right-tab-methodology, #methodology-context-panel")).toHaveCount(0);
+
+  if (isMobile) {
+    await page.locator("#site-topbar-menu-toggle").click();
+  }
+  await expect(page.locator("#site-topbar-actions")).toBeVisible();
+  await page.locator("#site-methodology-toggle").click();
+  await expect(page.locator("#site-methodology-menu a")).toHaveCount(4);
+  await expect(page.locator("#site-methodology-menu")).toBeVisible();
+  await page.locator("#site-methodology-toggle").click();
+  if (isMobile) {
+    await page.locator("#site-topbar-menu-toggle").click();
+    await page.locator("#mobile-citizen-toggle").click();
+    await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
+  }
+
+  const shortcut = page.locator("#active-layers-shortcut");
+  await expect(shortcut).toHaveAttribute("data-active-layer-count", "1");
+  await expect(shortcut).not.toHaveClass(/has-extra-layers/);
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
+  await expect(shortcut).toHaveAttribute("data-active-layer-count", "2");
+  await expect(shortcut).toHaveClass(/has-extra-layers/);
+  await expect(shortcut).toHaveAttribute("aria-label", /2 capas activas/);
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", false));
+  await expect(shortcut).toHaveAttribute("data-active-layer-count", "1");
+  await expect(shortcut).not.toHaveClass(/has-extra-layers/);
+
+  await shortcut.click();
+  await expect(page.locator("#technical-drawer")).toBeVisible();
+  await expect(shortcut).toHaveAttribute("aria-expanded", "true");
 });
 
 test("los cambios cartográficos y la selección territorial regresan a Leyenda", async ({ page }) => {
@@ -604,8 +636,8 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   });
   await loadPortal(page);
 
-  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(3);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(8);
+  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);
@@ -649,16 +681,18 @@ test("ubicación informa cuando el permiso es denegado", async ({ page }, testIn
   await expect(page.locator("#map-locate")).toBeEnabled();
 });
 
-test("catálogo vive en la barra y el panel ciudadano conserva una jerarquía compacta", async ({ page }) => {
+test("catálogo vive en la barra superior y el panel ciudadano conserva una jerarquía compacta", async ({ page }) => {
   await loadPortal(page);
   await expect(page.locator("#citizen-panel #btn-catalog")).toHaveCount(0);
-  await expect(page.locator("#right-tools-rail #btn-catalog")).toBeVisible();
+  await expect(page.locator("#right-tools-rail #btn-catalog")).toHaveCount(0);
+  await expect(page.locator("#site-topbar #btn-catalog")).toHaveCount(1);
   await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
   await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toHaveText("Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.");
   await expect(page.locator("#citizen-panel .citizen-intro-full, #citizen-panel .citizen-intro-mobile")).toHaveCount(0);
   expect(await page.locator("#download-summary-button").evaluate(element => element.hidden)).toBeTruthy();
 
-  await page.locator("#right-tools-rail #btn-catalog").click();
+  if ((page.viewportSize()?.width || 0) <= 768) await page.locator("#site-topbar-menu-toggle").click();
+  await page.locator("#site-topbar #btn-catalog").click();
   await expect(page.locator("#catalog-modal")).toBeVisible();
   await page.locator("#catalog-modal-close").click();
   await page.evaluate(() => window.__redsaAudit.showTerritory("province", "17"));

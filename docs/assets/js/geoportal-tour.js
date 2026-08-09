@@ -14,6 +14,8 @@
 
         const openCitizenPanelForTour = () => {
             window.setRightContextPanel?.(null, false);
+            window.setSiteMethodologyMenu?.(false);
+            window.setSiteTopbarMenu?.(false);
             if (typeof window.setMobilePanel === "function") {
                 window.setMobilePanel("citizen", true);
             }
@@ -39,12 +41,19 @@
             window.setRightContextPanel?.("basemap", true);
         };
 
+        const prepareSiteTopbarForTour = () => {
+            window.setMobilePanel?.("citizen", false);
+            window.setSiteTopbarMenu?.(true);
+        };
+
         const prepareMethodologyForTour = () => {
-            window.setRightContextPanel?.("methodology", true);
+            prepareSiteTopbarForTour();
+            window.setSiteMethodologyMenu?.(true);
         };
 
         const prepareCatalogForTour = () => {
-            window.setMobilePanel?.("citizen", false);
+            window.setSiteMethodologyMenu?.(false);
+            prepareSiteTopbarForTour();
         };
 
         const prepareAntLayerForTour = () => {
@@ -66,6 +75,8 @@
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
                 window.setRightContextPanel?.("legend", true);
+                window.setSiteMethodologyMenu?.(false);
+                window.setSiteTopbarMenu?.(false);
                 if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
                 if (isMobile) window.setMobilePanel?.("sidebar", false);
             },
@@ -153,7 +164,7 @@
                     }
                 },
                 {
-                    element: '[data-right-panel="methodology"]',
+                    element: '#site-methodology-toggle',
                     onHighlightStarted: prepareMethodologyForTour,
                     popover: {
                         title: 'Metodología y fuentes',
@@ -184,7 +195,7 @@
                 },
                 {
                     element: '#open-institutional-button',
-                    onHighlightStarted: openCitizenPanelForTour,
+                    onHighlightStarted: prepareSiteTopbarForTour,
                     popover: {
                         title: 'Ranking, confianza y citación',
                         description: 'Compara los 224 cantones, conoce por qué confiar en el tratamiento de los datos y obtén la cita sugerida del Observatorio.',

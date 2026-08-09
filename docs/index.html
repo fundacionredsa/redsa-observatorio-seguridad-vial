@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.41">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.41">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.41">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.42">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.42">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.42">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -82,6 +82,39 @@
         <div id="loader-status" class="loader-subtext">Descargando datos territoriales...</div>
     </div>
 
+    <header class="site-topbar" id="site-topbar">
+        <a class="site-topbar-brand" href="./" aria-label="Fundación REDSA, inicio del geoportal">
+            <span class="site-topbar-brand-mark" aria-hidden="true">R</span>
+            <span><strong>Fundación REDSA</strong><small>Observatorio de Seguridad Vial</small></span>
+        </a>
+        <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            <span>Menú</span>
+        </button>
+        <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio">
+            <button class="site-topbar-action" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal">
+                <i class="fa-solid fa-ranking-star" aria-hidden="true"></i><span>Ranking Nacional</span>
+            </button>
+            <button class="site-topbar-action" id="btn-catalog" type="button" aria-haspopup="dialog" aria-controls="catalog-modal">
+                <i class="fa-solid fa-database" aria-hidden="true"></i><span>Catálogo de Datos</span>
+            </button>
+            <div class="site-topbar-methodology">
+                <button class="site-topbar-action" id="site-methodology-toggle" type="button" aria-expanded="false" aria-controls="site-methodology-menu" aria-haspopup="true">
+                    <i class="fa-solid fa-book-open" aria-hidden="true"></i><span>Metodología</span><i class="fa-solid fa-chevron-down site-topbar-chevron" aria-hidden="true"></i>
+                </button>
+                <div class="site-methodology-menu" id="site-methodology-menu" role="menu" aria-label="Metodología del Observatorio" hidden>
+                    <a role="menuitem" href="metodologia/#fuentes">Inventario y fuentes de datos</a>
+                    <a role="menuitem" href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
+                    <a role="menuitem" href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
+                    <a role="menuitem" href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
+                </div>
+            </div>
+            <button class="site-topbar-action" id="btn-tour" type="button">
+                <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span>Ayuda</span>
+            </button>
+        </nav>
+    </header>
+
     <section class="citizen-panel" id="citizen-panel" aria-label="Explorar la seguridad vial de mi territorio">
         <div class="citizen-panel-topbar">
             <button type="button" id="mobile-citizen-close" class="mobile-citizen-close" aria-label="Cerrar panel">✕</button>
@@ -99,6 +132,10 @@
             <div class="citizen-search-row">
                 <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" aria-label="Buscar una provincia, cantón o parroquia" placeholder="Ej. Pichincha, Quito o Calderón">
                 <datalist id="territory-search-list"></datalist>
+                <button class="citizen-layers-shortcut" id="active-layers-shortcut" type="button" aria-label="Abrir Datos y capas" aria-controls="technical-drawer" aria-expanded="false">
+                    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                    <span class="citizen-layers-indicator" aria-hidden="true"></span>
+                </button>
                 <button class="citizen-search-button" type="submit" aria-label="Buscar territorio">&#8981;</button>
             </div>
             <div class="citizen-search-status" id="territory-search-status" role="status"></div>
@@ -116,11 +153,9 @@
         </div>
         <div class="citizen-actions">
             <button class="citizen-action citizen-action-primary" id="open-analysis-button" type="button">Ver análisis completo</button>
-            <button class="citizen-action" id="btn-tour" type="button"><i class="fa-solid fa-route"></i> Tour guiado</button>
             <button class="citizen-action" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro"><i class="fa-solid fa-sun"></i> Modo Claro</button>
             <button class="citizen-action citizen-action-wide" id="download-summary-button" type="button" disabled hidden><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF</button>
         </div>
-        <button class="institutional-entry" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal">Ver ranking nacional</button>
         <a class="citizen-contact" href="mailto:info@fundacionredsa.org"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Contacto: info@fundacionredsa.org</a>
     </section>
 
@@ -166,16 +201,6 @@
             <button class="right-tool-button" id="right-tab-basemap" type="button" role="tab" data-right-panel="basemap" aria-controls="basemap-context-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Mapas base" title="Mapas base">
                 <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
                 <span class="right-tool-label">Mapas base</span>
-            </button>
-            <button class="right-tool-button right-tool-methodology-tab" id="right-tab-methodology" type="button" role="tab" data-right-panel="methodology" aria-controls="methodology-context-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Metodología y fuentes" title="Metodología y fuentes">
-                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
-                <span class="right-tool-label">Metodología y fuentes</span>
-            </button>
-        </div>
-        <div class="right-tool-group right-reference-tools" role="group" aria-label="Catálogo del Observatorio">
-            <button class="right-tool-button" id="btn-catalog" type="button" aria-haspopup="dialog" aria-controls="catalog-modal" aria-label="Catálogo de datos" title="Catálogo de datos">
-                <i class="fa-solid fa-database" aria-hidden="true"></i>
-                <span class="right-tool-label">Catálogo de datos</span>
             </button>
         </div>
         <!-- Backlog: Consultar elementos podrá reutilizar handleTerritoryClick y
@@ -291,21 +316,6 @@
             <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar mapas base" title="Cerrar mapas base">&times;</button>
         </header>
         <div id="basemap-context-slot" class="basemap-context-slot"></div>
-    </section>
-    <section class="right-context-view methodology-context-panel" id="methodology-context-panel" role="tabpanel" data-right-context-view="methodology" hidden aria-hidden="true" aria-labelledby="right-tab-methodology" tabindex="0">
-        <header class="right-context-section-header">
-            <div>
-                <h2 id="methodology-context-title">Metodología y fuentes</h2>
-                <p>Consulta cómo se preparan, comparan y documentan los datos.</p>
-            </div>
-            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar metodología y fuentes" title="Cerrar metodología y fuentes">&times;</button>
-        </header>
-        <nav class="technical-links methodology-context-links" aria-label="Metodología del observatorio">
-            <a href="metodologia/#fuentes">Inventario y fuentes de datos</a>
-            <a href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
-            <a href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
-            <a href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
-        </nav>
     </section>
     </div>
     </div>
@@ -666,17 +676,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.41"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.41"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.42"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.42"></script>
 </body>
 </html>
