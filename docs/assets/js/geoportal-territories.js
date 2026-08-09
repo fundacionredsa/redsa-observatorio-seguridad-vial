@@ -302,6 +302,62 @@ function onEachProvinceFeature(feature, layer) {
             `;
         }
 
+        function activeLayerSymbol(item, fallbackColors = []) {
+            const colors = item?.colors?.length ? item.colors : fallbackColors;
+            const background = item?.shape === "gradient" || colors.length > 1
+                ? `linear-gradient(90deg, ${colors.join(", ")})`
+                : (item?.color || colors[0] || COLOR_BOUNDARY);
+            const circleClass = item?.shape === "circle" ? " is-circle" : "";
+            return `<span class="legend-active-layer-symbol${circleClass}" style="background:${background}"></span>`;
+        }
+
+        function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
+            const list = document.getElementById("legend-active-layers-list");
+            const count = document.getElementById("legend-active-layers-count");
+            if (!list || !count) return;
+
+            const activeLayers = [];
+            if (selectedVariable !== "normal") {
+                const config = VARIABLE_CONFIGS[selectedVariable];
+                const colors = activeVariableBins.colors?.length
+                    ? activeVariableBins.colors
+                    : (config?.colors || []);
+                const levelLabel = LEVEL_LABELS[currentLevel] || "territorio";
+                const unavailable = effectiveVariable === "normal";
+                activeLayers.push({
+                    title: config?.displayLabel || config?.label || "Variable territorial",
+                    subtitle: unavailable ? `No disponible en ${levelLabel}` : `Variable territorial · ${levelLabel}`,
+                    symbol: activeLayerSymbol({ shape: "gradient", colors }),
+                    info: config?.infoSigla ? siglaInfoIcon(config.infoSigla) : siglaInfoIcon("Información", config?.description || "Variable territorial activa.")
+                });
+            }
+
+            overlayEntries.forEach(entry => {
+                const firstItem = entry.items?.[0] || {};
+                const info = entry.id === "siniestros_ant"
+                    ? siglaInfoIcon("ANT_SINIESTROS")
+                    : siglaInfoIcon(
+                        "Información",
+                        entry.infoText || `${entry.title}: capa activa en el mapa.`
+                    );
+                activeLayers.push({
+                    title: entry.title,
+                    subtitle: entry.subtitle || firstItem.label || "Capa de infraestructura vial",
+                    symbol: activeLayerSymbol(firstItem),
+                    info
+                });
+            });
+
+            list.innerHTML = activeLayers.map(layer => `
+                <div class="legend-active-layer-row">
+                    ${layer.symbol}
+                    <span class="legend-active-layer-name">${layer.title}<small>${layer.subtitle}</small></span>
+                    ${layer.info}
+                </div>
+            `).join("");
+            count.textContent = `${activeLayers.length} ${activeLayers.length === 1 ? "capa" : "capas"}`;
+        }
+
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
         function updateLegend() {
             const container = document.getElementById("legend-items");
@@ -473,6 +529,7 @@ function onEachProvinceFeature(feature, layer) {
 
             let hasActiveOsmLayer = false;
             const overlayLegendEntries = window.REDSAOverlayState?.getLegendEntries?.() || [];
+            renderActiveLayersCard(currentLevel, effectiveVariable, overlayLegendEntries);
             overlayLegendEntries.forEach(entry => {
                 hasItems = true;
                 hasActiveOsmLayer = hasActiveOsmLayer || Boolean(entry.osmAudit);
