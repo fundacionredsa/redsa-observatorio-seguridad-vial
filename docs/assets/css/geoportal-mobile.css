@@ -6,6 +6,80 @@
  */
 
 @media (max-width: 768px) {
+    .site-topbar {
+        height: var(--site-topbar-mobile-height);
+        padding: 0 10px 0 12px;
+    }
+
+    .site-topbar-brand-mark {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .site-topbar-brand small {
+        display: none;
+    }
+
+    .site-topbar-menu-toggle {
+        display: inline-flex;
+        min-height: 40px;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 10px;
+        border: 1px solid var(--border-glass);
+        border-radius: 6px;
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+        color: var(--text-primary);
+        font: inherit;
+        font-size: 0.72rem;
+        font-weight: 750;
+        cursor: pointer;
+    }
+
+    .site-topbar-actions {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 8px;
+        display: none;
+        width: min(300px, calc(100vw - 16px));
+        align-items: stretch;
+        padding: 7px;
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        background: var(--bg-panel, var(--bg-glass));
+        box-shadow: var(--shadow);
+    }
+
+    .site-topbar-actions.is-open {
+        display: grid;
+    }
+
+    .site-topbar-action {
+        width: 100%;
+        min-height: 44px;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .site-topbar-methodology,
+    .site-topbar-methodology .site-topbar-action {
+        width: 100%;
+    }
+
+    .site-topbar-chevron {
+        margin-left: auto;
+    }
+
+    .site-methodology-menu {
+        position: static;
+        width: auto;
+        margin: 2px 4px 6px 28px;
+        padding: 4px;
+        border-radius: 6px;
+        box-shadow: none;
+    }
+
     .ant-summary-totals {
         grid-template-columns: 1fr;
     }
@@ -18,7 +92,7 @@
         --ui-padding: 10px;
         --ui-gap: 10px;
         --mobile-edge: 10px;
-        --mobile-top-offset: 66px;
+        --mobile-top-offset: var(--mobile-context-top);
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
         --road-scale-bottom-offset: 64px;
         --legend-bottom-clearance: 86px;
@@ -39,7 +113,7 @@
     .mobile-nav-toggle {
         display: inline-flex;
         position: fixed;
-        top: var(--mobile-edge);
+        top: calc(var(--site-topbar-mobile-height) + var(--mobile-edge));
         z-index: var(--z-mobile-navigation);
         min-width: 44px;
         min-height: 44px;
@@ -201,12 +275,12 @@
 
     .sidebar {
         position: fixed;
-        top: 0;
+        top: var(--site-topbar-mobile-height);
         left: 0;
         bottom: 0;
         width: var(--mobile-drawer-width);
-        height: 100dvh;
-        max-height: 100dvh;
+        height: calc(100dvh - var(--site-topbar-mobile-height));
+        max-height: calc(100dvh - var(--site-topbar-mobile-height));
         --analysis-drawer-padding: 16px;
         --analysis-drawer-bottom-padding: 32px;
         padding: var(--analysis-drawer-padding);

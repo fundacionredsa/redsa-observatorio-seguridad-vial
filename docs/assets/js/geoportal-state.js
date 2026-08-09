@@ -109,7 +109,8 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
-        const RIGHT_CONTEXT_PANELS = Object.freeze(["legend", "layers", "basemap", "methodology"]);
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["legend", "layers", "basemap"]);
+        const TOPBAR_CLOSE_KEY = "Escape";
         const MAP_ZOOM_STEP = 1;
         const GEOLOCATION_OPTIONS = Object.freeze({
             setView: false,
@@ -327,6 +328,12 @@
         const zoomOutButton = document.getElementById("map-zoom-out");
         const locateButton = document.getElementById("map-locate");
         const rightToolsStatus = document.getElementById("right-tools-status");
+        const activeLayersShortcut = document.getElementById("active-layers-shortcut");
+        const siteTopbar = document.getElementById("site-topbar");
+        const siteTopbarMenuToggle = document.getElementById("site-topbar-menu-toggle");
+        const siteTopbarActions = document.getElementById("site-topbar-actions");
+        const siteMethodologyToggle = document.getElementById("site-methodology-toggle");
+        const siteMethodologyMenu = document.getElementById("site-methodology-menu");
         let activeRightPanel = null;
         let geolocationPending = false;
         let locationMarker = null;
@@ -374,6 +381,7 @@
             document.body.classList.toggle("mobile-right-context-open", Boolean(nextPanel) && mobileMediaQuery.matches);
             technicalDrawer?.setAttribute("aria-hidden", String(!layersOpen));
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
+            activeLayersShortcut?.setAttribute("aria-expanded", String(layersOpen));
             mobileLayersToggle?.setAttribute("aria-expanded", String(layersOpen));
             mobileLegendToggle?.setAttribute("aria-expanded", String(legendOpen));
 
@@ -464,6 +472,25 @@
 
         function setDesktopTechnicalPanel(open) {
             setRightContextPanel("layers", Boolean(open));
+        }
+
+        function setSiteMethodologyMenu(open, options = {}) {
+            const shouldOpen = Boolean(open);
+            if (siteMethodologyMenu) siteMethodologyMenu.hidden = !shouldOpen;
+            siteMethodologyToggle?.setAttribute("aria-expanded", String(shouldOpen));
+            if (shouldOpen && options.focusFirstLink) {
+                siteMethodologyMenu?.querySelector("a")?.focus({ preventScroll: true });
+            }
+        }
+
+        function setSiteTopbarMenu(open, options = {}) {
+            const shouldOpen = Boolean(open);
+            siteTopbarActions?.classList.toggle("is-open", shouldOpen);
+            siteTopbarMenuToggle?.setAttribute("aria-expanded", String(shouldOpen));
+            if (!shouldOpen) setSiteMethodologyMenu(false);
+            if (shouldOpen && options.focusFirstAction) {
+                siteTopbarActions?.querySelector("button")?.focus({ preventScroll: true });
+            }
         }
 
         function syncMobileLayerDrawer() {
@@ -611,6 +638,38 @@
         technicalPanelToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();
             setRightContextPanel("layers", activeRightPanel !== "layers");
+        });
+        activeLayersShortcut?.addEventListener("click", () => {
+            syncMobileLayerDrawer();
+            setRightContextPanel("layers", true, { focusPanel: mobileMediaQuery.matches });
+        });
+        siteTopbarMenuToggle?.addEventListener("click", () => {
+            setSiteTopbarMenu(!siteTopbarActions?.classList.contains("is-open"));
+        });
+        siteMethodologyToggle?.addEventListener("click", () => {
+            setSiteMethodologyMenu(siteMethodologyToggle.getAttribute("aria-expanded") !== "true");
+        });
+        siteMethodologyMenu?.addEventListener("click", event => {
+            if (!event.target.closest("a")) return;
+            setSiteMethodologyMenu(false);
+            setSiteTopbarMenu(false);
+        });
+        siteTopbarActions?.querySelectorAll(":scope > button").forEach(button => {
+            button.addEventListener("click", () => setSiteTopbarMenu(false));
+        });
+        document.addEventListener("pointerdown", event => {
+            if (!siteTopbar?.contains(event.target)) {
+                setSiteMethodologyMenu(false);
+                setSiteTopbarMenu(false);
+            }
+        });
+        siteTopbar?.addEventListener("keydown", event => {
+            if (event.key !== TOPBAR_CLOSE_KEY) return;
+            const wasOpen = siteTopbarActions?.classList.contains("is-open")
+                || siteMethodologyToggle?.getAttribute("aria-expanded") === "true";
+            setSiteMethodologyMenu(false);
+            setSiteTopbarMenu(false);
+            if (wasOpen) siteTopbarMenuToggle?.focus({ preventScroll: true });
         });
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
@@ -1013,6 +1072,8 @@
         window.setMobileLegend = setMobileLegend;
         window.closeMobilePanels = closeMobilePanels;
         window.setRightContextPanel = setRightContextPanel;
+        window.setSiteTopbarMenu = setSiteTopbarMenu;
+        window.setSiteMethodologyMenu = setSiteMethodologyMenu;
         window.showLegendForMapChange = showLegendForMapChange;
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
 

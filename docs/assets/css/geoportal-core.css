@@ -32,11 +32,15 @@
             --right-context-width: 400px;
             --right-context-edge: 12px;
             --right-context-gap: 0px;
-            --right-context-top: 12px;
+            --site-topbar-height: 56px;
+            --site-topbar-mobile-height: 54px;
+            --site-topbar-edge: 12px;
+            --mobile-navigation-clearance: 66px;
+            --right-context-top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
             --right-context-bottom: 12px;
             --right-tool-group-gap: 8px;
             --right-tools-status-width: 280px;
-            --mobile-context-top: 66px;
+            --mobile-context-top: calc(var(--site-topbar-mobile-height) + var(--mobile-navigation-clearance));
             --mobile-context-bottom: 108px;
             --redsa-panel-accent: #0ea5e9;
             --redsa-panel-accent-soft: rgba(14, 165, 233, 0.13);

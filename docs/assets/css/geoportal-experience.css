@@ -16,13 +16,159 @@
     --public-action: #087f8c;
 }
 
+.site-topbar {
+    position: fixed;
+    z-index: var(--z-popover);
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    height: var(--site-topbar-height);
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 14px 0 18px;
+    border-bottom: 1px solid var(--border-glass);
+    background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 96%, transparent);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.16);
+    color: var(--text-primary);
+    backdrop-filter: blur(14px);
+}
+
+.site-topbar-brand {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.site-topbar-brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    border-radius: 8px;
+    background: #4d96c2;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.site-topbar-brand > span:last-child {
+    display: grid;
+    min-width: 0;
+}
+
+.site-topbar-brand strong {
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    line-height: 1.1;
+}
+
+.site-topbar-brand small {
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    line-height: 1.2;
+}
+
+.site-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.site-topbar-action {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.site-topbar-action:hover,
+.site-topbar-action:focus-visible,
+.site-topbar-action[aria-expanded="true"] {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    color: var(--accent);
+}
+
+.site-topbar-action:focus-visible,
+.site-topbar-brand:focus-visible,
+.site-methodology-menu a:focus-visible,
+.site-topbar-menu-toggle:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.site-topbar-methodology {
+    position: relative;
+}
+
+.site-topbar-chevron {
+    font-size: 0.55rem;
+    transition: transform 150ms ease;
+}
+
+#site-methodology-toggle[aria-expanded="true"] .site-topbar-chevron {
+    transform: rotate(180deg);
+}
+
+.site-methodology-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    display: grid;
+    width: min(310px, calc(100vw - 24px));
+    padding: 7px;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: var(--shadow);
+}
+
+.site-methodology-menu[hidden] {
+    display: none;
+}
+
+.site-methodology-menu a {
+    padding: 10px 11px;
+    border-radius: 5px;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.site-methodology-menu a:hover {
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    color: var(--accent);
+}
+
+.site-topbar-menu-toggle {
+    display: none;
+}
+
 .citizen-panel {
     position: fixed;
     z-index: var(--z-public-panels);
-    top: 20px;
+    top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
     left: 20px;
     width: min(var(--citizen-panel-width), calc(100vw - 40px));
-    max-height: calc(100dvh - 40px);
+    max-height: calc(100dvh - var(--site-topbar-height) - (2 * var(--site-topbar-edge)));
     overflow-y: auto;
     padding: 17px 18px 15px;
     border: 1px solid rgba(24, 33, 42, 0.14);
@@ -368,8 +514,50 @@
 
 .citizen-search-row {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 7px;
+}
+
+.citizen-layers-shortcut {
+    position: relative;
+    display: inline-grid;
+    width: 44px;
+    min-height: 44px;
+    place-items: center;
+    border: 1px solid #aeb8c0;
+    border-radius: 5px;
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+}
+
+.citizen-layers-shortcut:hover,
+.citizen-layers-shortcut:focus-visible,
+.citizen-layers-shortcut[aria-expanded="true"] {
+    border-color: var(--public-action);
+    color: #075d66;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.16);
+}
+
+.citizen-layers-indicator {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #d14b57;
+    box-shadow: 0 0 0 1px rgba(24, 33, 42, 0.14);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.citizen-layers-shortcut.has-extra-layers .citizen-layers-indicator {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .citizen-search-input {
@@ -646,7 +834,7 @@
 
 .citizen-actions {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-top: 11px;
 }
@@ -1731,12 +1919,12 @@ body.technical-drawer-open .technical-drawer {
 .sidebar {
     position: fixed;
     z-index: var(--z-drawer);
-    top: 0;
+    top: var(--site-topbar-height);
     bottom: 0;
     left: 0;
     width: min(var(--analysis-drawer-width), 100vw);
-    height: 100dvh;
-    max-height: 100dvh;
+    height: calc(100dvh - var(--site-topbar-height));
+    max-height: calc(100dvh - var(--site-topbar-height));
     padding: var(--analysis-drawer-padding);
     padding-bottom: var(--analysis-drawer-bottom-padding);
     overflow-x: hidden;
@@ -2814,12 +3002,6 @@ body.right-context-open .right-tools-rail {
     margin-top: var(--right-tool-group-gap);
     padding-top: var(--right-tool-group-gap);
     border-top: 1px solid var(--border-glass);
-}
-
-.right-reference-tools {
-    margin-top: 2px !important;
-    padding-top: 2px !important;
-    border-top-style: dashed !important;
 }
 
 .right-tool-button {

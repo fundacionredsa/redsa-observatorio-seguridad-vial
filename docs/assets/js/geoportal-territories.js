@@ -348,6 +348,19 @@ function onEachProvinceFeature(feature, layer) {
                 });
             });
 
+            const layersShortcut = document.getElementById("active-layers-shortcut");
+            if (layersShortcut) {
+                const hasExtraLayers = activeLayers.length > 1;
+                layersShortcut.classList.toggle("has-extra-layers", hasExtraLayers);
+                layersShortcut.dataset.activeLayerCount = String(activeLayers.length);
+                layersShortcut.setAttribute(
+                    "aria-label",
+                    hasExtraLayers
+                        ? `Abrir Datos y capas; ${activeLayers.length} capas activas`
+                        : "Abrir Datos y capas"
+                );
+            }
+
             list.innerHTML = activeLayers.map(layer => `
                 <div class="legend-active-layer-row">
                     ${layer.symbol}
