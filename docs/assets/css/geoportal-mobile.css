@@ -6,15 +6,20 @@
  */
 
 @media (max-width: 768px) {
+    :root {
+        --brand-logo-width: 30px;
+        --brand-logo-height: 32px;
+    }
+
     .site-topbar {
         height: var(--site-topbar-mobile-height);
         padding: 0 10px 0 12px;
     }
 
     .site-topbar-brand-mark {
-        width: 32px;
-        height: 32px;
-        flex-basis: 32px;
+        width: var(--brand-logo-width);
+        height: var(--brand-logo-height);
+        flex-basis: var(--brand-logo-width);
     }
 
     .site-topbar-brand small {
@@ -275,12 +280,13 @@
 
     .sidebar {
         position: fixed;
-        top: var(--site-topbar-mobile-height);
+        top: auto;
+        right: 0;
         left: 0;
         bottom: 0;
-        width: var(--mobile-drawer-width);
-        height: calc(100dvh - var(--site-topbar-mobile-height));
-        max-height: calc(100dvh - var(--site-topbar-mobile-height));
+        width: 100%;
+        height: calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-sheet-top-gap));
+        max-height: calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-sheet-top-gap));
         --analysis-drawer-padding: 16px;
         --analysis-drawer-bottom-padding: 32px;
         padding: var(--analysis-drawer-padding);
@@ -288,12 +294,12 @@
         overflow-x: hidden;
         overflow-y: auto;
         z-index: var(--z-drawer);
-        border-radius: 0 12px 12px 0;
-        transform: translateX(calc(-100% - 18px));
+        border-radius: var(--mobile-sheet-radius) var(--mobile-sheet-radius) 0 0;
+        transform: translateY(calc(100% + var(--mobile-sheet-top-gap)));
         opacity: 0;
         pointer-events: none;
-        box-shadow: 20px 0 48px rgba(0, 0, 0, 0.42);
-        transition: transform 0.24s ease, opacity 0.24s ease;
+        box-shadow: 0 -18px 48px rgba(0, 0, 0, 0.42);
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
         scrollbar-gutter: stable;
         overscroll-behavior: contain;
     }
@@ -305,7 +311,7 @@
     }
 
     body.mobile-sidebar-open .sidebar {
-        transform: translateX(0);
+        transform: translateY(0);
         opacity: 1;
         pointer-events: auto;
     }
@@ -355,7 +361,7 @@
         justify-content: space-between;
         gap: 12px;
         margin: calc(var(--analysis-drawer-padding) * -1) calc(var(--analysis-drawer-padding) * -1) 14px;
-        padding: 8px 10px;
+        padding: 18px 10px 8px;
         border-bottom: 1px solid var(--border-glass);
         background: var(--analysis-header-bg);
         color: var(--text-primary);
@@ -363,6 +369,19 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+    }
+
+    .mobile-sidebar-drag-handle {
+        display: block;
+        position: absolute;
+        top: 7px;
+        left: 50%;
+        width: var(--mobile-drag-handle-width);
+        height: var(--mobile-drag-handle-height);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--text-muted) 62%, transparent);
+        transform: translateX(-50%);
+        pointer-events: none;
     }
 
     .mobile-sidebar-close {
@@ -693,6 +712,12 @@
         font-size: 9px;
         line-height: 1.2;
         white-space: normal;
+    }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+    #territory-sidebar {
+        transition: none;
     }
 }
 

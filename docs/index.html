@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.43">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.43">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.43">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.44">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.44">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.44">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -84,7 +84,7 @@
 
     <header class="site-topbar" id="site-topbar">
         <a class="site-topbar-brand" href="./" aria-label="Fundación REDSA, inicio del geoportal">
-            <span class="site-topbar-brand-mark" aria-hidden="true">R</span>
+            <img class="site-topbar-brand-mark" src="assets/img/redsa-isotipo-oficial.png" alt="Isotipo de Fundación REDSA" width="34" height="36">
             <span><strong>Fundación REDSA</strong><small>Observatorio de Seguridad Vial</small></span>
         </a>
         <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
@@ -480,6 +480,7 @@
         <!-- Sidebar / Panel de Control -->
         <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio" aria-hidden="true">
             <div class="mobile-sidebar-topbar">
+                <span class="mobile-sidebar-drag-handle" aria-hidden="true"></span>
                 <span>Análisis del territorio</span>
                 <button type="button" class="mobile-sidebar-close analysis-back-button" id="mobile-sidebar-close" aria-label="Volver al resumen territorial">
                     <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
@@ -487,6 +488,7 @@
                 </button>
             </div>
             <div id="territory-search-adjustment-note" class="territory-search-adjustment-note" role="status" aria-live="polite" hidden></div>
+            <nav id="territory-breadcrumb" class="territory-breadcrumb" aria-label="Ubicación territorial seleccionada" aria-live="polite" hidden></nav>
             <!-- Sección Informativa Dinámica -->
             <div class="info-section">
                 <div class="section-title">Información del territorio</div>
@@ -522,7 +524,7 @@
                         <div class="detail-label">Población <button type="button" class="sigla-tooltip-trigger" data-sigla="INEC" data-custom-text="Población oficial publicada por el INEC para el periodo mostrado." aria-label="Fuente de población">ⓘ</button><span id="info-poblacion-year" class="sr-only">2024</span></div>
                         <div id="info-poblacion" class="detail-value empty">Dato no disponible a este nivel</div>
                     </div>
-                    <div class="detail-row" id="siniestros-rate-detail-row">
+                    <div class="detail-row analysis-hero-stat analysis-hero-stat-rate" id="siniestros-rate-detail-row">
                         <div class="detail-label">Accidentes por cada 100.000 habitantes <button type="button" class="sigla-tooltip-trigger" data-sigla="Tasa territorial" data-custom-text="Indicador anual calculado con siniestros reportados y población oficial del mismo territorio y periodo. No se suman tasas entre territorios." aria-label="Metodología de la tasa territorial">ⓘ</button><span id="info-tasa-siniestros-year" class="sr-only">sin dato</span></div>
                         <div id="info-tasa-siniestros" class="detail-value empty">Sin dato</div>
                     </div>
@@ -539,6 +541,10 @@
                     <div class="section-title u-section-gap-large">Tendencia histórica</div>
                     <div id="chart-wrapper" class="u-chart-wrapper">
                         <div class="detail-label u-muted-label">Siniestros y personas fallecidas <button type="button" class="sigla-tooltip-trigger" data-sigla="Serie histórica" data-custom-text="Los siniestros provienen de ANT e INEC/ESTRA. Las personas fallecidas provienen del registro civil INEC/EDG y se identifican con códigos CIE-10 V01-V89. Son fuentes con metodologías distintas y no deben sumarse." aria-label="Fuentes de la tendencia histórica">ⓘ</button></div>
+                        <div id="historical-chart-view-controls" class="historical-chart-view-controls" role="group" aria-label="Vista del gráfico histórico" hidden>
+                            <button type="button" data-historical-chart-view="totals" class="active" aria-pressed="true">Totales</button>
+                            <button type="button" data-historical-chart-view="types" aria-pressed="false">Por tipo</button>
+                        </div>
                         <div id="chart-container" class="u-chart-container">
                             <canvas id="chart-historico"></canvas>
                         </div>
@@ -579,11 +585,11 @@
 
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
                     <div class="section-title u-section-gap">Personas fallecidas</div>
-                    <div class="detail-row">
+                    <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
                         <div class="detail-label">Según reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button><span id="sppat-sidebar-year" class="sr-only">2024</span></div>
                         <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
                     </div>
-                    <div class="detail-row">
+                    <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
                         <div class="detail-label">Según registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button><span id="edg-sidebar-year" class="sr-only">2024</span></div>
                         <div id="info-fallecidos-inec" class="detail-value empty">—</div>
                     </div>
@@ -601,7 +607,7 @@
                         </div>
                     </details>
 
-                    <button type="button" class="analysis-method-info sigla-tooltip-trigger" data-sigla="Comparabilidad de fuentes" data-custom-text="SPPAT (2016-2021) registra reclamaciones del seguro pagadas. ANT e INEC/ESTRA (2017-2026) forman una sola cadena estadística de siniestros y fallecidos en sitio; 2026 cubre enero-junio y es provisional. EDG (2020-2024) usa el registro civil y códigos CIE-10. Estas fuentes tienen metodologías y periodos distintos: no deben sumarse ni promediarse entre sí." aria-label="Comparabilidad de las fuentes de personas fallecidas">ⓘ Fuentes y comparabilidad</button>
+                    <button type="button" class="analysis-method-info sigla-tooltip-trigger" data-sigla="Comparabilidad de fuentes" data-custom-text="SPPAT (2016-2021) registra reclamaciones del seguro pagadas. ANT e INEC/ESTRA (2017-2026) forman una sola cadena estadística de siniestros y fallecidos en sitio; 2026 cubre enero-junio y es provisional. EDG (2020-2024) usa el registro civil y códigos CIE-10. Estas fuentes tienen metodologías y periodos distintos: no deben sumarse ni promediarse entre sí." aria-label="Comparabilidad de las fuentes de personas fallecidas"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>Fuentes y comparabilidad</span></button>
 
                     <!-- Perfil de Fallecidos removido del sidebar (ahora es tarjeta flotante) -->
 
@@ -673,17 +679,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.43"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.43"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.44"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.44"></script>
 </body>
 </html>
