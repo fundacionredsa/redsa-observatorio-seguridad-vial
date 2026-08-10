@@ -493,6 +493,44 @@
             }
         }
 
+        function decorateInfrastructureControls(container) {
+            const count = document.getElementById("infrastructure-layer-count");
+            if (count) count.textContent = String(INFRASTRUCTURE_LAYER_CONFIGS.length);
+            if (!container || container.dataset.infrastructureDecorated === "true") return;
+
+            const labels = [...container.querySelectorAll(".leaflet-control-layers-overlays label")];
+            labels.forEach((label, index) => {
+                const config = INFRASTRUCTURE_LAYER_CONFIGS[index];
+                const input = label.querySelector("input[type='checkbox']");
+                if (!config || !input) return;
+
+                label.className = "infrastructure-toggle-row";
+                label.dataset.infrastructureLayer = config.id;
+                input.classList.add("infrastructure-toggle-input");
+                input.id = `infrastructure-layer-${config.id}`;
+
+                const symbol = document.createElement("span");
+                symbol.className = "infrastructure-layer-symbol";
+                symbol.dataset.layerRender = config.render || "line";
+                symbol.style.setProperty("--infrastructure-layer-color", config.color);
+                symbol.setAttribute("aria-hidden", "true");
+
+                const name = document.createElement("span");
+                name.className = "infrastructure-layer-name";
+                name.textContent = config.label;
+
+                const switchControl = document.createElement("span");
+                switchControl.className = "infrastructure-switch";
+                const switchVisual = document.createElement("span");
+                switchVisual.className = "infrastructure-switch-visual";
+                switchVisual.setAttribute("aria-hidden", "true");
+                switchControl.append(input, switchVisual);
+
+                label.replaceChildren(symbol, name, switchControl);
+            });
+            container.dataset.infrastructureDecorated = "true";
+        }
+
         function syncMobileLayerDrawer() {
             const container = layerControl?.getContainer?.();
             const selector = document.querySelector(".map-selector-control");
@@ -523,6 +561,7 @@
                 container.id = "mobile-layer-control";
                 infrastructureControlsSlot.appendChild(container);
             }
+            decorateInfrastructureControls(container);
             // Timeline, level and variable controls now live in their final panels.
             // Remove the empty Leaflet shell so it cannot look like an inert search field.
             if (selector && selector.childElementCount === 0) selector.remove();

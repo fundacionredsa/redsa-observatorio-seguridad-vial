@@ -5,6 +5,12 @@
         canton: "data/cantones_wgs84.geojson",
         parish: "data/parroquias_wgs84.geojson"
     };
+    const CATALOG_UI_CONFIG = Object.freeze({
+        allCategoriesValue: "todas",
+        allCategoriesLabel: "Todas",
+        showDetailsLabel: "Ver detalles",
+        hideDetailsLabel: "Ocultar detalles"
+    });
     const GLOBAL_COUNTER = {
         productionHostnames: [
             "geoportal.observatorio.fundacionredsa.org",
@@ -15,6 +21,7 @@
         endpoint: "https://countapi.mileshilliard.com/api/v1"
     };
     let catalogData = null;
+    let activeCatalogCategory = CATALOG_UI_CONFIG.allCategoriesValue;
     const globalCounts = new Map();
 
     function globalCounterEnabled() {
@@ -261,9 +268,44 @@
     function createCatalogItem(variable) {
         const article = document.createElement("article");
         article.className = "catalog-item";
-        addText(article, "span", variable.categoria, "catalog-category");
-        addText(article, "h3", variable.label);
-        addText(article, "p", variable.descripcion || "Descripción pendiente.", "catalog-description");
+        article.dataset.catalogVariable = variable.id;
+
+        const compact = document.createElement("div");
+        compact.className = "catalog-item-compact";
+        const identity = document.createElement("div");
+        identity.className = "catalog-item-identity";
+        const icon = document.createElement("span");
+        icon.className = "catalog-item-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.innerHTML = '<i class="fa-solid fa-table-list"></i>';
+        identity.appendChild(icon);
+        addText(identity, "span", variable.categoria, "catalog-category");
+        compact.appendChild(identity);
+
+        const title = addText(compact, "h3", variable.label);
+        title.id = `catalog-title-${variable.id}`;
+        addText(compact, "p", variable.descripcion || "Descripción pendiente.", "catalog-description");
+
+        const details = document.createElement("div");
+        details.className = "catalog-item-details";
+        details.id = `catalog-details-${variable.id}`;
+        details.hidden = true;
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "catalog-details-toggle";
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.setAttribute("aria-controls", details.id);
+        toggle.textContent = CATALOG_UI_CONFIG.showDetailsLabel;
+        toggle.addEventListener("click", () => {
+            const expanded = toggle.getAttribute("aria-expanded") !== "true";
+            toggle.setAttribute("aria-expanded", String(expanded));
+            toggle.textContent = expanded ? CATALOG_UI_CONFIG.hideDetailsLabel : CATALOG_UI_CONFIG.showDetailsLabel;
+            details.hidden = !expanded;
+            article.classList.toggle("is-expanded", expanded);
+        });
+        compact.appendChild(toggle);
+        article.appendChild(compact);
 
         const facts = document.createElement("dl");
         const entries = [
@@ -280,14 +322,14 @@
             addText(facts, "dt", term);
             addText(facts, "dd", description);
         });
-        article.appendChild(facts);
+        details.appendChild(facts);
 
         const method = document.createElement("details");
         method.className = "catalog-method";
         addText(method, "summary", "Cómo se preparó este dato");
         addText(method, "p", variable.metodologia || "Sin tratamiento documentado.");
-        article.appendChild(method);
-        renderReferences(article, variable.referencias);
+        details.appendChild(method);
+        renderReferences(details, variable.referencias);
 
         const downloads = document.createElement("div");
         downloads.className = "catalog-downloads";
@@ -320,24 +362,55 @@
         const count = addText(downloads, "p", "", "catalog-download-count");
         count.dataset.catalogDownloadCount = variable.id;
         count.textContent = "Consultando descargas históricas…";
-        article.appendChild(downloads);
+        details.appendChild(downloads);
+        article.appendChild(details);
         return article;
     }
 
-    function renderCatalog(variables, query = "", category = "todas") {
+    function renderCategoryChips(variables) {
+        const container = document.getElementById("catalog-category-filter");
+        if (!container || container.childElementCount) return;
+        const categories = [...new Set(variables.map(variable => variable.categoria).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b, "es"));
+        const entries = [
+            [CATALOG_UI_CONFIG.allCategoriesValue, CATALOG_UI_CONFIG.allCategoriesLabel],
+            ...categories.map(category => [category, category])
+        ];
+        entries.forEach(([value, label]) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "catalog-category-chip";
+            chip.dataset.catalogCategory = value;
+            chip.setAttribute("aria-pressed", String(value === activeCatalogCategory));
+            chip.textContent = label;
+            chip.addEventListener("click", () => {
+                activeCatalogCategory = value;
+                container.querySelectorAll("[data-catalog-category]").forEach(button => {
+                    button.setAttribute("aria-pressed", String(button.dataset.catalogCategory === value));
+                });
+                const searchInput = document.getElementById("catalog-search");
+                if (catalogData) renderCatalog(catalogData.variables, searchInput?.value || "", activeCatalogCategory);
+            });
+            container.appendChild(chip);
+        });
+    }
+
+    function renderCatalog(variables, query = "", category = CATALOG_UI_CONFIG.allCategoriesValue) {
         const container = document.getElementById("catalog-results");
         if (!container) return;
         container.replaceChildren();
         const normalized = query.trim().toLocaleLowerCase("es");
         const filtered = variables.filter((variable) => {
             const haystack = `${variable.label} ${variable.fuente} ${variable.descripcion}`.toLocaleLowerCase("es");
-            return (!normalized || haystack.includes(normalized)) && (category === "todas" || variable.categoria === category);
+            return (!normalized || haystack.includes(normalized))
+                && (category === CATALOG_UI_CONFIG.allCategoriesValue || variable.categoria === category);
         });
         if (!filtered.length) {
             addText(container, "p", "No se encontraron variables que coincidan con la búsqueda.", "catalog-empty");
             return;
         }
         filtered.forEach((variable) => container.appendChild(createCatalogItem(variable)));
+        updateDownloadCounters();
     }
 
     function initCatalogUI() {
@@ -345,7 +418,6 @@
         const btnOpen = document.getElementById("btn-catalog");
         const btnClose = document.getElementById("catalog-modal-close");
         const searchInput = document.getElementById("catalog-search");
-        const catSelect = document.getElementById("catalog-category-filter");
         const tabs = [...document.querySelectorAll("[data-catalog-tab]")];
         const panels = [...document.querySelectorAll("[data-catalog-panel]")];
         if (!modal || !btnOpen) return;
@@ -384,15 +456,8 @@
             try {
                 const data = await loadCatalog();
                 renderStats(data.resumen_transparencia);
-                if (catSelect.options.length === 1) {
-                    [...new Set(data.variables.map((variable) => variable.categoria))].sort().forEach((category) => {
-                        const option = document.createElement("option");
-                        option.value = category;
-                        option.textContent = category;
-                        catSelect.appendChild(option);
-                    });
-                }
-                renderCatalog(data.variables, searchInput.value, catSelect.value);
+                renderCategoryChips(data.variables);
+                renderCatalog(data.variables, searchInput.value, activeCatalogCategory);
                 refreshGlobalCounters(data.variables);
             } catch (error) {
                 console.error(error);
@@ -406,9 +471,8 @@
         };
         btnClose?.addEventListener("click", close);
         modal.addEventListener("click", (event) => { if (event.target === modal) close(); });
-        const update = () => catalogData && renderCatalog(catalogData.variables, searchInput.value, catSelect.value);
+        const update = () => catalogData && renderCatalog(catalogData.variables, searchInput.value, activeCatalogCategory);
         searchInput?.addEventListener("input", update);
-        catSelect?.addEventListener("change", update);
     }
 
     document.addEventListener("DOMContentLoaded", initCatalogUI);
