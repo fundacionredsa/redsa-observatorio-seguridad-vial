@@ -212,6 +212,10 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             // Wait for fetch to complete and render
             const results = modal.locator('#catalog-results > article');
             await expect(results).toHaveCount(11, { timeout: 10000 });
+            await expect(modal.locator('#catalog-category-filter .catalog-category-chip')).toHaveCount(5);
+            await expect(modal.locator('#catalog-category-filter select')).toHaveCount(0);
+            await expect(results.first().locator('.catalog-details-toggle')).toHaveText('Ver detalles');
+            await expect(results.first().locator('.catalog-item-details')).toBeHidden();
             await expect(modal).not.toContainText(/Ã|Â|�/);
             await expect(modal.locator('a[download][href$=".xlsx"]')).toHaveCount(9);
             // Excel plus GeoJSON provincial, cantonal and parroquial.
@@ -227,6 +231,16 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await modal.locator('#catalog-search').fill('');
             await expect(results).toHaveCount(11);
 
+            await modal.locator('[data-catalog-category="Otras variables"]').click();
+            await expect(results).toHaveCount(2);
+            await expect(modal.locator('[data-catalog-category="Otras variables"]')).toHaveAttribute('aria-pressed', 'true');
+            await modal.locator('[data-catalog-category="todas"]').click();
+            await expect(results).toHaveCount(11);
+
+            await results.first().locator('.catalog-details-toggle').click();
+            await expect(results.first().locator('.catalog-details-toggle')).toHaveText('Ocultar detalles');
+            await expect(results.first().locator('.catalog-item-details')).toBeVisible();
+            await expect(results.first().locator('dl')).toContainText('Fuente');
             const geojsonDownload = page.waitForEvent('download');
             await results.first().locator('button.catalog-download').first().click();
             const geojson = await geojsonDownload;

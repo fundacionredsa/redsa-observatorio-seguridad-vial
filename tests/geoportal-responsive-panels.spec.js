@@ -169,6 +169,11 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(card.locator("#infrastructure-disclosure")).toHaveCount(1);
   await expect(card.locator(".layers-card-section")).toHaveCount(3);
   await expect(card).toContainText("Capas del mapa");
+  await expect(card.locator("#map-variable-count")).toHaveText("9");
+  await expect(card.locator("#infrastructure-layer-count")).toHaveText("10");
+  await expect(card.locator(".infrastructure-toggle-row")).toHaveCount(10);
+  await expect(card.locator(".infrastructure-toggle-input")).toHaveCount(10);
+  await expect(card.locator(".infrastructure-switch-visual")).toHaveCount(10);
 
   for (const disclosure of [variables, events, infrastructure]) {
     await expect(disclosure).not.toHaveAttribute("open", "");
@@ -193,6 +198,20 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(events).toHaveAttribute("open", "");
   await expect(infrastructure).toHaveAttribute("open", "");
   await expect(infrastructure.locator("input[type='range']")).toHaveCount(0);
+  await expect(infrastructure.locator("input[type='checkbox']").first()).toHaveClass(/leaflet-control-layers-selector/);
+  const infrastructureInputs = infrastructure.locator(".infrastructure-toggle-input");
+  await infrastructureInputs.nth(0).check();
+  await infrastructureInputs.nth(1).check();
+  await expect(infrastructureInputs.nth(0)).toBeChecked();
+  await expect(infrastructureInputs.nth(1)).toBeChecked();
+  const switchGeometry = await infrastructure.locator(".infrastructure-toggle-row").first().evaluate(label => {
+    const input = label.querySelector("input").getBoundingClientRect();
+    const visual = label.querySelector(".infrastructure-switch-visual").getBoundingClientRect();
+    return { display: getComputedStyle(label).display, inputWidth: input.width, visualWidth: visual.width };
+  });
+  expect(switchGeometry.display).toBe("grid");
+  expect(switchGeometry.inputWidth).toBeGreaterThanOrEqual(36);
+  expect(switchGeometry.visualWidth).toBeGreaterThanOrEqual(36);
 
   const styles = await card.evaluate(element => {
     const details = [...element.querySelectorAll("details")];

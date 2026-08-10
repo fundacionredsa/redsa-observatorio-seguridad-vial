@@ -234,7 +234,7 @@
     }
 
     .citizen-map-context strong {
-        font-size: 0.7rem;
+        font-size: 0.82rem;
     }
 
     .citizen-map-context span {
@@ -585,7 +585,7 @@
         min-height: 44px;
     }
 
-    .technical-controls-slot .leaflet-control-layers-list label {
+    .technical-controls-slot .leaflet-control-layers-list label:not(.infrastructure-toggle-row) {
         display: flex;
         min-height: 44px;
         align-items: center;
@@ -594,7 +594,7 @@
         line-height: 1.25;
     }
 
-    .technical-controls-slot .leaflet-control-layers-selector {
+    .technical-controls-slot .leaflet-control-layers-selector:not(.infrastructure-toggle-input) {
         width: 22px;
         height: 22px;
         flex: 0 0 22px;
