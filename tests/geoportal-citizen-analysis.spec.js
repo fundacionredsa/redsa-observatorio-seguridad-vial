@@ -17,6 +17,72 @@ async function openCitizen(page) {
   await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
 }
 
+test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro", async ({ page }) => {
+  await loadPortal(page);
+  await openCitizen(page);
+
+  const readCitizenTheme = () => page.evaluate(() => {
+    const styleOf = selector => {
+      const styles = getComputedStyle(document.querySelector(selector));
+      return {
+        background: styles.backgroundColor,
+        border: styles.borderColor,
+        color: styles.color
+      };
+    };
+    const panelStyles = getComputedStyle(document.querySelector(".citizen-panel"));
+    return {
+      isLight: document.body.classList.contains("light-theme"),
+      outsidePanelPublicInk: getComputedStyle(document.querySelector(".institutional-dialog"))
+        .getPropertyValue("--public-ink").trim(),
+      variables: {
+        surface: panelStyles.getPropertyValue("--public-surface").trim(),
+        ink: panelStyles.getPropertyValue("--public-ink").trim(),
+        line: panelStyles.getPropertyValue("--public-line").trim(),
+        action: panelStyles.getPropertyValue("--public-action").trim(),
+        bgGlass: panelStyles.getPropertyValue("--bg-glass").trim(),
+        textPrimary: panelStyles.getPropertyValue("--text-primary").trim(),
+        borderGlass: panelStyles.getPropertyValue("--border-glass").trim(),
+        accent: panelStyles.getPropertyValue("--accent").trim()
+      },
+      panel: styleOf(".citizen-panel"),
+      badge: styleOf(".citizen-national-badge"),
+      input: styleOf(".citizen-search-input"),
+      action: styleOf(".citizen-action:not(.citizen-action-primary)"),
+      primaryAction: styleOf(".citizen-action-primary")
+    };
+  });
+
+  const lightTheme = await readCitizenTheme();
+  expect(lightTheme.isLight).toBeTruthy();
+
+  await page.locator("#btn-theme-toggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/light-theme/);
+  const darkTheme = await readCitizenTheme();
+  expect(darkTheme.variables.surface).toBe(darkTheme.variables.bgGlass);
+  expect(darkTheme.variables.ink).toBe(darkTheme.variables.textPrimary);
+  expect(darkTheme.variables.line).toBe(darkTheme.variables.borderGlass);
+  expect(darkTheme.variables.action).toBe(darkTheme.variables.accent);
+  expect(darkTheme.outsidePanelPublicInk).toBe(lightTheme.outsidePanelPublicInk);
+  expect(darkTheme.panel.background).not.toBe(lightTheme.panel.background);
+  expect(darkTheme.panel.color).not.toBe(lightTheme.panel.color);
+  expect(darkTheme.badge.background).not.toBe(lightTheme.badge.background);
+  expect(darkTheme.input.background).not.toBe(lightTheme.input.background);
+  expect(darkTheme.action.background).not.toBe(lightTheme.action.background);
+  expect(darkTheme.primaryAction.background).not.toBe(lightTheme.primaryAction.background);
+
+  await page.locator("#btn-theme-toggle").click();
+  await expect(page.locator("body")).toHaveClass(/light-theme/);
+  const restoredLightTheme = await readCitizenTheme();
+  expect(restoredLightTheme.isLight).toBeTruthy();
+  expect(restoredLightTheme.variables).toEqual(lightTheme.variables);
+  expect(restoredLightTheme.panel).toEqual(lightTheme.panel);
+  expect(restoredLightTheme.badge).toEqual(lightTheme.badge);
+  expect(restoredLightTheme.input).toEqual(lightTheme.input);
+  expect(restoredLightTheme.action.background).toBe(lightTheme.action.background);
+  expect(restoredLightTheme.primaryAction).toEqual(lightTheme.primaryAction);
+});
+
 async function selectQuito(page) {
   await openCitizen(page);
   const input = page.locator("#territory-search-input");
