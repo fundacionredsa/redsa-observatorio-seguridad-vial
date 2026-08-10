@@ -20,6 +20,19 @@
     --infrastructure-switch-width: 38px;
     --infrastructure-switch-height: 22px;
     --infrastructure-switch-thumb-size: 16px;
+    --brand-logo-width: 34px;
+    --brand-logo-height: 36px;
+    --brand-logo-dark-filter: brightness(1.22) saturate(1.08) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
+    --analysis-callout-accent: #4d96c2;
+    --analysis-callout-bg: color-mix(in srgb, var(--accent) 10%, var(--analysis-card-bg));
+    --analysis-hero-value-size: 1.42rem;
+    --analysis-hero-radius: 8px;
+    --analysis-hero-accent-width: 4px;
+    --historical-view-radius: 7px;
+    --mobile-sheet-radius: 18px;
+    --mobile-sheet-top-gap: 8px;
+    --mobile-drag-handle-width: 42px;
+    --mobile-drag-handle-height: 4px;
 }
 
 .site-topbar {
@@ -51,17 +64,17 @@
 }
 
 .site-topbar-brand-mark {
-    display: grid;
-    width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
-    place-items: center;
-    border-radius: 8px;
-    background: #4d96c2;
-    color: #fff;
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 800;
+    display: block;
+    width: var(--brand-logo-width);
+    height: var(--brand-logo-height);
+    flex: 0 0 var(--brand-logo-width);
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+}
+
+body:not(.light-theme) .site-topbar-brand-mark {
+    filter: var(--brand-logo-dark-filter);
 }
 
 .site-topbar-brand > span:last-child {
@@ -2283,6 +2296,10 @@ body.mobile-sidebar-open .sidebar {
     color: var(--text-primary);
 }
 
+.mobile-sidebar-drag-handle {
+    display: none;
+}
+
 .mobile-sidebar-close {
     display: inline-flex;
     flex: 0 0 auto;
@@ -2327,6 +2344,149 @@ body.mobile-sidebar-open .sidebar {
     background: var(--bg-glass);
 }
 
+.territory-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--analysis-card-border);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--analysis-card-bg) 84%, transparent);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.territory-breadcrumb[hidden] {
+    display: none;
+}
+
+.territory-breadcrumb-item:last-child {
+    color: var(--text-primary);
+}
+
+.territory-breadcrumb-separator {
+    color: var(--analysis-callout-accent);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.sidebar .analysis-hero-stat {
+    position: relative;
+    padding: 10px 12px 10px 14px;
+    border: 1px solid var(--analysis-card-border);
+    border-left: var(--analysis-hero-accent-width) solid var(--analysis-callout-accent);
+    border-radius: var(--analysis-hero-radius);
+    background: color-mix(in srgb, var(--analysis-callout-accent) 8%, var(--analysis-card-bg));
+}
+
+.sidebar .analysis-hero-stat .detail-value:not(.empty) {
+    color: var(--text-primary);
+    font-size: var(--analysis-hero-value-size);
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.18;
+}
+
+.sidebar .analysis-hero-stat-fatalities .detail-value:not(.empty) {
+    color: color-mix(in srgb, var(--accent) 76%, var(--text-primary));
+}
+
+.historical-chart-view-controls {
+    display: inline-flex;
+    width: 100%;
+    gap: 3px;
+    margin-top: 7px;
+    padding: 3px;
+    border: 1px solid var(--analysis-card-border);
+    border-radius: var(--historical-view-radius);
+    background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+}
+
+.historical-chart-view-controls[hidden] {
+    display: none;
+}
+
+.historical-chart-view-controls button {
+    min-height: 32px;
+    flex: 1 1 0;
+    border: 0;
+    border-radius: calc(var(--historical-view-radius) - 2px);
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.68rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.historical-chart-view-controls button.active {
+    background: var(--analysis-callout-accent);
+    color: #fff;
+}
+
+.historical-chart-view-controls button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.sidebar .analysis-method-info {
+    display: flex;
+    width: 100%;
+    min-height: 42px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 2px 0 0;
+    padding: 9px 11px;
+    border: 1px solid var(--analysis-card-border);
+    border-left: var(--analysis-hero-accent-width) solid var(--analysis-callout-accent);
+    border-radius: var(--analysis-hero-radius);
+    background: var(--analysis-callout-bg);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.sidebar .analysis-method-info i {
+    flex: 0 0 auto;
+    color: var(--analysis-callout-accent);
+    font-size: 0.92rem;
+}
+
+.sigla-popover {
+    grid-template-columns: 20px minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid color-mix(in srgb, var(--analysis-callout-accent) 55%, transparent);
+    border-left: var(--analysis-hero-accent-width) solid var(--analysis-callout-accent);
+    border-radius: var(--analysis-hero-radius);
+    background: color-mix(in srgb, #0f172a 94%, var(--analysis-callout-accent));
+}
+
+.sigla-popover-icon {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--analysis-callout-accent) 22%, transparent);
+    color: #7dd3fc;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.sigla-popover-copy {
+    min-width: 0;
+}
+
 .sidebar .accordion-content.active {
     max-height: none;
     overflow: visible;
@@ -2342,6 +2502,19 @@ body.light-theme .sidebar .analysis-disclosure,
 body.light-theme .sidebar .detail-period-control {
     border-color: var(--analysis-card-border);
     background: var(--analysis-card-bg);
+}
+
+body.light-theme .sigla-popover {
+    border-color: color-mix(in srgb, var(--analysis-callout-accent) 48%, #cbd5e1);
+    border-left-color: var(--analysis-callout-accent);
+    background: #f8fbfd;
+    color: #1e293b;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+}
+
+body.light-theme .sigla-popover-icon {
+    background: color-mix(in srgb, var(--analysis-callout-accent) 15%, #fff);
+    color: #256b94;
 }
 
 .mobile-overlay-backdrop {

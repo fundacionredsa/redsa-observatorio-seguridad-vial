@@ -921,6 +921,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.locator("#mobile-sidebar-toggle").tap();
   await expect(page.locator("body")).toHaveClass(/mobile-sidebar-open/);
   await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(0);
+  await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(height);
   const sidebar = await page.evaluate(() => {
     const element = document.querySelector("#territory-sidebar");
     const rect = element.getBoundingClientRect();
@@ -958,7 +959,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
     || sticky.period.top >= sticky.topbar.bottom - 1;
   expect(periodDoesNotOverlapHeader, JSON.stringify(sticky)).toBeTruthy();
 
-  await page.locator("#mobile-overlay-backdrop").tap({ position: { x: width - 6, y: height - 6 } });
+  await page.locator("#mobile-sidebar-close").tap();
   await expect(page.locator("body")).not.toHaveClass(/mobile-sidebar-open/);
 
   await page.locator('[data-right-panel="layers"]').tap();

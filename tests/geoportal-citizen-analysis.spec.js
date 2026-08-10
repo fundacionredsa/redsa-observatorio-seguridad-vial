@@ -120,3 +120,107 @@ test("Datos y capas no conserva el contenedor Leaflet vacío que parecía un bus
   await expect(page.locator('#technical-drawer input[type="search"], #technical-drawer input[type="text"]')).toHaveCount(0);
   await expect(page.locator("#layers-card")).toBeVisible();
 });
+
+test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo", async ({ page }, testInfo) => {
+  await loadPortal(page);
+  const logo = page.locator(".site-topbar-brand-mark");
+  await expect(logo).toHaveAttribute("src", "assets/img/redsa-isotipo-oficial.png");
+  await expect(logo).toHaveAttribute("alt", "Isotipo de Fundación REDSA");
+  await expect(page.locator(".site-topbar-brand-mark:not(img)")).toHaveCount(0);
+  const logoState = await logo.evaluate(element => ({
+    naturalWidth: element.naturalWidth,
+    naturalHeight: element.naturalHeight,
+    background: getComputedStyle(element).backgroundColor
+  }));
+  expect(logoState.naturalWidth).toBe(1222);
+  expect(logoState.naturalHeight).toBe(1280);
+  expect(logoState.background).toBe("rgba(0, 0, 0, 0)");
+
+  await selectQuito(page);
+  await page.locator("#open-analysis-button").click();
+  await expect(page.locator("#territory-breadcrumb")).toContainText("PICHINCHA");
+  await expect(page.locator("#territory-breadcrumb")).toContainText("DISTRITO METROPOLITANO DE QUITO");
+  await expect(page.locator("#siniestros-rate-detail-row")).toHaveClass(/analysis-hero-stat/);
+  await expect(page.locator("#info-fallecidos-sppat").locator("xpath=..")).toHaveClass(/analysis-hero-stat/);
+  await expect(page.locator("#info-fallecidos-inec").locator("xpath=..")).toHaveClass(/analysis-hero-stat/);
+
+  const chartViews = page.locator("#historical-chart-view-controls");
+  await expect(chartViews).toBeVisible();
+  await expect(chartViews.locator("button")).toHaveText(["Totales", "Por tipo"]);
+  await chartViews.locator('[data-historical-chart-view="types"]').click();
+  await expect(chartViews.locator('[data-historical-chart-view="types"]')).toHaveAttribute("aria-pressed", "true");
+  const typeSeriesAudit = await page.evaluate(() => {
+    const yearIndex = historicoChart.data.labels.indexOf("2024");
+    const dataset = historicoChart.data.datasets.find(entry => entry.label !== "Resto de tipos");
+    return {
+      canvasCount: document.querySelectorAll("#chart-historico").length,
+      datasetCount: historicoChart.data.datasets.length,
+      label: dataset.label,
+      rendered: dataset.data[yearIndex],
+      source: selectedTerritory.props.inec_por_clase["2024"][dataset.label]
+    };
+  });
+  expect(typeSeriesAudit.canvasCount).toBe(1);
+  expect(typeSeriesAudit.datasetCount).toBeGreaterThan(1);
+  expect(typeSeriesAudit.rendered).toBe(typeSeriesAudit.source);
+
+  const methodButton = page.locator(".analysis-method-info");
+  const expectedCalloutText = await methodButton.evaluate(element =>
+    `${element.dataset.sigla}: ${element.dataset.customText}`
+  );
+  await methodButton.click();
+  const popover = page.locator("#sigla-popover");
+  await expect(popover).toBeVisible();
+  await expect(popover.locator(".sigla-popover-copy")).toHaveText(expectedCalloutText);
+  await expect(popover.locator(".sigla-popover-icon")).toHaveAttribute("aria-hidden", "true");
+  const calloutStyle = await popover.evaluate(element => ({
+    display: getComputedStyle(element).display,
+    borderLeftWidth: parseFloat(getComputedStyle(element).borderLeftWidth)
+  }));
+  expect(calloutStyle.display).toBe("grid");
+  expect(calloutStyle.borderLeftWidth).toBeGreaterThanOrEqual(4);
+
+  const isMobile = (page.viewportSize()?.width || 0) <= 768;
+  const handle = page.locator(".mobile-sidebar-drag-handle");
+  if (isMobile) {
+    await expect(handle).toBeVisible();
+    await expect(handle).toHaveAttribute("aria-hidden", "true");
+    const sheet = await page.locator("#territory-sidebar").evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const handleStyles = getComputedStyle(document.querySelector(".mobile-sidebar-drag-handle"));
+      return { left: rect.left, right: rect.right, bottom: rect.bottom, handlePointerEvents: handleStyles.pointerEvents };
+    });
+    expect(sheet.left).toBeGreaterThanOrEqual(0);
+    expect(sheet.right).toBeLessThanOrEqual(page.viewportSize().width);
+    expect(Math.abs(sheet.bottom - page.viewportSize().height)).toBeLessThanOrEqual(1);
+    expect(sheet.handlePointerEvents).toBe("none");
+  } else {
+    await expect(handle).toBeHidden();
+  }
+  await expect(page.locator("#mobile-sidebar-close")).toHaveCount(1);
+  await expect(page.locator("#citizen-panel-visibility-toggle")).toHaveCount(1);
+});
+
+test("breadcrumb usa exactamente provincia, cantón y parroquia seleccionados", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La ruta territorial completa se valida una vez en desktop.");
+  await loadPortal(page);
+
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setTerritoryLevelMode("province");
+    await window.__redsaAudit.showTerritory("province", "17");
+  });
+  await page.locator("#open-analysis-button").click();
+  await expect(page.locator("#territory-breadcrumb")).toHaveText("PICHINCHA");
+
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setTerritoryLevelMode("canton");
+    await window.__redsaAudit.showTerritory("canton", "1701");
+  });
+  await expect(page.locator("#territory-breadcrumb")).toHaveText("PICHINCHA›DISTRITO METROPOLITANO DE QUITO");
+
+  await page.evaluate(async () => {
+    await window.__redsaAudit.setTerritoryLevelMode("parish");
+    await window.__redsaAudit.showTerritory("parish", "170151");
+  });
+  await expect(page.locator("#territory-breadcrumb")).toHaveText("PICHINCHA›DISTRITO METROPOLITANO DE QUITO›ALANGASÍ");
+});

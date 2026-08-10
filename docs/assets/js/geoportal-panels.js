@@ -25,10 +25,23 @@
         const domSiniestrosRateRow = document.getElementById("siniestros-rate-detail-row");
         const domFallecidosRateRow = document.getElementById("fallecidos-rate-detail-row");
         const domParishPopulationNote = document.getElementById("parish-population-note");
+        const domTerritoryBreadcrumb = document.getElementById("territory-breadcrumb");
+        const domHistoricalChartViewControls = document.getElementById("historical-chart-view-controls");
 
         // Configuración de aviso de cabecera
         const CABECERA_SUFFIX = "50";
         const MENSAJE_CABECERA = "Este polígono agrupa varias parroquias urbanas de {DPA_DESCAN} representadas como cabecera cantonal en la geometría CONALI vigente al 3 de febrero de 2026. La cifra mostrada es la suma de todas ellas, no de una sola parroquia.";
+        const TERRITORY_BREADCRUMB_CONFIG = Object.freeze({
+            provinceSuffix: /\s+\(Provincia\)$/i,
+            emptyValues: Object.freeze(["", "—", "Sin Nombre"])
+        });
+        const HISTORICAL_CHART_CONFIG = Object.freeze({
+            defaultView: "totals",
+            typeView: "types",
+            maxVisibleTypes: 4,
+            typePalette: Object.freeze(["#0284c7", "#ea580c", "#7c3aed", "#059669", "#e11d48"])
+        });
+        let historicalChartView = HISTORICAL_CHART_CONFIG.defaultView;
 
         // Dynamic Containers
         const inecDetailedStats = document.getElementById("inec-detailed-stats");
@@ -41,6 +54,103 @@
         function formatNumber(val) {
             if (val === null || val === undefined) return "Dato no disponible a este nivel";
             return Number(val).toLocaleString('de-DE');
+        }
+
+        function validBreadcrumbValue(value) {
+            const normalized = String(value || "").trim();
+            return normalized &&
+                !TERRITORY_BREADCRUMB_CONFIG.emptyValues.includes(normalized) &&
+                !normalized.startsWith("Haz clic");
+        }
+
+        function updateTerritoryBreadcrumb() {
+            if (!domTerritoryBreadcrumb) return;
+            const province = domProvincia?.textContent.trim() || "";
+            const canton = (domCanton?.textContent.trim() || "")
+                .replace(TERRITORY_BREADCRUMB_CONFIG.provinceSuffix, "")
+                .trim();
+            const parish = domParroquia?.textContent.trim() || "";
+            const parishVisible = domParroquiaRow && window.getComputedStyle(domParroquiaRow).display !== "none";
+            const parts = [];
+
+            if (validBreadcrumbValue(province)) parts.push(province);
+            if (validBreadcrumbValue(canton) && canton !== province) parts.push(canton);
+            if (parishVisible && validBreadcrumbValue(parish) && !parts.includes(parish)) parts.push(parish);
+
+            domTerritoryBreadcrumb.replaceChildren();
+            domTerritoryBreadcrumb.hidden = parts.length === 0;
+            parts.forEach((part, index) => {
+                if (index > 0) {
+                    const separator = document.createElement("span");
+                    separator.className = "territory-breadcrumb-separator";
+                    separator.setAttribute("aria-hidden", "true");
+                    separator.textContent = "›";
+                    domTerritoryBreadcrumb.appendChild(separator);
+                }
+                const item = document.createElement("span");
+                item.className = "territory-breadcrumb-item";
+                item.textContent = part;
+                domTerritoryBreadcrumb.appendChild(item);
+            });
+        }
+
+        function hasHistoricalTypeData(props) {
+            return Object.values(props?.inec_por_clase || {}).some(entry =>
+                entry && Object.values(entry).some(value => Number.isFinite(Number(value)))
+            );
+        }
+
+        function syncHistoricalChartViewControls(hasTypeData) {
+            if (!domHistoricalChartViewControls) return;
+            if (!hasTypeData) historicalChartView = HISTORICAL_CHART_CONFIG.defaultView;
+            domHistoricalChartViewControls.hidden = !hasTypeData;
+            domHistoricalChartViewControls.querySelectorAll("[data-historical-chart-view]").forEach(button => {
+                const active = button.dataset.historicalChartView === historicalChartView;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+        }
+
+        function buildHistoricalTypeDatasets(props, years, chartTheme) {
+            const series = props?.inec_por_clase || {};
+            const totals = {};
+            Object.values(series).forEach(entry => {
+                Object.entries(entry || {}).forEach(([category, value]) => {
+                    const numeric = Number(value);
+                    if (Number.isFinite(numeric)) totals[category] = (totals[category] || 0) + numeric;
+                });
+            });
+            const categories = Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
+            const visibleCategories = categories.slice(0, HISTORICAL_CHART_CONFIG.maxVisibleTypes);
+            const remainingCategories = categories.slice(HISTORICAL_CHART_CONFIG.maxVisibleTypes);
+            const datasetFor = (label, color, categoryGroup) => ({
+                label,
+                data: years.map(year => {
+                    const entry = series[year];
+                    if (!entry) return null;
+                    return categoryGroup.reduce((sum, category) => sum + (Number(entry[category]) || 0), 0);
+                }),
+                borderColor: color,
+                backgroundColor: color,
+                borderWidth: 2,
+                tension: 0.15,
+                fill: false,
+                pointBackgroundColor: color,
+                pointBorderColor: chartTheme.pointOutline,
+                pointRadius: years.map(year => year === String(selectedYear) ? 5 : 2),
+                yAxisID: "y"
+            });
+            const datasets = visibleCategories.map((category, index) =>
+                datasetFor(category, HISTORICAL_CHART_CONFIG.typePalette[index], [category])
+            );
+            if (remainingCategories.length) {
+                datasets.push(datasetFor(
+                    "Resto de tipos",
+                    HISTORICAL_CHART_CONFIG.typePalette[HISTORICAL_CHART_CONFIG.typePalette.length - 1],
+                    remainingCategories
+                ));
+            }
+            return datasets;
         }
 
         function availableYears(series) {
@@ -500,6 +610,15 @@
             if (currentProfileProps) showProfileCard(currentProfileProps, null);
         });
 
+        document.addEventListener("click", event => {
+            const button = event.target.closest("[data-historical-chart-view]");
+            if (!button || button.disabled) return;
+            historicalChartView = button.dataset.historicalChartView;
+            syncHistoricalChartViewControls(true);
+            if (selectedTerritory?.props) updateSidebar(selectedTerritory.props);
+            else if (currentProps) updateSidebar(currentProps);
+        });
+
         updateDetailPeriodControls();
 
         function renderSiniestrosSection(props, yearVal) {
@@ -715,6 +834,8 @@
                 chartContainer.style.display = "none";
                 chartEmptyMsg.style.display = "block";
                 chartEmptyMsg.textContent = `Haz clic en ${promptLevel} para ver la tendencia`;
+                syncHistoricalChartViewControls(false);
+                updateTerritoryBreadcrumb();
                 window.REDSAExperience?.updateSummary(null, selectedYear);
                 return;
             }
@@ -842,8 +963,11 @@
             // Renderizar mini-gráfico Chart.js con doble eje Y (Siniestros vs Fallecidos)
             const hasHistFallecidos = props.fallecidos_historico && Object.keys(props.fallecidos_historico).length > 0;
             const hasHistSiniestros = props.siniestros_historico && Object.keys(props.siniestros_historico).length > 0;
+            const hasHistTypes = hasHistoricalTypeData(props);
+            syncHistoricalChartViewControls(hasHistTypes);
+            const showHistoricalTypes = hasHistTypes && historicalChartView === HISTORICAL_CHART_CONFIG.typeView;
 
-            if (hasHistFallecidos || hasHistSiniestros) {
+            if (hasHistFallecidos || hasHistSiniestros || hasHistTypes) {
                 chartContainer.style.display = "block";
                 chartEmptyMsg.style.display = "none";
 
@@ -857,6 +981,36 @@
 
                 const ctx = document.getElementById('chart-historico').getContext('2d');
                 const chartTheme = getAnalysisChartTheme();
+                const historicalDatasets = showHistoricalTypes
+                    ? buildHistoricalTypeDatasets(props, years, chartTheme)
+                    : [
+                        {
+                            label: 'Siniestros (INEC)',
+                            data: valSiniestros,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                            borderWidth: 2,
+                            tension: 0.15,
+                            fill: true,
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: chartTheme.pointOutline,
+                            pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Fallecidos (EDG)',
+                            data: valFallecidos,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+                            borderWidth: 2,
+                            tension: 0.15,
+                            fill: true,
+                            pointBackgroundColor: '#0ea5e9',
+                            pointBorderColor: chartTheme.pointOutline,
+                            pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
+                            yAxisID: 'y1'
+                        }
+                    ];
                 const selectedYearMarker = {
                     id: "selectedYearMarker",
                     afterDatasetsDraw(chart) {
@@ -880,34 +1034,7 @@
                     type: 'line',
                     data: {
                         labels: years,
-                        datasets: [
-                            {
-                                label: 'Siniestros (INEC)',
-                                data: valSiniestros,
-                                borderColor: '#f59e0b',
-                                backgroundColor: 'rgba(245, 158, 11, 0.12)',
-                                borderWidth: 2,
-                                tension: 0.15,
-                                fill: true,
-                                pointBackgroundColor: '#f59e0b',
-                                pointBorderColor: chartTheme.pointOutline,
-                                pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
-                                yAxisID: 'y'
-                            },
-                            {
-                                label: 'Fallecidos (EDG)',
-                                data: valFallecidos,
-                                borderColor: '#0ea5e9',
-                                backgroundColor: 'rgba(14, 165, 233, 0.12)',
-                                borderWidth: 2,
-                                tension: 0.15,
-                                fill: true,
-                                pointBackgroundColor: '#0ea5e9',
-                                pointBorderColor: chartTheme.pointOutline,
-                                pointRadius: years.map(year => year === String(selectedYear) ? 7 : 3),
-                                yAxisID: 'y1'
-                            }
-                        ]
+                        datasets: historicalDatasets
                     },
                     plugins: [selectedYearMarker],
                     options: {
@@ -923,10 +1050,11 @@
                                 position: 'top',
                                 labels: {
                                     color: chartTheme.textMuted,
-                                    boxWidth: 8,
-                                    boxHeight: 4,
+                                    boxWidth: showHistoricalTypes ? 6 : 8,
+                                    boxHeight: showHistoricalTypes ? 6 : 4,
+                                    usePointStyle: showHistoricalTypes,
                                     font: {
-                                        size: 9,
+                                        size: showHistoricalTypes ? 8 : 9,
                                         family: 'Inter'
                                     }
                                 }
@@ -961,8 +1089,8 @@
                                 position: 'left',
                                 title: {
                                     display: true,
-                                    text: 'Siniestros',
-                                    color: '#f59e0b',
+                                    text: showHistoricalTypes ? 'Siniestros por tipo' : 'Siniestros',
+                                    color: showHistoricalTypes ? chartTheme.textMuted : '#f59e0b',
                                     font: {
                                         size: 9,
                                         family: 'Inter',
@@ -974,7 +1102,7 @@
                                     drawBorder: false
                                 },
                                 ticks: {
-                                    color: '#f59e0b',
+                                    color: showHistoricalTypes ? chartTheme.textMuted : '#f59e0b',
                                     font: {
                                         size: 9,
                                         family: 'Inter'
@@ -984,7 +1112,7 @@
                             },
                             y1: {
                                 type: 'linear',
-                                display: true,
+                                display: !showHistoricalTypes,
                                 position: 'right',
                                 title: {
                                     display: true,
@@ -1020,9 +1148,11 @@
                 chartEmptyMsg.style.display = "block";
                 chartEmptyMsg.textContent = "Sin datos de serie histórica para este cantón";
             }
+            updateTerritoryBreadcrumb();
             window.REDSAExperience?.updateSummary(parishProps || props, selectedYear);
         }
 
         document.addEventListener("redsa:themechange", () => {
-            if (currentProps) updateSidebar(currentProps);
+            if (selectedTerritory?.props) updateSidebar(selectedTerritory.props);
+            else if (currentProps) updateSidebar(currentProps);
         });

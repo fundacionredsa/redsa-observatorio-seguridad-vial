@@ -676,8 +676,8 @@
                 let pinnedTrigger = null;
 
                 function showPopover(trigger, text, pinned = false) {
-                    popover.innerHTML = text;
-                    popover.style.display = "block";
+                    popover.innerHTML = `<span class="sigla-popover-icon" aria-hidden="true">ⓘ</span><span class="sigla-popover-copy">${text}</span>`;
+                    popover.style.display = "grid";
 
                     const triggerRect = trigger.getBoundingClientRect();
                     const popoverRect = popover.getBoundingClientRect();
@@ -734,7 +734,7 @@
                         const sigla = trigger.getAttribute("data-sigla");
                         const customText = trigger.getAttribute("data-custom-text");
                         if (customText || siglaDefinitions[sigla]) {
-                            if (pinnedTrigger === trigger && popover.style.display === "block") {
+                            if (pinnedTrigger === trigger && popover.style.display !== "none") {
                                 hidePopover();
                             } else {
                                 const text = customText ? customText : siglaDefinitions[sigla];
