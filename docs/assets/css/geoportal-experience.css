@@ -266,6 +266,73 @@ body:not(.light-theme) .site-topbar-brand-mark {
     margin-bottom: 10px;
 }
 
+body:not(.light-theme) .citizen-panel {
+    --public-surface: var(--bg-glass);
+    --public-ink: var(--text-primary);
+    --public-muted: var(--text-secondary);
+    --public-line: var(--border-glass);
+    --public-risk-soft: color-mix(in srgb, var(--public-risk) 14%, var(--bg-glass));
+    --public-action: var(--accent);
+    border-color: var(--public-line);
+    box-shadow: var(--shadow);
+}
+
+body:not(.light-theme) .citizen-national-badge {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 16%, var(--bg-glass));
+    color: var(--text-primary);
+}
+
+body:not(.light-theme) .citizen-intro,
+body:not(.light-theme) .citizen-map-context .citizen-map-meta,
+body:not(.light-theme) .citizen-map-context span,
+body:not(.light-theme) .citizen-comparison {
+    color: var(--public-muted);
+}
+
+body:not(.light-theme) .citizen-map-context strong,
+body:not(.light-theme) .citizen-national-kicker,
+body:not(.light-theme) .citizen-national-reference .citizen-national-value,
+body:not(.light-theme) .citizen-summary-info,
+body:not(.light-theme) .citizen-national-info,
+body:not(.light-theme) .citizen-contact,
+body:not(.light-theme) .institutional-entry {
+    color: var(--public-action);
+}
+
+body:not(.light-theme) .citizen-layers-shortcut,
+body:not(.light-theme) .citizen-search-input,
+body:not(.light-theme) .citizen-action {
+    border-color: var(--public-line);
+    background: var(--bg-glass-hover);
+    color: var(--public-ink);
+}
+
+body:not(.light-theme) .citizen-layers-shortcut:hover,
+body:not(.light-theme) .citizen-layers-shortcut:focus-visible,
+body:not(.light-theme) .citizen-layers-shortcut[aria-expanded="true"],
+body:not(.light-theme) .citizen-action:hover,
+body:not(.light-theme) .citizen-action:focus-visible {
+    border-color: var(--public-action);
+    color: var(--accent-hover);
+}
+
+body:not(.light-theme) .citizen-action-primary,
+body:not(.light-theme) .citizen-action-primary:hover,
+body:not(.light-theme) .citizen-action-primary:focus-visible {
+    border-color: var(--public-action);
+    background: var(--public-action);
+    color: var(--text-primary);
+}
+
+body:not(.light-theme) .citizen-summary-metric {
+    border-top-color: var(--public-line);
+}
+
+body:not(.light-theme) .citizen-summary-history {
+    color: var(--public-ink);
+}
+
 .catalog-dialog {
     width: min(1050px, calc(100vw - 40px));
     max-height: min(860px, calc(100vh - 40px));
