@@ -11,6 +11,7 @@
         const variableTourTarget = '[data-right-panel="layers"]';
         const infrastructureTourTarget = "#infrastructure-disclosure";
         const citizenWasOpen = document.body.classList.contains("citizen-panel-open");
+        const rightPanelBeforeTour = document.getElementById("right-context-host")?.dataset.activePanel || null;
 
         const openCitizenPanelForTour = () => {
             window.setRightContextPanel?.(null, false);
@@ -35,6 +36,11 @@
             prepareLayersPanelForTour();
             const disclosure = document.getElementById("infrastructure-disclosure");
             if (disclosure) disclosure.open = true;
+        };
+
+        const prepareActiveLegendForTour = () => {
+            window.setRightContextPanel?.(null, false);
+            window.setMobilePanel?.("citizen", false);
         };
 
         const prepareBasemapsForTour = () => {
@@ -74,7 +80,10 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                window.setRightContextPanel?.("legend", true);
+                const restoreRightPanel = ["legend", "layers", "basemap"].includes(rightPanelBeforeTour)
+                    ? rightPanelBeforeTour
+                    : null;
+                window.setRightContextPanel?.(restoreRightPanel, Boolean(restoreRightPanel));
                 window.setSiteMethodologyMenu?.(false);
                 window.setSiteTopbarMenu?.(false);
                 if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
@@ -117,8 +126,8 @@
                     element: variableTourTarget,
                     onHighlightStarted: prepareLayersPanelForTour,
                     popover: {
-                        title: 'Variables, años y nivel territorial',
-                        description: 'En “Datos y capas” puedes elegir qué fenómeno representar, mover la línea de tiempo y cambiar entre provincias, cantones y parroquias. “Sin dato” nunca se interpreta como cero.',
+                        title: 'Variables y capas del mapa',
+                        description: 'En “Datos y capas” eliges qué fenómeno representar y puedes combinarlo con información de siniestros e infraestructura. “Sin dato” nunca se interpreta como cero.',
                         side: "left",
                         align: 'start'
                     }
@@ -130,6 +139,16 @@
                         title: 'Capas de infraestructura',
                         description: 'Despliega “Infraestructura vial” para activar una o varias capas a la vez y compararlas con la variable territorial.',
                         side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#legend-active-layers-card',
+                    onHighlightStarted: prepareActiveLegendForTour,
+                    popover: {
+                        title: 'Leyenda activa sobre el mapa',
+                        description: 'Esta tarjeta aparece cuando hay capas activas y las mantiene visibles sin cambiar de pestaña. Cada fila conserva el mismo peso visual y su botón informativo explica la fuente o el símbolo.',
+                        side: isMobile ? "top" : "right",
                         align: 'start'
                     }
                 },
@@ -158,7 +177,7 @@
                     onHighlightStarted: prepareLegendForTour,
                     popover: {
                         title: 'Leyenda adaptativa',
-                        description: 'La leyenda cambia según la variable, el año y el nivel territorial. También declara cuando no existen datos y su ícono informativo explica la clasificación.',
+                        description: 'Aquí ajustas nivel, año y periodo, y consultas la escala de colores, el total nacional y la intensidad visual. La leyenda también declara cuando no existen datos y explica la clasificación.',
                         side: "left",
                         align: 'end'
                     }
@@ -178,7 +197,7 @@
                     onHighlightStarted: prepareCatalogForTour,
                     popover: {
                         title: 'Catálogo y descarga de datos',
-                        description: 'Consulta todas las variables, sus años, niveles, fuentes y metodología. Desde cada ficha puedes descargar datos tabulares y geográficos disponibles.',
+                        description: 'Busca en una grilla de tarjetas compactas, filtra con chips de categorías reales y expande solo la variable que necesites. Cada detalle conserva sus fuentes, metodología y descargas tabulares o geográficas.',
                         side: "bottom",
                         align: 'start'
                     }
@@ -221,7 +240,8 @@
             titles: driverObj.getConfig().steps.map(step => step.popover?.title).filter(Boolean),
             coversCatalogDownloads: true,
             coversAnalysis: true,
-            coversVariablesAndLayers: true
+            coversVariablesAndLayers: true,
+            coversFloatingActiveLegend: true
         };
         driverObj.drive();
     }

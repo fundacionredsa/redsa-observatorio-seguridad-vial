@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.45">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.45">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.45">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.46">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.46">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.46">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -212,36 +212,44 @@
         <header class="right-context-section-header">
             <div>
                 <h2>Leyenda</h2>
-                <p>Escala de colores y ficha del territorio seleccionado.</p>
+                <p>Controles de periodo y claves para interpretar el mapa.</p>
             </div>
             <button class="right-context-close" id="mobile-legend-toggle" type="button" data-close-right-panel aria-expanded="true" aria-label="Cerrar leyenda" title="Cerrar leyenda">&times;</button>
         </header>
         <div class="legend-context-scroll">
-            <p id="legend-year-adjustment-note" class="timeline-year-adjustment-note legend-year-adjustment-note" role="status" aria-live="polite" hidden></p>
-            <div class="legend-context-controls" id="legend-context-controls" aria-label="Periodo y nivel de la leyenda">
-                <div id="legend-level-control-slot" class="legend-control-slot legend-level-control-slot"></div>
-                <div id="legend-timeline-control-slot" class="legend-control-slot legend-timeline-control-slot"></div>
-            </div>
-            <div id="legend-context-slot" class="legend-context-slot"></div>
-            <section id="legend-active-layers-card" class="legend-active-layers-card" aria-labelledby="legend-active-layers-title">
-                <header class="legend-active-layers-header">
-                    <h3 id="legend-active-layers-title">Leyenda activa</h3>
-                    <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
+            <section class="legend-content-group legend-temporal-group" aria-labelledby="legend-temporal-title">
+                <header class="legend-group-header">
+                    <span class="legend-group-icon" aria-hidden="true"><i class="fa-regular fa-calendar"></i></span>
+                    <span>
+                        <span class="legend-group-eyebrow">Explora el periodo</span>
+                        <h3 id="legend-temporal-title">Controles temporales</h3>
+                        <small>Nivel, año y periodo de los datos mostrados.</small>
+                    </span>
                 </header>
-                <div id="legend-active-layers-list" class="legend-active-layers-list" aria-live="polite"></div>
+                <p id="legend-year-adjustment-note" class="timeline-year-adjustment-note legend-year-adjustment-note" role="status" aria-live="polite" hidden></p>
+                <div class="legend-context-controls" id="legend-context-controls" aria-label="Periodo y nivel de la leyenda">
+                    <div id="legend-level-control-slot" class="legend-control-slot legend-level-control-slot"></div>
+                    <div id="legend-timeline-control-slot" class="legend-control-slot legend-timeline-control-slot"></div>
+                </div>
+            </section>
+            <section class="legend-content-group legend-reading-group" aria-labelledby="legend-reading-title">
+                <header class="legend-group-header">
+                    <span class="legend-group-icon" aria-hidden="true"><i class="fa-solid fa-palette"></i></span>
+                    <span>
+                        <span class="legend-group-eyebrow">Interpreta la visualización</span>
+                        <h3 id="legend-reading-title">Cómo leer el mapa</h3>
+                        <small>Escala, total nacional e intensidad visual.</small>
+                    </span>
+                </header>
+                <div id="legend-context-slot" class="legend-context-slot"></div>
             </section>
             <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
                 <div class="profile-card-header">
                     <div class="profile-card-heading-wrap">
-                        <span class="profile-card-kicker" id="legend-profile-heading">Ficha territorial</span>
-                        <span id="hover-card-title">Perfil de Fallecidos</span>
+                        <span class="profile-card-kicker" id="legend-profile-heading">Territorio seleccionado</span>
+                        <span id="hover-card-title">Consulta territorial</span>
                     </div>
                     <span class="profile-card-header-actions">
-                        <span class="detail-period-segments profile-period-segments" role="group" aria-label="Periodo del perfil de fallecidos">
-                            <button type="button" data-detail-period-mode="year" class="active" aria-pressed="true">Año</button>
-                            <button type="button" data-detail-period-mode="accumulated" aria-pressed="false">Histórico</button>
-                        </span>
-                        <span id="hover-card-period" class="profile-card-period">2024</span>
                         <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
                     </span>
                 </div>
@@ -319,6 +327,16 @@
     </section>
     </div>
     </div>
+    <aside id="legend-active-layers-card" class="legend-active-layers-card map-active-layers-card" aria-labelledby="legend-active-layers-title" aria-hidden="true" inert>
+        <header class="legend-active-layers-header">
+            <span class="legend-active-layers-heading">
+                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                <h2 id="legend-active-layers-title">Leyenda activa</h2>
+            </span>
+            <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
+        </header>
+        <div id="legend-active-layers-list" class="legend-active-layers-list" role="list" aria-live="polite"></div>
+    </aside>
     <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
 
     <div id="mobile-level-bar" class="mobile-level-bar" role="group" aria-label="Nivel territorial">
@@ -679,17 +697,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.45"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.45"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.46"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.46"></script>
 </body>
 </html>

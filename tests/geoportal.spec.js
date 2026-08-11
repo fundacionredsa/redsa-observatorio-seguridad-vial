@@ -239,9 +239,11 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#technical-drawer")).not.toContainText("Descargar datos cantonales");
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "true");
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
   await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator("#legend-active-layers-card")).toContainText("Personas fallecidas");
+  await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
   await page.locator("#site-methodology-toggle").click();
   await expect(page.locator("#site-methodology-menu")).toBeVisible();
@@ -285,24 +287,20 @@ test("selector de variables permite selección única y deselección accesible",
   const boundaryStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
   expect(boundaryStyle.fillOpacity).toBeLessThan(choroplethStyle.fillOpacity);
 
-  await page.locator('[data-right-panel="layers"]').click();
   await fatalities.click();
   await expect(fatalities).toBeChecked();
   await expect(accidents).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("fallecidos_inec_2019");
 
-  await page.locator('[data-right-panel="layers"]').click();
   await fatalities.focus();
   await fatalities.press("Space");
   await expect(fatalities).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
 
-  await page.locator('[data-right-panel="layers"]').click();
   await accidents.focus();
   await accidents.press("Enter");
   await expect(accidents).toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
-  await page.locator('[data-right-panel="layers"]').click();
   await accidents.press("Enter");
   await expect(accidents).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
@@ -411,15 +409,14 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
-  await page.locator(".profile-period-segments [data-detail-period-mode='accumulated']").click();
+  await page.evaluate(() => document.querySelector("#territory-sidebar [data-detail-period-mode='accumulated']")?.click());
 
   await expect(page.locator("#edg-sidebar-year")).toHaveText("2020–2024");
   await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
   await expect(page.locator("#siniestros-section-year")).toContainText("2017–2025");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
-  await expect(page.locator("#hover-card-period")).toHaveText("Histórico");
-  await expect(page.locator("#hover-card-body")).toContainText("Periodo: 2020–2024");
-  await expect(page.locator("#hover-card-body")).toContainText("Periodo: 2016–2021");
+  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
+  await expect(page.locator("#demographic-hover-card")).not.toContainText("2020–2024");
 
   const controls = await page.locator("[data-detail-period-mode='accumulated']").evaluateAll(buttons =>
     buttons.map(button => button.getAttribute("aria-pressed"))
@@ -619,7 +616,7 @@ test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío"
   expect(state.validValueCount).toBeGreaterThan(0);
   expect(state.timelineYearAdjustment).toContain("cambió a 2024");
   expect(state.timelineYearAdjustment).toContain("2020–2024");
-  await expect(page.locator("#legend-year-adjustment-note")).toBeVisible();
+  await expect(page.locator("#legend-year-adjustment-note")).not.toHaveAttribute("hidden", "");
   expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().year)).toBe(2024);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_sppat_2016_2021"));
@@ -685,26 +682,23 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
     window.__redsaAudit.selectYear(2024);
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
-  await expect(page.locator(".profile-card-citizen-title").first()).toHaveText("¿Quiénes fallecieron en siniestros de tránsito aquí?");
-  await expect(page.locator(".profile-card-title-meta").first()).toHaveText("Periodo: 2024");
-  const edgDetail = page.locator(".profile-card-source-detail").first();
-  await expect(edgDetail).toContainText("Personas fallecidas en siniestros de tránsito según el registro civil.");
-  expect(await edgDetail.textContent()).not.toContain("INEC");
-  expect(await edgDetail.textContent()).not.toContain("CIE-10");
-  await expect(edgDetail.locator(".sigla-tooltip-trigger")).toHaveCount(3);
-  await edgDetail.locator('[data-sigla="INEC"]').click();
-  await expect(page.locator("#sigla-popover")).toContainText("Instituto Nacional de Estadística y Censos de Ecuador");
-  await edgDetail.locator('[data-sigla="EDG"]').click();
+  const shortcut = page.locator("#demographic-hover-card");
+  await expect(shortcut).toContainText("QUITO");
+  await expect(shortcut).toContainText("Código DPA 1701");
+  await expect(shortcut).toContainText("Ver análisis completo");
+  await expect(shortcut.locator(".profile-card-citizen-title, .profile-card-source-detail, .perfil-card-section")).toHaveCount(0);
+
+  await shortcut.locator("#legend-open-analysis-button").click();
+  await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator("#info-fallecidos-inec")).toHaveText("504");
+  await expect(page.locator("#info-fallecidos-sppat")).not.toBeEmpty();
+
+  const edgInfo = page.locator('#territory-sidebar [data-sigla="EDG"]');
+  await edgInfo.click();
   await expect(page.locator("#sigla-popover")).toContainText("Registro Estadístico de Defunciones Generales");
-  await edgDetail.locator('[data-sigla="CIE-10"]').click();
-  await expect(page.locator("#sigla-popover")).toContainText("códigos V01 a V89");
-  await expect(page.locator(".profile-card-citizen-title").nth(1)).toHaveText("Fallecidos registrados en reclamaciones del seguro");
-  await expect(page.locator(".profile-card-title-meta").nth(1)).toContainText("Periodo:");
-  const sppatDetail = page.locator(".profile-card-source-detail").nth(1);
-  await expect(sppatDetail).toContainText("Personas fallecidas registradas en reclamaciones del seguro.");
-  expect(await sppatDetail.textContent()).not.toContain("SPPAT");
-  await expect(sppatDetail.locator('[data-sigla="SPPAT"]')).toHaveCount(1);
-  await expect(page.locator(".perfil-card-section").locator("text=Otros / veh. no especificado (V80-V89)")).toBeVisible();
+  const sppatInfo = page.locator('#territory-sidebar [data-sigla="SPPAT"]');
+  await sppatInfo.click();
+  await expect(page.locator("#sigla-popover")).toContainText("Servicio Público para Pago de Accidentes de Tránsito");
 });
 
 test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", async ({ page }, testInfo) => {
@@ -717,10 +711,10 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
 
-  const profile = page.locator("#demographic-hover-card");
-  await expect(profile).toContainText("No hay datos de edad, sexo o forma de desplazamiento en el registro civil para este año.");
-  await expect(profile).not.toContainText("El registro civil no tiene fallecidos disponibles para este año.");
-  await expect(profile).toContainText("No hay detalle por sexo, forma de desplazamiento o tipo de accidente en las reclamaciones de 2025.");
+  const shortcut = page.locator("#demographic-hover-card");
+  await expect(shortcut).toContainText("Ver análisis completo");
+  await expect(shortcut).not.toContainText("No hay datos de edad");
+  await expect(shortcut).not.toContainText("No hay detalle por sexo");
 });
 
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
@@ -1034,31 +1028,13 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   }
   await page.touchscreen.tap(tapPoint.x, tapPoint.y);
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({ level: "canton", code: "1701" });
-  await expect(page.locator("#demographic-hover-card")).toBeVisible();
-  await expect(page.locator("#hover-card-period")).toHaveText("2022");
-
-  const selected = await page.evaluate(() => {
-    const box = selector => {
-      const element = document.querySelector(selector);
-      const rect = element.getBoundingClientRect();
-      const styles = getComputedStyle(element);
-      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height, visibility: styles.visibility };
-    };
-    const card = box("#demographic-hover-card");
-    const host = box("#right-context-host");
-    return { card, host, parentPanel: document.querySelector("#demographic-hover-card").closest("[data-right-context-view]")?.id };
-  });
-  expect(selected.card.top).toBeGreaterThanOrEqual(0);
-  expect(selected.card.left).toBeGreaterThanOrEqual(selected.host.left);
-  expect(selected.card.right).toBeLessThanOrEqual(selected.host.right);
-  expect(selected.parentPanel).toBe("legend-context-panel");
-
-  await page.locator("#mobile-legend-toggle").tap();
-  await expect(page.locator('[data-right-panel="legend"]')).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#demographic-hover-card")).not.toHaveAttribute("hidden", "");
+
   await page.locator('[data-right-panel="legend"]').tap();
   await expect(page.locator("#right-context-host")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
 });
 
 

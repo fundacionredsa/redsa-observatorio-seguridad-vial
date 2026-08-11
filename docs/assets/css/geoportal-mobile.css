@@ -784,6 +784,62 @@
         min-height: var(--ui-secondary-info-size-mobile);
     }
 
+    .legend-context-scroll {
+        padding: 10px;
+    }
+
+    .legend-content-group {
+        gap: 11px;
+        padding: 11px;
+    }
+
+    .legend-group-header {
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .legend-group-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .legend-context-controls .timeline-marks {
+        gap: 2px;
+        overflow-x: auto;
+        padding-bottom: 3px;
+    }
+
+    .legend-context-controls .timeline-mark {
+        min-width: 29px;
+        padding: 3px 2px;
+        font-size: 0.57rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .map-active-layers-card,
+    body.citizen-panel-open .map-active-layers-card,
+    body.mobile-sidebar-open .map-active-layers-card {
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        bottom: 72px;
+        left: var(--mobile-edge, 10px);
+        width: auto;
+        max-height: 38dvh;
+        transform-origin: bottom left;
+    }
+
+    .map-active-layers-card .legend-active-layers-list {
+        max-height: min(24dvh, 190px);
+    }
+
+    body.mobile-citizen-open .map-active-layers-card,
+    body.mobile-sidebar-open .map-active-layers-card,
+    body.mobile-right-context-open .map-active-layers-card {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(8px);
+    }
+
     .right-context-view,
     .right-context-host .technical-drawer {
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));

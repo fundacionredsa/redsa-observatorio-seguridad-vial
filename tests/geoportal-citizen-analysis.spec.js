@@ -63,7 +63,8 @@ test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro
   expect(darkTheme.variables.ink).toBe(darkTheme.variables.textPrimary);
   expect(darkTheme.variables.line).toBe(darkTheme.variables.borderGlass);
   expect(darkTheme.variables.action).toBe(darkTheme.variables.accent);
-  expect(darkTheme.outsidePanelPublicInk).toBe(lightTheme.outsidePanelPublicInk);
+  expect(darkTheme.outsidePanelPublicInk).toBe(darkTheme.variables.textPrimary);
+  expect(darkTheme.outsidePanelPublicInk).not.toBe(lightTheme.outsidePanelPublicInk);
   expect(darkTheme.panel.background).not.toBe(lightTheme.panel.background);
   expect(darkTheme.panel.color).not.toBe(lightTheme.panel.color);
   expect(darkTheme.badge.background).not.toBe(lightTheme.badge.background);
@@ -81,6 +82,53 @@ test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro
   expect(restoredLightTheme.input).toEqual(lightTheme.input);
   expect(restoredLightTheme.action.background).toBe(lightTheme.action.background);
   expect(restoredLightTheme.primaryAction).toEqual(lightTheme.primaryAction);
+});
+
+test("Ranking y Catálogo comparten el tema oscuro y restauran su apariencia clara", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "La paleta completa de ambos modales se valida una vez en desktop.");
+  await loadPortal(page);
+
+  const readStyle = selector => page.locator(selector).first().evaluate(element => {
+    const styles = getComputedStyle(element);
+    return { background: styles.backgroundColor, color: styles.color, border: styles.borderColor };
+  });
+  const open = async selector => {
+    await page.evaluate(buttonSelector => document.querySelector(buttonSelector)?.click(), selector);
+  };
+
+  await open("#open-institutional-button");
+  await expect(page.locator("#institutional-modal")).toBeVisible();
+  const rankingLight = await readStyle("#institutional-modal .institutional-dialog");
+  await page.locator("#institutional-modal-close").click();
+
+  await open("#btn-catalog");
+  await expect(page.locator("#catalog-modal")).toBeVisible();
+  await expect(page.locator("#catalog-modal .catalog-item").first()).toBeVisible();
+  const catalogLight = await readStyle("#catalog-modal .institutional-dialog");
+  await page.locator("#catalog-modal-close").click();
+
+  await page.evaluate(() => document.querySelector("#btn-theme-toggle")?.click());
+  await expect(page.locator("body")).not.toHaveClass(/light-theme/);
+
+  await open("#open-institutional-button");
+  const rankingDark = await readStyle("#institutional-modal .institutional-dialog");
+  const rankingTableDark = await readStyle("#institutional-modal .ranking-table-wrap");
+  expect(rankingDark.background).not.toBe(rankingLight.background);
+  expect(rankingDark.color).not.toBe(rankingLight.color);
+  expect(rankingTableDark.background).toBe(rankingDark.background);
+  await page.locator("#institutional-modal-close").click();
+
+  await open("#btn-catalog");
+  const catalogDark = await readStyle("#catalog-modal .institutional-dialog");
+  const catalogCardDark = await readStyle("#catalog-modal .catalog-item");
+  expect(catalogDark.background).not.toBe(catalogLight.background);
+  expect(catalogDark.color).not.toBe(catalogLight.color);
+  expect(catalogCardDark.color).toBe(catalogDark.color);
+  await page.locator("#catalog-modal-close").click();
+
+  await page.evaluate(() => document.querySelector("#btn-theme-toggle")?.click());
+  await open("#btn-catalog");
+  expect(await readStyle("#catalog-modal .institutional-dialog")).toEqual(catalogLight);
 });
 
 async function selectQuito(page) {
@@ -277,6 +325,8 @@ test("breadcrumb usa exactamente provincia, cantón y parroquia seleccionados", 
   });
   await page.locator("#open-analysis-button").click();
   await expect(page.locator("#territory-breadcrumb")).toHaveText("PICHINCHA");
+  await expect(page.locator("#cabecera-warning-box")).toHaveText("Este dato se calcula sumando los cantones de la provincia; algunos años pueden tener información incompleta.");
+  await expect(page.locator("#cabecera-warning-box")).not.toContainText(".geojson");
 
   await page.evaluate(async () => {
     await window.__redsaAudit.setTerritoryLevelMode("canton");

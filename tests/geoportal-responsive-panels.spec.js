@@ -63,6 +63,10 @@ test("la barra derecha controla un solo panel de tres pestañas con Leyenda por 
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
+  await expect(page.locator("#legend-context-panel #legend-active-layers-card")).toHaveCount(0);
+  await expect(page.locator("body > #legend-active-layers-card")).toHaveCount(1);
+  await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "1");
+  await expect(page.locator("#legend-active-layers-card")).toHaveClass(/is-visible/);
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
@@ -123,34 +127,38 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
   await expect(shortcut).toHaveAttribute("aria-expanded", "true");
 });
 
-test("los cambios cartográficos y la selección territorial regresan a Leyenda", async ({ page }) => {
+test("los cambios cartográficos conservan la pestaña elegida por la persona", async ({ page }) => {
   await loadPortal(page);
   const host = page.locator("#right-context-host");
   const basemapTab = page.locator('[data-right-panel="basemap"]');
   const layersTab = page.locator('[data-right-panel="layers"]');
-  const expectLegend = async () => {
+  const expectPanel = async panel => {
     await expect(host).toBeVisible();
-    await expect(host).toHaveAttribute("data-active-panel", "legend");
-    await expect(page.locator("#legend-context-panel")).toBeVisible();
+    await expect(host).toHaveAttribute("data-active-panel", panel);
   };
 
   await basemapTab.click();
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expectLegend();
+  await expectPanel("basemap");
 
-  await basemapTab.click();
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
-  await expectLegend();
+  await expectPanel("basemap");
 
-  await page.locator('[data-period-mode="accumulated"]').click();
-  await expectLegend();
+  await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
+  await expectPanel("basemap");
 
-  await page.locator('[data-level-mode="canton"]').first().click();
-  await expectLegend();
-
-  await basemapTab.click();
+  await layersTab.click();
   await page.evaluate(() => window.__redsaAudit.showTerritory("province", "17"));
-  await expectLegend();
+  await expectPanel("layers");
+  await expect(page.locator("#demographic-hover-card")).not.toHaveAttribute("hidden", "");
+
+  await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
+  await expectPanel("layers");
+  await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "2");
+  await expect(page.locator("#legend-active-layers-card")).toHaveClass(/is-visible/);
+
+  await page.locator('[data-right-panel="legend"]').click();
+  await expectPanel("legend");
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
 });
 
@@ -360,16 +368,20 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
   expect(await card.evaluate(element => element.parentElement?.classList.contains("legend-context-scroll"))).toBeTruthy();
   expect(await card.evaluate(element => getComputedStyle(element).position)).toBe("relative");
   const legendFlow = await page.evaluate(() => {
-    const slot = document.getElementById("legend-context-slot");
+    const readingGroup = document.querySelector(".legend-reading-group");
     const card = document.getElementById("demographic-hover-card");
+    const groupBox = readingGroup?.getBoundingClientRect();
+    const cardBox = card?.getBoundingClientRect();
     return {
-      slotHeight: slot?.offsetHeight || 0,
-      cardTop: card?.offsetTop || 0,
-      slotBottom: (slot?.offsetTop || 0) + (slot?.offsetHeight || 0)
+      groupHeight: groupBox?.height || 0,
+      cardTop: cardBox?.top || 0,
+      groupBottom: groupBox?.bottom || 0
     };
   });
-  expect(legendFlow.slotHeight).toBeGreaterThan(0);
-  expect(legendFlow.cardTop).toBeGreaterThanOrEqual(legendFlow.slotBottom);
+  expect(legendFlow.groupHeight).toBeGreaterThan(0);
+  expect(legendFlow.cardTop).toBeGreaterThanOrEqual(legendFlow.groupBottom);
+  await expect(card).toContainText("Ver análisis completo");
+  await expect(card.locator(".profile-shortcut-value")).toHaveCount(0);
   const geometry = await measure();
   expect(geometry.cardBox.left).toBeGreaterThanOrEqual(geometry.hostBox.left);
   expect(geometry.cardBox.right).toBeLessThanOrEqual(geometry.hostBox.right);
@@ -424,12 +436,17 @@ test("Leyenda reúne nivel, año, escala y opacidad en ese orden", async ({ page
   expect(order.timeline, JSON.stringify(order)).toBeLessThan(order.period);
   expect(order.period, JSON.stringify(order)).toBeLessThan(order.legend);
   expect(order.legend, JSON.stringify(order)).toBeLessThan(order.opacity);
+  await expect(page.locator(".legend-content-group")).toHaveCount(2);
+  await expect(page.locator("#legend-temporal-title")).toHaveText("Controles temporales");
+  await expect(page.locator("#legend-reading-title")).toHaveText("Cómo leer el mapa");
+  await expect(page.locator("#territory-opacity-label")).toHaveText("Intensidad del color en el mapa");
   expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("legend-level-control-slot");
   expect(await page.locator(".timeline-filter-block").evaluate(element => element.parentElement?.id)).toBe("legend-timeline-control-slot");
   expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-territory-opacity-slot");
   const coverage = await page.evaluate(() => window.__redsaAudit.state().temporalCoverage);
   await expect(page.locator("#timeline-marks .tm-available")).toHaveCount(coverage.anios_disponibles.length);
   await expect(page.locator("#timeline-marks .tm-unavailable")).toHaveCount(11 - coverage.anios_disponibles.length);
+  await expect(page.locator("#timeline-marks .timeline-mark").first()).toHaveText(/^20\d{2}$/);
   await page.locator("#map-year-slider").fill("2024");
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2024);
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
@@ -473,14 +490,15 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
   );
 
   const typography = await page.evaluate(() => {
-    const style = selector => {
-      const computed = getComputedStyle(document.querySelector(selector));
+    const style = element => {
+      const computed = getComputedStyle(element);
       return { size: parseFloat(computed.fontSize), weight: Number(computed.fontWeight) };
     };
+    const activeLayerNames = [...document.querySelectorAll("#legend-active-layers-list .legend-active-layer-name")];
     return {
-      territory: style(".legend-heading-title"),
-      infrastructure: style('[data-legend-layer-id="infra-ciclovias"] .legend-overlay-title'),
-      control: style("#territory-level-control")
+      territory: style(activeLayerNames[0]),
+      infrastructure: style(activeLayerNames.at(-1)),
+      control: style(document.querySelector("#territory-level-control"))
     };
   });
   expect(Math.abs(typography.territory.size - typography.infrastructure.size)).toBeLessThanOrEqual(0.5);

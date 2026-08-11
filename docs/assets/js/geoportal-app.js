@@ -472,10 +472,10 @@
                                 <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
                                 <div class="contextual-opacity-control" id="territory-opacity-control">
                                     <div class="contextual-opacity-heading">
-                                        <label id="territory-opacity-label" for="territory-opacity-slider">Opacidad de la variable territorial</label>
+                                        <label id="territory-opacity-label" for="territory-opacity-slider">Intensidad del color en el mapa</label>
                                         <output id="territory-opacity-value" for="territory-opacity-slider">100%</output>
                                     </div>
-                                    <input id="territory-opacity-slider" type="range" min="20" max="100" step="5" value="100" aria-label="Opacidad de la variable territorial">
+                                    <input id="territory-opacity-slider" type="range" min="20" max="100" step="5" value="100" aria-label="Intensidad del color de la variable territorial en el mapa">
                                 </div>
                             </details>
                         `;
@@ -571,7 +571,6 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
-                    window.showLegendForMapChange?.("variable");
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     refreshCitizenSummary();
@@ -605,7 +604,6 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
-                    window.showLegendForMapChange?.("period");
                     refreshCitizenSummary();
                     window.REDSAInstitutional?.refresh();
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
@@ -622,7 +620,6 @@
                     refreshTerritoryLayerStyles(level, true);
                     updateMapLevelNote(level);
                     updateLegend();
-                    window.showLegendForMapChange?.("year");
                     if (currentProps) updateSidebar(currentProps);
                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
                     refreshCitizenSummary();
