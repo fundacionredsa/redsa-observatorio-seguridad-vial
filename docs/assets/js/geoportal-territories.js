@@ -312,9 +312,10 @@ function onEachProvinceFeature(feature, layer) {
         }
 
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
+            const card = document.getElementById("legend-active-layers-card");
             const list = document.getElementById("legend-active-layers-list");
             const count = document.getElementById("legend-active-layers-count");
-            if (!list || !count) return;
+            if (!card || !list || !count) return;
 
             const activeLayers = [];
             if (selectedVariable !== "normal") {
@@ -362,13 +363,18 @@ function onEachProvinceFeature(feature, layer) {
             }
 
             list.innerHTML = activeLayers.map(layer => `
-                <div class="legend-active-layer-row">
+                <div class="legend-active-layer-row" role="listitem">
                     ${layer.symbol}
                     <span class="legend-active-layer-name">${layer.title}<small>${layer.subtitle}</small></span>
                     ${layer.info}
                 </div>
             `).join("");
             count.textContent = `${activeLayers.length} ${activeLayers.length === 1 ? "capa" : "capas"}`;
+            const hasActiveLayers = activeLayers.length > 0;
+            card.classList.toggle("is-visible", hasActiveLayers);
+            card.setAttribute("aria-hidden", String(!hasActiveLayers));
+            card.toggleAttribute("inert", !hasActiveLayers);
+            card.dataset.layerCount = String(activeLayers.length);
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -404,10 +410,10 @@ function onEachProvinceFeature(feature, layer) {
                 const hasTerritorialSurface = effectiveVariable !== "normal" && !unavailableAtLevel && !noValuesAtLevel;
                 if (territoryOpacityControl) territoryOpacityControl.hidden = !hasTerritorialSurface;
                 if (territoryOpacityLabel && hasTerritorialSurface) {
-                    territoryOpacityLabel.textContent = `Opacidad de ${requestedConfig.displayLabel || requestedConfig.label}`;
+                    territoryOpacityLabel.textContent = "Intensidad del color en el mapa";
                     document.getElementById("territory-opacity-slider")?.setAttribute(
                         "aria-label",
-                        `Opacidad de ${requestedConfig.displayLabel || requestedConfig.label}`
+                        `Intensidad del color de ${requestedConfig.displayLabel || requestedConfig.label} en el mapa`
                     );
                 }
 
@@ -806,7 +812,6 @@ function onEachProvinceFeature(feature, layer) {
             refreshTerritoryLayerStyles();
             updateMapLevelNote(level);
             updateLegend();
-            window.showLegendForMapChange?.("territory-level");
             updateTerritoryLevelControl();
             if (selectedTerritory?.props) updateSidebar(selectedTerritory.props);
             if (yearResolution.changed && currentProfileProps) showProfileCard(currentProfileProps, null);

@@ -313,7 +313,7 @@
             const body = document.getElementById("hover-card-body");
             const title = document.getElementById("hover-card-title");
             if (body) body.replaceChildren();
-            if (title) title.textContent = "Perfil de fallecidos";
+            if (title) title.textContent = "Consulta territorial";
         }
 
         function ensureProfileHeaderVisible(card) {
@@ -328,7 +328,7 @@
             });
         }
 
-        function showProfileCard(props, e) {
+        function renderLegacyProfileCard(props, e) {
             const card = document.getElementById("demographic-hover-card");
             const body = document.getElementById("hover-card-body");
             const title = document.getElementById("hover-card-title");
@@ -344,7 +344,6 @@
 
             card.hidden = false;
             document.body.classList.add("profile-selection-active");
-            window.showLegendForMapChange?.("territory-selection");
             ensureProfileHeaderVisible(card);
 
             // Caso 1: Parroquia
@@ -584,8 +583,44 @@
             body.innerHTML = html;
         }
 
+        function showProfileCard(props) {
+            const card = document.getElementById("demographic-hover-card");
+            const body = document.getElementById("hover-card-body");
+            const title = document.getElementById("hover-card-title");
+            if (!card || !body || !title || !props) return;
+
+            currentProfileProps = props;
+            const isParish = Boolean(props.DPA_PARROQ);
+            const isProvince = !isParish && props.nivel_agregacion === "provincia";
+            const territoryName = isParish
+                ? props.DPA_DESPAR
+                : (isProvince ? props.DPA_DESPRO : props.DPA_DESCAN);
+            const territoryLevel = isParish ? "Parroquia" : (isProvince ? "Provincia" : "Cantón");
+            const territoryCode = isParish
+                ? props.DPA_PARROQ
+                : (isProvince ? props.DPA_PROVIN : props.DPA_CANTON);
+
+            title.textContent = territoryName || "Territorio seleccionado";
+            body.innerHTML = `
+                <div class="legend-territory-shortcut-copy">
+                    <span class="legend-territory-shortcut-meta">${territoryLevel}${territoryCode ? ` · Código DPA ${territoryCode}` : ""}</span>
+                    <p>Consulta indicadores, periodos, fuentes y el perfil territorial sin repetir aquí la cifra principal del mapa.</p>
+                </div>
+                <button id="legend-open-analysis-button" class="legend-open-analysis-button" type="button">
+                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                    <span>Ver análisis completo</span>
+                </button>
+            `;
+            card.hidden = false;
+            document.body.classList.add("profile-selection-active");
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("profile-card-close")?.addEventListener("click", clearTerritorySelection);
+            document.getElementById("demographic-hover-card")?.addEventListener("click", event => {
+                if (!event.target.closest("#legend-open-analysis-button")) return;
+                document.getElementById("open-analysis-button")?.click();
+            });
         });
 
         let currentProps = null;
@@ -849,7 +884,8 @@
             domProvincia.classList.remove("empty");
 
             if (isProvinceProps && domWarningBox) {
-                domWarningBox.textContent = "Agregado provincial derivado de cantones. Algunos años pueden tener cobertura parcial; ver metadatos cobertura_datos en provincias_wgs84.geojson.";
+                domWarningBox.textContent = "Este dato se calcula sumando los cantones de la provincia; algunos años pueden tener información incompleta.";
+                domWarningBox.title = "Agregado provincial derivado de cantones; la cobertura por año se conserva en los metadatos técnicos del conjunto provincial.";
                 domWarningBox.style.display = "block";
             }
 

@@ -221,7 +221,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(compactLayout.overlapsRail, JSON.stringify(compactLayout)).toBeFalsy();
     });
 
-    test('mobile demographic profile has no horizontal scroll and exposes its close button', async ({ page }) => {
+    test('mobile territorial shortcut has no horizontal scroll and exposes both actions', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
         await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
@@ -234,18 +234,16 @@ test.describe('Geoportal Mobile UX Improvements', () => {
 
         const card = page.locator('#demographic-hover-card');
         await expect(card).toBeVisible();
+        await card.scrollIntoViewIfNeeded();
         await expect(page.locator('#profile-card-close')).toBeInViewport();
+        await expect(page.locator('#legend-open-analysis-button')).toBeInViewport();
         const overflow = await card.evaluate(element => {
-            const scroll = element.closest('.legend-context-scroll');
             return {
                 clientWidth: element.clientWidth,
-                scrollWidth: element.scrollWidth,
-                clientHeight: scroll.clientHeight,
-                scrollHeight: scroll.scrollHeight
+                scrollWidth: element.scrollWidth
             };
         });
         expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth);
-        expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
     });
 
     test('mobile panel topbars have sticky positioning for close button accessibility', async ({ page }) => {

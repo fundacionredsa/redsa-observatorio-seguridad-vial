@@ -402,10 +402,6 @@
             setRightContextPanel("legend", Boolean(open));
         }
 
-        function showLegendForMapChange() {
-            setRightContextPanel("legend", true);
-        }
-
         function updateCitizenPanelControls(open) {
             const isOpen = Boolean(open);
             const coveredByAnalysis = document.body.classList.contains("mobile-sidebar-open");
@@ -1047,7 +1043,6 @@
             refreshTerritoryLayerStyles(level, true);
             if (typeof updateMapLevelNote === "function") updateMapLevelNote(level);
             if (typeof updateLegend === "function") updateLegend();
-            showLegendForMapChange();
             if (typeof updateSidebar === "function" && typeof currentProps !== "undefined" && currentProps) updateSidebar(currentProps);
             if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
             window.REDSAInstitutional?.refresh();
@@ -1113,7 +1108,6 @@
         window.setRightContextPanel = setRightContextPanel;
         window.setSiteTopbarMenu = setSiteTopbarMenu;
         window.setSiteMethodologyMenu = setSiteMethodologyMenu;
-        window.showLegendForMapChange = showLegendForMapChange;
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
 
         function updateTimelineControl() {
@@ -1138,7 +1132,7 @@
             marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
             marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
                 const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${String(year).slice(2)}</span>`;
+                return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
             }).join("");
 
             const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
