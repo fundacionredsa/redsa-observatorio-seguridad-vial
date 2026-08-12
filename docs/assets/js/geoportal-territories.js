@@ -834,8 +834,12 @@ function onEachProvinceFeature(feature, layer) {
             recalculateActiveVariableBins(selectedVariable, level);
             targetLayer.addTo(map);
 
-            domParroquiaRow.style.display = level === "parish" ? "flex" : "none";
-            domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
+            const showParishRows = level === "parish";
+            [domParroquiaRow, domFallecidosParroquiaRow].forEach(row => {
+                if (!row) return;
+                row.classList.toggle("u-hidden", !showParishRows);
+                row.style.removeProperty("display");
+            });
             if (typeof updateParishPopulationContext === "function") {
                 updateParishPopulationContext(level === "parish");
             }

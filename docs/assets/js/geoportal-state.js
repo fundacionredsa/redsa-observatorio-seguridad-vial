@@ -347,6 +347,7 @@
         let activeRightPanel = null;
         let legendUserVisible = true;
         let contextualPanelRestoreTarget = "citizen";
+        let sidebarReturnTarget = "map";
         let legendLayoutResizeTimer = null;
         let geolocationPending = false;
         let locationMarker = null;
@@ -514,7 +515,12 @@
                 }
             }
             if (panel === "sidebar") {
-                if (open) contextualPanelRestoreTarget = "sidebar";
+                if (open) {
+                    contextualPanelRestoreTarget = "sidebar";
+                    if (options.returnTarget === "citizen" || options.returnTarget === "map") {
+                        sidebarReturnTarget = options.returnTarget;
+                    }
+                }
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (open) {
@@ -778,12 +784,13 @@
             if (event.detail === 0) toggleCitizenPanelVisibility();
         });
         mobileSidebarToggle?.addEventListener("click", () => {
-            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
+            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"), { returnTarget: "map" });
         });
         mobileSidebarClose?.addEventListener("click", () => {
+            const shouldReturnToCitizen = sidebarReturnTarget === "citizen";
             contextualPanelRestoreTarget = "citizen";
             setMobilePanel("sidebar", false);
-            setMobilePanel("citizen", true, { preserveSidebar: true });
+            if (shouldReturnToCitizen) setMobilePanel("citizen", true, { preserveSidebar: true });
         });
         mobileLayersToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();

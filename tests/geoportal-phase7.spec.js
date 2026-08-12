@@ -204,5 +204,6 @@ test("HD compacta el análisis y declara los estados vacíos con menor jerarquí
     await window.__redsaAudit.showTerritory("parish", "170151");
   });
   await expect(page.locator("#parroquia-row")).toBeVisible();
-  await expect(page.locator(".sidebar .detail-value.empty").first()).toBeVisible();
+  await expect(page.locator("#parroquia-row")).toHaveCSS("display", "grid");
+  await expect(page.locator("#parish-population-note")).toBeVisible();
 });

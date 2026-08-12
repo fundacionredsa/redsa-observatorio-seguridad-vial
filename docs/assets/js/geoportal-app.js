@@ -177,7 +177,10 @@
                         return [];
                     },
                     openAnalysis: () => {
-                        setMobilePanel("sidebar", true);
+                        const returnTarget = document.body.classList.contains("citizen-panel-open")
+                            ? "citizen"
+                            : "map";
+                        setMobilePanel("sidebar", true, { returnTarget });
                         if (!mobileMediaQuery.matches) {
                             document.getElementById("territory-sidebar")?.scrollIntoView({ behavior: "smooth" });
                         }

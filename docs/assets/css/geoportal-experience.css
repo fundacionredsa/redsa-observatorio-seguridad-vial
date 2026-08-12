@@ -33,6 +33,7 @@
     --mobile-sheet-top-gap: 8px;
     --mobile-drag-handle-width: 42px;
     --mobile-drag-handle-height: 4px;
+    --mobile-sticky-scroll-clearance: 84px;
     --map-legend-edge: 20px;
     --map-legend-gap: 12px;
     --map-legend-width: 350px;
@@ -2569,6 +2570,7 @@ body.mobile-sidebar-open .sidebar {
 
 .sidebar .detail-period-control {
     position: static;
+    z-index: auto;
     background: var(--bg-glass);
 }
 
@@ -3187,7 +3189,7 @@ body.light-theme .perfil-fallecidos-card,
 body.light-theme .profile-card-header,
 body.light-theme .mobile-sidebar-topbar {
     border-color: #cbd5e1;
-    background: rgba(255, 255, 255, 0.98);
+    background: #ffffff;
     color: #1e293b;
 }
 
@@ -3748,15 +3750,15 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     background: color-mix(in srgb, var(--analysis-card-bg) 82%, transparent);
 }
 
-.territory-identity-block .detail-row {
+.territory-identity-block .detail-row:not(.u-hidden):not([hidden]) {
     padding: 6px 8px;
 }
 
-.territory-identity-block .detail-row + .detail-row {
+.territory-identity-block .detail-row:not(.u-hidden):not([hidden]) + .detail-row:not(.u-hidden):not([hidden]) {
     border-top: 1px solid var(--analysis-card-border);
 }
 
-.sidebar .detail-row {
+.sidebar .detail-row:not(.u-hidden):not([hidden]) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(var(--analysis-detail-value-min-width), auto);
     align-items: center;
@@ -3774,12 +3776,12 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     overflow-wrap: anywhere;
 }
 
-.sidebar .detail-row:has(.detail-value.empty) {
+.sidebar .detail-row:not(.u-hidden):not([hidden]):has(.detail-value.empty) {
     min-height: 0;
     padding-block: 3px;
 }
 
-.sidebar .detail-row:has(.detail-value.empty) .detail-label {
+.sidebar .detail-row:not(.u-hidden):not([hidden]):has(.detail-value.empty) .detail-label {
     color: color-mix(in srgb, var(--text-muted) 82%, transparent);
     font-size: 0.64rem;
 }
@@ -3845,7 +3847,7 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
 }
 
 .sidebar .analysis-disclosure-content,
-.sidebar .analysis-disclosure > .detail-row {
+.sidebar .analysis-disclosure > .detail-row:not(.u-hidden):not([hidden]) {
     padding: 3px 9px 8px;
 }
 

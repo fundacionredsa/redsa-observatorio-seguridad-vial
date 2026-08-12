@@ -290,7 +290,7 @@
         --analysis-drawer-padding: 16px;
         --analysis-drawer-bottom-padding: 32px;
         padding: var(--analysis-drawer-padding);
-        padding-bottom: var(--analysis-drawer-bottom-padding);
+        padding-bottom: calc(var(--analysis-drawer-bottom-padding) + var(--mobile-sticky-scroll-clearance));
         overflow-x: hidden;
         overflow-y: auto;
         z-index: var(--z-drawer);
