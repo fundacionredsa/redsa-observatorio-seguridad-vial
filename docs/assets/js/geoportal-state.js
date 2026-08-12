@@ -6,6 +6,9 @@
         const UMBRAL_MEJORA_GVF = 0.02; // Mejoría mínima de GVF para aumentar de clases
         const MIN_CLASSES = 5;
         const MAX_CLASSES = 7;
+        const LEGEND_LAYOUT_MIN_WIDTH_PX = 240;
+        const LEGEND_LAYOUT_RESIZE_DEBOUNCE_MS = 80;
+        const LEGEND_LAYOUT_PANEL_TRANSITION_MS = 240;
 
         // --- CONSTANTES DE ANIMACION Y TRANSICION ---
         const INTERVALO_REPRODUCCION_MS = 1200; // Intervalo de avance automático entre años (ms)
@@ -343,6 +346,9 @@
         const siteMethodologyMenu = document.getElementById("site-methodology-menu");
         let activeRightPanel = null;
         let legendUserVisible = true;
+        let contextualPanelRestoreTarget = "citizen";
+        let sidebarReturnTarget = "map";
+        let legendLayoutResizeTimer = null;
         let geolocationPending = false;
         let locationMarker = null;
         let rightToolsStatusTimer = null;
@@ -360,6 +366,30 @@
             scheduleSelectedTerritoryRefit();
         });
 
+        function isLegendLayoutConstrained() {
+            if (!mapLegendCard) return false;
+            if (mobileMediaQuery.matches || !rightToolRail) {
+                mapLegendCard.style.removeProperty("--map-legend-available-width");
+                return false;
+            }
+            const rootStyles = getComputedStyle(document.documentElement);
+            const layoutGap = Number.parseFloat(rootStyles.getPropertyValue("--map-legend-gap")) || 0;
+            const visibleLeftPanels = [citizenPanel, territorySidebar].filter(panel => {
+                if (!panel || panel.getAttribute("aria-hidden") === "true") return false;
+                const styles = getComputedStyle(panel);
+                return styles.visibility !== "hidden" && styles.display !== "none";
+            });
+            const leftBoundary = visibleLeftPanels.reduce((edge, panel) => (
+                Math.max(edge, panel.getBoundingClientRect().right)
+            ), 0);
+            const rightBoundary = activeRightPanel && rightContextHost && !rightContextHost.hidden
+                ? rightContextHost.getBoundingClientRect().left
+                : rightToolRail.getBoundingClientRect().left;
+            const availableWidth = Math.max(0, rightBoundary - leftBoundary - (layoutGap * 2));
+            mapLegendCard.style.setProperty("--map-legend-available-width", `${availableWidth}px`);
+            return availableWidth < LEGEND_LAYOUT_MIN_WIDTH_PX;
+        }
+
         function syncLegendCardPresentation() {
             if (!mapLegendCard) return;
             const hasLegendContent = mapLegendCard.dataset.hasLegend === "true";
@@ -367,16 +397,18 @@
                 && (document.body.classList.contains("mobile-sidebar-open")
                     || document.body.classList.contains("mobile-citizen-open")
                     || document.body.classList.contains("mobile-right-context-open"));
-            const shouldShow = legendUserVisible && hasLegendContent && !coveredByMobileSheet;
+            const layoutConstrained = isLegendLayoutConstrained();
+            const shouldShow = legendUserVisible && hasLegendContent && !coveredByMobileSheet && !layoutConstrained;
             mapLegendCard.classList.toggle("is-visible", shouldShow);
             mapLegendCard.setAttribute("aria-hidden", String(!shouldShow));
             mapLegendCard.toggleAttribute("inert", !shouldShow);
             if (legendVisibilityToggle) {
-                const shouldOfferRecovery = !legendUserVisible && hasLegendContent && !coveredByMobileSheet;
+                const shouldOfferRecovery = !legendUserVisible && hasLegendContent && !coveredByMobileSheet && !layoutConstrained;
                 legendVisibilityToggle.hidden = !shouldOfferRecovery;
                 legendVisibilityToggle.setAttribute("aria-expanded", String(shouldShow));
             }
             document.body.classList.toggle("map-legend-visible", shouldShow);
+            document.body.classList.toggle("map-legend-space-constrained", layoutConstrained);
         }
 
         function hideUnifiedLegend() {
@@ -435,20 +467,30 @@
             }
         }
 
+        function syncContextualPanelToggle() {
+            if (!citizenPanelVisibilityToggle) return;
+            const analysisOpen = document.body.classList.contains("mobile-sidebar-open");
+            const citizenOpen = document.body.classList.contains("citizen-panel-open") && !analysisOpen;
+            const activePanel = analysisOpen ? "sidebar" : citizenOpen ? "citizen" : null;
+            const targetPanel = activePanel || contextualPanelRestoreTarget;
+            const panelName = targetPanel === "sidebar" ? "análisis del territorio" : "exploración territorial";
+            const action = activePanel ? "Ocultar" : "Mostrar";
+            const accessibleLabel = `${action} panel de ${panelName}`;
+            citizenPanelVisibilityToggle.setAttribute("aria-controls", targetPanel === "sidebar" ? "territory-sidebar" : "citizen-panel");
+            citizenPanelVisibilityToggle.setAttribute("aria-expanded", String(Boolean(activePanel)));
+            citizenPanelVisibilityToggle.setAttribute("aria-label", accessibleLabel);
+            citizenPanelVisibilityToggle.setAttribute("title", accessibleLabel);
+            const icon = citizenPanelVisibilityToggle.querySelector("i");
+            icon?.classList.toggle("fa-chevron-left", Boolean(activePanel));
+            icon?.classList.toggle("fa-chevron-right", !activePanel);
+        }
+
         function updateCitizenPanelControls(open) {
             const isOpen = Boolean(open);
             const coveredByAnalysis = document.body.classList.contains("mobile-sidebar-open");
             citizenPanel?.setAttribute("aria-hidden", String(!isOpen || coveredByAnalysis));
             mobileCitizenToggle?.setAttribute("aria-expanded", String(isOpen));
-            citizenPanelVisibilityToggle?.setAttribute("aria-expanded", String(isOpen));
-            if (!citizenPanelVisibilityToggle) return;
-            const action = isOpen ? "Ocultar" : "Mostrar";
-            const accessibleLabel = `${action} panel de exploración territorial`;
-            citizenPanelVisibilityToggle.setAttribute("aria-label", accessibleLabel);
-            citizenPanelVisibilityToggle.setAttribute("title", accessibleLabel);
-            const icon = citizenPanelVisibilityToggle.querySelector("i");
-            icon?.classList.toggle("fa-chevron-left", isOpen);
-            icon?.classList.toggle("fa-chevron-right", !isOpen);
+            syncContextualPanelToggle();
         }
 
         function setMobilePanel(panel, open, options = {}) {
@@ -457,6 +499,7 @@
             }
             if (panel === "citizen") {
                 const shouldOpen = Boolean(open);
+                if (shouldOpen) contextualPanelRestoreTarget = "citizen";
                 document.body.classList.toggle("citizen-panel-open", shouldOpen);
                 document.body.classList.toggle("mobile-citizen-open", shouldOpen && mobileMediaQuery.matches);
                 updateCitizenPanelControls(shouldOpen);
@@ -472,6 +515,12 @@
                 }
             }
             if (panel === "sidebar") {
+                if (open) {
+                    contextualPanelRestoreTarget = "sidebar";
+                    if (options.returnTarget === "citizen" || options.returnTarget === "map") {
+                        sidebarReturnTarget = options.returnTarget;
+                    }
+                }
                 document.body.classList.toggle("mobile-sidebar-open", open);
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (open) {
@@ -491,7 +540,11 @@
             if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
             }
+            syncContextualPanelToggle();
             syncLegendCardPresentation();
+            if (panel === "citizen" || panel === "sidebar") {
+                window.setTimeout(syncLegendCardPresentation, LEGEND_LAYOUT_PANEL_TRANSITION_MS);
+            }
         }
 
         function closeMobilePanels() {
@@ -710,7 +763,18 @@
         mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
         mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
         const toggleCitizenPanelVisibility = () => {
-            setMobilePanel("citizen", !document.body.classList.contains("citizen-panel-open"), { preserveSidebar: true });
+            if (document.body.classList.contains("mobile-sidebar-open")) {
+                contextualPanelRestoreTarget = "sidebar";
+                setMobilePanel("sidebar", false);
+                setMobilePanel("citizen", false, { preserveSidebar: true });
+                return;
+            }
+            if (document.body.classList.contains("citizen-panel-open")) {
+                contextualPanelRestoreTarget = "citizen";
+                setMobilePanel("citizen", false, { preserveSidebar: true });
+                return;
+            }
+            setMobilePanel(contextualPanelRestoreTarget, true, { preserveSidebar: true });
         };
         citizenPanelVisibilityToggle?.addEventListener("pointerdown", event => {
             event.preventDefault();
@@ -720,9 +784,14 @@
             if (event.detail === 0) toggleCitizenPanelVisibility();
         });
         mobileSidebarToggle?.addEventListener("click", () => {
-            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"));
+            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"), { returnTarget: "map" });
         });
-        mobileSidebarClose?.addEventListener("click", () => setMobilePanel("sidebar", false));
+        mobileSidebarClose?.addEventListener("click", () => {
+            const shouldReturnToCitizen = sidebarReturnTarget === "citizen";
+            contextualPanelRestoreTarget = "citizen";
+            setMobilePanel("sidebar", false);
+            if (shouldReturnToCitizen) setMobilePanel("citizen", true, { preserveSidebar: true });
+        });
         mobileLayersToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();
             setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
@@ -815,6 +884,10 @@
             }
             // Conservar la eleccion del usuario al cruzar el breakpoint, incluido el estado cerrado.
             setRightContextPanel(activeRightPanel, Boolean(activeRightPanel));
+        });
+        window.addEventListener("resize", () => {
+            window.clearTimeout(legendLayoutResizeTimer);
+            legendLayoutResizeTimer = window.setTimeout(syncLegendCardPresentation, LEGEND_LAYOUT_RESIZE_DEBOUNCE_MS);
         });
 
         if (!mobileMediaQuery.matches) {

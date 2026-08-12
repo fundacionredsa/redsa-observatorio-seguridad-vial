@@ -453,7 +453,7 @@ function onEachProvinceFeature(feature, layer) {
                 const hasTerritorialSurface = effectiveVariable !== "normal" && !unavailableAtLevel && !noValuesAtLevel;
                 if (territoryOpacityControl) territoryOpacityControl.hidden = !hasTerritorialSurface;
                 if (territoryOpacityLabel && hasTerritorialSurface) {
-                    territoryOpacityLabel.textContent = "Intensidad del color en el mapa";
+                    territoryOpacityLabel.textContent = "Intensidad";
                     document.getElementById("territory-opacity-slider")?.setAttribute(
                         "aria-label",
                         `Intensidad del color de ${requestedConfig.displayLabel || requestedConfig.label} en el mapa`
@@ -834,8 +834,12 @@ function onEachProvinceFeature(feature, layer) {
             recalculateActiveVariableBins(selectedVariable, level);
             targetLayer.addTo(map);
 
-            domParroquiaRow.style.display = level === "parish" ? "flex" : "none";
-            domFallecidosParroquiaRow.style.display = level === "parish" ? "flex" : "none";
+            const showParishRows = level === "parish";
+            [domParroquiaRow, domFallecidosParroquiaRow].forEach(row => {
+                if (!row) return;
+                row.classList.toggle("u-hidden", !showParishRows);
+                row.style.removeProperty("display");
+            });
             if (typeof updateParishPopulationContext === "function") {
                 updateParishPopulationContext(level === "parish");
             }

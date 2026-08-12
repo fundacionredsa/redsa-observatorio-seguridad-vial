@@ -272,7 +272,7 @@
         grid-column: 1 / -1;
     }
 
-    body.profile-selection-active .citizen-panel {
+    body.profile-selection-active:not(.mobile-citizen-open) .citizen-panel {
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
@@ -290,7 +290,7 @@
         --analysis-drawer-padding: 16px;
         --analysis-drawer-bottom-padding: 32px;
         padding: var(--analysis-drawer-padding);
-        padding-bottom: var(--analysis-drawer-bottom-padding);
+        padding-bottom: calc(var(--analysis-drawer-bottom-padding) + var(--mobile-sticky-scroll-clearance));
         overflow-x: hidden;
         overflow-y: auto;
         z-index: var(--z-drawer);
@@ -360,7 +360,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin: calc(var(--analysis-drawer-padding) * -1) calc(var(--analysis-drawer-padding) * -1) 14px;
+        margin: calc(var(--analysis-drawer-padding) * -1) calc(var(--analysis-drawer-padding) * -1) 8px;
         padding: 18px 10px 8px;
         border-bottom: 1px solid var(--border-glass);
         background: var(--analysis-header-bg);
@@ -869,6 +869,7 @@
         bottom: 112px;
         left: var(--mobile-edge, 10px);
         width: auto;
+        min-width: 0;
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
         max-height: min(34dvh, 300px);
         border-radius: 14px;
@@ -899,6 +900,7 @@
     }
 
     .legend-visibility-toggle {
+        right: auto;
         bottom: 112px;
         left: var(--mobile-edge, 10px);
         min-height: 44px;
