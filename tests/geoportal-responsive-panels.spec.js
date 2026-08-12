@@ -32,7 +32,7 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha controla un solo panel de tres pestañas con Leyenda por defecto", async ({ page }) => {
+test("la barra derecha controla la leyenda unificada y los otros dos paneles", async ({ page }) => {
   await loadPortal(page);
 
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
@@ -52,25 +52,27 @@ test("la barra derecha controla un solo panel de tres pestañas con Leyenda por 
     "Datos y capas",
     "Mapas base"
   ]);
-  await expect(legendButton).toHaveAttribute("aria-selected", "true");
-  await expect(legendButton).toHaveAttribute("aria-expanded", "true");
+  await expect(legendButton).toHaveAttribute("aria-selected", "false");
+  await expect(legendButton).toHaveAttribute("aria-expanded", "false");
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
   await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#right-context-host")).toBeVisible();
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator(".legend-panel")).toBeHidden();
+  await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
-  await expect(page.locator("#legend-context-panel #legend-active-layers-card")).toHaveCount(0);
-  await expect(page.locator("body > #legend-active-layers-card")).toHaveCount(1);
+  await expect(page.locator("#legend-context-panel #legend-active-layers-card")).toHaveCount(1);
+  await expect(page.locator("body > #legend-active-layers-card")).toHaveCount(0);
   await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "1");
-  await expect(page.locator("#legend-active-layers-card")).toHaveClass(/is-visible/);
+  await expect(page.locator("#legend-context-panel")).toHaveClass(/is-visible/);
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await basemapButton.click();
   await expect(page.locator("#basemap-context-panel")).toBeVisible();
@@ -79,11 +81,28 @@ test("la barra derecha controla un solo panel de tres pestañas con Leyenda por 
   await expect(layersButton).toBeFocused();
   await expect(page.locator("#technical-drawer")).toBeVisible();
   await legendButton.click();
-  const panel = await box(page, "#right-context-host");
+  await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
+  const panel = await box(page, "#legend-context-panel");
   const railBox = await box(page, "#right-tools-rail");
   expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
   expect(intersects(panel, railBox)).toBeFalsy();
   expect(panel.right).toBeLessThanOrEqual(viewport.width);
+
+  await legendButton.click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await page.locator("#mobile-legend-toggle").click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "hidden");
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await legendButton.click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-layer-count", "0");
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
+  await legendButton.click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "hidden");
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
 });
 
 test("la barra superior concentra accesos y el buscador refleja capas extra en vivo", async ({ page }) => {
@@ -155,10 +174,12 @@ test("los cambios cartográficos conservan la pestaña elegida por la persona", 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
   await expectPanel("layers");
   await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "2");
-  await expect(page.locator("#legend-active-layers-card")).toHaveClass(/is-visible/);
+  await expect(page.locator("#legend-context-panel")).toHaveClass(/is-visible/);
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
 
   await page.locator('[data-right-panel="legend"]').click();
-  await expectPanel("legend");
+  await expect(host).toBeHidden();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
 });
 
@@ -283,7 +304,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   const search = page.locator("#territory-search-input");
 
   await expect(citizenToggle).toBeVisible();
-  await expect(page.locator(".legend-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
 
   await expect(body).toHaveClass(/citizen-panel-open/);
   await expect(citizen).toHaveAttribute("aria-hidden", "false");
@@ -353,6 +374,8 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
   });
 
   const card = page.locator("#demographic-hover-card");
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await page.locator('[data-right-panel="legend"]').click();
   await expect(card).toBeVisible();
   const viewport = page.viewportSize();
 
@@ -360,11 +383,12 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
     const cardBox = await box(page, "#demographic-hover-card");
     const scaleBox = await box(page, ".road-scale-control");
     const attributionBox = await box(page, ".leaflet-control-attribution");
-    const hostBox = await box(page, "#right-context-host");
+    const hostBox = await box(page, "#legend-context-panel");
     return { cardBox, scaleBox, attributionBox, hostBox };
   };
 
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   expect(await card.evaluate(element => element.parentElement?.classList.contains("legend-context-scroll"))).toBeTruthy();
   expect(await card.evaluate(element => getComputedStyle(element).position)).toBe("relative");
   const legendFlow = await page.evaluate(() => {
@@ -415,8 +439,9 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
   await expect(page.locator("#legend-context-panel")).toBeVisible();
 });
 
-test("Leyenda reúne nivel, año, escala y opacidad en ese orden", async ({ page }) => {
+test("Leyenda prioriza la lectura del mapa y conserva todos los controles", async ({ page }) => {
   await loadPortal(page);
+  await page.locator('[data-right-panel="legend"]').click();
 
   const order = await page.evaluate(() => {
     const top = selector => document.querySelector(selector).getBoundingClientRect().top;
@@ -432,14 +457,20 @@ test("Leyenda reúne nivel, año, escala y opacidad en ese orden", async ({ page
     };
   });
 
-  expect(order.level, JSON.stringify(order)).toBeLessThan(order.timeline);
-  expect(order.timeline, JSON.stringify(order)).toBeLessThan(order.period);
-  expect(order.period, JSON.stringify(order)).toBeLessThan(order.legend);
   expect(order.legend, JSON.stringify(order)).toBeLessThan(order.opacity);
+  expect(order.opacity, JSON.stringify(order)).toBeLessThan(order.level);
+  expect(order.level, JSON.stringify(order)).toBeLessThan(order.period);
+  expect(order.period, JSON.stringify(order)).toBeLessThan(order.timeline);
   await expect(page.locator(".legend-content-group")).toHaveCount(2);
-  await expect(page.locator("#legend-temporal-title")).toHaveText("Controles temporales");
+  await expect(page.locator("#legend-temporal-title")).toHaveText("Controles auxiliares");
   await expect(page.locator("#legend-reading-title")).toHaveText("Cómo leer el mapa");
   await expect(page.locator("#territory-opacity-label")).toHaveText("Intensidad del color en el mapa");
+  await expect(page.locator(".legend-ordinal-scale")).toHaveCount(1);
+  await expect(page.locator(".legend-ordinal-labels span")).toHaveCount(5);
+  await expect(page.locator(".legend-ordinal-labels")).toContainText("≤ 160");
+  await expect(page.locator(".legend-ordinal-labels")).toContainText("> 4500");
+  await expect(page.locator(".territory-level-segments button")).toHaveCount(4);
+  await expect(page.locator('.territory-level-segments button[aria-label="Parroquias"]')).toHaveCount(1);
   expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("legend-level-control-slot");
   expect(await page.locator(".timeline-filter-block").evaluate(element => element.parentElement?.id)).toBe("legend-timeline-control-slot");
   expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-territory-opacity-slot");
@@ -482,6 +513,7 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
   await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Ciclovías"].loaded, null, { timeout: 90_000 });
+  await page.locator('[data-right-panel="legend"]').click();
   const infrastructureLegend = page.locator('[data-legend-layer-id="infra-ciclovias"]');
   await expect(infrastructureLegend).toBeVisible();
   await expect(infrastructureLegend.locator(".legend-overlay-title .sigla-tooltip-trigger")).toHaveAttribute(
@@ -592,15 +624,16 @@ test("infraestructura usa SVG compartido y conserva la interacción territorial"
   });
 });
 
-test("pantalla grande abre el panel ciudadano y mantiene Leyenda como pestaña visible", async ({ page }, testInfo) => {
+test("pantalla grande abre el panel ciudadano y mantiene la leyenda compacta visible", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La comprobación 1920 px se ejecuta una vez.");
   await page.setViewportSize({ width: 1920, height: 1080 });
   await loadPortal(page);
 
   await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
   await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
-  await expect(page.locator(".legend-panel")).toBeVisible();
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#technical-drawer")).toBeHidden();
   const citizenBox = await box(page, "#citizen-panel");
   const railBox = await box(page, "#right-tools-rail");
@@ -614,7 +647,7 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
 
   await expect(page.locator("#citizen-panel-visibility-toggle")).toBeHidden();
   await expect(page.locator("#right-tools-rail")).toBeVisible();
-  await expect(page.locator(".legend-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toBeVisible();
   await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
   await page.locator("#mobile-citizen-toggle").click();
   await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
@@ -626,10 +659,11 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
   await expect(page.locator("#mobile-level-bar")).toBeVisible();
   await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await expect(page.locator(".timeline-control")).toContainText("Año");
   const timelineBox = await box(page, ".timeline-control");
   const legendBox = await box(page, "#legend-territory-items");
-  expect(timelineBox.top).toBeLessThan(legendBox.top);
+  expect(legendBox.top).toBeLessThan(timelineBox.top);
 });
 
 test("mapas base ocupa el panel contextual sin superponerse", async ({ page }, testInfo) => {
@@ -765,6 +799,7 @@ test("Dark Matter activa realce cartográfico sin cambiar el tema de interfaz", 
 test("la superficie territorial se oculta solo en zoom profundo y restaura la opacidad", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La regla cartográfica es común; se valida una vez con capturas.");
   await loadPortal(page);
+  await page.locator('[data-right-panel="legend"]').click();
   await page.evaluate(async () => {
     await window.__redsaAudit.setTerritoryLevelMode("parish");
     await window.__redsaAudit.setZoom(15);

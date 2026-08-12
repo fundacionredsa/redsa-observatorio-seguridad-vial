@@ -101,11 +101,12 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
             expect(tourAudit.titles).toContain('Ficha PDF del territorio');
             expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
-            expect(tourAudit.titles).toContain('Leyenda activa sobre el mapa');
+            expect(tourAudit.titles).toContain('Leyenda unificada: vista compacta');
+            expect(tourAudit.titles).toContain('Leyenda unificada: vista completa');
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
-                if (expectedTitle === 'Leyenda adaptativa') {
+                if (expectedTitle === 'Leyenda unificada: vista completa') {
                     const geometry = await page.evaluate(() => {
                         const legendElement = document.querySelector('#legend-context-panel');
                         const targetElement = legendElement;
@@ -335,6 +336,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
+            await page.locator('[data-right-panel="legend"]').click();
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
             expect(await slider.evaluate(element => element.closest('.legend-opacity-slot')?.id)).toBe('legend-territory-opacity-slot');

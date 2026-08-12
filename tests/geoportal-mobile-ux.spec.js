@@ -182,7 +182,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.evaluate(() => window.setRightContextPanel("legend", true));
         await page.locator('[data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
-        await expect(page.locator('#right-context-host')).toHaveAttribute('data-active-panel', 'legend');
+        await expect(page.locator('#legend-context-panel')).toHaveAttribute('data-legend-state', 'expanded');
         await page.locator('#mobile-legend-toggle').click();
         await expect(yearBar).toBeVisible();
         const targetHistoricalYear = yearBar.locator('button[data-year="2019"]');
@@ -232,6 +232,8 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             window.__redsaAudit.showTerritory('canton', '1701');
         });
 
+        await page.locator('[data-right-panel="legend"]').tap();
+        await expect(page.locator('#legend-context-panel')).toHaveAttribute('data-legend-state', 'expanded');
         const card = page.locator('#demographic-hover-card');
         await expect(card).toBeVisible();
         await card.scrollIntoViewIfNeeded();
