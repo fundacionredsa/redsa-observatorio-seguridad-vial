@@ -34,6 +34,11 @@ incluidos errores relevantes corregidos durante el desarrollo.
 
 ### Fixed
 
+- La flecha lateral ahora actúa sobre el panel visible: colapsa y restaura el
+  Análisis del territorio sin convertir la acción `Volver` en un duplicado.
+- La tarjeta de leyenda se ancla a la derecha, reduce su ancho con el espacio
+  disponible y se oculta temporalmente si ningún ancho legible evita cruces
+  con los paneles abiertos.
 - Cuarenta y siete de 119 siniestros historicos no agregados se recuperaron con
   DPA ANT (30 en 2021 y 17 en 2022). Los 72 de zonas en estudio permanecen
   visibles en el total nacional y sin asignacion especulativa.
@@ -46,6 +51,9 @@ incluidos errores relevantes corregidos durante el desarrollo.
 
 ### Changed
 
+- La barra de controles del mapa y el panel de Análisis del territorio usan
+  una densidad mayor: controles compactos sin texto truncado, filas de dos
+  columnas, identificación agrupada, vacíos discretos y diagnóstico plegado.
 - La leyenda del mapa se consolida en una sola tarjeta informativa permanente,
   recuperable con el botón `Leyenda`; los controles de nivel, periodo, año e
   intensidad pasan a una segunda fila del topbar en escritorio y a las barras

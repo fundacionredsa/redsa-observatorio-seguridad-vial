@@ -34,8 +34,16 @@
     --mobile-drag-handle-width: 42px;
     --mobile-drag-handle-height: 4px;
     --map-legend-edge: 20px;
+    --map-legend-gap: 12px;
+    --map-legend-width: 350px;
+    --map-legend-min-width: 240px;
     --map-legend-bottom: 132px;
     --map-legend-radius: 12px;
+    --analysis-compact-gap: 7px;
+    --analysis-compact-padding: 10px;
+    --analysis-panel-padding: 16px;
+    --analysis-empty-font-size: 0.68rem;
+    --analysis-detail-value-min-width: 108px;
 }
 
 .site-topbar {
@@ -3687,6 +3695,244 @@ body:not(.technical-ready) .leaflet-control-layers:not(.basemap-control) {
     color: var(--text-primary);
 }
 
+/* Fase 7: densidad informativa del panel de análisis, sin ocultar contenido. */
+.sidebar {
+    gap: 10px;
+    padding: var(--analysis-panel-padding);
+    padding-bottom: var(--analysis-drawer-bottom-padding);
+}
+
+.mobile-sidebar-topbar {
+    top: calc(var(--analysis-panel-padding) * -1);
+    margin: calc(var(--analysis-panel-padding) * -1) calc(var(--analysis-panel-padding) * -1) 8px;
+}
+
+.sidebar .header-brand {
+    padding-bottom: 10px;
+}
+
+.sidebar .header-brand p {
+    margin-top: 4px;
+}
+
+.sidebar .info-section,
+.sidebar .canton-details {
+    gap: var(--analysis-compact-gap);
+}
+
+.sidebar .canton-details {
+    padding: var(--analysis-compact-padding);
+}
+
+.sidebar .detail-period-control {
+    margin: 3px 0 5px;
+    padding: 7px;
+    box-shadow: none;
+}
+
+.sidebar .detail-period-label {
+    margin-bottom: 4px;
+    font-size: 0.6rem;
+}
+
+.sidebar .detail-period-segments button {
+    min-height: 32px;
+    padding-block: 3px;
+}
+
+.territory-identity-block {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--analysis-card-border);
+    border-radius: var(--analysis-disclosure-radius);
+    background: color-mix(in srgb, var(--analysis-card-bg) 82%, transparent);
+}
+
+.territory-identity-block .detail-row {
+    padding: 6px 8px;
+}
+
+.territory-identity-block .detail-row + .detail-row {
+    border-top: 1px solid var(--analysis-card-border);
+}
+
+.sidebar .detail-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(var(--analysis-detail-value-min-width), auto);
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar .detail-label {
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.sidebar .detail-value {
+    min-width: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.sidebar .detail-row:has(.detail-value.empty) {
+    min-height: 0;
+    padding-block: 3px;
+}
+
+.sidebar .detail-row:has(.detail-value.empty) .detail-label {
+    color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+    font-size: 0.64rem;
+}
+
+.sidebar .detail-value.empty {
+    max-width: 175px;
+    color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+    font-size: var(--analysis-empty-font-size);
+    line-height: 1.25;
+}
+
+.sidebar .analysis-hero-stat {
+    grid-template-columns: minmax(105px, 0.72fr) minmax(170px, 1.28fr);
+    padding: 7px 9px 7px 11px;
+}
+
+.sidebar .analysis-hero-stat .detail-label {
+    font-size: 0.64rem;
+}
+
+.sidebar .analysis-hero-stat .detail-value:not(.empty) {
+    font-size: 1.12rem;
+}
+
+.sidebar .section-title.u-section-gap,
+.sidebar .section-title.u-section-gap-large {
+    margin-top: 7px;
+    margin-bottom: 2px;
+}
+
+.sidebar .u-chart-wrapper {
+    margin-bottom: 3px;
+    padding-bottom: 6px;
+}
+
+.sidebar .u-chart-container {
+    height: 164px;
+}
+
+.sidebar .historical-chart-view-controls {
+    margin-top: 4px;
+    padding: 2px;
+}
+
+.sidebar :is(.analysis-disclosure, .ant-territory-analysis) {
+    margin-top: 0;
+    border-color: var(--analysis-card-border);
+    border-radius: var(--analysis-disclosure-radius);
+    background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+}
+
+.sidebar :is(.analysis-disclosure, .ant-territory-analysis) > summary {
+    min-height: 36px;
+    padding: 7px 9px;
+    color: var(--text-secondary);
+    font-size: var(--analysis-secondary-font-size);
+    font-weight: 700;
+}
+
+.sidebar .ant-territory-analysis-status,
+.sidebar .ant-summary-method {
+    padding: 0 9px 8px;
+}
+
+.sidebar .analysis-disclosure-content,
+.sidebar .analysis-disclosure > .detail-row {
+    padding: 3px 9px 8px;
+}
+
+.sidebar .analysis-method-info {
+    min-height: 38px;
+    margin: 0;
+    padding: 7px 9px;
+}
+
+.sidebar .accordion-btn {
+    min-height: 36px;
+    margin: 0;
+    padding: 7px 9px;
+    border-color: var(--analysis-card-border);
+    border-radius: var(--analysis-disclosure-radius);
+    background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+    color: var(--text-secondary);
+    font-size: var(--analysis-secondary-font-size);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.sidebar .accordion-btn::after {
+    content: '+';
+    color: var(--accent);
+    font-size: 0.9rem;
+    transform: none;
+}
+
+.sidebar .accordion-btn.active::after {
+    content: '−';
+    transform: none;
+}
+
+.sidebar .accordion-content {
+    margin: 0;
+    padding: 0 9px;
+    border: 1px solid transparent;
+    border-top: 0;
+    border-radius: 0 0 var(--analysis-disclosure-radius) var(--analysis-disclosure-radius);
+}
+
+.sidebar .accordion-content.active {
+    margin-top: -7px;
+    padding: 13px 9px 8px;
+    border-color: var(--analysis-card-border);
+    background: color-mix(in srgb, var(--analysis-card-bg) 62%, transparent);
+}
+
+.sidebar .diagnostic-panel {
+    padding: 0;
+    border-radius: var(--analysis-disclosure-radius);
+}
+
+.sidebar .diagnostic-title {
+    min-height: 36px;
+    margin: 0;
+    padding: 7px 9px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.sidebar .diagnostic-title::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar .diagnostic-title::after {
+    content: '+';
+    margin-left: 7px;
+    color: var(--accent);
+}
+
+.sidebar .diagnostic-panel[open] .diagnostic-title::after {
+    content: '−';
+}
+
+.sidebar .diagnostic-content {
+    padding: 0 9px 8px;
+}
+
+.sidebar .diagnostic-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
 /* Barra de herramientas y panel contextual derecho. Solo una vista ocupa el host. */
 .right-control-shell {
     position: fixed;
@@ -3851,12 +4097,12 @@ body.right-context-open .right-tools-rail {
 .map-controls-toolbar {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(300px, 1.35fr) minmax(228px, 1fr) minmax(260px, 1.1fr) minmax(180px, 0.7fr);
+    grid-template-columns: minmax(252px, 1.05fr) minmax(178px, 0.72fr) minmax(232px, 0.95fr) minmax(148px, 0.62fr);
     min-width: 0;
     height: var(--map-controls-toolbar-height);
     align-items: center;
-    gap: 8px;
-    padding: 4px 14px 5px 18px;
+    gap: 4px;
+    padding: 3px 10px 4px 12px;
     border-top: 1px solid var(--border-glass);
     background: color-mix(in srgb, var(--bg-glass-hover) 42%, transparent);
 }
@@ -3881,15 +4127,15 @@ body.right-context-open .right-tools-rail {
 .map-controls-toolbar .territory-level-control,
 .map-controls-toolbar .period-mode-control {
     display: grid;
-    grid-template-columns: 24px auto 22px minmax(0, 1fr);
+    grid-template-columns: 22px auto 20px minmax(0, 1fr);
     align-items: center;
-    gap: 5px;
+    gap: 3px;
 }
 
 .map-controls-toolbar .legend-control-icon {
     display: inline-grid;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     place-items: center;
     border-radius: 7px;
     background: color-mix(in srgb, var(--accent) 13%, transparent);
@@ -3912,10 +4158,10 @@ body.right-context-open .right-tools-rail {
 }
 
 .map-controls-toolbar .control-info-trigger {
-    width: 22px;
-    height: 22px;
-    min-width: 22px;
-    min-height: 22px;
+    width: 20px;
+    height: 32px;
+    min-width: 20px;
+    min-height: 32px;
 }
 
 .map-controls-toolbar .territory-level-segments,
@@ -3923,7 +4169,7 @@ body.right-context-open .right-tools-rail {
     display: flex;
     min-width: 0;
     gap: 2px;
-    padding: 2px;
+    padding: 1px;
     border: 1px solid var(--border-glass);
     border-radius: 999px;
     background: color-mix(in srgb, var(--bg-glass-hover) 70%, transparent);
@@ -3932,9 +4178,9 @@ body.right-context-open .right-tools-rail {
 .map-controls-toolbar .territory-level-segments button,
 .map-controls-toolbar .period-mode-segments button {
     min-width: 0;
-    min-height: 28px;
+    min-height: 32px;
     flex: 1 1 0;
-    padding: 3px 6px;
+    padding: 2px 5px;
     border: 0;
     border-radius: 999px;
     background: transparent;
@@ -3970,9 +4216,9 @@ body.right-context-open .right-tools-rail {
 
 .map-controls-toolbar .timeline-control {
     display: grid;
-    grid-template-columns: minmax(85px, auto) minmax(110px, 1fr);
+    grid-template-columns: minmax(80px, auto) minmax(100px, 1fr);
     align-items: center;
-    gap: 8px;
+    gap: 5px;
 }
 
 .map-controls-toolbar .timeline-header {
@@ -4012,9 +4258,9 @@ body.right-context-open .right-tools-rail {
 
 .map-controls-toolbar .contextual-opacity-control {
     display: grid;
-    grid-template-columns: minmax(116px, auto) minmax(64px, 1fr);
+    grid-template-columns: minmax(62px, auto) minmax(64px, 1fr);
     align-items: center;
-    gap: 8px;
+    gap: 5px;
 }
 
 .map-controls-toolbar .contextual-opacity-heading {
@@ -4023,8 +4269,8 @@ body.right-context-open .right-tools-rail {
 }
 
 .map-controls-toolbar .contextual-opacity-heading label {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .map-controls-toolbar .contextual-opacity-control input[type="range"] {
@@ -4647,10 +4893,11 @@ body.basemap-dark-matter .leaflet-event-pane {
     position: fixed;
     z-index: calc(var(--z-drawer) - 1);
     bottom: var(--map-legend-bottom);
-    left: var(--map-legend-edge);
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--map-legend-gap));
     display: flex;
     box-sizing: border-box;
-    width: min(350px, calc(100vw - (2 * var(--map-legend-edge))));
+    width: min(var(--map-legend-width), var(--map-legend-available-width, 100vw), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--map-legend-gap) - var(--map-legend-edge)));
+    min-width: min(var(--map-legend-min-width), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--map-legend-gap) - var(--map-legend-edge)));
     max-height: min(62dvh, 560px);
     flex-direction: column;
     overflow: hidden;
@@ -4663,7 +4910,7 @@ body.basemap-dark-matter .leaflet-event-pane {
     visibility: hidden;
     pointer-events: none;
     transform: translateY(9px);
-    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 220ms, left 180ms ease;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 220ms, right 180ms ease, width 180ms ease;
     backdrop-filter: blur(14px) saturate(1.08);
     -webkit-backdrop-filter: blur(14px) saturate(1.08);
 }
@@ -4676,9 +4923,13 @@ body.basemap-dark-matter .leaflet-event-pane {
     transition-delay: 0s;
 }
 
-body.citizen-panel-open .map-legend-card,
-body.citizen-panel-open .legend-visibility-toggle {
-    left: calc(var(--map-legend-edge) + var(--citizen-panel-width) + 20px);
+body.right-context-open .map-legend-card {
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-width) + var(--map-legend-gap));
+    width: min(var(--map-legend-width), var(--map-legend-available-width, 100vw), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--right-context-width) - (2 * var(--map-legend-gap))));
+}
+
+body.right-context-open .legend-visibility-toggle {
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-width) + var(--map-legend-gap));
 }
 
 .map-legend-card-header {
@@ -4794,7 +5045,7 @@ body.citizen-panel-open .legend-visibility-toggle {
     position: fixed;
     z-index: calc(var(--z-drawer) - 1);
     bottom: var(--map-legend-bottom);
-    left: var(--map-legend-edge);
+    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--map-legend-gap));
     display: inline-flex;
     min-height: 42px;
     align-items: center;
@@ -4831,9 +5082,9 @@ body.citizen-panel-open .legend-visibility-toggle {
 
 @media (min-width: 769px) and (max-width: 1279px) {
     .map-controls-toolbar {
-        grid-template-columns: minmax(270px, 1.25fr) minmax(200px, 0.95fr) minmax(220px, 1fr) minmax(150px, 0.65fr);
-        gap: 5px;
-        padding-inline: 10px;
+        grid-template-columns: minmax(236px, 1fr) minmax(164px, 0.7fr) minmax(218px, 0.92fr) minmax(136px, 0.58fr);
+        gap: 3px;
+        padding-inline: 8px;
     }
 
     .map-controls-toolbar .territory-level-segments button,
@@ -4848,13 +5099,9 @@ body.citizen-panel-open .legend-visibility-toggle {
         font-size: 0.52rem;
     }
 
-    .map-controls-toolbar .control-info-trigger {
-        display: none;
-    }
-
     .map-controls-toolbar .territory-level-control,
     .map-controls-toolbar .period-mode-control {
-        grid-template-columns: 22px auto minmax(0, 1fr);
+        grid-template-columns: 20px auto 18px minmax(0, 1fr);
     }
 
     .map-controls-toolbar .contextual-opacity-control {
@@ -4862,8 +5109,8 @@ body.citizen-panel-open .legend-visibility-toggle {
         gap: 5px;
     }
 
-    body.citizen-panel-open.right-context-open .map-legend-card {
-        width: min(280px, calc(100vw - var(--citizen-panel-width) - var(--right-context-width) - var(--right-tool-rail-width) - 64px));
+    body.right-context-open .map-legend-card {
+        width: min(var(--map-legend-width), var(--map-legend-available-width, 100vw), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--right-context-width) - (2 * var(--map-legend-gap))));
     }
 }
 

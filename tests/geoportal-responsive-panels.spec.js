@@ -332,19 +332,27 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   const sidebarOpenBox = await box(page, "#territory-sidebar");
   expect(toggleWhileSidebarOpen.left).toBeGreaterThanOrEqual(sidebarOpenBox.right - 1);
   expect(toggleWhileSidebarOpen.right).toBeLessThanOrEqual(viewport.width);
+  await expect(citizenToggle).toHaveAttribute("aria-controls", "territory-sidebar");
+  await expect(citizenToggle).toHaveAttribute("aria-label", "Ocultar panel de análisis del territorio");
 
   await citizenToggle.click();
   await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
+  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
+  await expect(citizenToggle).toHaveAttribute("aria-controls", "territory-sidebar");
+  await expect(citizenToggle).toHaveAttribute("aria-label", "Mostrar panel de análisis del territorio");
   await citizenToggle.click();
-  await expect(body).toHaveClass(/citizen-panel-open/);
   await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await expect(body).not.toHaveClass(/citizen-panel-open/);
+  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
   await expect(search).toHaveValue(resolvedSearchValue);
 
   await page.locator("#mobile-sidebar-close").click();
   await expect(body).not.toHaveClass(/mobile-sidebar-open/);
   await expect(body).toHaveClass(/citizen-panel-open/);
   await expect(citizen).toHaveAttribute("aria-hidden", "false");
+  await expect(citizenToggle).toHaveAttribute("aria-controls", "citizen-panel");
+  await expect(citizenToggle).toHaveAttribute("aria-label", "Ocultar panel de exploración territorial");
 
   await citizenToggle.focus();
   await citizenToggle.press("Enter");
@@ -429,7 +437,8 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
 
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#map-legend-card .legend-content-group")).toHaveCount(1);
-  await expect(page.locator("#territory-opacity-label")).toHaveText("Intensidad del color en el mapa");
+  await expect(page.locator("#territory-opacity-label")).toHaveText("Intensidad");
+  await expect(page.locator("#territory-opacity-slider")).toHaveAttribute("aria-label", /Intensidad del color de .+ en el mapa/);
   await expect(page.locator(".legend-ordinal-scale")).toHaveCount(1);
   await expect(page.locator(".legend-ordinal-labels span")).toHaveCount(5);
   await expect(page.locator(".legend-ordinal-labels")).toContainText("≤ 160");
@@ -450,7 +459,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
     await expect(page.locator("#mobile-year-bar")).toBeVisible();
   } else {
     await expect(page.locator("#map-controls-toolbar")).toBeVisible();
-    await expect(page.locator("#site-topbar")).toHaveCSS("height", "98px");
+    await expect(page.locator("#site-topbar")).toHaveCSS("height", "96px");
   }
   const coverage = await page.evaluate(() => window.__redsaAudit.state().temporalCoverage);
   await expect(page.locator("#timeline-marks .tm-available")).toHaveCount(coverage.anios_disponibles.length);

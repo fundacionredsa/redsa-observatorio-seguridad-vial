@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.48">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.48">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.48">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.49">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.49">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.49">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -512,19 +512,21 @@
                 
                 <div class="canton-details">
                     <!-- SECCIÓN 1: IDENTIFICACIÓN -->
-                    <div class="detail-row u-hidden" id="parroquia-row">
-                        <div class="detail-label">Parroquia</div>
-                        <div id="info-parroquia" class="detail-value empty">—</div>
+                    <div class="territory-identity-block" aria-label="Identificación territorial">
+                        <div class="detail-row u-hidden" id="parroquia-row">
+                            <div class="detail-label">Parroquia</div>
+                            <div id="info-parroquia" class="detail-value empty">—</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Cantón</div>
+                            <div id="info-canton" class="detail-value empty">Haz clic en una unidad del mapa</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Provincia</div>
+                            <div id="info-provincia" class="detail-value empty">—</div>
+                        </div>
                     </div>
                     <div id="cabecera-warning-box" class="u-warning-box"></div>
-                    <div class="detail-row">
-                        <div class="detail-label">Cantón</div>
-                        <div id="info-canton" class="detail-value empty">Haz clic en una unidad del mapa</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Provincia</div>
-                        <div id="info-provincia" class="detail-value empty">—</div>
-                    </div>
                     <div class="detail-row u-hidden" id="fallecidos-parroquia-row">
                         <div class="detail-label u-text-accent-strong">Personas fallecidas en esta parroquia <span class="source-label">(<span id="parroquia-sidebar-year">2024</span>)</span></div>
                         <div id="info-fallecidos-parroquia" class="detail-value empty u-text-accent-strong">—</div>
@@ -586,7 +588,7 @@
                         </div>
                     </details>
 
-                    <details class="ant-territory-analysis" id="ant-territory-analysis">
+                    <details class="analysis-disclosure ant-territory-analysis" id="ant-territory-analysis">
                         <summary>Patrones de los siniestros registrados por ANT (año seleccionado)</summary>
                         <p id="ant-territory-analysis-status" class="ant-territory-analysis-status" role="status">Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.</p>
                         <div id="ant-territory-analysis-content" hidden></div>
@@ -651,28 +653,30 @@
             </div>
 
             <!-- Panel de Diagnóstico -->
-            <div class="diagnostic-panel">
-                <div class="diagnostic-title">
+            <details class="diagnostic-panel">
+                <summary class="diagnostic-title">
                     <span>Rendimiento de Carga</span>
                     <span class="u-glossary-badge">EN VIVO</span>
+                </summary>
+                <div class="diagnostic-content">
+                    <div class="diagnostic-row">
+                        <span>Descarga de los límites del mapa:</span>
+                        <span id="diag-download" class="diagnostic-val">cargando...</span>
+                    </div>
+                    <div class="diagnostic-row">
+                        <span>Tiempo para dibujar el mapa:</span>
+                        <span id="diag-render" class="diagnostic-val">esperando...</span>
+                    </div>
+                    <div class="diagnostic-row">
+                        <span>Tiempo total de carga:</span>
+                        <span id="diag-total" class="diagnostic-val">esperando...</span>
+                    </div>
+                    <div class="diagnostic-row u-diagnostic-separator">
+                        <span>Polígonos cargados:</span>
+                        <span id="diag-features" class="diagnostic-val">0</span>
+                    </div>
                 </div>
-                <div class="diagnostic-row">
-                    <span>Descarga de los límites del mapa:</span>
-                    <span id="diag-download" class="diagnostic-val">cargando...</span>
-                </div>
-                <div class="diagnostic-row">
-                    <span>Tiempo para dibujar el mapa:</span>
-                    <span id="diag-render" class="diagnostic-val">esperando...</span>
-                </div>
-                <div class="diagnostic-row">
-                    <span>Tiempo total de carga:</span>
-                    <span id="diag-total" class="diagnostic-val">esperando...</span>
-                </div>
-                <div class="diagnostic-row u-diagnostic-separator">
-                    <span>Polígonos cargados:</span>
-                    <span id="diag-features" class="diagnostic-val">0</span>
-                </div>
-            </div>
+            </details>
         </div>
     </div>
 
@@ -688,17 +692,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.48"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.49"></script>
 </body>
 </html>

@@ -453,7 +453,7 @@ function onEachProvinceFeature(feature, layer) {
                 const hasTerritorialSurface = effectiveVariable !== "normal" && !unavailableAtLevel && !noValuesAtLevel;
                 if (territoryOpacityControl) territoryOpacityControl.hidden = !hasTerritorialSurface;
                 if (territoryOpacityLabel && hasTerritorialSurface) {
-                    territoryOpacityLabel.textContent = "Intensidad del color en el mapa";
+                    territoryOpacityLabel.textContent = "Intensidad";
                     document.getElementById("territory-opacity-slider")?.setAttribute(
                         "aria-label",
                         `Intensidad del color de ${requestedConfig.displayLabel || requestedConfig.label} en el mapa`
