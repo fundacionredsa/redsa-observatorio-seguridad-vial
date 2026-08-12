@@ -10,11 +10,10 @@
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const variableTourTarget = '[data-right-panel="layers"]';
         const infrastructureTourTarget = "#infrastructure-disclosure";
+        const mapControlsTourTarget = isMobile ? "#mobile-level-bar" : "#map-controls-toolbar";
         const citizenWasOpen = document.body.classList.contains("citizen-panel-open");
-        const legendStateBeforeTour = document.getElementById("legend-context-panel")?.dataset.legendState || "collapsed";
-        const rightPanelBeforeTour = document.body.classList.contains("unified-legend-expanded")
-            ? "legend"
-            : (document.getElementById("right-context-host")?.dataset.activePanel || null);
+        const legendWasVisible = document.getElementById("map-legend-card")?.classList.contains("is-visible") ?? true;
+        const rightPanelBeforeTour = document.getElementById("right-context-host")?.dataset.activePanel || null;
 
         const openCitizenPanelForTour = () => {
             window.setRightContextPanel?.(null, false);
@@ -31,10 +30,6 @@
             }
         };
 
-        const prepareLegendForTour = () => {
-            window.setRightContextPanel?.("legend", true);
-        };
-
         const prepareInfrastructureForTour = () => {
             prepareLayersPanelForTour();
             const disclosure = document.getElementById("infrastructure-disclosure");
@@ -42,8 +37,13 @@
         };
 
         const prepareActiveLegendForTour = () => {
-            window.setRightContextPanel?.("legend", true);
-            window.setRightContextPanel?.("legend", false);
+            window.setRightContextPanel?.(null, false);
+            window.setMobilePanel?.("citizen", false);
+            window.showUnifiedLegend?.();
+        };
+
+        const prepareMapControlsForTour = () => {
+            window.setRightContextPanel?.(null, false);
             window.setMobilePanel?.("citizen", false);
         };
 
@@ -84,13 +84,11 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                const restoreRightPanel = ["legend", "layers", "basemap"].includes(rightPanelBeforeTour)
+                const restoreRightPanel = ["layers", "basemap"].includes(rightPanelBeforeTour)
                     ? rightPanelBeforeTour
                     : null;
                 window.setRightContextPanel?.(restoreRightPanel, Boolean(restoreRightPanel));
-                if (!restoreRightPanel && legendStateBeforeTour === "hidden") {
-                    window.hideUnifiedLegend?.();
-                }
+                if (!legendWasVisible) window.hideUnifiedLegend?.();
                 window.setSiteMethodologyMenu?.(false);
                 window.setSiteTopbarMenu?.(false);
                 if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
@@ -150,11 +148,11 @@
                     }
                 },
                 {
-                    element: '#legend-active-layers-card',
+                    element: '#map-legend-card',
                     onHighlightStarted: prepareActiveLegendForTour,
                     popover: {
-                        title: 'Leyenda unificada: vista compacta',
-                        description: 'Esta vista breve mantiene a la vista las capas activas sin tapar el mapa. Puedes ampliarla con la flecha o con “Leyenda” en el rail, y ocultarla por completo con ×.',
+                        title: 'Leyenda siempre a la vista',
+                        description: 'Esta tarjeta única explica la variable, sus rangos, el total nacional cuando corresponde y todas las capas activas. Puedes cerrarla para despejar el mapa y recuperarla con el botón “Leyenda”.',
                         side: isMobile ? "top" : "right",
                         align: 'start'
                     }
@@ -180,13 +178,15 @@
                     }
                 },
                 {
-                    element: '#legend-context-panel',
-                    onHighlightStarted: prepareLegendForTour,
+                    element: mapControlsTourTarget,
+                    onHighlightStarted: prepareMapControlsForTour,
                     popover: {
-                        title: 'Leyenda unificada: vista completa',
-                        description: 'Al ampliarla, el mismo componente muestra primero la escala real y el total nacional cuando aplica; después ofrece Nivel, Periodo, Año e intensidad. Ningún cambio del mapa la abre sin que lo pidas.',
-                        side: "left",
-                        align: 'end'
+                        title: 'Controles permanentes del mapa',
+                        description: isMobile
+                            ? 'Las barras existentes reúnen Nivel, Año, Periodo e intensidad sin crear una tercera barra móvil.'
+                            : 'La segunda fila del encabezado reúne Nivel, Periodo, Año e intensidad. Cambiar un control actualiza el mapa y la leyenda sin abrir otro panel.',
+                        side: isMobile ? "bottom" : "bottom",
+                        align: 'center'
                     }
                 },
                 {
@@ -248,7 +248,8 @@
             coversCatalogDownloads: true,
             coversAnalysis: true,
             coversVariablesAndLayers: true,
-            coversFloatingActiveLegend: true
+            coversUniqueLegendCard: true,
+            coversMapControlsToolbar: true
         };
         driverObj.drive();
     }

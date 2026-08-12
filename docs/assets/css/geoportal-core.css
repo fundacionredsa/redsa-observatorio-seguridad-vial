@@ -32,7 +32,9 @@
             --right-context-width: 400px;
             --right-context-edge: 12px;
             --right-context-gap: 0px;
-            --site-topbar-height: 56px;
+            --site-topbar-main-height: 56px;
+            --map-controls-toolbar-height: 42px;
+            --site-topbar-height: calc(var(--site-topbar-main-height) + var(--map-controls-toolbar-height));
             --site-topbar-mobile-height: 54px;
             --site-topbar-edge: 12px;
             --mobile-navigation-clearance: 66px;

@@ -356,11 +356,11 @@ function onEachProvinceFeature(feature, layer) {
         }
 
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
-            const component = document.getElementById("legend-context-panel");
-            const card = document.getElementById("legend-active-layers-card");
+            const component = document.getElementById("map-legend-card");
+            const section = document.getElementById("legend-active-layers-section");
             const list = document.getElementById("legend-active-layers-list");
             const count = document.getElementById("legend-active-layers-count");
-            if (!component || !card || !list || !count) return;
+            if (!component || !section || !list || !count) return;
 
             const activeLayers = [];
             if (selectedVariable !== "normal") {
@@ -415,9 +415,9 @@ function onEachProvinceFeature(feature, layer) {
                 </div>
             `).join("");
             count.textContent = `${activeLayers.length} ${activeLayers.length === 1 ? "capa" : "capas"}`;
+            count.hidden = activeLayers.length === 0;
             component.dataset.layerCount = String(activeLayers.length);
-            card.dataset.layerCount = String(activeLayers.length);
-            window.syncUnifiedLegendPresentation?.();
+            section.hidden = activeLayers.length === 0;
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -628,6 +628,11 @@ function onEachProvinceFeature(feature, layer) {
                 syncTerritorySurfaceAutoHideNote(currentLevel);
             }
             panel.style.display = hasItems ? "block" : "none";
+            const mapLegendCard = document.getElementById("map-legend-card");
+            if (mapLegendCard) {
+                mapLegendCard.dataset.hasLegend = String(selectedVariable !== "normal" || overlayLegendEntries.length > 0);
+            }
+            window.syncLegendCardPresentation?.();
         }
 
         // Registrar listeners para actualización de leyenda

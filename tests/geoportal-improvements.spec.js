@@ -101,27 +101,24 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
             expect(tourAudit.titles).toContain('Ficha PDF del territorio');
             expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
-            expect(tourAudit.titles).toContain('Leyenda unificada: vista compacta');
-            expect(tourAudit.titles).toContain('Leyenda unificada: vista completa');
+            expect(tourAudit.titles).toContain('Leyenda siempre a la vista');
+            expect(tourAudit.titles).toContain('Controles permanentes del mapa');
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
-                if (expectedTitle === 'Leyenda unificada: vista completa') {
+                if (expectedTitle === 'Controles permanentes del mapa') {
                     const geometry = await page.evaluate(() => {
-                        const legendElement = document.querySelector('#legend-context-panel');
-                        const targetElement = legendElement;
-                        const legend = legendElement?.getBoundingClientRect();
+                        const targetElement = document.querySelector('#map-controls-toolbar');
                         const target = targetElement?.getBoundingClientRect();
                         const box = rect => rect && ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
                         return {
-                            legend: box(legend),
                             target: box(target),
                             targetIsActive: targetElement?.classList.contains('driver-active-element'),
                             activeCount: document.querySelectorAll('.driver-active-element').length
                         };
                     });
                     expect(geometry.targetIsActive, JSON.stringify(geometry)).toBeTruthy();
-                    expect(geometry.target, JSON.stringify(geometry)).toEqual(geometry.legend);
+                    expect(geometry.target?.height, JSON.stringify(geometry)).toBeGreaterThan(0);
                 }
             }
         });
@@ -143,10 +140,10 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 '#open-analysis-button',
                 '[data-right-panel="layers"]',
                 '#infrastructure-disclosure',
-                '#legend-active-layers-card',
+                '#map-legend-card',
                 '[data-right-panel="basemap"]',
                 '#event-layer-disclosure',
-                '#legend-context-panel',
+                '#mobile-level-bar',
                 '#site-methodology-toggle',
                 '#btn-catalog',
                 '#citizen-panel',
@@ -336,10 +333,12 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
-            await page.locator('[data-right-panel="legend"]').click();
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
-            expect(await slider.evaluate(element => element.closest('.legend-opacity-slot')?.id)).toBe('legend-territory-opacity-slot');
+            const expectedSlot = test.info().project.name === 'mobile'
+                ? 'mobile-opacity-control-slot'
+                : 'map-toolbar-opacity-slot';
+            expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe(expectedSlot);
 
             // Set to 50%
             await slider.fill('50');
@@ -454,7 +453,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(mapContainer).toBeVisible();
 
             // Hover over map
-            await mapContainer.hover();
+            await page.locator('#legend-close-toggle').click();
+            await mapContainer.hover({ position: { x: 600, y: 320 } });
             await page.mouse.move(500, 500);
 
             // Give the coordinate tracker a moment (there is a setTimeout(..., 2000) for initialization)
@@ -497,7 +497,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block G: Timeline Playback & Color Transition', () => {
         test('timeline play button advances year, pauses on click and auto-stops on last year', async ({ page }) => {
-            await page.evaluate(() => window.setRightContextPanel("legend", true));
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 
@@ -533,7 +532,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('timeline play button is disabled with tooltip for foto_unica variables', async ({ page }) => {
-            await page.evaluate(() => window.setRightContextPanel("legend", true));
             const playBtn = page.locator('#timeline-play-button');
             await expect(playBtn).toBeVisible();
 

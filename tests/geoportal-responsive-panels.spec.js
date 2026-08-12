@@ -32,7 +32,7 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha controla la leyenda unificada y los otros dos paneles", async ({ page }) => {
+test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page }) => {
   await loadPortal(page);
 
   const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
@@ -40,39 +40,36 @@ test("la barra derecha controla la leyenda unificada y los otros dos paneles", a
   expect((await citizenToggle.textContent()).trim()).toBe("");
 
   const rail = page.locator("#right-tools-rail");
-  const legendButton = page.locator('[data-right-panel="legend"]');
   const layersButton = page.locator('[data-right-panel="layers"]');
   const basemapButton = page.locator('[data-right-panel="basemap"]');
-  const viewport = page.viewportSize();
+  const isMobile = (page.viewportSize()?.width || 0) <= 768;
 
   await expect(rail).toBeVisible();
-  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(3);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(2);
   await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
-    "Leyenda",
     "Datos y capas",
     "Mapas base"
   ]);
-  await expect(legendButton).toHaveAttribute("aria-selected", "false");
-  await expect(legendButton).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
   await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator(".legend-panel")).toBeHidden();
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await expect(page.locator("#map-legend-card")).toBeVisible();
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-has-legend", "true");
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "1");
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
-  await expect(page.locator("#legend-context-panel #legend-active-layers-card")).toHaveCount(1);
-  await expect(page.locator("body > #legend-active-layers-card")).toHaveCount(0);
-  await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "1");
-  await expect(page.locator("#legend-context-panel")).toHaveClass(/is-visible/);
+  await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(1);
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  if (isMobile) {
+    await expect(page.locator("#map-legend-card")).toBeHidden();
+  } else {
+    await expect(page.locator("#map-legend-card")).toBeVisible();
+  }
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await basemapButton.click();
   await expect(page.locator("#basemap-context-panel")).toBeVisible();
@@ -80,29 +77,18 @@ test("la barra derecha controla la leyenda unificada y los otros dos paneles", a
   await basemapButton.press("ArrowUp");
   await expect(layersButton).toBeFocused();
   await expect(page.locator("#technical-drawer")).toBeVisible();
-  await legendButton.click();
-  await expect(page.locator("#right-context-host")).toBeHidden();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  const panel = await box(page, "#legend-context-panel");
-  const railBox = await box(page, "#right-tools-rail");
-  expect(Math.abs(panel.right - railBox.left)).toBeLessThanOrEqual(1);
-  expect(intersects(panel, railBox)).toBeFalsy();
-  expect(panel.right).toBeLessThanOrEqual(viewport.width);
 
-  await legendButton.click();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
-  await page.locator("#mobile-legend-toggle").click();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "hidden");
-  await expect(page.locator("#legend-context-panel")).toBeHidden();
-  await legendButton.click();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  if (isMobile) await layersButton.click();
+  await expect(page.locator("#map-legend-card")).toBeVisible();
+  await page.locator("#legend-close-toggle").click();
+  await expect(page.locator("#map-legend-card")).toBeHidden();
+  await expect(page.locator("#legend-visibility-toggle")).toBeVisible();
+  await page.locator("#legend-visibility-toggle").click();
+  await expect(page.locator("#map-legend-card")).toBeVisible();
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-layer-count", "0");
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  await legendButton.click();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "hidden");
-  await expect(page.locator("#legend-context-panel")).toBeHidden();
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "0");
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-has-legend", "false");
+  await expect(page.locator("#map-legend-card")).toBeHidden();
 });
 
 test("la barra superior concentra accesos y el buscador refleja capas extra en vivo", async ({ page }) => {
@@ -173,14 +159,13 @@ test("los cambios cartográficos conservan la pestaña elegida por la persona", 
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
   await expectPanel("layers");
-  await expect(page.locator("#legend-active-layers-card")).toHaveAttribute("data-layer-count", "2");
-  await expect(page.locator("#legend-context-panel")).toHaveClass(/is-visible/);
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
-
-  await page.locator('[data-right-panel="legend"]').click();
-  await expect(host).toBeHidden();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "2");
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await expect(page.locator("#map-legend-card")).toBeHidden();
+  } else {
+    await expect(page.locator("#map-legend-card")).toHaveClass(/is-visible/);
+    await expect(page.locator("#demographic-hover-card")).toBeVisible();
+  }
 });
 
 test("las tres capas del mapa comparten una sola tarjeta y conservan controles independientes", async ({ page }, testInfo) => {
@@ -212,7 +197,9 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(variables).toHaveAttribute("open", "");
   await expect(card.locator("#territory-opacity-control")).toHaveCount(0);
   await expect(page.locator("#territory-opacity-control")).toHaveCount(1);
-  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-territory-opacity-slot");
+  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe(
+    testInfo.project.name === "mobile" ? "mobile-opacity-control-slot" : "map-toolbar-opacity-slot"
+  );
   await expect(page.locator(".opacity-control")).toHaveCount(0);
   await expect(events).not.toHaveAttribute("open", "");
   await expect(infrastructure).not.toHaveAttribute("open", "");
@@ -304,7 +291,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   const search = page.locator("#territory-search-input");
 
   await expect(citizenToggle).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#map-legend-card")).toBeVisible();
 
   await expect(body).toHaveClass(/citizen-panel-open/);
   await expect(citizen).toHaveAttribute("aria-hidden", "false");
@@ -366,7 +353,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   await expect(body).toHaveClass(/citizen-panel-open/);
 });
 
-test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selección", async ({ page }, testInfo) => {
+test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección", async ({ page }, testInfo) => {
   await loadPortal(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
@@ -374,8 +361,8 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
   });
 
   const card = page.locator("#demographic-hover-card");
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
-  await page.locator('[data-right-panel="legend"]').click();
+  const legendCard = page.locator("#map-legend-card");
+  await expect(legendCard).toBeVisible();
   await expect(card).toBeVisible();
   const viewport = page.viewportSize();
 
@@ -383,13 +370,12 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
     const cardBox = await box(page, "#demographic-hover-card");
     const scaleBox = await box(page, ".road-scale-control");
     const attributionBox = await box(page, ".leaflet-control-attribution");
-    const hostBox = await box(page, "#legend-context-panel");
+    const hostBox = await box(page, "#map-legend-card");
     return { cardBox, scaleBox, attributionBox, hostBox };
   };
 
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  expect(await card.evaluate(element => element.parentElement?.classList.contains("legend-context-scroll"))).toBeTruthy();
+  expect(await card.evaluate(element => element.parentElement?.classList.contains("map-legend-card-scroll"))).toBeTruthy();
   expect(await card.evaluate(element => getComputedStyle(element).position)).toBe("relative");
   const legendFlow = await page.evaluate(() => {
     const readingGroup = document.querySelector(".legend-reading-group");
@@ -423,47 +409,26 @@ test("ficha territorial vive dentro de Leyenda y desaparece al limpiar la selecc
     contentType: "image/png"
   });
 
-  if (testInfo.project.name === "mobile") {
-    await expect(page.locator(".road-scale-control")).toHaveCSS("visibility", "hidden");
-  } else {
+  if (testInfo.project.name !== "mobile") {
     const scaleCenter = (geometry.scaleBox.left + geometry.scaleBox.right) / 2;
     expect(Math.abs(scaleCenter - viewport.width / 2)).toBeLessThanOrEqual(1);
-    expect(intersects(geometry.cardBox, geometry.scaleBox)).toBeFalsy();
-    expect(intersects(geometry.scaleBox, geometry.attributionBox)).toBeFalsy();
     await expect(page.locator(".road-scale-control").locator("xpath=..")).toHaveClass(/leaflet-center/);
   }
+  expect(intersects(geometry.hostBox, geometry.scaleBox)).toBeFalsy();
+  expect(intersects(geometry.scaleBox, geometry.attributionBox)).toBeFalsy();
 
   await page.evaluate(() => window.__redsaAudit.clearSelection());
   await expect(card).toBeHidden();
   await expect(page.locator("#hover-card-body")).toBeEmpty();
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(legendCard).toBeVisible();
 });
 
-test("Leyenda prioriza la lectura del mapa y conserva todos los controles", async ({ page }) => {
+test("la tarjeta informa y el topbar conserva todos los controles", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await page.locator('[data-right-panel="legend"]').click();
+  const isMobile = testInfo.project.name === "mobile";
 
-  const order = await page.evaluate(() => {
-    const top = selector => document.querySelector(selector).getBoundingClientRect().top;
-    return {
-      level: top("#territory-level-control"),
-      timeline: top(".timeline-control"),
-      period: top(".period-mode-control"),
-      legend: top("#legend-territory-items"),
-      opacity: top("#territory-opacity-control"),
-      variables: top("#variable-disclosure"),
-      events: top("#event-layer-disclosure"),
-      infrastructure: top("#infrastructure-disclosure")
-    };
-  });
-
-  expect(order.legend, JSON.stringify(order)).toBeLessThan(order.opacity);
-  expect(order.opacity, JSON.stringify(order)).toBeLessThan(order.level);
-  expect(order.level, JSON.stringify(order)).toBeLessThan(order.period);
-  expect(order.period, JSON.stringify(order)).toBeLessThan(order.timeline);
-  await expect(page.locator(".legend-content-group")).toHaveCount(2);
-  await expect(page.locator("#legend-temporal-title")).toHaveText("Controles auxiliares");
-  await expect(page.locator("#legend-reading-title")).toHaveText("Cómo leer el mapa");
+  await expect(page.locator("#map-legend-card")).toBeVisible();
+  await expect(page.locator("#map-legend-card .legend-content-group")).toHaveCount(1);
   await expect(page.locator("#territory-opacity-label")).toHaveText("Intensidad del color en el mapa");
   await expect(page.locator(".legend-ordinal-scale")).toHaveCount(1);
   await expect(page.locator(".legend-ordinal-labels span")).toHaveCount(5);
@@ -471,14 +436,27 @@ test("Leyenda prioriza la lectura del mapa y conserva todos los controles", asyn
   await expect(page.locator(".legend-ordinal-labels")).toContainText("> 4500");
   await expect(page.locator(".territory-level-segments button")).toHaveCount(4);
   await expect(page.locator('.territory-level-segments button[aria-label="Parroquias"]')).toHaveCount(1);
-  expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("legend-level-control-slot");
-  expect(await page.locator(".timeline-filter-block").evaluate(element => element.parentElement?.id)).toBe("legend-timeline-control-slot");
-  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-territory-opacity-slot");
+  expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-level-slot");
+  expect(await page.locator(".timeline-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-year-slot");
+  expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe(
+    isMobile ? "mobile-period-control-slot" : "map-toolbar-period-slot"
+  );
+  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe(
+    isMobile ? "mobile-opacity-control-slot" : "map-toolbar-opacity-slot"
+  );
+  if (isMobile) {
+    await expect(page.locator("#map-controls-toolbar")).toBeHidden();
+    await expect(page.locator("#mobile-level-bar")).toBeVisible();
+    await expect(page.locator("#mobile-year-bar")).toBeVisible();
+  } else {
+    await expect(page.locator("#map-controls-toolbar")).toBeVisible();
+    await expect(page.locator("#site-topbar")).toHaveCSS("height", "98px");
+  }
   const coverage = await page.evaluate(() => window.__redsaAudit.state().temporalCoverage);
   await expect(page.locator("#timeline-marks .tm-available")).toHaveCount(coverage.anios_disponibles.length);
   await expect(page.locator("#timeline-marks .tm-unavailable")).toHaveCount(11 - coverage.anios_disponibles.length);
   await expect(page.locator("#timeline-marks .timeline-mark").first()).toHaveText(/^20\d{2}$/);
-  await page.locator("#map-year-slider").fill("2024");
+  await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2024);
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
   await expect(page.locator('#mobile-year-bar [data-year="2024"]')).toHaveClass(/my-selected/);
@@ -513,7 +491,6 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
   await page.waitForFunction(() => window.__redsaAudit.state().osmLayers["Ciclovías"].loaded, null, { timeout: 90_000 });
-  await page.locator('[data-right-panel="legend"]').click();
   const infrastructureLegend = page.locator('[data-legend-layer-id="infra-ciclovias"]');
   await expect(infrastructureLegend).toBeVisible();
   await expect(infrastructureLegend.locator(".legend-overlay-title .sigla-tooltip-trigger")).toHaveAttribute(
@@ -605,8 +582,8 @@ test("infraestructura usa SVG compartido y conserva la interacción territorial"
     const center = layer.getCenter();
     return window.geoportalMap.latLngToContainerPoint(center);
   });
+  await page.locator("#legend-close-toggle").click();
   if (testInfo.project.name === "mobile") {
-    await page.locator("#mobile-legend-toggle").click();
     await expect(page.locator("#right-context-host")).toBeHidden();
     await page.touchscreen.tap(point.x, point.y);
     await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).not.toBeNull();
@@ -631,8 +608,7 @@ test("pantalla grande abre el panel ciudadano y mantiene la leyenda compacta vis
 
   await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
   await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#technical-drawer")).toBeHidden();
   const citizenBox = await box(page, "#citizen-panel");
@@ -647,7 +623,7 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
 
   await expect(page.locator("#citizen-panel-visibility-toggle")).toBeHidden();
   await expect(page.locator("#right-tools-rail")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
+  await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
   await page.locator("#mobile-citizen-toggle").click();
   await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
@@ -657,13 +633,10 @@ test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ p
 
   await expect(page.locator("#mobile-year-bar")).toBeVisible();
   await expect(page.locator("#mobile-level-bar")).toBeVisible();
-  await page.locator('[data-right-panel="legend"]').click();
-  await expect(page.locator("#legend-context-panel")).toBeVisible();
-  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
-  await expect(page.locator(".timeline-control")).toContainText("Año");
-  const timelineBox = await box(page, ".timeline-control");
-  const legendBox = await box(page, "#legend-territory-items");
-  expect(legendBox.top).toBeLessThan(timelineBox.top);
+  await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
+  await expect(page.locator("#map-legend-card")).toBeVisible();
+  expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe("mobile-period-control-slot");
+  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("mobile-opacity-control-slot");
 });
 
 test("mapas base ocupa el panel contextual sin superponerse", async ({ page }, testInfo) => {
@@ -708,7 +681,7 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   await loadPortal(page);
 
   await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(5);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);
@@ -799,7 +772,6 @@ test("Dark Matter activa realce cartográfico sin cambiar el tema de interfaz", 
 test("la superficie territorial se oculta solo en zoom profundo y restaura la opacidad", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La regla cartográfica es común; se valida una vez con capturas.");
   await loadPortal(page);
-  await page.locator('[data-right-panel="legend"]').click();
   await page.evaluate(async () => {
     await window.__redsaAudit.setTerritoryLevelMode("parish");
     await window.__redsaAudit.setZoom(15);
