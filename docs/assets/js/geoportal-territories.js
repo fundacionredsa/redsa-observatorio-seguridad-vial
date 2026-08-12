@@ -278,6 +278,8 @@ function onEachProvinceFeature(feature, layer) {
             }
         }
 
+        const LEGEND_ORDINAL_GAP_PERCENT = 0.8;
+
         function getLegendPeriodLabel(config) {
             const activePeriod = getActivePeriodLabel(config);
             if (activePeriod) return activePeriod;
@@ -289,15 +291,57 @@ function onEachProvinceFeature(feature, layer) {
         function renderLegendHeading(title, metadataParts = [], technicalInfo = "") {
             const metadata = metadataParts
                 .filter(Boolean)
-                .map(part => `<span class="legend-heading-meta-part">${part}</span>`)
-                .join('<span class="legend-heading-separator" aria-hidden="true">·</span>');
+                .map(part => String(part).trim().replace(/[.]+$/, ""))
+                .join(". ");
             const secondaryLine = metadata || technicalInfo
-                ? `<div class="legend-heading-meta">${metadata}${technicalInfo ? `<span class="legend-heading-technical">${technicalInfo}</span>` : ""}</div>`
+                ? `<div class="legend-heading-meta">${metadata ? `<span>${metadata}.</span>` : ""}${technicalInfo ? `<span class="legend-heading-technical">${technicalInfo}</span>` : ""}</div>`
                 : "";
             return `
                 <div class="legend-heading">
                     <div class="legend-heading-title">${title}</div>
                     ${secondaryLine}
+                </div>
+            `;
+        }
+
+        function getLegendBinLabels(bins, displayBins, config, formatFunc) {
+            return Array.from({ length: bins.length + 1 }, (_, index) => {
+                if (index === 0) {
+                    return config.zeroIsData && Number(displayBins[0]) === 0
+                        ? "0"
+                        : `≤ ${formatFunc(displayBins[0])}`;
+                }
+                if (index === bins.length) {
+                    return `> ${formatFunc(displayBins[displayBins.length - 1])}`;
+                }
+                return config.continuous
+                    ? `${formatFunc(displayBins[index - 1])} a ${formatFunc(displayBins[index])}`
+                    : `${formatFunc(displayBins[index - 1] + 1)} a ${formatFunc(displayBins[index])}`;
+            });
+        }
+
+        function renderOrdinalLegendScale(colors, labels) {
+            const categoryWidth = 100 / colors.length;
+            const stops = colors.flatMap((color, index) => {
+                const start = index * categoryWidth;
+                const end = (index + 1) * categoryWidth;
+                const inset = LEGEND_ORDINAL_GAP_PERCENT / 2;
+                return [
+                    `transparent ${start}%`,
+                    `transparent ${start + inset}%`,
+                    `${color} ${start + inset}%`,
+                    `${color} ${end - inset}%`,
+                    `transparent ${end - inset}%`,
+                    `transparent ${end}%`
+                ];
+            }).join(", ");
+            const accessibleScale = labels.map((label, index) => `${label}: ${colors[index]}`).join("; ");
+            return `
+                <div class="legend-ordinal-scale" role="img" aria-label="Escala de colores por rangos: ${accessibleScale}">
+                    <span class="legend-ordinal-bar" style="background:linear-gradient(90deg, ${stops});"></span>
+                    <span class="legend-ordinal-labels" style="--legend-bin-count:${labels.length}">
+                        ${labels.map(label => `<span title="${label}">${label}</span>`).join("")}
+                    </span>
                 </div>
             `;
         }
@@ -312,10 +356,11 @@ function onEachProvinceFeature(feature, layer) {
         }
 
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
+            const component = document.getElementById("legend-context-panel");
             const card = document.getElementById("legend-active-layers-card");
             const list = document.getElementById("legend-active-layers-list");
             const count = document.getElementById("legend-active-layers-count");
-            if (!card || !list || !count) return;
+            if (!component || !card || !list || !count) return;
 
             const activeLayers = [];
             if (selectedVariable !== "normal") {
@@ -370,11 +415,9 @@ function onEachProvinceFeature(feature, layer) {
                 </div>
             `).join("");
             count.textContent = `${activeLayers.length} ${activeLayers.length === 1 ? "capa" : "capas"}`;
-            const hasActiveLayers = activeLayers.length > 0;
-            card.classList.toggle("is-visible", hasActiveLayers);
-            card.setAttribute("aria-hidden", String(!hasActiveLayers));
-            card.toggleAttribute("inert", !hasActiveLayers);
+            component.dataset.layerCount = String(activeLayers.length);
             card.dataset.layerCount = String(activeLayers.length);
+            window.syncUnifiedLegendPresentation?.();
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -424,9 +467,9 @@ function onEachProvinceFeature(feature, layer) {
                         ${renderLegendHeading(
                             requestedConfig.displayLabel || requestedConfig.label,
                             [
+                                requestedConfig.fuente ? `Fuente: ${requestedConfig.fuente}` : "",
                                 `Nivel: ${levelName}`,
-                                getLegendPeriodLabel(requestedConfig) ? `Periodo: ${getLegendPeriodLabel(requestedConfig)}` : "",
-                                requestedConfig.fuente ? `Fuente: ${requestedConfig.fuente}` : ""
+                                getLegendPeriodLabel(requestedConfig) ? `Periodo: ${getLegendPeriodLabel(requestedConfig)}` : ""
                             ],
                             technicalInfo
                         )}
@@ -447,8 +490,8 @@ function onEachProvinceFeature(feature, layer) {
                     const levelTitle = "Sin variable seleccionada";
                     territoryContainer.innerHTML += `
                         ${renderLegendHeading(levelTitle, [
+                            "Vista: límites administrativos",
                             `Nivel: ${LEVEL_LABELS[currentLevel]}`,
-                            "Vista: límites administrativos"
                         ])}
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
@@ -476,48 +519,32 @@ function onEachProvinceFeature(feature, layer) {
                         ${renderLegendHeading(
                             config.displayLabel || config.label,
                             [
+                                config.fuente ? `Fuente: ${config.fuente}` : "",
                                 LEVEL_LABELS[currentLevel] ? `Nivel: ${LEVEL_LABELS[currentLevel]}` : "",
-                                getLegendPeriodLabel(config) ? `Periodo: ${getLegendPeriodLabel(config)}` : "",
-                                config.fuente ? `Fuente: ${config.fuente}` : ""
+                                getLegendPeriodLabel(config) ? `Periodo: ${getLegendPeriodLabel(config)}` : ""
                             ],
                             technicalInfo
                         )}
                     `;
 
-                    for (let i = 0; bins.length && i <= bins.length; i++) {
-                        let label = "";
-                        if (i === 0) {
-                            label = config.zeroIsData && Number(displayBins[0]) === 0
-                                ? "0"
-                                : `<= ${formatFunc(displayBins[0])}`;
-                        } else if (i === bins.length) {
-                            label = `> ${formatFunc(displayBins[displayBins.length - 1])}`;
-                        } else {
-                            label = config.continuous
-                                ? `${formatFunc(displayBins[i - 1])} a ${formatFunc(displayBins[i])}`
-                                : `${formatFunc(displayBins[i - 1] + 1)} a ${formatFunc(displayBins[i])}`;
-                        }
-                        itemsHtml += `
-                            <div class="legend-item" style="padding-left: 8px;">
-                                <span class="legend-color-line" style="background-color: ${colors[i]}; height: 10px; width: 14px; border-radius: 2px; opacity: 0.75; border: 1px solid rgba(255,255,255,0.15)"></span>
-                                <span>${label}</span>
-                            </div>
-                        `;
+                    const binLabels = getLegendBinLabels(bins, displayBins, config, formatFunc);
+                    if (bins.length && colors.length) {
+                        itemsHtml += renderOrdinalLegendScale(colors.slice(0, binLabels.length), binLabels);
                     }
 
                     if (config.zeroAsNoMapping) {
                         itemsHtml += `
-                            <div class="legend-item" style="padding-left: 8px;">
-                                <span class="legend-color-line" style="background-color: #475569; border: 1px dashed #94a3b8; height: 10px; width: 14px; border-radius: 2px;"></span>
-                                <span style="color: var(--text-muted)">Sin elementos mapeados en OSM; no implica ausencia</span>
+                            <div class="legend-item legend-special-swatch">
+                                <span class="legend-color-line" style="background-color: #475569; border: 1px dashed #94a3b8;"></span>
+                                <span>Sin elementos mapeados en OSM; no implica ausencia</span>
                             </div>
                         `;
                     }
                     if (!config.omitNoDataLegend) {
                         itemsHtml += `
-                            <div class="legend-item" style="padding-left: 8px; margin-bottom: 6px;">
-                                <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569; height: 10px; width: 14px; border-radius: 2px;"></span>
-                                <span style="color: var(--text-muted)">Sin dato oficial</span>
+                            <div class="legend-item legend-special-swatch">
+                                <span class="legend-color-line" style="background-color: #1e293b; border: 1px dashed #475569;"></span>
+                                <span>Sin dato oficial</span>
                             </div>
                         `;
                     }
@@ -534,10 +561,9 @@ function onEachProvinceFeature(feature, layer) {
                                 ? "<strong>Corte parcial enero-junio:</strong> no comparar con años completos."
                                 : "";
                             itemsHtml += `
-                                <div class="legend-data-audit" role="note">
-                                    <strong>Total nacional: ${total}</strong>
-                                    <span>${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio y se conservan en el total sin asignación especulativa.</span>
-                                    ${partial ? `<span>${partial}</span>` : ""}
+                                <div class="legend-data-audit legend-territory-audit" role="note">
+                                    <span class="legend-audit-value"><small>Total nacional</small><strong>${total}</strong></span>
+                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio y se conservan en el total sin asignación especulativa.${partial ? `<span>${partial}</span>` : ""}</span>
                                 </div>
                             `;
                         }

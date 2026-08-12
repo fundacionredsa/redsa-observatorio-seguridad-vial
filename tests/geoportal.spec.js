@@ -137,6 +137,8 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   expect(geometry.territory.top).toBeGreaterThanOrEqual(geometry.visible.top - 2);
   expect(geometry.territory.bottom).toBeLessThanOrEqual(geometry.visible.bottom + 2);
 
+  await page.locator('[data-right-panel="legend"]').click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click"));
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await page.waitForTimeout(700);
@@ -408,6 +410,7 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
     await window.__redsaAudit.setTerritoryLevelMode("canton");
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
+  await page.locator('[data-right-panel="legend"]').click();
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await page.evaluate(() => document.querySelector("#territory-sidebar [data-detail-period-mode='accumulated']")?.click());
 
@@ -471,6 +474,7 @@ test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ p
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.fireTerritoryEvent("canton", "1701", "click");
   });
+  await page.locator('[data-right-panel="legend"]').click();
   const card = page.locator("#demographic-hover-card");
   await expect(card).toBeVisible();
   const selectedTitle = await page.locator("#hover-card-title").textContent();
@@ -688,6 +692,8 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await expect(shortcut).toContainText("Ver análisis completo");
   await expect(shortcut.locator(".profile-card-citizen-title, .profile-card-source-detail, .perfil-card-section")).toHaveCount(0);
 
+  await page.locator('[data-right-panel="legend"]').click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await shortcut.locator("#legend-open-analysis-button").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#info-fallecidos-inec")).toHaveText("504");
@@ -803,6 +809,8 @@ test("ficha territorial permanece visible dentro del panel Leyenda", async ({ pa
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await page.locator('[data-right-panel="legend"]').click();
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
@@ -816,7 +824,7 @@ test("ficha territorial permanece visible dentro del panel Leyenda", async ({ pa
 
   const boxes = await page.evaluate(() => {
     const cardRect = document.querySelector(".perfil-fallecidos-card").getBoundingClientRect();
-    const hostRect = document.querySelector("#right-context-host").getBoundingClientRect();
+    const hostRect = document.querySelector("#legend-context-panel").getBoundingClientRect();
     return { card: { top: cardRect.top, bottom: cardRect.bottom, left: cardRect.left, right: cardRect.right }, host: { top: hostRect.top, bottom: hostRect.bottom, left: hostRect.left, right: hostRect.right }, parent: document.querySelector(".perfil-fallecidos-card").parentElement?.className, innerHeight };
   });
   expect(boxes.parent).toContain("legend-context-scroll");
@@ -836,15 +844,17 @@ test("ficha territorial comparte solo el panel Leyenda y no crea otra región fl
     await window.__redsaAudit.showTerritory("canton", "1701");
   });
 
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
-  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
-  expect(await page.locator("#demographic-hover-card").evaluate(element => element.closest("[data-right-context-view]")?.id)).toBe("legend-context-panel");
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
+  await page.locator('[data-right-panel="legend"]').click();
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
+  await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(0);
+  expect(await page.locator("#demographic-hover-card").evaluate(element => element.closest("#legend-context-panel")?.id)).toBe("legend-context-panel");
 
   await page.locator("#open-analysis-button").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   const separated = await page.evaluate(() => {
     const sidebar = document.querySelector("#territory-sidebar").getBoundingClientRect();
-    const host = document.querySelector("#right-context-host").getBoundingClientRect();
+    const host = document.querySelector("#legend-context-panel").getBoundingClientRect();
     return sidebar.right <= host.left;
   });
   expect(separated).toBeTruthy();
@@ -883,13 +893,13 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
     await page.setViewportSize(viewport);
     await loadPortal(page);
     await expect(page.locator('[data-right-panel="legend"]')).toBeVisible();
-    await expect(page.locator(".legend-panel")).toBeVisible();
+    await expect(page.locator("#legend-context-panel")).toBeVisible();
     const geometry = await page.evaluate(() => {
       const box = selector => {
         const rect = document.querySelector(selector).getBoundingClientRect();
         return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
       };
-      return { map: box("#map"), host: box("#right-context-host"), rail: box("#right-tools-rail") };
+      return { map: box("#map"), host: box("#legend-context-panel"), rail: box("#right-tools-rail") };
     });
     expect(geometry.map.width).toBe(viewport.width);
     expect(geometry.map.height).toBe(viewport.height);
@@ -900,8 +910,8 @@ test("mobile conserva una superficie de mapa util en telefono y tablet", async (
       expect(element.bottom).toBeLessThanOrEqual(viewport.height);
     }
     expect(boxesIntersect(geometry.host, geometry.rail)).toBeFalsy();
-    await expect(page.locator("#right-context-host")).toBeVisible();
-    await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+    await expect(page.locator("#right-context-host")).toBeHidden();
+    await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "collapsed");
   }
 });
 
@@ -976,16 +986,14 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
 
   await page.locator('[data-right-panel="legend"]').tap();
   await expect(page.locator("#legend-context-panel")).toBeVisible();
-  const legendControls = await page.evaluate(() => {
-    const box = selector => {
-      const rect = document.querySelector(selector).getBoundingClientRect();
-      return { top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
-    };
-    return { slider: box("#map-year-slider"), level: box("#territory-level-control") };
-  });
-  expect(legendControls.slider.height).toBeGreaterThanOrEqual(44);
-  expect(legendControls.slider.bottom).toBeLessThanOrEqual(height);
-  expect(legendControls.level.bottom).toBeLessThanOrEqual(height);
+  await expect.poll(() => page.locator("#legend-context-panel").evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(height);
+  await page.locator("#map-year-slider").scrollIntoViewIfNeeded();
+  const sliderInView = await page.locator("#map-year-slider").boundingBox();
+  expect(sliderInView.height).toBeGreaterThanOrEqual(44);
+  expect(sliderInView.y + sliderInView.height).toBeLessThanOrEqual(height);
+  await page.locator("#territory-level-control").scrollIntoViewIfNeeded();
+  const levelInView = await page.locator("#territory-level-control").boundingBox();
+  expect(levelInView.y + levelInView.height).toBeLessThanOrEqual(height);
 
   const tooSmall = await page.evaluate(() => {
     const selectors = [
@@ -1010,15 +1018,16 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   });
   expect(tooSmall).toEqual([]);
 
+  await page.locator("#map-year-slider").scrollIntoViewIfNeeded();
   const sliderBox = await page.locator("#map-year-slider").boundingBox();
   expect(sliderBox).not.toBeNull();
   await page.touchscreen.tap(sliderBox.x + sliderBox.width * 0.6, sliderBox.y + sliderBox.height / 2);
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
 
-  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "legend");
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await page.locator("#mobile-legend-toggle").tap();
   await expect(page.locator("body")).not.toHaveClass(/mobile-layers-open/);
-  await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#legend-context-panel")).toBeHidden();
 
   const tapPoint = await page.evaluate(() => window.__redsaAudit.prepareTerritoryTap("canton", "1701"));
   expect(tapPoint).not.toBeNull();
@@ -1032,7 +1041,8 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await expect(page.locator("#demographic-hover-card")).not.toHaveAttribute("hidden", "");
 
   await page.locator('[data-right-panel="legend"]').tap();
-  await expect(page.locator("#right-context-host")).toBeVisible();
+  await expect(page.locator("#right-context-host")).toBeHidden();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
 });
@@ -1047,10 +1057,8 @@ test("Legend classification tooltips and adaptive color palettes verify correctl
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_parroquial"));
   await page.waitForFunction(() => window.__redsaActiveBins && window.__redsaActiveBins.variable === "fallecidos_parroquial");
 
-  const mobileLegendToggle = page.locator("#mobile-legend-toggle");
-  if (await mobileLegendToggle.isVisible() && await mobileLegendToggle.getAttribute("aria-expanded") === "false") {
-      await mobileLegendToggle.click();
-  }
+  await page.locator('[data-right-panel="legend"]').click();
+  await expect(page.locator("#legend-context-panel")).toHaveAttribute("data-legend-state", "expanded");
 
   await expect(page.locator('.legend-panel')).not.toContainText(/escala logar.tmica/i);
   const infoIcon = page.locator('.legend-panel .sigla-tooltip-trigger[data-sigla="INFO"]');

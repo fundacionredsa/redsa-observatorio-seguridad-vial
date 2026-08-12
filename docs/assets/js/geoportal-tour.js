@@ -11,7 +11,10 @@
         const variableTourTarget = '[data-right-panel="layers"]';
         const infrastructureTourTarget = "#infrastructure-disclosure";
         const citizenWasOpen = document.body.classList.contains("citizen-panel-open");
-        const rightPanelBeforeTour = document.getElementById("right-context-host")?.dataset.activePanel || null;
+        const legendStateBeforeTour = document.getElementById("legend-context-panel")?.dataset.legendState || "collapsed";
+        const rightPanelBeforeTour = document.body.classList.contains("unified-legend-expanded")
+            ? "legend"
+            : (document.getElementById("right-context-host")?.dataset.activePanel || null);
 
         const openCitizenPanelForTour = () => {
             window.setRightContextPanel?.(null, false);
@@ -39,7 +42,8 @@
         };
 
         const prepareActiveLegendForTour = () => {
-            window.setRightContextPanel?.(null, false);
+            window.setRightContextPanel?.("legend", true);
+            window.setRightContextPanel?.("legend", false);
             window.setMobilePanel?.("citizen", false);
         };
 
@@ -84,6 +88,9 @@
                     ? rightPanelBeforeTour
                     : null;
                 window.setRightContextPanel?.(restoreRightPanel, Boolean(restoreRightPanel));
+                if (!restoreRightPanel && legendStateBeforeTour === "hidden") {
+                    window.hideUnifiedLegend?.();
+                }
                 window.setSiteMethodologyMenu?.(false);
                 window.setSiteTopbarMenu?.(false);
                 if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
@@ -146,8 +153,8 @@
                     element: '#legend-active-layers-card',
                     onHighlightStarted: prepareActiveLegendForTour,
                     popover: {
-                        title: 'Leyenda activa sobre el mapa',
-                        description: 'Esta tarjeta aparece cuando hay capas activas y las mantiene visibles sin cambiar de pestaña. Cada fila conserva el mismo peso visual y su botón informativo explica la fuente o el símbolo.',
+                        title: 'Leyenda unificada: vista compacta',
+                        description: 'Esta vista breve mantiene a la vista las capas activas sin tapar el mapa. Puedes ampliarla con la flecha o con “Leyenda” en el rail, y ocultarla por completo con ×.',
                         side: isMobile ? "top" : "right",
                         align: 'start'
                     }
@@ -176,8 +183,8 @@
                     element: '#legend-context-panel',
                     onHighlightStarted: prepareLegendForTour,
                     popover: {
-                        title: 'Leyenda adaptativa',
-                        description: 'Aquí ajustas nivel, año y periodo, y consultas la escala de colores, el total nacional y la intensidad visual. La leyenda también declara cuando no existen datos y explica la clasificación.',
+                        title: 'Leyenda unificada: vista completa',
+                        description: 'Al ampliarla, el mismo componente muestra primero la escala real y el total nacional cuando aplica; después ofrece Nivel, Periodo, Año e intensidad. Ningún cambio del mapa la abre sin que lo pidas.',
                         side: "left",
                         align: 'end'
                     }

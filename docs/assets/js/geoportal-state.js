@@ -317,6 +317,9 @@
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
         const legendLevelControlSlot = document.getElementById("legend-level-control-slot");
         const legendTimelineControlSlot = document.getElementById("legend-timeline-control-slot");
+        const unifiedLegendPanel = document.getElementById("legend-context-panel");
+        const legendExpandedContent = document.getElementById("legend-expanded-content");
+        const legendExpandToggle = document.getElementById("legend-expand-toggle");
         const territorySidebar = document.getElementById("territory-sidebar");
         const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
         const rightContextHost = document.getElementById("right-context-host");
@@ -335,6 +338,8 @@
         const siteMethodologyToggle = document.getElementById("site-methodology-toggle");
         const siteMethodologyMenu = document.getElementById("site-methodology-menu");
         let activeRightPanel = null;
+        let legendUserVisible = true;
+        let legendExpanded = false;
         let geolocationPending = false;
         let locationMarker = null;
         let rightToolsStatusTimer = null;
@@ -352,9 +357,55 @@
             scheduleSelectedTerritoryRefit();
         });
 
+        function syncUnifiedLegendPresentation(options = {}) {
+            if (!unifiedLegendPanel) return;
+            const hasActiveLayers = Number(unifiedLegendPanel.dataset.layerCount || 0) > 0;
+            const coveredByMobileSheet = mobileMediaQuery.matches
+                && (document.body.classList.contains("mobile-sidebar-open")
+                    || document.body.classList.contains("mobile-citizen-open"));
+            const shouldShow = legendUserVisible && (hasActiveLayers || legendExpanded) && !coveredByMobileSheet;
+            unifiedLegendPanel.classList.toggle("is-visible", shouldShow);
+            unifiedLegendPanel.classList.toggle("is-expanded", legendExpanded && shouldShow);
+            unifiedLegendPanel.dataset.legendState = !shouldShow
+                ? "hidden"
+                : (legendExpanded ? "expanded" : "collapsed");
+            unifiedLegendPanel.setAttribute("aria-hidden", String(!shouldShow));
+            unifiedLegendPanel.toggleAttribute("inert", !shouldShow);
+            legendExpandedContent?.setAttribute("aria-hidden", String(!legendExpanded));
+            legendExpandedContent?.toggleAttribute("inert", !legendExpanded);
+            legendExpandToggle?.setAttribute("aria-expanded", String(legendExpanded));
+            if (legendExpandToggle) {
+                const action = legendExpanded ? "Contraer" : "Ampliar";
+                legendExpandToggle.setAttribute("aria-label", `${action} leyenda`);
+                legendExpandToggle.setAttribute("title", `${action} leyenda`);
+                legendExpandToggle.querySelector("i")?.classList.toggle("fa-chevron-up", !legendExpanded);
+                legendExpandToggle.querySelector("i")?.classList.toggle("fa-chevron-down", legendExpanded);
+            }
+            document.body.classList.toggle("unified-legend-visible", shouldShow);
+            document.body.classList.toggle("unified-legend-expanded", legendExpanded && shouldShow);
+            if (options.focusPanel && legendExpanded && shouldShow) {
+                legendExpandedContent?.querySelector("button, input, summary, a")?.focus({ preventScroll: true });
+            }
+        }
+
+        function hideUnifiedLegend() {
+            legendUserVisible = false;
+            legendExpanded = false;
+            if (activeRightPanel === "legend") activeRightPanel = null;
+            setRightContextPanel(activeRightPanel, Boolean(activeRightPanel));
+        }
+
         function setRightContextPanel(panel, open = true, options = {}) {
-            const nextPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
-            activeRightPanel = nextPanel;
+            const requestedPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
+            const nextPanel = requestedPanel && requestedPanel !== "legend" ? requestedPanel : null;
+            if (requestedPanel === "legend") {
+                legendUserVisible = true;
+                legendExpanded = true;
+                activeRightPanel = "legend";
+            } else {
+                legendExpanded = false;
+                activeRightPanel = nextPanel;
+            }
             if (rightContextHost) {
                 rightContextHost.hidden = !nextPanel;
                 rightContextHost.dataset.activePanel = nextPanel || "none";
@@ -365,15 +416,15 @@
                 view.setAttribute("aria-hidden", String(!isActive));
             });
             rightToolButtons.forEach((button, index) => {
-                const isActive = button.dataset.rightPanel === nextPanel;
+                const isActive = button.dataset.rightPanel === activeRightPanel;
                 button.classList.toggle("active", isActive);
                 button.setAttribute("aria-expanded", String(isActive));
                 button.setAttribute("aria-selected", String(isActive));
-                button.tabIndex = isActive || (!nextPanel && index === 0) ? 0 : -1;
+                button.tabIndex = isActive || (!activeRightPanel && index === 0) ? 0 : -1;
             });
 
             const layersOpen = nextPanel === "layers";
-            const legendOpen = nextPanel === "legend";
+            const legendOpen = activeRightPanel === "legend";
             document.body.classList.toggle("technical-drawer-open", layersOpen);
             document.body.classList.toggle("mobile-layers-open", layersOpen && mobileMediaQuery.matches);
             document.body.classList.toggle("mobile-legend-open", legendOpen);
@@ -383,7 +434,6 @@
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
             activeLayersShortcut?.setAttribute("aria-expanded", String(layersOpen));
             mobileLayersToggle?.setAttribute("aria-expanded", String(layersOpen));
-            mobileLegendToggle?.setAttribute("aria-expanded", String(legendOpen));
 
             if (nextPanel && mobileMediaQuery.matches) {
                 document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open", "citizen-panel-open");
@@ -391,6 +441,7 @@
                 mobileSidebarToggle?.setAttribute("aria-expanded", "false");
                 updateCitizenPanelControls(false);
             }
+            syncUnifiedLegendPresentation(options);
             if (options.focusPanel && nextPanel) {
                 rightContextViews.find(view => view.dataset.rightContextView === nextPanel)
                     ?.querySelector("button, input, summary, a")
@@ -458,6 +509,7 @@
             if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
             }
+            syncUnifiedLegendPresentation();
         }
 
         function closeMobilePanels() {
@@ -709,6 +761,10 @@
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
+        legendExpandToggle?.addEventListener("click", () => {
+            setRightContextPanel("legend", !legendExpanded, { focusPanel: false });
+        });
+        mobileLegendToggle?.addEventListener("click", hideUnifiedLegend);
         rightToolButtons.forEach(button => button.addEventListener("click", () => {
             const panel = button.dataset.rightPanel;
             if (panel === "layers") syncMobileLayerDrawer();
@@ -764,7 +820,7 @@
         } else {
             updateCitizenPanelControls(false);
         }
-        setRightContextPanel("legend", true);
+        setRightContextPanel(null, false);
 
         let selectedVariable = INITIAL_VIEW.variable;
         let selectedYear = INITIAL_VIEW.year;
@@ -1106,6 +1162,8 @@
         window.setMobileLegend = setMobileLegend;
         window.closeMobilePanels = closeMobilePanels;
         window.setRightContextPanel = setRightContextPanel;
+        window.syncUnifiedLegendPresentation = syncUnifiedLegendPresentation;
+        window.hideUnifiedLegend = hideUnifiedLegend;
         window.setSiteTopbarMenu = setSiteTopbarMenu;
         window.setSiteMethodologyMenu = setSiteMethodologyMenu;
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
