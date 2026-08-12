@@ -156,7 +156,7 @@
     .mobile-nav-toggle:focus-visible,
     .mobile-sidebar-close:focus-visible,
     .drawer-close:focus-visible,
-    .mobile-legend-toggle:focus-visible,
+    .legend-close-toggle:focus-visible,
     .leaflet-control-layers input:focus-visible,
     .variable-option input:focus-visible,
     #map-year-slider:focus-visible {
@@ -715,6 +715,203 @@
     }
 }
 
+/* Fase 6: mobile conserva dos barras existentes; periodo e intensidad comparten la de año. */
+@media (max-width: 768px) {
+    .site-topbar {
+        display: block;
+        height: var(--site-topbar-mobile-height);
+    }
+
+    .site-topbar-main {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+    }
+
+    .map-controls-toolbar {
+        display: none;
+    }
+
+    .mobile-year-bar {
+        display: grid;
+        grid-template-columns: 44px auto minmax(0, 1fr) minmax(88px, 0.55fr);
+        row-gap: 4px;
+        border-radius: 14px;
+    }
+
+    .mobile-timeline-play-slot {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+    }
+
+    .mobile-timeline-play-slot .timeline-play-btn {
+        display: inline-grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 1px solid var(--border-glass);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        color: var(--accent-hover);
+    }
+
+    .mobile-year-bar-label,
+    .mobile-year-bar-scroll {
+        align-self: center;
+    }
+
+    .mobile-year-bar-scroll {
+        grid-column: 3 / 5;
+    }
+
+    .mobile-map-control-slot {
+        min-width: 0;
+    }
+
+    .mobile-period-control-slot {
+        grid-column: 1 / 4;
+        padding-top: 4px;
+        border-top: 1px solid var(--border-glass);
+    }
+
+    .mobile-opacity-control-slot {
+        grid-column: 4;
+        padding-top: 4px;
+        border-top: 1px solid var(--border-glass);
+    }
+
+    .mobile-period-control-slot .period-mode-control {
+        display: block;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .mobile-period-control-slot .legend-control-icon,
+    .mobile-period-control-slot .period-mode-label,
+    .mobile-period-control-slot .control-info-trigger,
+    .mobile-period-control-slot .period-mode-note,
+    .mobile-period-control-slot .period-label-full {
+        display: none;
+    }
+
+    .mobile-period-control-slot .period-label-compact {
+        display: inline;
+    }
+
+    .mobile-period-control-slot .period-mode-segments {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3px;
+        padding: 2px;
+        border: 1px solid var(--border-glass);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--bg-glass-hover) 70%, transparent);
+    }
+
+    .mobile-period-control-slot .period-mode-segments button {
+        min-height: 44px;
+        padding: 3px 8px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.62rem;
+        font-weight: 800;
+    }
+
+    .mobile-period-control-slot .period-mode-segments button.active {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .mobile-opacity-control-slot .contextual-opacity-control {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: center;
+        gap: 0;
+        margin: 0;
+        padding: 4px 6px;
+        border-radius: 999px;
+    }
+
+    .mobile-opacity-control-slot .contextual-opacity-heading {
+        position: absolute;
+        margin: 0;
+    }
+
+    .mobile-opacity-control-slot .contextual-opacity-heading label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .mobile-opacity-control-slot .contextual-opacity-heading output {
+        position: absolute;
+        right: 5px;
+        bottom: 4px;
+        min-width: 32px;
+        font-size: 0.56rem;
+    }
+
+    .mobile-opacity-control-slot .contextual-opacity-control input[type="range"] {
+        min-height: 28px;
+        padding-right: 31px;
+    }
+
+    .map-legend-card {
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        bottom: 112px;
+        left: var(--mobile-edge, 10px);
+        width: auto;
+        max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
+        max-height: min(34dvh, 300px);
+        border-radius: 14px;
+    }
+
+    body.citizen-panel-open .map-legend-card,
+    body.citizen-panel-open .legend-visibility-toggle {
+        left: var(--mobile-edge, 10px);
+    }
+
+    body.mobile-citizen-open .map-legend-card,
+    body.mobile-sidebar-open .map-legend-card,
+    body.mobile-layers-open .map-legend-card,
+    body.mobile-right-context-open .map-legend-card {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(8px);
+    }
+
+    .map-legend-card .legend-active-layers-list {
+        max-height: 110px;
+    }
+
+    .map-legend-card .legend-active-layer-row {
+        grid-template-columns: 22px minmax(0, 1fr) 44px;
+        min-height: 44px;
+    }
+
+    .legend-visibility-toggle {
+        bottom: 112px;
+        left: var(--mobile-edge, 10px);
+        min-height: 44px;
+    }
+
+    body.mobile-citizen-open .legend-visibility-toggle,
+    body.mobile-sidebar-open .legend-visibility-toggle,
+    body.mobile-layers-open .legend-visibility-toggle,
+    body.mobile-right-context-open .legend-visibility-toggle {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
     #territory-sidebar {
         transition: none;
@@ -761,133 +958,6 @@
         width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
-    }
-
-    .legend-context-controls .territory-level-label {
-        display: none;
-    }
-
-    .legend-context-controls .territory-level-segments button {
-        padding-inline: 2px;
-        font-size: var(--ui-secondary-font-size-mobile);
-        min-height: var(--ui-secondary-control-height-mobile);
-    }
-
-    .legend-context-controls .period-mode-segments button {
-        min-height: var(--ui-secondary-control-height-mobile);
-    }
-
-    .legend-context-controls .control-info-trigger {
-        width: var(--ui-secondary-info-size-mobile);
-        height: var(--ui-secondary-info-size-mobile);
-        min-width: var(--ui-secondary-info-size-mobile);
-        min-height: var(--ui-secondary-info-size-mobile);
-    }
-
-    .legend-context-scroll {
-        padding: 10px;
-    }
-
-    .legend-content-group {
-        gap: 11px;
-        padding: 11px;
-    }
-
-    .legend-group-header {
-        grid-template-columns: 28px minmax(0, 1fr);
-        gap: 8px;
-    }
-
-    .legend-group-icon {
-        width: 28px;
-        height: 28px;
-    }
-
-    .legend-context-controls .timeline-marks {
-        gap: 2px;
-        overflow-x: auto;
-        padding-bottom: 3px;
-    }
-
-    .legend-context-controls .timeline-mark {
-        min-width: 29px;
-        padding: 3px 2px;
-        font-size: 0.57rem;
-        font-variant-numeric: tabular-nums;
-    }
-
-    .unified-legend,
-    body.citizen-panel-open .unified-legend:not(.is-expanded) {
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
-        bottom: 72px;
-        left: var(--mobile-edge, 10px);
-        width: auto;
-        max-height: 38dvh;
-        transform-origin: bottom left;
-    }
-
-    .unified-legend.is-expanded {
-        top: var(--mobile-context-top);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width));
-        bottom: var(--mobile-context-bottom);
-        left: var(--mobile-edge, 10px);
-        width: auto;
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
-        border-radius: 14px 0 0 14px;
-        transform-origin: bottom center;
-    }
-
-    .unified-legend .legend-active-layers-list {
-        max-height: min(20dvh, 150px);
-    }
-
-    .unified-legend.is-expanded .legend-expanded-content {
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom) - 126px);
-    }
-
-    .unified-legend.is-expanded .legend-context-scroll {
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom) - 126px);
-    }
-
-    body.mobile-citizen-open .unified-legend,
-    body.mobile-sidebar-open .unified-legend {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translateY(8px);
-    }
-
-    body.mobile-right-context-open .unified-legend:not(.is-expanded) {
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 14px);
-        bottom: 72px;
-        left: auto;
-        width: min(218px, calc(100vw - var(--right-tool-rail-width) - (3 * var(--mobile-edge, 10px))));
-    }
-
-    .legend-context-controls .period-mode-control {
-        grid-template-columns: 25px 46px 22px minmax(0, 1fr);
-        gap: 4px;
-    }
-
-    .legend-context-controls .territory-level-control {
-        grid-template-columns: 25px minmax(0, 1fr) 22px;
-        gap: 4px;
-    }
-
-    .legend-context-controls .territory-level-segments {
-        grid-column: 1 / -1;
-        width: 100%;
-    }
-
-    .legend-context-controls .territory-level-label {
-        display: block;
-    }
-
-    .legend-context-controls .territory-level-segments button,
-    .legend-context-controls .period-mode-segments button {
-        min-height: 44px;
-        padding-inline: 3px;
-        font-size: 0.55rem;
     }
 
     .legend-shell-action {
@@ -942,14 +1012,7 @@
         pointer-events: auto;
     }
 
-    body.mobile-right-context-open .road-scale-control,
-    body.mobile-legend-open .road-scale-control {
+    body.mobile-right-context-open .road-scale-control {
         visibility: hidden;
-    }
-
-    body.mobile-legend-open .mobile-overlay-backdrop {
-        display: none;
-        opacity: 0;
-        pointer-events: none;
     }
 }

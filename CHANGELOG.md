@@ -46,6 +46,12 @@ incluidos errores relevantes corregidos durante el desarrollo.
 
 ### Changed
 
+- La leyenda del mapa se consolida en una sola tarjeta informativa permanente,
+  recuperable con el botón `Leyenda`; los controles de nivel, periodo, año e
+  intensidad pasan a una segunda fila del topbar en escritorio y a las barras
+  móviles existentes en teléfono y tableta.
+- El rail derecho queda reducido a `Datos y capas` y `Mapas base`, y el tour
+  guiado describe la nueva ubicación de controles y leyenda.
 - El ano inicial del geoportal pasa de 2024 a 2025, ultimo ano completo de la
   serie territorial de siniestros; 2026 se mantiene identificado como corte
   parcial enero-junio.

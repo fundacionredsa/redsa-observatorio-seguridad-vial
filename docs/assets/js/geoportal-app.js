@@ -146,7 +146,6 @@
                     activateTerritoryLevel(level);
                     const foundLayer = findTerritoryLayerByCode(level, code);
                     if (!foundLayer) return false;
-                    if (mobileMediaQuery.matches) setMobileLegend(false);
                     const selected = selectTerritoryLayer(level, foundLayer, {
                         fitBounds: true,
                         updateHash: level === "canton",
@@ -413,7 +412,7 @@
                                 <div class="timeline-control">
                                     <div class="timeline-header legend-secondary-control-row">
                                         <span class="legend-control-icon" aria-hidden="true"><i class="fa-regular fa-calendar"></i></span>
-                                        <div class="timeline-title-wrap">
+                                        <div class="timeline-title-wrap" id="timeline-title-wrap">
                                             <button type="button" id="timeline-play-button" class="timeline-play-btn" aria-label="Reproducir línea de tiempo" title="Reproducir animación año a año">
                                                 <i class="fa-solid fa-play" id="timeline-play-icon"></i>
                                             </button>
@@ -431,8 +430,8 @@
                                     <div class="period-mode-label">Periodo</div>
                                     <button type="button" id="period-mode-info" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Periodo mostrado" aria-label="Explicación del periodo mostrado">ⓘ</button>
                                     <div class="period-mode-segments" role="group" aria-label="Cambiar entre año y acumulado histórico">
-                                        <button type="button" data-period-mode="year" class="active" aria-pressed="true">Año seleccionado</button>
-                                        <button type="button" data-period-mode="accumulated" aria-pressed="false">Acumulado histórico</button>
+                                        <button type="button" data-period-mode="year" class="active" aria-pressed="true" aria-label="Año seleccionado"><span class="period-label-full">Año seleccionado</span><span class="period-label-compact" aria-hidden="true">Año</span></button>
+                                        <button type="button" data-period-mode="accumulated" aria-pressed="false" aria-label="Acumulado histórico"><span class="period-label-full">Acumulado histórico</span><span class="period-label-compact" aria-hidden="true">Hist.</span></button>
                                     </div>
                                     <div id="period-mode-note" class="period-mode-note sr-only" aria-live="polite"></div>
                                 </div>
@@ -962,7 +961,7 @@
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
                             timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
                             timelineBadge: document.getElementById("timeline-badge")?.textContent,
-                            timelineYearAdjustment: document.getElementById("legend-year-adjustment-note")?.textContent || "",
+                            timelineYearAdjustment: document.getElementById("timeline-year-adjustment-note")?.textContent || "",
                             basemap: document.body.dataset.basemap || "positron",
                             territorySurfaceAutoHideZoom: ZOOM_SURFACE_AUTO_HIDE_MIN,
                             territorySurfaceAutoHidden: isTerritorySurfaceAutoHidden(activeTerritoryLevel),

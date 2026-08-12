@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.47">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.47">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.47">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.48">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.48">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.48">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -83,6 +83,7 @@
     </div>
 
     <header class="site-topbar" id="site-topbar">
+        <div class="site-topbar-main">
         <a class="site-topbar-brand" href="./" aria-label="Fundación REDSA, inicio del geoportal">
             <img class="site-topbar-brand-mark" src="assets/img/redsa-isotipo-oficial.png" alt="Isotipo de Fundación REDSA" width="34" height="36">
             <span><strong>Fundación REDSA</strong><small>Observatorio de Seguridad Vial</small></span>
@@ -113,6 +114,14 @@
                 <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span>Ayuda</span>
             </button>
         </nav>
+        </div>
+        <div class="map-controls-toolbar" id="map-controls-toolbar" aria-label="Controles permanentes del mapa">
+            <div id="map-toolbar-level-slot" class="map-toolbar-slot map-toolbar-level-slot"></div>
+            <div id="map-toolbar-period-slot" class="map-toolbar-slot map-toolbar-period-slot"></div>
+            <div id="map-toolbar-year-slot" class="map-toolbar-slot map-toolbar-year-slot"></div>
+            <div id="map-toolbar-opacity-slot" class="map-toolbar-slot map-toolbar-opacity-slot"></div>
+            <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite"></div>
+        </div>
     </header>
 
     <section class="citizen-panel" id="citizen-panel" aria-label="Explorar la seguridad vial de mi territorio">
@@ -190,10 +199,6 @@
             </button>
         </div>
         <div class="right-tool-group right-panel-tabs" role="tablist" aria-label="Panel lateral del mapa" aria-orientation="vertical">
-            <button class="right-tool-button" id="right-tab-legend" type="button" role="tab" data-right-panel="legend" aria-controls="legend-context-panel" aria-selected="false" aria-expanded="false" aria-label="Leyenda" title="Leyenda">
-                <i class="fa-solid fa-list" aria-hidden="true"></i>
-                <span class="right-tool-label">Leyenda</span>
-            </button>
             <button class="right-tool-button" id="right-tab-layers" type="button" role="tab" data-right-panel="layers" aria-controls="technical-drawer" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Datos y capas" title="Datos y capas">
                 <i class="fa-solid fa-sliders" aria-hidden="true"></i>
                 <span class="right-tool-label">Datos y capas</span>
@@ -278,81 +283,62 @@
     </section>
     </div>
     </div>
-    <aside id="legend-context-panel" class="legend-context-panel unified-legend" aria-labelledby="legend-active-layers-title" aria-hidden="true" data-legend-state="collapsed" data-layer-count="0" inert>
-        <section id="legend-active-layers-card" class="legend-active-layers-card" aria-labelledby="legend-active-layers-title">
-            <header class="legend-active-layers-header">
-                <span class="legend-active-layers-heading">
-                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                    <span>
-                        <span class="legend-active-kicker">Estás viendo</span>
-                        <h2 id="legend-active-layers-title">Leyenda activa</h2>
+    <aside id="map-legend-card" class="map-legend-card" aria-labelledby="map-legend-card-title" aria-hidden="true" data-layer-count="0" data-has-legend="false" inert>
+        <header class="map-legend-card-header">
+            <span class="map-legend-card-heading">
+                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                <span>
+                    <span class="legend-active-kicker">Estás viendo</span>
+                    <h2 id="map-legend-card-title">Leyenda del mapa</h2>
+                </span>
+            </span>
+            <span class="legend-active-layers-actions">
+                <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
+                <button class="legend-shell-action legend-close-toggle" id="legend-close-toggle" type="button" aria-label="Ocultar leyenda del mapa" title="Ocultar leyenda del mapa">&times;</button>
+            </span>
+        </header>
+        <div class="map-legend-card-scroll">
+            <section class="legend-content-group legend-reading-group" aria-labelledby="legend-reading-title">
+                <h3 id="legend-reading-title" class="sr-only">Cómo leer el mapa</h3>
+                <div id="legend-context-slot" class="legend-context-slot"></div>
+            </section>
+            <section id="legend-active-layers-section" class="legend-active-layers-section" aria-labelledby="legend-active-layers-title" hidden>
+                <header class="legend-active-layers-subheader">
+                    <h3 id="legend-active-layers-title">Capas activas</h3>
+                </header>
+                <div id="legend-active-layers-list" class="legend-active-layers-list" role="list" aria-live="polite"></div>
+            </section>
+            <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
+                <div class="profile-card-header">
+                    <div class="profile-card-heading-wrap">
+                        <span class="profile-card-kicker" id="legend-profile-heading">Territorio seleccionado</span>
+                        <span id="hover-card-title">Consulta territorial</span>
+                    </div>
+                    <span class="profile-card-header-actions">
+                        <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
                     </span>
-                </span>
-                <span class="legend-active-layers-actions">
-                    <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
-                    <button id="legend-expand-toggle" class="legend-shell-action legend-expand-toggle" type="button" aria-controls="legend-expanded-content" aria-expanded="false" aria-label="Ampliar leyenda" title="Ampliar leyenda">
-                        <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
-                    </button>
-                    <button class="legend-shell-action legend-close-toggle" id="mobile-legend-toggle" type="button" aria-label="Ocultar leyenda" title="Ocultar leyenda">&times;</button>
-                </span>
-            </header>
-            <div id="legend-active-layers-list" class="legend-active-layers-list" role="list" aria-live="polite"></div>
-        </section>
-        <div id="legend-expanded-content" class="legend-expanded-content" aria-hidden="true" inert>
-            <div class="legend-context-scroll">
-                <section class="legend-content-group legend-reading-group" aria-labelledby="legend-reading-title">
-                    <header class="legend-group-header">
-                        <span class="legend-group-icon" aria-hidden="true"><i class="fa-solid fa-palette"></i></span>
-                        <span>
-                            <span class="legend-group-eyebrow">Interpreta la visualización</span>
-                            <h3 id="legend-reading-title">Cómo leer el mapa</h3>
-                            <small>Variable, escala, total nacional e intensidad visual.</small>
-                        </span>
-                    </header>
-                    <div id="legend-context-slot" class="legend-context-slot"></div>
-                </section>
-                <div class="legend-section-divider" role="separator" aria-hidden="true"></div>
-                <section class="legend-content-group legend-temporal-group" aria-labelledby="legend-temporal-title">
-                    <header class="legend-group-header">
-                        <span class="legend-group-icon" aria-hidden="true"><i class="fa-solid fa-sliders"></i></span>
-                        <span>
-                            <span class="legend-group-eyebrow">Ajusta la vista</span>
-                            <h3 id="legend-temporal-title">Controles auxiliares</h3>
-                            <small>Nivel, periodo y año de los datos mostrados.</small>
-                        </span>
-                    </header>
-                    <p id="legend-year-adjustment-note" class="timeline-year-adjustment-note legend-year-adjustment-note" role="status" aria-live="polite" hidden></p>
-                    <div class="legend-context-controls" id="legend-context-controls" aria-label="Periodo y nivel de la leyenda">
-                        <div id="legend-level-control-slot" class="legend-control-slot legend-level-control-slot"></div>
-                        <div id="legend-timeline-control-slot" class="legend-control-slot legend-timeline-control-slot"></div>
-                    </div>
-                </section>
-                <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
-                    <div class="profile-card-header">
-                        <div class="profile-card-heading-wrap">
-                            <span class="profile-card-kicker" id="legend-profile-heading">Territorio seleccionado</span>
-                            <span id="hover-card-title">Consulta territorial</span>
-                        </div>
-                        <span class="profile-card-header-actions">
-                            <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
-                        </span>
-                    </div>
-                    <div id="hover-card-body"></div>
-                </section>
-            </div>
+                </div>
+                <div id="hover-card-body"></div>
+            </section>
         </div>
     </aside>
+    <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
+        <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
+    </button>
     <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
 
     <div id="mobile-level-bar" class="mobile-level-bar" role="group" aria-label="Nivel territorial">
-        <button type="button" data-level-mode="auto" aria-pressed="true">Auto</button>
-        <button type="button" data-level-mode="province" aria-pressed="false">Prov.</button>
-        <button type="button" data-level-mode="canton" aria-pressed="false">Cant.</button>
-        <button type="button" data-level-mode="parish" aria-pressed="false">Parr.</button>
+        <button type="button" data-level-mode="auto" aria-pressed="true" aria-label="Nivel automático">Auto</button>
+        <button type="button" data-level-mode="province" aria-pressed="false" aria-label="Provincias">Prov.</button>
+        <button type="button" data-level-mode="canton" aria-pressed="false" aria-label="Cantones">Cant.</button>
+        <button type="button" data-level-mode="parish" aria-pressed="false" aria-label="Parroquias">Parr.</button>
     </div>
-    <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año del geoportal">
+    <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año, periodo e intensidad del mapa">
+        <div id="mobile-timeline-play-slot" class="mobile-timeline-play-slot"></div>
         <span class="mobile-year-bar-label">Año</span>
         <div id="mobile-year-bar-scroll" class="mobile-year-bar-scroll"></div>
+        <div id="mobile-period-control-slot" class="mobile-map-control-slot mobile-period-control-slot"></div>
+        <div id="mobile-opacity-control-slot" class="mobile-map-control-slot mobile-opacity-control-slot"></div>
     </div>
     <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
         <span aria-hidden="true">&#9776;</span>
@@ -702,17 +688,17 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.47"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.47"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.48"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.48"></script>
 </body>
 </html>

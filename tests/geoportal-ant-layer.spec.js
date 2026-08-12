@@ -66,10 +66,9 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#timeline-badge")).toHaveText("2024");
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
-  await expect(page.locator("#timeline-year-adjustment-note")).toBeHidden();
-  await expect(page.locator("#legend-year-adjustment-note")).not.toHaveAttribute("hidden", "");
-  await expect(page.locator("#legend-year-adjustment-note")).toContainText("El año cambió a 2024");
-  await expect(page.locator("#legend-year-adjustment-note")).toContainText("2020–2024");
+  await expect(page.locator("#timeline-year-adjustment-note")).not.toHaveAttribute("hidden", "");
+  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("El año cambió a 2024");
+  await expect(page.locator("#timeline-year-adjustment-note")).toContainText("2020–2024");
 });
 
 test("Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas", async ({ page }, testInfo) => {
@@ -118,7 +117,9 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(paneAudit.territoryIndex).toBeLessThan(paneAudit.heatIndex);
   expect(paneAudit.heatIndex).toBeLessThan(paneAudit.infrastructureIndex);
   expect(paneAudit.infrastructureIndex).toBeLessThan(paneAudit.eventIndex);
-  await page.evaluate(() => window.setRightContextPanel("legend", true));
+  if (testInfo.project.name === "mobile") {
+    await page.evaluate(() => window.setRightContextPanel(null, false));
+  }
   await expect(page.locator("#ant-heat-opacity-control")).toBeVisible();
   expect(await page.locator("#ant-heat-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-ant-opacity-slot");
   await page.locator("#ant-heat-opacity-slider").fill("60");
@@ -164,7 +165,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(requests.filter(url => url.includes("_heat.json"))).toHaveLength(1);
   expect(requests.filter(isFullAntGeoJson)).toHaveLength(1);
 
-  await page.evaluate(() => window.setMobileLegend?.(true));
+  await page.evaluate(() => window.showUnifiedLegend?.());
   const legend = page.locator("#legend-items");
   await expect(legend).toContainText("Siniestros (ANT)");
   await expect(legend).toContainText("20.148 de 20.346");
@@ -239,7 +240,7 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
   expect(state.cacheYears).toEqual([2026]);
   expect(state.cacheYears).toHaveLength(1);
   expect(state.pointCount).toBe(10_747);
-  await page.evaluate(() => window.setMobileLegend?.(true));
+  await page.evaluate(() => window.showUnifiedLegend?.());
   await expect(page.locator("#legend-items")).toContainText("parcial enero-junio");
   await expect(page.locator("#legend-items")).toContainText("10.747 de 10.752");
   expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe(before);
@@ -251,8 +252,10 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   await page.locator("#event-layer-disclosure summary").click();
   await page.locator("#ant-layer-toggle").check();
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
+  if (testInfo.project.name === "mobile") {
+    await page.evaluate(() => window.setRightContextPanel(null, false));
+  }
 
-  await page.evaluate(() => window.setRightContextPanel("legend", true));
   await page.locator("[data-period-mode='accumulated']").click();
   await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#ant-layer-toggle")).toBeDisabled();
@@ -267,7 +270,6 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
   expect(await page.locator(".leaflet-antHeat-pane canvas").count()).toBe(0);
 
-  await page.evaluate(() => window.setRightContextPanel("legend", true));
   await page.locator("[data-period-mode='year']").click();
   await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
   await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");
@@ -299,7 +301,7 @@ test("la leyenda usa cero explícito y nunca muestra el rango confuso menor o ig
   await page.evaluate(() => {
     window.__redsaAudit.setTerritoryLevelMode("parish");
     window.__redsaAudit.selectYear(2025);
-    window.setMobileLegend?.(true);
+    window.showUnifiedLegend?.();
   });
   const legendItems = page.locator("#legend-items");
   await expect(legendItems).toBeAttached();

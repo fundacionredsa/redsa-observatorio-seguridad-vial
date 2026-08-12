@@ -109,7 +109,7 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
-        const RIGHT_CONTEXT_PANELS = Object.freeze(["legend", "layers", "basemap"]);
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "basemap"]);
         const TOPBAR_CLOSE_KEY = "Escape";
         const MAP_ZOOM_STEP = 1;
         const GEOLOCATION_OPTIONS = Object.freeze({
@@ -161,7 +161,7 @@
 
         ensureControlCorner("bottomcenter", "leaflet-bottom leaflet-center");
 
-        // La leyenda conserva el contrato Leaflet, pero su DOM vive dentro del panel lateral único.
+        // La leyenda conserva el contrato Leaflet, pero su DOM vive dentro de la tarjeta única del mapa.
         const LegendControl = L.Control.extend({
             options: {
                 position: 'bottomright'
@@ -174,7 +174,6 @@
                 div.innerHTML = `<div class="legend-content" id="legend-content">
                     <div id="legend-items" class="legend-items-structured">
                         <div id="legend-territory-items" class="legend-layer-items"></div>
-                        <div id="legend-territory-opacity-slot" class="legend-opacity-slot" data-legend-layer="territory"></div>
                         <p id="territory-surface-auto-hide-note" class="territory-surface-auto-hide-note" role="status" hidden>Superficie oculta a este nivel de acercamiento; se prioriza el detalle del mapa base.</p>
                         <div id="legend-overlay-items" class="legend-layer-items"></div>
                         <div id="legend-ant-opacity-slot" class="legend-opacity-slot" data-legend-layer="siniestros_ant"></div>
@@ -315,13 +314,18 @@
         const technicalControlsSlot = document.getElementById("technical-controls-slot");
         const mapVariableDisclosureSlot = document.getElementById("map-variable-disclosure-slot");
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
-        const legendLevelControlSlot = document.getElementById("legend-level-control-slot");
-        const legendTimelineControlSlot = document.getElementById("legend-timeline-control-slot");
-        const unifiedLegendPanel = document.getElementById("legend-context-panel");
-        const legendExpandedContent = document.getElementById("legend-expanded-content");
-        const legendExpandToggle = document.getElementById("legend-expand-toggle");
+        const mapToolbarLevelSlot = document.getElementById("map-toolbar-level-slot");
+        const mapToolbarPeriodSlot = document.getElementById("map-toolbar-period-slot");
+        const mapToolbarYearSlot = document.getElementById("map-toolbar-year-slot");
+        const mapToolbarOpacitySlot = document.getElementById("map-toolbar-opacity-slot");
+        const mapToolbarStatusSlot = document.getElementById("map-toolbar-status-slot");
+        const mobilePeriodControlSlot = document.getElementById("mobile-period-control-slot");
+        const mobileOpacityControlSlot = document.getElementById("mobile-opacity-control-slot");
+        const mobileTimelinePlaySlot = document.getElementById("mobile-timeline-play-slot");
+        const mapLegendCard = document.getElementById("map-legend-card");
         const territorySidebar = document.getElementById("territory-sidebar");
-        const mobileLegendToggle = document.getElementById("mobile-legend-toggle");
+        const legendCloseToggle = document.getElementById("legend-close-toggle");
+        const legendVisibilityToggle = document.getElementById("legend-visibility-toggle");
         const rightContextHost = document.getElementById("right-context-host");
         const rightToolRail = document.getElementById("right-tools-rail");
         const rightRailButtons = [...document.querySelectorAll(".right-tool-button")];
@@ -339,7 +343,6 @@
         const siteMethodologyMenu = document.getElementById("site-methodology-menu");
         let activeRightPanel = null;
         let legendUserVisible = true;
-        let legendExpanded = false;
         let geolocationPending = false;
         let locationMarker = null;
         let rightToolsStatusTimer = null;
@@ -357,55 +360,40 @@
             scheduleSelectedTerritoryRefit();
         });
 
-        function syncUnifiedLegendPresentation(options = {}) {
-            if (!unifiedLegendPanel) return;
-            const hasActiveLayers = Number(unifiedLegendPanel.dataset.layerCount || 0) > 0;
+        function syncLegendCardPresentation() {
+            if (!mapLegendCard) return;
+            const hasLegendContent = mapLegendCard.dataset.hasLegend === "true";
             const coveredByMobileSheet = mobileMediaQuery.matches
                 && (document.body.classList.contains("mobile-sidebar-open")
-                    || document.body.classList.contains("mobile-citizen-open"));
-            const shouldShow = legendUserVisible && (hasActiveLayers || legendExpanded) && !coveredByMobileSheet;
-            unifiedLegendPanel.classList.toggle("is-visible", shouldShow);
-            unifiedLegendPanel.classList.toggle("is-expanded", legendExpanded && shouldShow);
-            unifiedLegendPanel.dataset.legendState = !shouldShow
-                ? "hidden"
-                : (legendExpanded ? "expanded" : "collapsed");
-            unifiedLegendPanel.setAttribute("aria-hidden", String(!shouldShow));
-            unifiedLegendPanel.toggleAttribute("inert", !shouldShow);
-            legendExpandedContent?.setAttribute("aria-hidden", String(!legendExpanded));
-            legendExpandedContent?.toggleAttribute("inert", !legendExpanded);
-            legendExpandToggle?.setAttribute("aria-expanded", String(legendExpanded));
-            if (legendExpandToggle) {
-                const action = legendExpanded ? "Contraer" : "Ampliar";
-                legendExpandToggle.setAttribute("aria-label", `${action} leyenda`);
-                legendExpandToggle.setAttribute("title", `${action} leyenda`);
-                legendExpandToggle.querySelector("i")?.classList.toggle("fa-chevron-up", !legendExpanded);
-                legendExpandToggle.querySelector("i")?.classList.toggle("fa-chevron-down", legendExpanded);
+                    || document.body.classList.contains("mobile-citizen-open")
+                    || document.body.classList.contains("mobile-right-context-open"));
+            const shouldShow = legendUserVisible && hasLegendContent && !coveredByMobileSheet;
+            mapLegendCard.classList.toggle("is-visible", shouldShow);
+            mapLegendCard.setAttribute("aria-hidden", String(!shouldShow));
+            mapLegendCard.toggleAttribute("inert", !shouldShow);
+            if (legendVisibilityToggle) {
+                const shouldOfferRecovery = !legendUserVisible && hasLegendContent && !coveredByMobileSheet;
+                legendVisibilityToggle.hidden = !shouldOfferRecovery;
+                legendVisibilityToggle.setAttribute("aria-expanded", String(shouldShow));
             }
-            document.body.classList.toggle("unified-legend-visible", shouldShow);
-            document.body.classList.toggle("unified-legend-expanded", legendExpanded && shouldShow);
-            if (options.focusPanel && legendExpanded && shouldShow) {
-                legendExpandedContent?.querySelector("button, input, summary, a")?.focus({ preventScroll: true });
-            }
+            document.body.classList.toggle("map-legend-visible", shouldShow);
         }
 
         function hideUnifiedLegend() {
             legendUserVisible = false;
-            legendExpanded = false;
-            if (activeRightPanel === "legend") activeRightPanel = null;
-            setRightContextPanel(activeRightPanel, Boolean(activeRightPanel));
+            syncLegendCardPresentation();
+            legendVisibilityToggle?.focus({ preventScroll: true });
+        }
+
+        function showUnifiedLegend() {
+            legendUserVisible = true;
+            syncLegendCardPresentation();
+            legendCloseToggle?.focus({ preventScroll: true });
         }
 
         function setRightContextPanel(panel, open = true, options = {}) {
-            const requestedPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
-            const nextPanel = requestedPanel && requestedPanel !== "legend" ? requestedPanel : null;
-            if (requestedPanel === "legend") {
-                legendUserVisible = true;
-                legendExpanded = true;
-                activeRightPanel = "legend";
-            } else {
-                legendExpanded = false;
-                activeRightPanel = nextPanel;
-            }
+            const nextPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
+            activeRightPanel = nextPanel;
             if (rightContextHost) {
                 rightContextHost.hidden = !nextPanel;
                 rightContextHost.dataset.activePanel = nextPanel || "none";
@@ -424,10 +412,8 @@
             });
 
             const layersOpen = nextPanel === "layers";
-            const legendOpen = activeRightPanel === "legend";
             document.body.classList.toggle("technical-drawer-open", layersOpen);
             document.body.classList.toggle("mobile-layers-open", layersOpen && mobileMediaQuery.matches);
-            document.body.classList.toggle("mobile-legend-open", legendOpen);
             document.body.classList.toggle("right-context-open", Boolean(nextPanel));
             document.body.classList.toggle("mobile-right-context-open", Boolean(nextPanel) && mobileMediaQuery.matches);
             technicalDrawer?.setAttribute("aria-hidden", String(!layersOpen));
@@ -441,16 +427,12 @@
                 mobileSidebarToggle?.setAttribute("aria-expanded", "false");
                 updateCitizenPanelControls(false);
             }
-            syncUnifiedLegendPresentation(options);
+            syncLegendCardPresentation();
             if (options.focusPanel && nextPanel) {
                 rightContextViews.find(view => view.dataset.rightContextView === nextPanel)
                     ?.querySelector("button, input, summary, a")
                     ?.focus({ preventScroll: true });
             }
-        }
-
-        function setMobileLegend(open) {
-            setRightContextPanel("legend", Boolean(open));
         }
 
         function updateCitizenPanelControls(open) {
@@ -509,7 +491,7 @@
             if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
             }
-            syncUnifiedLegendPresentation();
+            syncLegendCardPresentation();
         }
 
         function closeMobilePanels() {
@@ -583,19 +565,39 @@
             const container = layerControl?.getContainer?.();
             const selector = document.querySelector(".map-selector-control");
             if (!technicalControlsSlot) return;
-            const timelineBlock = selector?.querySelector(".timeline-filter-block");
+            const timelineBlock = document.querySelector(".timeline-filter-block");
+            const timelineControl = document.querySelector(".timeline-control");
+            const timelinePlayButton = document.getElementById("timeline-play-button");
+            const timelineTitleWrap = document.getElementById("timeline-title-wrap");
+            const periodControl = document.querySelector(".period-mode-control");
             const levelControl = document.getElementById("territory-level-control");
+            const mapLevelNote = document.getElementById("map-level-note");
             const territoryOpacityControl = document.getElementById("territory-opacity-control");
             const antHeatOpacityControl = document.getElementById("ant-heat-opacity-control");
-            if (levelControl && legendLevelControlSlot && levelControl.parentElement !== legendLevelControlSlot) {
-                legendLevelControlSlot.appendChild(levelControl);
+            if (levelControl && mapToolbarLevelSlot && levelControl.parentElement !== mapToolbarLevelSlot) {
+                mapToolbarLevelSlot.appendChild(levelControl);
             }
-            if (timelineBlock && legendTimelineControlSlot && timelineBlock.parentElement !== legendTimelineControlSlot) {
-                legendTimelineControlSlot.appendChild(timelineBlock);
+            const periodTarget = mobileMediaQuery.matches ? mobilePeriodControlSlot : mapToolbarPeriodSlot;
+            if (periodControl && periodTarget && periodControl.parentElement !== periodTarget) {
+                periodTarget.appendChild(periodControl);
             }
-            const territoryOpacitySlot = document.getElementById("legend-territory-opacity-slot");
-            if (territoryOpacityControl && territoryOpacitySlot && territoryOpacityControl.parentElement !== territoryOpacitySlot) {
-                territoryOpacitySlot.appendChild(territoryOpacityControl);
+            if (timelineControl && mapToolbarYearSlot && timelineControl.parentElement !== mapToolbarYearSlot) {
+                mapToolbarYearSlot.appendChild(timelineControl);
+            }
+            const playTarget = mobileMediaQuery.matches ? mobileTimelinePlaySlot : timelineTitleWrap;
+            if (timelinePlayButton && playTarget && timelinePlayButton.parentElement !== playTarget) {
+                if (playTarget === timelineTitleWrap) {
+                    playTarget.prepend(timelinePlayButton);
+                } else {
+                    playTarget.appendChild(timelinePlayButton);
+                }
+            }
+            const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : mapToolbarOpacitySlot;
+            if (territoryOpacityControl && opacityTarget && territoryOpacityControl.parentElement !== opacityTarget) {
+                opacityTarget.appendChild(territoryOpacityControl);
+            }
+            if (mapLevelNote && mapToolbarStatusSlot && mapLevelNote.parentElement !== mapToolbarStatusSlot) {
+                mapToolbarStatusSlot.appendChild(mapLevelNote);
             }
             const antOpacitySlot = document.getElementById("legend-ant-opacity-slot");
             if (antHeatOpacityControl && antOpacitySlot && antHeatOpacityControl.parentElement !== antOpacitySlot) {
@@ -612,8 +614,11 @@
             decorateInfrastructureControls(container);
             // Timeline, level and variable controls now live in their final panels.
             // Remove the empty Leaflet shell so it cannot look like an inert search field.
+            if (timelineBlock && timelineBlock.childElementCount === 0) timelineBlock.remove();
             if (selector && selector.childElementCount === 0) selector.remove();
-            if (container && variableDisclosure && timelineBlock) document.body.classList.add("technical-ready");
+            if (container && variableDisclosure && levelControl && periodControl && timelineControl) {
+                document.body.classList.add("technical-ready");
+            }
         }
 
         document.addEventListener("input", event => {
@@ -761,10 +766,8 @@
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
-        legendExpandToggle?.addEventListener("click", () => {
-            setRightContextPanel("legend", !legendExpanded, { focusPanel: false });
-        });
-        mobileLegendToggle?.addEventListener("click", hideUnifiedLegend);
+        legendCloseToggle?.addEventListener("click", hideUnifiedLegend);
+        legendVisibilityToggle?.addEventListener("click", showUnifiedLegend);
         rightToolButtons.forEach(button => button.addEventListener("click", () => {
             const panel = button.dataset.rightPanel;
             if (panel === "layers") syncMobileLayerDrawer();
@@ -802,6 +805,7 @@
         });
         mobileMediaQuery.addEventListener("change", (event) => {
             syncBasemapControlDock();
+            syncMobileLayerDrawer();
             if (event.matches) {
                 setMobilePanel("citizen", false);
                 setMobilePanel("sidebar", false);
@@ -889,19 +893,10 @@
 
         function updateYearAdjustmentNotice() {
             const note = document.getElementById("timeline-year-adjustment-note");
-            const legendNote = document.getElementById("legend-year-adjustment-note");
-            if (!note && !legendNote) return;
-            // La línea de tiempo vive ahora dentro de Leyenda. Mantener su aviso
-            // interno oculto evita repetir el mismo mensaje dos veces en esa pestaña.
-            if (note) {
+            if (!note) return;
+            if (!yearAdjustmentNotice) {
                 note.textContent = "";
                 note.hidden = true;
-            }
-            if (!yearAdjustmentNotice) {
-                [legendNote].filter(Boolean).forEach(element => {
-                    element.textContent = "";
-                    element.hidden = true;
-                });
                 return;
             }
 
@@ -909,10 +904,8 @@
             const message = availableYears.length === 1
                 ? `El año cambió a ${resolvedYear} porque esta variable solo tiene datos de ${resolvedYear}.`
                 : `El año cambió a ${resolvedYear} porque esta variable cubre ${formatCoveredYears(availableYears)}.`;
-            [legendNote].filter(Boolean).forEach(element => {
-                element.textContent = message;
-                element.hidden = false;
-            });
+            note.textContent = message;
+            note.hidden = false;
         }
 
         function clearYearAdjustmentNotice() {
@@ -1159,11 +1152,11 @@
         window.stopTimelinePlayback = stopTimelinePlayback;
         window.startTimelinePlayback = startTimelinePlayback;
         window.setMobilePanel = setMobilePanel;
-        window.setMobileLegend = setMobileLegend;
         window.closeMobilePanels = closeMobilePanels;
         window.setRightContextPanel = setRightContextPanel;
-        window.syncUnifiedLegendPresentation = syncUnifiedLegendPresentation;
+        window.syncLegendCardPresentation = syncLegendCardPresentation;
         window.hideUnifiedLegend = hideUnifiedLegend;
+        window.showUnifiedLegend = showUnifiedLegend;
         window.setSiteTopbarMenu = setSiteTopbarMenu;
         window.setSiteMethodologyMenu = setSiteMethodologyMenu;
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
