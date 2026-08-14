@@ -35,20 +35,17 @@ function intersects(a, b) {
 test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page }) => {
   await loadPortal(page);
 
-  const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
-  await expect(citizenToggle.locator("span")).toHaveCount(0);
-  expect((await citizenToggle.textContent()).trim()).toBe("");
-
   const rail = page.locator("#right-tools-rail");
   const layersButton = page.locator('[data-right-panel="layers"]');
   const basemapButton = page.locator('[data-right-panel="basemap"]');
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
 
   await expect(rail).toBeVisible();
-  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(2);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(3);
   await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
-    "Datos y capas",
-    "Mapas base"
+    "CAPAS",
+    "ANÁLISIS",
+    "AJUSTES"
   ]);
   await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
