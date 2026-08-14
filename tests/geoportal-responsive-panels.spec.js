@@ -283,82 +283,29 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   test.skip(testInfo.project.name === "mobile", "La experiencia off-canvas móvil se cubre por separado.");
   await loadPortal(page);
 
-  const viewport = page.viewportSize();
   const body = page.locator("body");
-  const citizen = page.locator("#citizen-panel");
-  const citizenToggle = page.locator("#citizen-panel-visibility-toggle");
   const sidebar = page.locator("#territory-sidebar");
   const search = page.locator("#territory-search-input");
+  const analysisTab = page.locator("#right-tab-analysis");
 
-  await expect(citizenToggle).toBeVisible();
+  await expect(page.locator("#map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toBeVisible();
 
-  await expect(body).toHaveClass(/citizen-panel-open/);
-  await expect(citizen).toHaveAttribute("aria-hidden", "false");
-  await citizenToggle.click();
-
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect.poll(async () => (await box(page, "#citizen-panel")).right).toBeLessThan(0);
-  await citizenToggle.click();
-  await expect(body).toHaveClass(/citizen-panel-open/);
-  await expect.poll(async () => (await box(page, "#citizen-panel")).left).toBeGreaterThanOrEqual(19);
-  await expect.poll(async () => (await box(page, "#citizen-panel-visibility-toggle")).left).toBeGreaterThanOrEqual(409);
-
   await search.fill("Cayambe");
-  await citizenToggle.click();
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect(search).toHaveValue("Cayambe");
-  await citizenToggle.click();
-  await expect(search).toHaveValue("Cayambe");
-
-  await search.press("Tab");
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
-  await expect(body).toHaveClass(/citizen-panel-open/);
-  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
-  await expect(citizen).toHaveAttribute("aria-hidden", "false");
+  await search.press("Enter");
   await expect.poll(async () => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({
     level: "canton",
     code: "1702"
   });
-  const resolvedSearchValue = await search.inputValue();
-  await page.locator("#open-analysis-button").click();
+
+  await analysisTab.click();
   await expect(body).toHaveClass(/mobile-sidebar-open/);
-  await expect(body).toHaveClass(/citizen-panel-open/);
   await expect(sidebar).toHaveAttribute("aria-hidden", "false");
-  await expect(citizen).toHaveAttribute("aria-hidden", "true");
   await expect.poll(async () => (await box(page, "#territory-sidebar")).left).toBeGreaterThanOrEqual(0);
-
-  const toggleWhileSidebarOpen = await box(page, "#citizen-panel-visibility-toggle");
-  const sidebarOpenBox = await box(page, "#territory-sidebar");
-  expect(toggleWhileSidebarOpen.left).toBeGreaterThanOrEqual(sidebarOpenBox.right - 1);
-  expect(toggleWhileSidebarOpen.right).toBeLessThanOrEqual(viewport.width);
-  await expect(citizenToggle).toHaveAttribute("aria-controls", "territory-sidebar");
-  await expect(citizenToggle).toHaveAttribute("aria-label", "Ocultar panel de análisis del territorio");
-
-  await citizenToggle.click();
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
-  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
-  await expect(citizenToggle).toHaveAttribute("aria-controls", "territory-sidebar");
-  await expect(citizenToggle).toHaveAttribute("aria-label", "Mostrar panel de análisis del territorio");
-  await citizenToggle.click();
-  await expect(body).toHaveClass(/mobile-sidebar-open/);
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
-  await expect(search).toHaveValue(resolvedSearchValue);
 
   await page.locator("#mobile-sidebar-close").click();
   await expect(body).not.toHaveClass(/mobile-sidebar-open/);
-  await expect(body).toHaveClass(/citizen-panel-open/);
-  await expect(citizen).toHaveAttribute("aria-hidden", "false");
-  await expect(citizenToggle).toHaveAttribute("aria-controls", "citizen-panel");
-  await expect(citizenToggle).toHaveAttribute("aria-label", "Ocultar panel de exploración territorial");
-
-  await citizenToggle.focus();
-  await citizenToggle.press("Enter");
-  await expect(body).not.toHaveClass(/citizen-panel-open/);
-  await citizenToggle.press("Enter");
-  await expect(body).toHaveClass(/citizen-panel-open/);
+  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
 });
 
 test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección", async ({ page }, testInfo) => {

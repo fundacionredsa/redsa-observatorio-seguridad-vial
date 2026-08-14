@@ -38,31 +38,13 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
-  await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial");
-  await expect(page.locator("#citizen-panel")).toContainText(
-    "Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible"
-  );
-  await expect(page.locator("#citizen-panel")).toContainText(
-    "una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA"
-  );
-  await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
-  await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Nivel: provincias");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Fuente: ANT");
-  await expect(page.locator("#open-analysis-button")).toHaveClass(/citizen-action-primary/);
-  const actionStyles = await page.evaluate(() => {
-    const primary = getComputedStyle(document.getElementById("open-analysis-button"));
-    const secondary = getComputedStyle(document.getElementById("btn-tour"));
-    return {
-      primaryBackground: primary.backgroundColor,
-      primaryColor: primary.color,
-      secondaryBackground: secondary.backgroundColor,
-      secondaryColor: secondary.color
-    };
-  });
-  expect(actionStyles.primaryBackground).not.toBe(actionStyles.secondaryBackground);
-  expect(actionStyles.primaryColor).not.toBe(actionStyles.secondaryColor);
+  await expect(page.locator(".site-topbar-brand")).toContainText("Observatorio de Seguridad Vial");
+  await expect(page.locator(".site-topbar-brand")).toContainText("Fundación REDSA");
+  await expect(page.locator(".site-topbar-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
+  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
   await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
   await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
@@ -105,7 +87,6 @@ test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page 
 test("busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "medium", "El caso reproduce el viewport mediano reportado.");
   await loadPortal(page);
-  await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
 
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
@@ -219,7 +200,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
   await expect(page.locator('[data-right-panel="layers"]')).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#technical-drawer-close")).toBeVisible();
-  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
@@ -241,7 +222,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
-  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toContainText("Personas fallecidas");
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
   await page.locator("#site-methodology-toggle").click();

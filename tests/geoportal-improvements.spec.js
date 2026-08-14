@@ -2,14 +2,9 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 
 async function openCitizenPanelWhenNeeded(page) {
-    if ((page.viewportSize()?.width || 0) <= 768) {
-        await page.locator('#mobile-citizen-toggle').click();
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-        return;
-    }
-    if (await page.locator('#citizen-panel').getAttribute('aria-hidden') === 'true') {
-        await page.locator('#citizen-panel-visibility-toggle').click();
-        await expect(page.locator('body')).toHaveClass(/citizen-panel-open/);
+    if ((page.viewportSize()?.width || 0) <= 768 && !await page.locator('#site-topbar-actions').isVisible()) {
+        await page.locator('#site-topbar-menu-toggle').click();
+        await expect(page.locator('#site-topbar-actions')).toBeVisible();
     }
 }
 
@@ -127,7 +122,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const isMobile = (page.viewportSize()?.width || 0) <= 768;
             test.skip(!isMobile, 'Tour test is for mobile');
 
-            await page.evaluate(() => window.setMobilePanel?.('citizen', true));
+            await page.evaluate(() => window.setMobilePanel?.('sidebar', true));
             await openSiteMenuWhenNeeded(page);
             await page.locator('#btn-tour').click();
 
@@ -319,14 +314,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
-            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
-                'Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible'
-            );
-            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
-                'una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA'
-            );
-            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial y Movilidad Sostenible');
-            await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
+            await expect(page.locator('.site-topbar-brand')).toContainText('Observatorio de Seguridad Vial');
+            await expect(page.locator('.site-topbar-brand')).toContainText('Fundación REDSA');
+            await expect(page.locator('.site-topbar-contact')).toHaveAttribute('href', 'mailto:info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
     });
