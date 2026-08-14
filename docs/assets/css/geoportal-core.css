@@ -214,6 +214,15 @@
             opacity: 0;
         }
 
+        .map-left-column {
+            pointer-events: none;
+        }
+
+        .map-search-card,
+        .map-legend-card {
+            pointer-events: auto;
+        }
+
         /* Cabecera / Info Panel Izquierdo */
         .sidebar {
             grid-column: 1;

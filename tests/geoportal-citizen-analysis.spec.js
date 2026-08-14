@@ -157,7 +157,7 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
   await selectQuito(page);
 
   const body = page.locator("body");
-  await page.evaluate(() => document.querySelector("#right-tab-analysis")?.click());
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#mobile-sidebar-close")).toContainText("Volver");
   await expect(page.locator("#inec-detailed-stats")).not.toHaveAttribute("open", "");
@@ -218,7 +218,7 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
 
 test("Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
+  await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
   await expect(page.locator("#variable-controls-slot")).toHaveCount(0);
   await expect(page.locator(".map-selector-control")).toHaveCount(0);
@@ -242,7 +242,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
   expect(logoState.background).toBe("rgba(0, 0, 0, 0)");
 
   await selectQuito(page);
-  await page.evaluate(() => document.querySelector("#right-tab-analysis")?.click());
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-breadcrumb")).toContainText("PICHINCHA");
   await expect(page.locator("#territory-breadcrumb")).toContainText("DISTRITO METROPOLITANO DE QUITO");
   await expect(page.locator("#siniestros-rate-detail-row")).toHaveClass(/analysis-hero-stat/);
@@ -283,7 +283,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
     borderLeftWidth: parseFloat(getComputedStyle(element).borderLeftWidth)
   }));
   expect(calloutStyle.display).toBe("grid");
-  expect(calloutStyle.borderLeftWidth).toBeGreaterThanOrEqual(1);
+  expect(calloutStyle.borderLeftWidth).toBe(1);
 
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
   const handle = page.locator(".mobile-sidebar-drag-handle");

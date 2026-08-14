@@ -62,7 +62,7 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
   await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(1);
 
-  await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
+  await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
   if (isMobile) {
     await expect(page.locator("#map-legend-card")).toBeHidden();
@@ -70,16 +70,16 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
     await expect(page.locator("#map-legend-card")).toBeVisible();
   }
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
-  await page.evaluate(() => document.querySelector('[data-right-panel="settings"]')?.click());
+  await settingsButton.click();
   await expect(page.locator("#view-settings-panel")).toBeVisible();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await settingsButton.press("ArrowUp");
   await expect(analysisButton).toBeFocused();
   await expect(page.locator("#territory-sidebar")).toBeVisible();
 
-  if (isMobile) await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
+  if (isMobile) await layersButton.click();
   await expect(page.locator("#map-legend-card")).toBeVisible();
-  await page.evaluate(() => document.querySelector("#legend-close-toggle")?.click());
+  await page.locator("#legend-close-toggle").click();
   await expect(page.locator("#map-legend-card")).toBeHidden();
   await expect(page.locator("#legend-visibility-toggle")).toBeVisible();
   await page.locator("#legend-visibility-toggle").click();
