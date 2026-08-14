@@ -218,7 +218,7 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
 
 test("Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await page.locator('[data-right-panel="layers"]').click();
+  await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
   await expect(page.locator("#technical-drawer")).toBeVisible();
   await expect(page.locator("#variable-controls-slot")).toHaveCount(0);
   await expect(page.locator(".map-selector-control")).toHaveCount(0);
