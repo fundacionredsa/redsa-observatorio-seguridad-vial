@@ -37,7 +37,8 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
 
   const rail = page.locator("#right-tools-rail");
   const layersButton = page.locator('[data-right-panel="layers"]');
-  const basemapButton = page.locator('[data-right-panel="basemap"]');
+  const analysisButton = page.locator('[data-right-panel="analysis"]');
+  const settingsButton = page.locator('[data-right-panel="settings"]');
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
 
   await expect(rail).toBeVisible();
@@ -49,7 +50,8 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   ]);
   await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
-  await expect(basemapButton).toHaveAttribute("aria-expanded", "false");
+  await expect(analysisButton).toHaveAttribute("aria-expanded", "false");
+  await expect(settingsButton).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#map-legend-card")).toBeVisible();
@@ -68,10 +70,10 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
     await expect(page.locator("#map-legend-card")).toBeVisible();
   }
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
-  await basemapButton.click();
-  await expect(page.locator("#basemap-context-panel")).toBeVisible();
+  await settingsButton.click();
+  await expect(page.locator("#view-settings-panel")).toBeVisible();
   await expect(page.locator("#technical-drawer")).toBeHidden();
-  await basemapButton.press("ArrowUp");
+  await settingsButton.press("ArrowUp");
   await expect(layersButton).toBeFocused();
   await expect(page.locator("#technical-drawer")).toBeVisible();
 
