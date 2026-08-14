@@ -64,7 +64,7 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expect(page.locator("#timeline-badge")).toHaveText("2024");
+  await expect(page.locator("#map-year-value")).toHaveText("2024");
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
   await expect(page.locator("#timeline-year-adjustment-note")).not.toHaveAttribute("hidden", "");
   await expect(page.locator("#timeline-year-adjustment-note")).toContainText("El año cambió a 2024");
