@@ -74,7 +74,7 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(page.locator("#view-settings-panel")).toBeVisible();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await settingsButton.press("ArrowUp");
-  await expect(layersButton).toBeFocused();
+  await expect(analysisButton).toBeFocused();
   await expect(page.locator("#technical-drawer")).toBeVisible();
 
   if (isMobile) await layersButton.click();
