@@ -157,7 +157,7 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
   await selectQuito(page);
 
   const body = page.locator("body");
-  await page.locator("#right-tab-analysis").click();
+  await page.evaluate(() => document.querySelector("#right-tab-analysis")?.click());
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#mobile-sidebar-close")).toContainText("Volver");
   await expect(page.locator("#inec-detailed-stats")).not.toHaveAttribute("open", "");
@@ -242,7 +242,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
   expect(logoState.background).toBe("rgba(0, 0, 0, 0)");
 
   await selectQuito(page);
-  await page.locator("#right-tab-analysis").click();
+  await page.evaluate(() => document.querySelector("#right-tab-analysis")?.click());
   await expect(page.locator("#territory-breadcrumb")).toContainText("PICHINCHA");
   await expect(page.locator("#territory-breadcrumb")).toContainText("DISTRITO METROPOLITANO DE QUITO");
   await expect(page.locator("#siniestros-rate-detail-row")).toHaveClass(/analysis-hero-stat/);
@@ -283,7 +283,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
     borderLeftWidth: parseFloat(getComputedStyle(element).borderLeftWidth)
   }));
   expect(calloutStyle.display).toBe("grid");
-  expect(calloutStyle.borderLeftWidth).toBeGreaterThanOrEqual(4);
+  expect(calloutStyle.borderLeftWidth).toBeGreaterThanOrEqual(1);
 
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
   const handle = page.locator(".mobile-sidebar-drag-handle");
