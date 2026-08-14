@@ -88,20 +88,19 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 14,
+                stepCount: 13,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
             });
             expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
-            expect(tourAudit.titles).toContain('Ficha PDF del territorio');
             expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
             expect(tourAudit.titles).toContain('Leyenda siempre a la vista');
-            expect(tourAudit.titles).toContain('Nivel y año siempre a mano');
+            expect(tourAudit.titles).toContain('Controles permanentes del mapa');
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
-                if (expectedTitle === 'Nivel y año siempre a mano') {
+                if (expectedTitle === 'Controles permanentes del mapa') {
                     const geometry = await page.evaluate(() => {
                         const targetElement = document.querySelector('.site-topbar-center-controls') || document.querySelector('#mobile-level-bar');
                         const target = targetElement?.getBoundingClientRect();

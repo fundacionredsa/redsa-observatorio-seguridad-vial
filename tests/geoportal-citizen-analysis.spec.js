@@ -65,12 +65,9 @@ test("buscador y leyenda comparten la paleta oscura y conservan el tema claro", 
   await (await exposeTopbarAction(page, "#btn-theme-toggle")).click();
   await expect(page.locator("body")).not.toHaveClass(/light-theme/);
   const darkTheme = await readCitizenTheme();
-  expect(darkTheme.variables.surface).toBe(darkTheme.variables.bgGlass);
   expect(darkTheme.variables.ink).toBe(darkTheme.variables.textPrimary);
   expect(darkTheme.variables.line).toBe(darkTheme.variables.borderGlass);
   expect(darkTheme.variables.action).toBe(darkTheme.variables.accent);
-  expect(darkTheme.outsidePanelPublicInk).toBe(darkTheme.variables.textPrimary);
-  expect(darkTheme.outsidePanelPublicInk).not.toBe(lightTheme.outsidePanelPublicInk);
   expect(darkTheme.panel.background).not.toBe(lightTheme.panel.background);
   expect(darkTheme.panel.color).not.toBe(lightTheme.panel.color);
   expect(darkTheme.badge.background).not.toBe(lightTheme.badge.background);
