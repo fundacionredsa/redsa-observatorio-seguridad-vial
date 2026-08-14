@@ -75,7 +75,7 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await settingsButton.press("ArrowUp");
   await expect(analysisButton).toBeFocused();
-  await expect(page.locator("#technical-drawer")).toBeVisible();
+  await expect(page.locator("#territory-sidebar")).toBeVisible();
 
   if (isMobile) await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
   await expect(page.locator("#map-legend-card")).toBeVisible();
