@@ -84,101 +84,132 @@
 
     <header class="site-topbar" id="site-topbar">
         <div class="site-topbar-main">
-        <a class="site-topbar-brand" href="./" aria-label="Fundación REDSA, inicio del geoportal">
-            <img class="site-topbar-brand-mark" src="assets/img/redsa-isotipo-oficial.png" alt="Isotipo de Fundación REDSA" width="34" height="36">
-            <span><strong>Fundación REDSA</strong><small>Observatorio de Seguridad Vial</small></span>
-        </a>
-        <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
-            <i class="fa-solid fa-bars" aria-hidden="true"></i>
-            <span>Menú</span>
-        </button>
-        <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio">
-            <button class="site-topbar-action" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal">
-                <i class="fa-solid fa-ranking-star" aria-hidden="true"></i><span>Ranking Nacional</span>
-            </button>
-            <button class="site-topbar-action" id="btn-catalog" type="button" aria-haspopup="dialog" aria-controls="catalog-modal">
-                <i class="fa-solid fa-database" aria-hidden="true"></i><span>Catálogo de Datos</span>
-            </button>
-            <div class="site-topbar-methodology">
-                <button class="site-topbar-action" id="site-methodology-toggle" type="button" aria-expanded="false" aria-controls="site-methodology-menu" aria-haspopup="true">
-                    <i class="fa-solid fa-book-open" aria-hidden="true"></i><span>Metodología</span><i class="fa-solid fa-chevron-down site-topbar-chevron" aria-hidden="true"></i>
-                </button>
-                <div class="site-methodology-menu" id="site-methodology-menu" role="menu" aria-label="Metodología del Observatorio" hidden>
-                    <a role="menuitem" href="metodologia/#fuentes">Inventario y fuentes de datos</a>
-                    <a role="menuitem" href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
-                    <a role="menuitem" href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
-                    <a role="menuitem" href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
+            <a class="site-topbar-brand" href="./" aria-label="Fundación REDSA, inicio del geoportal">
+                <img class="site-topbar-brand-mark" src="assets/img/redsa-isotipo-oficial.png" alt="Isotipo de Fundación REDSA" width="28" height="30">
+                <span><strong>Fundación REDSA</strong><small>Observatorio de Seguridad Vial</small></span>
+            </a>
+            <div class="site-topbar-center-controls">
+                <div id="map-toolbar-level-slot" class="map-toolbar-slot map-toolbar-level-slot">
+                    <div class="territory-level-control" id="territory-level-control">
+                        <label for="territory-level-select" class="sr-only">Nivel territorial</label>
+                        <select id="territory-level-select" class="territory-level-select" aria-label="Nivel territorial">
+                            <option value="auto">Nivel: Automático ▾</option>
+                            <option value="province">Nivel: Provincias ▾</option>
+                            <option value="canton" selected>Nivel: Cantones ▾</option>
+                            <option value="parish">Nivel: Parroquias ▾</option>
+                        </select>
+                    </div>
                 </div>
+                <div id="map-toolbar-year-slot" class="map-toolbar-slot map-toolbar-year-slot">
+                    <div class="timeline-control" id="map-timeline-control">
+                        <button type="button" class="timeline-play-button" id="timeline-play-button" aria-label="Reproducir evolución temporal" title="Reproducir evolución temporal">
+                            <i class="fa-solid fa-play" aria-hidden="true"></i>
+                        </button>
+                        <label for="map-year-slider" class="sr-only">Año de la variable activa</label>
+                        <input id="map-year-slider" type="range" min="2019" max="2025" step="1" value="2023" aria-label="Año del mapa">
+                        <output id="map-year-value" class="timeline-badge" for="map-year-slider">2023</output>
+                    </div>
+                </div>
+                <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite"></div>
             </div>
-            <button class="site-topbar-action" id="btn-tour" type="button">
-                <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span>Ayuda</span>
+            <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                <span class="sr-only">Menú</span>
             </button>
-        </nav>
-        </div>
-        <div class="map-controls-toolbar" id="map-controls-toolbar" aria-label="Controles permanentes del mapa">
-            <div id="map-toolbar-level-slot" class="map-toolbar-slot map-toolbar-level-slot"></div>
-            <div id="map-toolbar-period-slot" class="map-toolbar-slot map-toolbar-period-slot"></div>
-            <div id="map-toolbar-year-slot" class="map-toolbar-slot map-toolbar-year-slot"></div>
-            <div id="map-toolbar-opacity-slot" class="map-toolbar-slot map-toolbar-opacity-slot"></div>
-            <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite"></div>
+            <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio">
+                <button class="site-topbar-action" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal" aria-label="Ranking Nacional" title="Ranking Nacional">
+                    <i class="fa-solid fa-ranking-star" aria-hidden="true"></i><span class="site-topbar-action-label">Ranking Nacional</span>
+                </button>
+                <button class="site-topbar-action" id="btn-catalog" type="button" aria-haspopup="dialog" aria-controls="catalog-modal" aria-label="Catálogo de Datos" title="Catálogo de Datos">
+                    <i class="fa-solid fa-database" aria-hidden="true"></i><span class="site-topbar-action-label">Catálogo de Datos</span>
+                </button>
+                <div class="site-topbar-methodology">
+                    <button class="site-topbar-action" id="site-methodology-toggle" type="button" aria-expanded="false" aria-controls="site-methodology-menu" aria-haspopup="true" aria-label="Metodología" title="Metodología">
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i><span class="site-topbar-action-label">Metodología</span><i class="fa-solid fa-chevron-down site-topbar-chevron" aria-hidden="true"></i>
+                    </button>
+                    <div class="site-methodology-menu" id="site-methodology-menu" role="menu" aria-label="Metodología del Observatorio" hidden>
+                        <a role="menuitem" href="metodologia/#fuentes">Inventario y fuentes de datos</a>
+                        <a role="menuitem" href="metodologia/#zonas-calientes">Metodología de zonas calientes</a>
+                        <a role="menuitem" href="metodologia/#cobertura-temporal">Cobertura temporal y OpenStreetMap</a>
+                        <a role="menuitem" href="metodologia/#vehiculos">Vehículos matriculados y limitaciones</a>
+                    </div>
+                </div>
+                <button class="site-topbar-action" id="btn-tour" type="button" aria-label="Guía y ayuda" title="Guía y ayuda">
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span class="site-topbar-action-label">Ayuda</span>
+                </button>
+                <button class="site-topbar-action site-topbar-theme" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro">
+                    <i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label">Modo Claro</span>
+                </button>
+                <a class="site-topbar-action site-topbar-contact" href="mailto:info@fundacionredsa.org" aria-label="Contactar a Fundación REDSA" title="Contactar a Fundación REDSA">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="site-topbar-action-label">Contacto</span>
+                </a>
+            </nav>
         </div>
     </header>
 
-    <section class="citizen-panel" id="citizen-panel" aria-label="Explorar la seguridad vial de mi territorio">
-        <div class="citizen-panel-topbar">
-            <button type="button" id="mobile-citizen-close" class="mobile-citizen-close" aria-label="Cerrar panel">✕</button>
-        </div>
-        <div class="citizen-brand">
-            <div class="citizen-brand-copy">
-                <p class="citizen-eyebrow">Fundación REDSA</p>
-                <h1>Observatorio de Seguridad Vial y Movilidad Sostenible</h1>
-            </div>
-            <span class="citizen-national-badge">Ecuador</span>
-        </div>
-        <p class="citizen-intro citizen-intro-prompt">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
-        <form id="territory-search-form" role="search">
-            <label class="citizen-search-label" for="territory-search-input">Busca una provincia, cantón o parroquia</label>
-            <div class="citizen-search-row">
-                <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" aria-label="Buscar una provincia, cantón o parroquia" placeholder="Ej. Pichincha, Quito o Calderón">
-                <datalist id="territory-search-list"></datalist>
-                <button class="citizen-layers-shortcut" id="active-layers-shortcut" type="button" aria-label="Abrir Datos y capas" aria-controls="technical-drawer" aria-expanded="false">
-                    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-                    <span class="citizen-layers-indicator" aria-hidden="true"></span>
-                </button>
-                <button class="citizen-search-button" type="submit" aria-label="Buscar territorio">&#8981;</button>
-            </div>
-            <div class="citizen-search-status" id="territory-search-status" role="status"></div>
-        </form>
-        <div class="citizen-map-context" aria-live="polite">
-            <div class="citizen-map-context-heading">
-                <strong id="citizen-map-variable">Siniestros de tránsito reportados</strong>
-                <button type="button" id="citizen-map-info" class="sigla-tooltip-trigger citizen-map-info" data-sigla="Dato del mapa" aria-label="Explicación de la variable activa">ⓘ</button>
-            </div>
-            <span id="citizen-map-meta" class="citizen-map-meta">Nivel: Provincias · Periodo: 2025 · Fuente: ANT e INEC/ESTRA</span>
-            <span id="citizen-map-description" class="sr-only">Número de accidentes de tránsito reportados oficialmente en esta zona.</span>
-        </div>
-        <div class="citizen-summary" id="citizen-summary" aria-live="polite">
-            <p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos y compararlos con el país.</p>
-        </div>
-        <div class="citizen-actions">
-            <button class="citizen-action citizen-action-primary" id="open-analysis-button" type="button">Ver análisis completo</button>
-            <button class="citizen-action" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro"><i class="fa-solid fa-sun"></i> Modo Claro</button>
-            <button class="citizen-action citizen-action-wide" id="download-summary-button" type="button" disabled hidden><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF</button>
-        </div>
-        <a class="citizen-contact" href="mailto:info@fundacionredsa.org"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Contacto: info@fundacionredsa.org</a>
-    </section>
+    <div class="map-left-column" id="map-left-column">
+        <section class="map-search-card" id="map-search-card" aria-label="Buscar un territorio">
+            <form id="territory-search-form" role="search">
+                <label class="citizen-search-label" for="territory-search-input">Busca una provincia, cantón o parroquia</label>
+                <div class="citizen-search-row">
+                    <input class="citizen-search-input" id="territory-search-input" list="territory-search-list" autocomplete="off" aria-label="Buscar una provincia, cantón o parroquia" placeholder="Ej. Pichincha, Quito o Calderón">
+                    <datalist id="territory-search-list"></datalist>
+                    <button class="citizen-layers-shortcut" id="active-layers-shortcut" type="button" aria-label="Abrir Capas del mapa" aria-controls="technical-drawer" aria-expanded="false">
+                        <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+                        <span class="citizen-layers-indicator" aria-hidden="true"></span>
+                    </button>
+                    <button class="citizen-search-button" type="submit" aria-label="Buscar territorio">&#8981;</button>
+                </div>
+                <div class="citizen-search-status" id="territory-search-status" role="status"></div>
+            </form>
+        </section>
 
-    <button
-        class="citizen-panel-visibility-toggle"
-        id="citizen-panel-visibility-toggle"
-        type="button"
-        aria-controls="citizen-panel"
-        aria-expanded="false"
-        aria-label="Mostrar panel de exploración territorial"
-        title="Mostrar panel de exploración territorial"
-    >
-        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-    </button>
+        <aside id="map-legend-card" class="map-legend-card" aria-labelledby="map-legend-card-title" aria-hidden="true" data-layer-count="0" data-has-legend="false" inert>
+            <header class="map-legend-card-header">
+                <span class="map-legend-card-heading">
+                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    <span>
+                        <span class="legend-active-kicker">Estás viendo</span>
+                        <h2 id="map-legend-card-title">Leyenda del mapa</h2>
+                    </span>
+                </span>
+                <span class="legend-active-layers-actions">
+                    <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
+                    <button class="legend-shell-action legend-collapse-toggle" id="map-legend-card-collapse" type="button" aria-label="Colapsar leyenda del mapa" title="Colapsar leyenda del mapa" aria-expanded="true">
+                        <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                    </button>
+                    <button class="legend-shell-action legend-close-toggle" id="legend-close-toggle" type="button" aria-label="Ocultar leyenda del mapa" title="Ocultar leyenda del mapa">&times;</button>
+                </span>
+            </header>
+            <div class="map-legend-card-scroll">
+                <span class="citizen-national-badge legend-country-badge">Ecuador</span>
+                <section class="legend-content-group legend-reading-group" aria-labelledby="legend-reading-title">
+                    <h3 id="legend-reading-title" class="sr-only">Cómo leer el mapa</h3>
+                    <div id="legend-context-slot" class="legend-context-slot"></div>
+                </section>
+                <section id="legend-active-layers-section" class="legend-active-layers-section" aria-labelledby="legend-active-layers-title" hidden>
+                    <header class="legend-active-layers-subheader">
+                        <h3 id="legend-active-layers-title">Capas activas</h3>
+                    </header>
+                    <div id="legend-active-layers-list" class="legend-active-layers-list" role="list" aria-live="polite"></div>
+                </section>
+                <div id="legend-summary" class="legend-summary citizen-summary" aria-live="polite" tabindex="-1"></div>
+                <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
+                    <div class="profile-card-header">
+                        <div class="profile-card-heading-wrap">
+                            <span class="profile-card-kicker" id="legend-profile-heading">Territorio seleccionado</span>
+                            <span id="hover-card-title">Consulta territorial</span>
+                        </div>
+                        <span class="profile-card-header-actions">
+                            <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
+                        </span>
+                    </div>
+                    <div id="hover-card-body"></div>
+                    <button class="legend-download-action" id="download-summary-button" type="button" disabled hidden><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF</button>
+                </section>
+            </div>
+        </aside>
+    </div>
 
     <button class="technical-toggle" id="technical-panel-toggle" type="button" aria-controls="right-context-host" aria-expanded="false">Datos y capas</button>
 
@@ -199,32 +230,34 @@
             </button>
         </div>
         <div class="right-tool-group right-panel-tabs" role="tablist" aria-label="Panel lateral del mapa" aria-orientation="vertical">
-            <button class="right-tool-button" id="right-tab-layers" type="button" role="tab" data-right-panel="layers" aria-controls="technical-drawer" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Datos y capas" title="Datos y capas">
+            <button class="right-tool-button right-tab-vertical" id="right-tab-layers" type="button" role="tab" data-right-panel="layers" aria-controls="technical-drawer" aria-selected="false" aria-expanded="false" tabindex="0" aria-label="Capas del mapa" title="Capas del mapa">
                 <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-                <span class="right-tool-label">Datos y capas</span>
+                <span class="right-tool-label-vertical">CAPAS</span>
             </button>
-            <button class="right-tool-button" id="right-tab-basemap" type="button" role="tab" data-right-panel="basemap" aria-controls="basemap-context-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Mapas base" title="Mapas base">
-                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                <span class="right-tool-label">Mapas base</span>
+            <button class="right-tool-button right-tab-vertical" id="right-tab-analysis" type="button" role="tab" data-right-panel="analysis" aria-controls="territory-sidebar" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Análisis del territorio" title="Análisis del territorio">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                <span class="right-tool-label-vertical">ANÁLISIS</span>
+            </button>
+            <button class="right-tool-button right-tab-vertical" id="right-tab-settings" type="button" role="tab" data-right-panel="settings" aria-controls="view-settings-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Ajustes de vista" title="Ajustes de vista">
+                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                <span class="right-tool-label-vertical">AJUSTES</span>
             </button>
         </div>
-        <!-- Backlog: Consultar elementos podrá reutilizar handleTerritoryClick y
-             selectTerritoryBelowInfrastructure cuando exista un contrato de consulta único. -->
     </nav>
 
     <div class="right-context-host" id="right-context-host" data-active-panel="none" aria-label="Panel lateral del mapa" hidden>
     <aside class="technical-drawer right-context-view" id="technical-drawer" role="tabpanel" data-right-context-view="layers" hidden aria-hidden="true" aria-labelledby="right-tab-layers" tabindex="0">
         <div class="drawer-header">
             <div>
-                <h2>Datos y capas</h2>
+                <h2>Capas del mapa</h2>
                 <p>Variables, periodos e infraestructura para análisis técnico.</p>
             </div>
-            <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar datos y capas">&times;</button>
+            <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar capas del mapa">&times;</button>
         </div>
         <div class="technical-controls-slot" id="technical-controls-slot">
             <section class="layers-card" id="layers-card" aria-labelledby="layers-card-title">
                 <header class="layers-card-header">
-                    <h3 id="layers-card-title">Capas del mapa</h3>
+                    <h3 id="layers-card-title">Capas disponibles</h3>
                     <p>Elige qué información quieres ver y combinar en el mapa.</p>
                 </header>
                 <div class="layers-card-sections">
@@ -267,61 +300,30 @@
                             <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
                         </details>
                     </div>
+                    <div class="layers-card-section basemap-layer-section" id="basemap-layer-section">
+                        <div class="basemap-section-header">
+                            <span class="layers-summary-title">Mapa base de fondo</span>
+                            <small>5 mapas</small>
+                        </div>
+                        <p class="basemap-help">Elige el mapa base para explorar el territorio.</p>
+                        <div id="basemap-context-slot" class="basemap-context-slot"></div>
+                    </div>
                 </div>
             </section>
         </div>
     </aside>
-    <section class="right-context-view basemap-context-panel" id="basemap-context-panel" role="tabpanel" data-right-context-view="basemap" hidden aria-hidden="true" aria-labelledby="right-tab-basemap" tabindex="0">
+    <section class="right-context-view view-settings-panel" id="view-settings-panel" role="tabpanel" data-right-context-view="settings" hidden aria-hidden="true" aria-labelledby="right-tab-settings" tabindex="0">
         <header class="right-context-section-header">
-            <div>
-                <h2 id="basemap-context-title">Mapas base</h2>
-                <p>Elige el mapa de fondo para consultar el territorio.</p>
-            </div>
-            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar mapas base" title="Cerrar mapas base">&times;</button>
+            <div><h2>Ajustes de vista</h2><p>Configura el periodo y la intensidad del mapa.</p></div>
+            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar ajustes de vista" title="Cerrar ajustes de vista">&times;</button>
         </header>
-        <div id="basemap-context-slot" class="basemap-context-slot"></div>
+        <div class="view-settings-content">
+            <div id="view-settings-period-slot" class="view-settings-slot"></div>
+            <div id="view-settings-opacity-slot" class="view-settings-slot"></div>
+        </div>
     </section>
     </div>
     </div>
-    <aside id="map-legend-card" class="map-legend-card" aria-labelledby="map-legend-card-title" aria-hidden="true" data-layer-count="0" data-has-legend="false" inert>
-        <header class="map-legend-card-header">
-            <span class="map-legend-card-heading">
-                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                <span>
-                    <span class="legend-active-kicker">Estás viendo</span>
-                    <h2 id="map-legend-card-title">Leyenda del mapa</h2>
-                </span>
-            </span>
-            <span class="legend-active-layers-actions">
-                <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
-                <button class="legend-shell-action legend-close-toggle" id="legend-close-toggle" type="button" aria-label="Ocultar leyenda del mapa" title="Ocultar leyenda del mapa">&times;</button>
-            </span>
-        </header>
-        <div class="map-legend-card-scroll">
-            <section class="legend-content-group legend-reading-group" aria-labelledby="legend-reading-title">
-                <h3 id="legend-reading-title" class="sr-only">Cómo leer el mapa</h3>
-                <div id="legend-context-slot" class="legend-context-slot"></div>
-            </section>
-            <section id="legend-active-layers-section" class="legend-active-layers-section" aria-labelledby="legend-active-layers-title" hidden>
-                <header class="legend-active-layers-subheader">
-                    <h3 id="legend-active-layers-title">Capas activas</h3>
-                </header>
-                <div id="legend-active-layers-list" class="legend-active-layers-list" role="list" aria-live="polite"></div>
-            </section>
-            <section id="demographic-hover-card" class="demographic-card perfil-fallecidos-card legend-territory-profile" aria-labelledby="legend-profile-heading" hidden>
-                <div class="profile-card-header">
-                    <div class="profile-card-heading-wrap">
-                        <span class="profile-card-kicker" id="legend-profile-heading">Territorio seleccionado</span>
-                        <span id="hover-card-title">Consulta territorial</span>
-                    </div>
-                    <span class="profile-card-header-actions">
-                        <button id="profile-card-close" class="profile-card-close" type="button" aria-label="Cerrar selección territorial">&times;</button>
-                    </span>
-                </div>
-                <div id="hover-card-body"></div>
-            </section>
-        </div>
-    </aside>
     <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
         <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
     </button>
@@ -346,10 +348,7 @@
     </button>
     <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
         <span aria-hidden="true">&#9638;</span>
-        <span>Datos y capas</span>
-    </button>
-    <button type="button" id="mobile-citizen-toggle" class="mobile-citizen-toggle" aria-expanded="false" aria-controls="citizen-panel">
-        Explorar mi territorio
+        <span>Capas</span>
     </button>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
 
@@ -404,6 +403,7 @@
 
             <section class="institutional-panel institutional-reading" id="institutional-panel-trust" role="tabpanel" aria-labelledby="institutional-tab-trust" data-institutional-panel="trust" hidden>
                 <h3>¿Por qué confiar en estos datos?</h3>
+                <p class="institutional-intro">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
                 <p>Este observatorio no reemplaza a las fuentes oficiales (INEC, ANT, AMT): las audita, las cruza entre sí y hace visible dónde coinciden y dónde no. Tres cosas nos distinguen:</p>
                 <div class="trust-principles">
                     <article>
@@ -487,7 +487,7 @@
     <!-- Contenedor Principal de la Interfaz -->
     <div class="ui-container">
         <!-- Sidebar / Panel de Control -->
-        <div class="ui-panel sidebar" id="territory-sidebar" aria-label="Informacion del territorio" aria-hidden="true">
+        <div class="ui-panel sidebar right-context-view" id="territory-sidebar" role="tabpanel" data-right-context-view="analysis" aria-labelledby="right-tab-analysis" aria-label="Informacion del territorio" aria-hidden="true" hidden>
             <div class="mobile-sidebar-topbar">
                 <span class="mobile-sidebar-drag-handle" aria-hidden="true"></span>
                 <span>Análisis del territorio</span>

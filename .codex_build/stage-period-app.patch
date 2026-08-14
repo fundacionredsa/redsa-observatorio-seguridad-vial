@@ -1,0 +1,28 @@
+diff --git a/docs/assets/js/geoportal-app.js b/docs/assets/js/geoportal-app.js
+index 3d40a0c..0000000 100644
+--- a/docs/assets/js/geoportal-app.js
++++ b/docs/assets/js/geoportal-app.js
+@@ -369,6 +369,7 @@
+                         pane: "eventPane",
+                         config: antEventConfig,
+                         getYear: () => selectedYear,
++                        getPeriodMode: () => selectedPeriodMode,
+                         setYear: year => setSelectedYearAndRefresh(year),
+                         selectTerritoryBelow: selectTerritoryBelowInfrastructure,
+                         onStateChange: () => updateLegend()
+@@ -433,6 +434,7 @@
+                     updateMapLevelNote(level);
+                     updateLegend();
+                     window.REDSAInstitutional?.refresh();
++                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+                 });
+ 
+                 document.getElementById("map-year-slider").addEventListener("input", function() {
+@@ -449,6 +451,7 @@
+                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                     window.REDSAInstitutional?.refresh();
+                     window.REDSAAntLayer?.syncYear(selectedYear);
++                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+                 });
+ 
+                 document.addEventListener("click", (e) => {

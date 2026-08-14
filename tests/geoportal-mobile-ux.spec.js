@@ -234,7 +234,6 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(card).toBeVisible();
         await card.scrollIntoViewIfNeeded();
         await expect(page.locator('#profile-card-close')).toBeInViewport();
-        await expect(page.locator('#legend-open-analysis-button')).toBeInViewport();
         const overflow = await card.evaluate(element => {
             return {
                 clientWidth: element.clientWidth,
@@ -248,11 +247,9 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
 
-        const citizenTopbarPosition = await page.locator('.citizen-panel-topbar').evaluate(el => window.getComputedStyle(el).position);
         const drawerHeaderPosition = await page.locator('.drawer-header').first().evaluate(el => window.getComputedStyle(el).position);
         const sidebarTopbarPosition = await page.locator('.mobile-sidebar-topbar').evaluate(el => window.getComputedStyle(el).position);
 
-        expect(citizenTopbarPosition).toBe('sticky');
         expect(drawerHeaderPosition).toBe('sticky');
         expect(sidebarTopbarPosition).toBe('sticky');
     });
@@ -266,20 +263,18 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(parseFloat(fontSize)).toBeGreaterThanOrEqual(16);
     });
 
-    test('desktop panel remains visible and mobile controls are hidden', async ({ page }) => {
+    test('desktop search and legend remain visible and mobile controls are hidden', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(isMobile, 'Desktop-only test');
 
-        const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
-        const mobileCitizenClose = page.locator('#mobile-citizen-close');
         const mobileLevelBar = page.locator('#mobile-level-bar');
         const mobileYearBar = page.locator('#mobile-year-bar');
-        const citizenPanel = page.locator('#citizen-panel');
+        const searchCard = page.locator('.map-search-card');
+        const legendCard = page.locator('#map-legend-card');
 
-        await expect(mobileCitizenToggle).toBeHidden();
-        await expect(mobileCitizenClose).toBeHidden();
         await expect(mobileLevelBar).toBeHidden();
         await expect(mobileYearBar).toBeHidden();
-        await expect(citizenPanel).toBeVisible();
+        await expect(searchCard).toBeVisible();
+        await expect(legendCard).toBeVisible();
     });
 });

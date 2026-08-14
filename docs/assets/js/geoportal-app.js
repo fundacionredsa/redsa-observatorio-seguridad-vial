@@ -411,24 +411,8 @@
                     onAdd: function(map) {
                         const div = L.DomUtil.create('div', 'map-selector-control glass');
                         div.innerHTML = `
-                            <div class="timeline-filter-block" aria-label="Periodo y nivel territorial de los datos">
-                                <div class="timeline-control">
-                                    <div class="timeline-header legend-secondary-control-row">
-                                        <span class="legend-control-icon" aria-hidden="true"><i class="fa-regular fa-calendar"></i></span>
-                                        <div class="timeline-title-wrap" id="timeline-title-wrap">
-                                            <button type="button" id="timeline-play-button" class="timeline-play-btn" aria-label="Reproducir línea de tiempo" title="Reproducir animación año a año">
-                                                <i class="fa-solid fa-play" id="timeline-play-icon"></i>
-                                            </button>
-                                            <span>Año</span>
-                                            <button type="button" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Año de los datos" data-custom-text="Mueve el control para ver los datos de cada año. Los años atenuados no tienen datos para la variable activa." aria-label="Cómo funciona la línea de tiempo">ⓘ</button>
-                                        </div>
-                                        <span id="timeline-badge" class="timeline-badge">${selectedYear}</span>
-                                    </div>
-                                    <p id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></p>
-                                    <input id="map-year-slider" type="range" min="${TIMELINE_MIN_YEAR}" max="${TIMELINE_MAX_YEAR}" step="1" value="${selectedYear}" aria-label="Año de los datos mostrados">
-                                    <div id="timeline-marks" class="timeline-marks"></div>
-                                </div>
-                                <div class="period-mode-control legend-secondary-control-row" aria-label="Periodo mostrado">
+                            <div class="timeline-filter-block" aria-label="Periodo de los datos">
+                                <div class="period-mode-control legend-secondary-control-row" id="period-mode-control" aria-label="Periodo mostrado">
                                     <span class="legend-control-icon" aria-hidden="true"><i class="fa-solid fa-clock-rotate-left"></i></span>
                                     <div class="period-mode-label">Periodo</div>
                                     <button type="button" id="period-mode-info" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Periodo mostrado" aria-label="Explicación del periodo mostrado">ⓘ</button>
@@ -437,18 +421,6 @@
                                         <button type="button" data-period-mode="accumulated" aria-pressed="false" aria-label="Acumulado histórico"><span class="period-label-full">Acumulado histórico</span><span class="period-label-compact" aria-hidden="true">Hist.</span></button>
                                     </div>
                                     <div id="period-mode-note" class="period-mode-note sr-only" aria-live="polite"></div>
-                                </div>
-                                <div id="territory-level-control" class="territory-level-control legend-secondary-control-row" aria-label="Nivel territorial visible">
-                                    <span class="legend-control-icon" aria-hidden="true"><i class="fa-solid fa-map"></i></span>
-                                    <div class="territory-level-label">Nivel</div>
-                                    <button type="button" id="territory-level-info" class="sigla-tooltip-trigger control-info-trigger" data-sigla="Nivel territorial" aria-label="Explicación del nivel territorial">ⓘ</button>
-                                    <div class="territory-level-segments" role="group" aria-label="Cambiar nivel territorial">
-                                        <button type="button" data-level-mode="auto" aria-pressed="true" aria-label="Nivel automático">Auto</button>
-                                        <button type="button" data-level-mode="province" aria-pressed="false" aria-label="Provincias"><span class="level-label-full">Provincias</span><span class="level-label-compact" aria-hidden="true">Prov.</span></button>
-                                        <button type="button" data-level-mode="canton" aria-pressed="false" aria-label="Cantones"><span class="level-label-full">Cantones</span><span class="level-label-compact" aria-hidden="true">Cant.</span></button>
-                                        <button type="button" data-level-mode="parish" aria-pressed="false" aria-label="Parroquias"><span class="level-label-full">Parroquias</span><span class="level-label-compact" aria-hidden="true">Parr.</span></button>
-                                    </div>
-                                    <div id="territory-level-status" class="territory-level-status sr-only" aria-live="polite"></div>
                                 </div>
                                 <div id="map-level-note" class="map-level-note"></div>
                             </div>

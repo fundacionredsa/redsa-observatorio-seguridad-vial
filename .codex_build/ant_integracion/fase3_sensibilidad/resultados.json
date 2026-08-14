@@ -1,0 +1,158 @@
+{
+  "generatedAt": "2026-07-27T20:59:53.478Z",
+  "results": [
+    {
+      "profile": "focused",
+      "scale": "nacional",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.048066511102977064,
+      "meanVisibleAlpha": 55.759826280093606,
+      "p95Alpha": 109,
+      "maxAlpha": 196,
+      "render": {
+        "renderMs": 61.60000002384186,
+        "zoom": 6,
+        "bandwidthMeters": 18000,
+        "radiusPx": 10
+      }
+    },
+    {
+      "profile": "focused",
+      "scale": "cantonal",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.42799174139824303,
+      "meanVisibleAlpha": 49.71353961349752,
+      "p95Alpha": 134,
+      "maxAlpha": 252,
+      "render": {
+        "renderMs": 41.200000047683716,
+        "zoom": 9,
+        "bandwidthMeters": 5500,
+        "radiusPx": 18
+      }
+    },
+    {
+      "profile": "focused",
+      "scale": "urbana",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.7370687683016105,
+      "meanVisibleAlpha": 119.1117969608794,
+      "p95Alpha": 231,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 38.299999952316284,
+        "zoom": 14,
+        "bandwidthMeters": 450,
+        "radiusPx": 47
+      }
+    },
+    {
+      "profile": "balanced_provisional",
+      "scale": "nacional",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.049892859321620305,
+      "meanVisibleAlpha": 62.50769936188912,
+      "p95Alpha": 121,
+      "maxAlpha": 231,
+      "render": {
+        "renderMs": 82.10000002384186,
+        "zoom": 6,
+        "bandwidthMeters": 26000,
+        "radiusPx": 11
+      }
+    },
+    {
+      "profile": "balanced_provisional",
+      "scale": "cantonal",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.5822952888604197,
+      "meanVisibleAlpha": 54.67132770974285,
+      "p95Alpha": 138,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 45.5,
+        "zoom": 9,
+        "bandwidthMeters": 8000,
+        "radiusPx": 26
+      }
+    },
+    {
+      "profile": "balanced_provisional",
+      "scale": "urbana",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.8091075295876037,
+      "meanVisibleAlpha": 148.81016581745354,
+      "p95Alpha": 252,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 33.5,
+        "zoom": 14,
+        "bandwidthMeters": 700,
+        "radiusPx": 64
+      }
+    },
+    {
+      "profile": "broad",
+      "scale": "nacional",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.05505257900195217,
+      "meanVisibleAlpha": 84.04148558566358,
+      "p95Alpha": 160,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 37.10000002384186,
+        "zoom": 6,
+        "bandwidthMeters": 38000,
+        "radiusPx": 16
+      }
+    },
+    {
+      "profile": "broad",
+      "scale": "cantonal",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.7387588076500732,
+      "meanVisibleAlpha": 66.81975115577215,
+      "p95Alpha": 153,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 42.800000071525574,
+        "zoom": 9,
+        "bandwidthMeters": 12000,
+        "radiusPx": 39
+      }
+    },
+    {
+      "profile": "broad",
+      "scale": "urbana",
+      "canvasFound": true,
+      "width": 1366,
+      "height": 768,
+      "visiblePixelRatio": 0.8091075295876037,
+      "meanVisibleAlpha": 148.81016581745354,
+      "p95Alpha": 252,
+      "maxAlpha": 255,
+      "render": {
+        "renderMs": 30.600000023841858,
+        "zoom": 14,
+        "bandwidthMeters": 1100,
+        "radiusPx": 64
+      }
+    }
+  ]
+}

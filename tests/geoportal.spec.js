@@ -684,10 +684,9 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   const shortcut = page.locator("#demographic-hover-card");
   await expect(shortcut).toContainText("QUITO");
   await expect(shortcut).toContainText("Código DPA 1701");
-  await expect(shortcut).toContainText("Ver análisis completo");
   await expect(shortcut.locator(".profile-card-citizen-title, .profile-card-source-detail, .perfil-card-section")).toHaveCount(0);
 
-  await shortcut.locator("#legend-open-analysis-button").click();
+  await page.locator('[data-right-panel="analysis"]').click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#info-fallecidos-inec")).toHaveText("504");
   await expect(page.locator("#info-fallecidos-sppat")).not.toBeEmpty();

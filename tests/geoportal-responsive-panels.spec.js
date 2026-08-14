@@ -448,18 +448,18 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-level-slot");
   expect(await page.locator(".timeline-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-year-slot");
   expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe(
-    isMobile ? "mobile-period-control-slot" : "map-toolbar-period-slot"
+    isMobile ? "mobile-period-control-slot" : "view-settings-period-slot"
   );
   expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe(
-    isMobile ? "mobile-opacity-control-slot" : "map-toolbar-opacity-slot"
+    isMobile ? "mobile-opacity-control-slot" : "view-settings-opacity-slot"
   );
   if (isMobile) {
-    await expect(page.locator("#map-controls-toolbar")).toBeHidden();
+    await expect(page.locator(".site-topbar-center-controls")).toBeHidden();
     await expect(page.locator("#mobile-level-bar")).toBeVisible();
     await expect(page.locator("#mobile-year-bar")).toBeVisible();
   } else {
-    await expect(page.locator("#map-controls-toolbar")).toBeVisible();
-    await expect(page.locator("#site-topbar")).toHaveCSS("height", "96px");
+    await expect(page.locator(".site-topbar-center-controls")).toBeVisible();
+    await expect(page.locator("#site-topbar")).toHaveCSS("height", "44px");
   }
   const coverage = await page.evaluate(() => window.__redsaAudit.state().temporalCoverage);
   await expect(page.locator("#timeline-marks .tm-available")).toHaveCount(coverage.anios_disponibles.length);

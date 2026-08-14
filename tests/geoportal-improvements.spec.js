@@ -93,7 +93,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 13,
+                stepCount: 14,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
@@ -102,13 +102,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(tourAudit.titles).toContain('Ficha PDF del territorio');
             expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
             expect(tourAudit.titles).toContain('Leyenda siempre a la vista');
-            expect(tourAudit.titles).toContain('Controles permanentes del mapa');
+            expect(tourAudit.titles).toContain('Nivel y año siempre a mano');
             for (const expectedTitle of tourAudit.titles.slice(1)) {
                 await popover.locator('.driver-popover-next-btn').click();
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
-                if (expectedTitle === 'Controles permanentes del mapa') {
+                if (expectedTitle === 'Nivel y año siempre a mano') {
                     const geometry = await page.evaluate(() => {
-                        const targetElement = document.querySelector('#map-controls-toolbar');
+                        const targetElement = document.querySelector('.site-topbar-center-controls') || document.querySelector('#mobile-level-bar');
                         const target = targetElement?.getBoundingClientRect();
                         const box = rect => rect && ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
                         return {

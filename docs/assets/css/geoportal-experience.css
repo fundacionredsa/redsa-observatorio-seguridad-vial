@@ -53,13 +53,13 @@
     top: 0;
     right: 0;
     left: 0;
-    display: grid;
-    grid-template-rows: var(--site-topbar-main-height) var(--map-controls-toolbar-height);
+    display: flex;
+    align-items: center;
     height: var(--site-topbar-height);
-    padding: 0;
+    padding: 0 12px;
     border-bottom: 1px solid var(--border-glass);
     background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 96%, transparent);
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.16);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.12);
     color: var(--text-primary);
     backdrop-filter: blur(14px);
 }
@@ -102,6 +102,82 @@ body:not(.light-theme) .site-topbar-brand-mark {
     color: var(--text-muted);
     font-size: 0.62rem;
     line-height: 1.2;
+}
+
+.site-topbar-center-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.territory-level-control {
+    display: inline-flex;
+    align-items: center;
+}
+
+.territory-level-select {
+    appearance: none;
+    background: color-mix(in srgb, var(--bg-glass-hover) 75%, transparent);
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 650;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.territory-level-select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.timeline-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.timeline-play-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-glass-hover) 70%, transparent);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.65rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.timeline-play-button:hover,
+.timeline-play-button:focus-visible {
+    background: var(--accent);
+    color: #fff;
+}
+
+#map-year-slider {
+    width: 84px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.timeline-badge {
+    font-size: 0.72rem;
+    font-weight: 750;
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
 }
 
 .site-topbar-actions {
@@ -276,7 +352,10 @@ body:not(.light-theme) .site-topbar-brand-mark {
     margin-bottom: 10px;
 }
 
-body:not(.light-theme) .citizen-panel {
+body:not(.light-theme) .citizen-panel,
+body:not(.light-theme) .map-search-card,
+body:not(.light-theme) .map-legend-card,
+body:not(.light-theme) .map-left-column {
     --public-surface: var(--bg-glass);
     --public-ink: var(--text-primary);
     --public-muted: var(--text-secondary);
@@ -287,7 +366,9 @@ body:not(.light-theme) .citizen-panel {
     box-shadow: var(--shadow);
 }
 
-body:not(.light-theme) .citizen-national-badge {
+body:not(.light-theme) .citizen-national-badge,
+body:not(.light-theme) .citizen-national-reference,
+body:not(.light-theme) .citizen-territory-reference {
     border-color: color-mix(in srgb, var(--accent) 45%, var(--border-glass));
     background: color-mix(in srgb, var(--accent) 16%, var(--bg-glass));
     color: var(--text-primary);
@@ -2485,25 +2566,31 @@ body.technical-drawer-open .technical-drawer {
 .sidebar {
     position: fixed;
     z-index: var(--z-drawer);
-    top: var(--site-topbar-height);
-    bottom: 0;
-    left: 0;
-    width: min(var(--analysis-drawer-width), 100vw);
-    height: calc(100dvh - var(--site-topbar-height));
-    max-height: calc(100dvh - var(--site-topbar-height));
-    padding: var(--analysis-drawer-padding);
-    padding-bottom: var(--analysis-drawer-bottom-padding);
+    top: calc(var(--site-topbar-height) + 8px);
+    bottom: 10px;
+    right: calc(var(--right-tool-rail-width, 58px) + 12px);
+    left: auto;
+    width: min(var(--analysis-panel-width, 480px), calc(100vw - var(--right-tool-rail-width, 58px) - 24px));
+    height: calc(100dvh - var(--site-topbar-height) - 18px);
+    max-height: calc(100dvh - var(--site-topbar-height) - 18px);
+    padding: var(--analysis-drawer-padding, 16px);
+    padding-bottom: var(--analysis-drawer-bottom-padding, 24px);
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
-    border-radius: 0 8px 8px 0;
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
     opacity: 0;
-    transform: translateX(-104%);
+    transform: translateX(20px);
     transition: transform 220ms ease, opacity 160ms ease;
     pointer-events: none;
 }
 
+body.right-context-open #territory-sidebar:not([hidden]),
 body.mobile-sidebar-open .sidebar {
     opacity: 1;
     transform: translateX(0);
@@ -4055,6 +4142,34 @@ body.right-context-open .right-tools-rail {
     transform: translate(0, -50%);
 }
 
+.right-tab-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+    min-height: 48px;
+    padding: 6px 2px;
+}
+
+.right-tab-vertical i {
+    font-size: 0.85rem;
+}
+
+.right-tool-label-vertical {
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--text-secondary);
+}
+
+.right-tool-button.active .right-tool-label-vertical {
+    color: var(--accent);
+}
+
 .right-context-host {
     grid-area: panel;
     position: relative;
@@ -4074,6 +4189,7 @@ body.right-context-open .right-tools-rail {
 }
 
 .right-context-host[hidden],
+.right-context-host[data-active-panel="analysis"],
 .right-context-view[hidden] {
     display: none !important;
 }
@@ -4890,29 +5006,125 @@ body.basemap-dark-matter .leaflet-event-pane {
     filter: saturate(1.12) brightness(1.1) drop-shadow(0 0 1.2px var(--dark-basemap-vector-halo));
 }
 
-/* Fase 6: una sola leyenda informativa; los controles viven en el topbar. */
-.map-legend-card {
+/* Columna flotante izquierda (Buscador + Leyenda apilados sin offset frágil) */
+.map-left-column {
     position: fixed;
-    z-index: calc(var(--z-drawer) - 1);
-    bottom: var(--map-legend-bottom);
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--map-legend-gap));
+    z-index: var(--z-public-panels);
+    top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
+    left: var(--map-left-column-edge);
+    display: flex;
+    flex-direction: column;
+    gap: var(--map-left-column-gap);
+    width: min(var(--map-left-column-width, 320px), calc(100vw - (2 * var(--map-left-column-edge))));
+    max-height: calc(100dvh - var(--site-topbar-height) - var(--site-topbar-edge) - 16px);
+    pointer-events: none;
+}
+
+.map-search-card {
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--map-search-card-height, 48px);
+    padding: 8px 10px;
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 96%, transparent);
+    box-shadow: 0 10px 24px color-mix(in srgb, #0f172a 18%, transparent);
+    color: var(--text-primary);
+    backdrop-filter: blur(12px);
+    pointer-events: auto;
+}
+
+.map-search-card .citizen-search-label {
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.map-search-card .citizen-search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.map-search-card .citizen-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: var(--bg-glass-hover);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.map-search-card .citizen-layers-shortcut {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: var(--bg-glass-hover);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.map-search-card .citizen-search-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.map-search-card .citizen-search-status {
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.map-search-card .citizen-search-status:empty {
+    display: none;
+}
+
+/* Leyenda informativa fija a la izquierda (Bloque JC - GeoLibre pattern) */
+.map-legend-card {
+    position: relative;
+    z-index: 1;
     display: flex;
     box-sizing: border-box;
-    width: min(var(--map-legend-width), var(--map-legend-available-width, 100vw), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--map-legend-gap) - var(--map-legend-edge)));
-    min-width: min(var(--map-legend-min-width), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--map-legend-gap) - var(--map-legend-edge)));
-    max-height: min(62dvh, 560px);
+    width: 100%;
+    min-width: 270px;
+    max-width: 440px;
+    max-height: calc(100dvh - var(--site-topbar-height) - var(--site-topbar-edge) - 90px);
     flex-direction: column;
-    overflow: hidden;
+    resize: both;
+    overflow: auto;
     border: 1px solid var(--border-glass);
     border-radius: var(--map-legend-radius);
-    background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 94%, transparent);
+    background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 96%, transparent);
     box-shadow: 0 14px 34px color-mix(in srgb, #0f172a 24%, transparent);
     color: var(--text-primary);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transform: translateY(9px);
-    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 220ms, right 180ms ease, width 180ms ease;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 220ms;
     backdrop-filter: blur(14px) saturate(1.08);
     -webkit-backdrop-filter: blur(14px) saturate(1.08);
 }
@@ -4925,13 +5137,23 @@ body.basemap-dark-matter .leaflet-event-pane {
     transition-delay: 0s;
 }
 
-body.right-context-open .map-legend-card {
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-width) + var(--map-legend-gap));
-    width: min(var(--map-legend-width), var(--map-legend-available-width, 100vw), calc(100vw - var(--right-context-edge) - var(--right-tool-rail-width) - var(--right-context-width) - (2 * var(--map-legend-gap))));
+.map-legend-card.is-collapsed {
+    max-height: 48px !important;
+    overflow: hidden !important;
+    resize: none !important;
 }
 
-body.right-context-open .legend-visibility-toggle {
-    right: calc(var(--right-context-edge) + var(--right-tool-rail-width) + var(--right-context-width) + var(--map-legend-gap));
+.map-legend-card.is-collapsed .map-legend-card-scroll {
+    display: none !important;
+}
+
+.legend-scale-field-name {
+    font-size: 0.65rem;
+    font-weight: 750;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .map-legend-card-header {
@@ -5173,4 +5395,17 @@ body.light-theme .right-tool-button.active {
     border-color: var(--redsa-panel-border);
     background: var(--redsa-panel-accent-soft);
     color: var(--redsa-panel-accent);
+}
+
+.u-hidden,
+[hidden],
+.u-hidden.u-hidden,
+[hidden][hidden],
+#parroquia-row.u-hidden,
+#fallecidos-parroquia-row.u-hidden,
+#parish-population-note.u-hidden,
+#parroquia-row[hidden],
+#fallecidos-parroquia-row[hidden],
+#parish-population-note[hidden] {
+    display: none !important;
 }

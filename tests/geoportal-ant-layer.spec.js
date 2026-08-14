@@ -256,6 +256,7 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
     await page.evaluate(() => window.setRightContextPanel(null, false));
   }
 
+  await page.locator("#right-tab-settings").click();
   await page.locator("[data-period-mode='accumulated']").click();
   await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#ant-layer-toggle")).toBeDisabled();

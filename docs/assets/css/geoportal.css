@@ -1,0 +1,21 @@
+@layer base, layout, components, utilities;
+
+@import url("geoportal-core.css?v=0.12.0");
+@import url("geoportal-experience.css?v=0.12.0");
+@import url("geoportal-mobile.css?v=0.12.0");
+
+/*
+ * Visibility utilities: unlayered declarations with !important always win over all layered and unlayered rules.
+ */
+.u-hidden,
+[hidden],
+.u-hidden.u-hidden,
+[hidden][hidden],
+#parroquia-row.u-hidden,
+#fallecidos-parroquia-row.u-hidden,
+#parish-population-note.u-hidden,
+#parroquia-row[hidden],
+#fallecidos-parroquia-row[hidden],
+#parish-population-note[hidden] {
+    display: none !important;
+}

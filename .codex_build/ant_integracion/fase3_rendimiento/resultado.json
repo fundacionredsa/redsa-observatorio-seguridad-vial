@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-27T21:01:18.967Z",
+  "scenario": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "network": "1.6 Mbps descarga, 150 ms latencia",
+    "cpuThrottle": 4
+  },
+  "activationToUsableMs": 2889,
+  "worker": {
+    "transferBytes": 4013391,
+    "encodedTransferBytes": 362447,
+    "transferMs": 2006.1000000238419,
+    "parseMs": 42.10000002384186,
+    "indexMs": 164.79999995231628,
+    "totalWorkerMs": 2213
+  },
+  "firstRender": {
+    "heat": {
+      "renderMs": 169.20000004768372,
+      "zoom": 6,
+      "bandwidthMeters": 26000,
+      "radiusPx": 11
+    },
+    "clusters": {
+      "renderMs": 54.5,
+      "queryMs": 0.3999999761581421,
+      "visibleObjects": 37,
+      "zoom": 6
+    },
+    "cases": {
+      "renderMs": 734.6000000238419,
+      "queryMs": 5.899999976158142,
+      "visibleCases": 6000,
+      "totalVisible": 20149,
+      "truncated": true,
+      "zoom": 6
+    }
+  }
+}

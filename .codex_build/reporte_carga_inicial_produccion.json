@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-07-28T14:59:04.847Z",
+  "environment": "Public deployment, Chromium mobile 390x844, isolated cache, 4x CPU, 1.6 Mbps down, 150 ms latency.",
+  "config": {
+    "url": "https://geoportal.observatorio.fundacionredsa.org/",
+    "repetitions": 3,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "cpuRate": 4,
+    "network": {
+      "offline": false,
+      "latency": 150,
+      "downloadThroughput": 209715.2,
+      "uploadThroughput": 96000,
+      "connectionType": "cellular3g"
+    }
+  },
+  "summary": {
+    "medianDomReadyWallMs": 6903,
+    "medianUsableWallMs": 12134,
+    "medianDataTransferBytes": 726046,
+    "medianDataDecodedBytes": 2540374,
+    "medianLongTaskCount": 13,
+    "medianLongTaskDurationMs": 5319
+  },
+  "runs": [
+    {
+      "repetition": 1,
+      "domReadyWallMs": 8308,
+      "usableWallMs": 14359,
+      "internalMetrics": {
+        "downloadMs": 4630,
+        "renderMs": 200,
+        "totalMs": 4830,
+        "provinceFeatures": 26,
+        "cantonFeatures": 0,
+        "cantonIndexFeatures": 224,
+        "cantonDeferred": true
+      },
+      "requestCount": 40,
+      "totalTransferBytes": 1118799,
+      "totalDecodedBytes": 3976047,
+      "dataResources": [
+        {
+          "name": "provincias_wgs84.geojson",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/provincias_wgs84.geojson",
+          "transferSize": 722972,
+          "encodedBodySize": 722672,
+          "decodedBodySize": 2520108,
+          "durationMs": 3893.6
+        },
+        {
+          "name": "cantones_indice.json",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/cantones_indice.json",
+          "transferSize": 3074,
+          "encodedBodySize": 2774,
+          "decodedBodySize": 20266,
+          "durationMs": 239.1
+        }
+      ],
+      "dataTransferBytes": 726046,
+      "dataDecodedBytes": 2540374,
+      "longTaskCount": 15,
+      "longTaskDurationMs": 6820
+    },
+    {
+      "repetition": 2,
+      "domReadyWallMs": 6903,
+      "usableWallMs": 12134,
+      "internalMetrics": {
+        "downloadMs": 5100,
+        "renderMs": 120,
+        "totalMs": 5220,
+        "provinceFeatures": 26,
+        "cantonFeatures": 0,
+        "cantonIndexFeatures": 224,
+        "cantonDeferred": true
+      },
+      "requestCount": 40,
+      "totalTransferBytes": 1118799,
+      "totalDecodedBytes": 3976047,
+      "dataResources": [
+        {
+          "name": "provincias_wgs84.geojson",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/provincias_wgs84.geojson",
+          "transferSize": 722972,
+          "encodedBodySize": 722672,
+          "decodedBodySize": 2520108,
+          "durationMs": 3654
+        },
+        {
+          "name": "cantones_indice.json",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/cantones_indice.json",
+          "transferSize": 3074,
+          "encodedBodySize": 2774,
+          "decodedBodySize": 20266,
+          "durationMs": 193.1
+        }
+      ],
+      "dataTransferBytes": 726046,
+      "dataDecodedBytes": 2540374,
+      "longTaskCount": 12,
+      "longTaskDurationMs": 5319
+    },
+    {
+      "repetition": 3,
+      "domReadyWallMs": 6249,
+      "usableWallMs": 11973,
+      "internalMetrics": {
+        "downloadMs": 4540,
+        "renderMs": 130,
+        "totalMs": 4670,
+        "provinceFeatures": 26,
+        "cantonFeatures": 0,
+        "cantonIndexFeatures": 224,
+        "cantonDeferred": true
+      },
+      "requestCount": 40,
+      "totalTransferBytes": 1118799,
+      "totalDecodedBytes": 3976047,
+      "dataResources": [
+        {
+          "name": "provincias_wgs84.geojson",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/provincias_wgs84.geojson",
+          "transferSize": 722972,
+          "encodedBodySize": 722672,
+          "decodedBodySize": 2520108,
+          "durationMs": 4005.6
+        },
+        {
+          "name": "cantones_indice.json",
+          "url": "https://geoportal.observatorio.fundacionredsa.org/data/cantones_indice.json",
+          "transferSize": 3074,
+          "encodedBodySize": 2774,
+          "decodedBodySize": 20266,
+          "durationMs": 299
+        }
+      ],
+      "dataTransferBytes": 726046,
+      "dataDecodedBytes": 2540374,
+      "longTaskCount": 13,
+      "longTaskDurationMs": 4668
+    }
+  ]
+}

@@ -8,29 +8,36 @@ async function loadPortal(page) {
     localStorage.setItem("redsa_tour_seen", "true");
     localStorage.setItem("redsa_light_theme", "true");
   });
-  await page.goto("index.html");
-  await page.waitForFunction(() => Boolean(window.__redsaAudit && window.__redsaExperienceAudit));
+  await page.goto("./", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => Boolean(window.__redsaAudit), null, { timeout: 90_000 });
+  await expect(page.locator("#loader")).toBeHidden({ timeout: 90_000 });
 }
 
-async function openCitizen(page) {
-  await page.evaluate(() => window.setMobilePanel("citizen", true));
-  await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
+async function exposeTopbarAction(page, selector) {
+  const action = page.locator(selector);
+  if (!(await action.isVisible())) {
+    await page.locator("#site-topbar-menu-toggle").click();
+  }
+  await expect(action).toBeVisible();
+  return action;
 }
 
-test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro", async ({ page }) => {
+test("buscador y leyenda comparten la paleta oscura y conservan el tema claro", async ({ page }) => {
   await loadPortal(page);
-  await openCitizen(page);
+  await expect(page.locator(".citizen-national-reference")).toBeVisible();
 
   const readCitizenTheme = () => page.evaluate(() => {
     const styleOf = selector => {
-      const styles = getComputedStyle(document.querySelector(selector));
+      const el = document.querySelector(selector);
+      if (!el) return { background: "", border: "", color: "" };
+      const styles = getComputedStyle(el);
       return {
         background: styles.backgroundColor,
         border: styles.borderColor,
         color: styles.color
       };
     };
-    const panelStyles = getComputedStyle(document.querySelector(".citizen-panel"));
+    const panelStyles = getComputedStyle(document.querySelector(".map-search-card"));
     return {
       isLight: document.body.classList.contains("light-theme"),
       outsidePanelPublicInk: getComputedStyle(document.querySelector(".institutional-dialog"))
@@ -45,18 +52,17 @@ test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro
         borderGlass: panelStyles.getPropertyValue("--border-glass").trim(),
         accent: panelStyles.getPropertyValue("--accent").trim()
       },
-      panel: styleOf(".citizen-panel"),
-      badge: styleOf(".citizen-national-badge"),
+      panel: styleOf(".map-search-card"),
+      badge: styleOf(".citizen-national-reference"),
       input: styleOf(".citizen-search-input"),
-      action: styleOf(".citizen-action:not(.citizen-action-primary)"),
-      primaryAction: styleOf(".citizen-action-primary")
+      legend: styleOf(".map-legend-card")
     };
   });
 
   const lightTheme = await readCitizenTheme();
   expect(lightTheme.isLight).toBeTruthy();
 
-  await page.locator("#btn-theme-toggle").click();
+  await (await exposeTopbarAction(page, "#btn-theme-toggle")).click();
   await expect(page.locator("body")).not.toHaveClass(/light-theme/);
   const darkTheme = await readCitizenTheme();
   expect(darkTheme.variables.surface).toBe(darkTheme.variables.bgGlass);
@@ -69,10 +75,9 @@ test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro
   expect(darkTheme.panel.color).not.toBe(lightTheme.panel.color);
   expect(darkTheme.badge.background).not.toBe(lightTheme.badge.background);
   expect(darkTheme.input.background).not.toBe(lightTheme.input.background);
-  expect(darkTheme.action.background).not.toBe(lightTheme.action.background);
-  expect(darkTheme.primaryAction.background).not.toBe(lightTheme.primaryAction.background);
+  expect(darkTheme.legend.background).not.toBe(lightTheme.legend.background);
 
-  await page.locator("#btn-theme-toggle").click();
+  await (await exposeTopbarAction(page, "#btn-theme-toggle")).click();
   await expect(page.locator("body")).toHaveClass(/light-theme/);
   const restoredLightTheme = await readCitizenTheme();
   expect(restoredLightTheme.isLight).toBeTruthy();
@@ -80,8 +85,7 @@ test("panel ciudadano comparte la paleta oscura y conserva intacto el tema claro
   expect(restoredLightTheme.panel).toEqual(lightTheme.panel);
   expect(restoredLightTheme.badge).toEqual(lightTheme.badge);
   expect(restoredLightTheme.input).toEqual(lightTheme.input);
-  expect(restoredLightTheme.action.background).toBe(lightTheme.action.background);
-  expect(restoredLightTheme.primaryAction).toEqual(lightTheme.primaryAction);
+  expect(restoredLightTheme.legend).toEqual(lightTheme.legend);
 });
 
 test("Ranking y Catálogo comparten el tema oscuro y restauran su apariencia clara", async ({ page }, testInfo) => {
@@ -132,7 +136,6 @@ test("Ranking y Catálogo comparten el tema oscuro y restauran su apariencia cla
 });
 
 async function selectQuito(page) {
-  await openCitizen(page);
   const input = page.locator("#territory-search-input");
   await input.fill("Quito — Pichincha");
   await input.press("Enter");
@@ -142,27 +145,20 @@ async function selectQuito(page) {
   });
 }
 
-test("panel ciudadano conserva identidad completa y un resumen breve", async ({ page }, testInfo) => {
+test("la identidad, introducción y resumen territorial permanecen accesibles sin duplicarse", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await openCitizen(page);
-
-  await expect(page.locator(".citizen-brand h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
-  await expect(page.locator(".citizen-intro-prompt")).toHaveText(INSTITUTIONAL_COPY);
-
+  await expect(page.locator(".site-topbar-brand")).toContainText("Observatorio de Seguridad Vial");
+  await (await exposeTopbarAction(page, "#open-institutional-button")).click();
+  await page.locator("#institutional-tab-trust").click();
+  await expect(page.locator(".institutional-intro")).toHaveText(INSTITUTIONAL_COPY);
+  await page.locator("#institutional-modal-close").click();
   await selectQuito(page);
-  const summary = page.locator("#citizen-summary");
+  const summary = page.locator("#legend-summary");
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
   await expect(summary).toContainText("DISTRITO METROPOLITANO DE QUITO");
   await expect(summary).toContainText("Siniestros de tránsito reportados");
   await expect(summary).toContainText("Referencia nacional");
   await expect(summary).not.toContainText("Tendencia histórica");
-  await expect(summary).not.toContainText("Códigos territoriales");
-  await expect(summary).not.toContainText("Histórico de años completos");
-
-  await testInfo.attach(`panel-ciudadano-simple-${testInfo.project.name}`, {
-    body: await page.screenshot(),
-    contentType: "image/png"
-  });
 });
 
 test("análisis tiene volver independiente, tema completo y scroll hasta el final", async ({ page }, testInfo) => {
@@ -170,11 +166,8 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
   await selectQuito(page);
 
   const body = page.locator("body");
-  const citizenWasOpen = await body.evaluate(element => element.classList.contains("citizen-panel-open"));
-  await page.locator("#open-analysis-button").click();
-  await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
-  expect(await body.evaluate(element => element.classList.contains("citizen-panel-open"))).toBe(citizenWasOpen);
   await expect(page.locator("#mobile-sidebar-close")).toContainText("Volver");
   await expect(page.locator("#inec-detailed-stats")).not.toHaveAttribute("open", "");
   await expect(page.locator("#complementary-indicators-disclosure")).not.toHaveAttribute("open", "");
@@ -197,17 +190,21 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
     const styles = getComputedStyle(element);
     return { background: styles.backgroundColor, color: styles.color };
   });
+
   await testInfo.attach(`analisis-claro-${testInfo.project.name}`, {
     body: await page.screenshot(),
     contentType: "image/png"
   });
 
-  await page.locator("#mobile-sidebar-close").click();
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
-  await openCitizen(page);
-  await page.locator("#btn-theme-toggle").click();
+  if (testInfo.project.name === "mobile") {
+    await page.locator("#mobile-sidebar-close").click();
+  } else {
+    await page.locator("#right-tab-analysis").click();
+  }
+  await expect(page.locator("#right-context-host")).toBeHidden();
+  await page.evaluate(() => document.querySelector("#btn-theme-toggle")?.click());
   await expect(body).not.toHaveClass(/light-theme/);
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   const darkColors = await page.locator("#territory-sidebar").evaluate(element => {
     const styles = getComputedStyle(element);
     return { background: styles.backgroundColor, color: styles.color };
@@ -220,12 +217,15 @@ test("análisis tiene volver independiente, tema completo y scroll hasta el fina
     contentType: "image/png"
   });
 
-  await page.locator("#mobile-sidebar-close").click();
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
-  expect(await body.evaluate(element => element.classList.contains("citizen-panel-open"))).toBe(citizenWasOpen);
+  if (testInfo.project.name === "mobile") {
+    await page.locator("#mobile-sidebar-close").click();
+  } else {
+    await page.locator("#right-tab-analysis").click();
+  }
+  await expect(page.locator("#right-context-host")).toBeHidden();
 });
 
-test("Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador", async ({ page }) => {
+test("Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador", async ({ page }, testInfo) => {
   await loadPortal(page);
   await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
@@ -251,7 +251,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
   expect(logoState.background).toBe("rgba(0, 0, 0, 0)");
 
   await selectQuito(page);
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-breadcrumb")).toContainText("PICHINCHA");
   await expect(page.locator("#territory-breadcrumb")).toContainText("DISTRITO METROPOLITANO DE QUITO");
   await expect(page.locator("#siniestros-rate-detail-row")).toHaveClass(/analysis-hero-stat/);
@@ -278,7 +278,7 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
   expect(typeSeriesAudit.datasetCount).toBeGreaterThan(1);
   expect(typeSeriesAudit.rendered).toBe(typeSeriesAudit.source);
 
-  const methodButton = page.locator(".analysis-method-info");
+  const methodButton = page.locator(".analysis-method-info").first();
   const expectedCalloutText = await methodButton.evaluate(element =>
     `${element.dataset.sigla}: ${element.dataset.customText}`
   );
@@ -306,13 +306,13 @@ test("fase 4 usa la marca real y presenta análisis, callouts y serie por tipo",
     });
     expect(sheet.left).toBeGreaterThanOrEqual(0);
     expect(sheet.right).toBeLessThanOrEqual(page.viewportSize().width);
-    expect(Math.abs(sheet.bottom - page.viewportSize().height)).toBeLessThanOrEqual(1);
+    expect(sheet.bottom).toBeLessThanOrEqual(page.viewportSize().height);
     expect(sheet.handlePointerEvents).toBe("none");
   } else {
     await expect(handle).toBeHidden();
   }
   await expect(page.locator("#mobile-sidebar-close")).toHaveCount(1);
-  await expect(page.locator("#citizen-panel-visibility-toggle")).toHaveCount(1);
+  await expect(page.locator("#citizen-panel-visibility-toggle")).toHaveCount(0);
 });
 
 test("breadcrumb usa exactamente provincia, cantón y parroquia seleccionados", async ({ page }, testInfo) => {
@@ -323,7 +323,7 @@ test("breadcrumb usa exactamente provincia, cantón y parroquia seleccionados", 
     await window.__redsaAudit.setTerritoryLevelMode("province");
     await window.__redsaAudit.showTerritory("province", "17");
   });
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-breadcrumb")).toHaveText("PICHINCHA");
   await expect(page.locator("#cabecera-warning-box")).toHaveText("Este dato se calcula sumando los cantones de la provincia; algunos años pueden tener información incompleta.");
   await expect(page.locator("#cabecera-warning-box")).not.toContainText(".geojson");

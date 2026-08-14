@@ -1,0 +1,34 @@
+{
+  "desktop": {
+    "paneOrder": {
+      "territory": 7,
+      "event": 9
+    },
+    "eventChildren": [
+      "leaflet-zoom-animated"
+    ],
+    "clusterLabels": 91,
+    "legend": {
+      "top": 250.015625,
+      "bottom": 710.015625,
+      "height": 460,
+      "width": 290,
+      "scrollHeight": 684,
+      "overflowY": "auto"
+    },
+    "tokens": {
+      "desktop": "min(460px, calc(100dvh - 120px))",
+      "mobile": "min(66dvh, 470px)"
+    }
+  },
+  "mobile": {
+    "legend": {
+      "top": 311.21875,
+      "bottom": 781.21875,
+      "height": 470,
+      "scrollHeight": 470,
+      "viewport": 844
+    },
+    "clusterLabels": 34
+  }
+}

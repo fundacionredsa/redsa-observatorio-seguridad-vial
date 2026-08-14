@@ -42,11 +42,11 @@ test("captura la barra de controles y la leyenda única en claro y oscuro", asyn
 
     await expect(page.locator("#map-legend-card")).toBeVisible();
     if (testInfo.project.name === "mobile") {
-      await expect(page.locator("#map-controls-toolbar")).toBeHidden();
+      await expect(page.locator(".site-topbar-center-controls")).toBeHidden();
       await expect(page.locator("#mobile-level-bar")).toBeVisible();
       await expect(page.locator("#mobile-year-bar")).toBeVisible();
     } else {
-      await expect(page.locator("#map-controls-toolbar")).toBeVisible();
+      await expect(page.locator(".site-topbar-center-controls")).toBeVisible();
     }
 
     const outputPath = path.join(CAPTURE_CONFIG.outputDir, `fase6-${testInfo.project.name}-${theme.id}.png`);

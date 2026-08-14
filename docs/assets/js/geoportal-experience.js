@@ -376,7 +376,7 @@
     }
 
     function updateSummary(props, requestedYear) {
-        const summary = document.getElementById("citizen-summary");
+        const summary = document.getElementById("legend-summary") || document.getElementById("citizen-summary");
         const panel = document.getElementById("citizen-panel");
         const downloadButton = document.getElementById("download-summary-button");
         if (!summary) return;
@@ -407,7 +407,7 @@
             <div class="citizen-summary-title">${name} <span style="font-weight:500;">(${level})</span></div>
             <div class="citizen-summary-province">${province}</div>
             <section class="citizen-territory-reference" aria-label="Resumen de la variable activa en el territorio">
-                <span class="citizen-national-kicker">${escapeHtml(config?.displayLabel || config?.label || "Variable activa")}</span>
+                <span class="citizen-national-kicker">Este territorio · ${escapeHtml(config?.displayLabel || config?.label || "Variable activa")}</span>
                 <strong class="citizen-national-value">${value ?? "Sin dato"} <span>${escapeHtml(config?.unidad || "")}</span></strong>
                 <span class="citizen-national-meta">${escapeHtml(period)} ${infoIcon}</span>
             </section>
@@ -428,7 +428,7 @@
             allowTaint: false,
             logging: false,
             scale: 2,
-            ignoreElements: element => element.matches?.("#right-tools-rail, #right-context-host, .opacity-control, .basemap-control, .mobile-nav-toggle")
+            ignoreElements: element => element.matches?.("#right-tools-rail, #right-context-host, #right-control-shell, .opacity-control, .basemap-control, .mobile-nav-toggle, .map-left-column, .map-search-card, .map-legend-card, .legend-visibility-toggle, #site-topbar, .site-topbar, #mobile-level-bar, #mobile-year-bar, .road-scale-control, .leaflet-control-container")
         });
         return canvas.toDataURL("image/jpeg", 0.9);
     }

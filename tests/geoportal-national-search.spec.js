@@ -9,13 +9,7 @@ async function loadPortal(page) {
   await page.waitForFunction(() => Boolean(window.__redsaAudit && window.__redsaExperienceAudit));
 }
 
-async function openCitizenPanel(page) {
-  await page.evaluate(() => window.setMobilePanel("citizen", true));
-  await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
-}
-
 async function searchTerritory(page, query, expectedLevel, expectedCode) {
-  await openCitizenPanel(page);
   const input = page.locator("#territory-search-input");
   await input.fill(query);
   await input.press("Enter");
@@ -24,12 +18,11 @@ async function searchTerritory(page, query, expectedLevel, expectedCode) {
     code: expectedCode
   });
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
-  await expect(page.locator("#citizen-summary")).toContainText(query.split("—")[0].trim(), { ignoreCase: true });
+  await expect(page.locator("#legend-summary")).toContainText(query.split("—")[0].trim(), { ignoreCase: true });
 }
 
 test("el estado inicial muestra una referencia nacional que sigue variable, año y periodo", async ({ page }) => {
   await loadPortal(page);
-  await openCitizenPanel(page);
   const reference = page.locator(".citizen-national-reference");
   await expect(reference).toBeVisible();
   await expect(reference).toContainText("20.346");
@@ -70,7 +63,6 @@ test("la búsqueda selecciona provincia, cantón y parroquia sin abrir el análi
   const experienceState = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experienceState.parishOptions).toBe(1050);
 
-  await openCitizenPanel(page);
   await page.locator("#territory-search-input").fill("SAN ANTONIO");
   await page.locator("#territory-search-input").press("Enter");
   await expect(page.locator("#territory-search-status")).toContainText("varias coincidencias");
