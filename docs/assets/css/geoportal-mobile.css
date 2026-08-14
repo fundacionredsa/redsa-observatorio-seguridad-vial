@@ -187,24 +187,7 @@
         display: block;
     }
 
-    .citizen-panel {
-        padding: 7px 12px;
-        overflow-x: hidden;
-    }
 
-    .citizen-brand {
-        gap: 8px;
-        padding-bottom: 2px;
-    }
-
-    .citizen-eyebrow {
-        display: none;
-    }
-
-    .citizen-panel h1 {
-        font-size: 0.98rem;
-        line-height: 1.12;
-    }
 
     .citizen-national-badge {
         padding: 3px 6px;
@@ -256,12 +239,7 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .citizen-panel:not(.has-selection) #share-view-button,
-    .citizen-panel:not(.has-selection) #download-summary-button {
-        display: none;
-    }
-
-    .citizen-panel:not(.has-selection) .citizen-actions {
+    .citizen-actions {
         grid-template-columns: 1fr 1fr;
         margin-top: 7px;
     }
@@ -274,12 +252,6 @@
 
     .citizen-action:last-child {
         grid-column: 1 / -1;
-    }
-
-    body.profile-selection-active:not(.mobile-citizen-open) .citizen-panel {
-        visibility: hidden;
-        opacity: 0;
-        pointer-events: none;
     }
 
     .sidebar {
@@ -347,14 +319,7 @@
         color: #1e293b;
     }
 
-    .citizen-panel-topbar {
-        position: sticky;
-        top: -7px;
-        z-index: var(--z-sticky-content);
-        margin: -7px -12px 6px;
-        padding: 7px 12px 6px;
-        background: var(--public-surface, #fff);
-    }
+
 
     .mobile-sidebar-topbar {
         display: flex;
@@ -896,16 +861,9 @@
         border-radius: 12px;
     }
 
-    body.citizen-panel-open .map-legend-card,
-    body.citizen-panel-open .legend-visibility-toggle {
-        left: auto;
-    }
-
-    body.mobile-citizen-open .map-left-column,
     body.mobile-sidebar-open .map-left-column,
     body.mobile-layers-open .map-left-column,
     body.mobile-right-context-open .map-left-column,
-    body.mobile-citizen-open .map-legend-card,
     body.mobile-sidebar-open .map-legend-card,
     body.mobile-layers-open .map-legend-card,
     body.mobile-right-context-open .map-legend-card {
@@ -931,7 +889,6 @@
         min-height: 44px;
     }
 
-    body.mobile-citizen-open .legend-visibility-toggle,
     body.mobile-sidebar-open .legend-visibility-toggle,
     body.mobile-layers-open .legend-visibility-toggle,
     body.mobile-right-context-open .legend-visibility-toggle {
@@ -969,7 +926,6 @@
         transition: opacity 160ms ease, visibility 160ms ease;
     }
 
-    body.mobile-citizen-open .right-control-shell,
     body.mobile-sidebar-open .right-control-shell {
         visibility: hidden;
         opacity: 0;

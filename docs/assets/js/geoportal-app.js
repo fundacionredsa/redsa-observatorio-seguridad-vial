@@ -177,8 +177,8 @@
                         return [];
                     },
                     openAnalysis: () => {
-                        const returnTarget = document.body.classList.contains("citizen-panel-open")
-                            ? "citizen"
+                        const returnTarget = document.body.classList.contains("mobile-sidebar-open")
+                            ? "sidebar"
                             : "map";
                         setMobilePanel("sidebar", true, { returnTarget });
                         if (!mobileMediaQuery.matches) {
@@ -811,21 +811,9 @@
                         }
 
                         const mapRect = map.getContainer().getBoundingClientRect();
-                        const citizen = document.getElementById("citizen-panel");
-                        const citizenBox = citizen?.getBoundingClientRect();
-                        const citizenStyles = citizen ? getComputedStyle(citizen) : null;
-                        const citizenRect = citizenBox
-                            && citizenStyles?.display !== "none"
-                            && citizenStyles?.visibility !== "hidden"
-                            && citizenBox.width > 0
-                            && citizenBox.height > 0
-                            && citizenBox.right > 0
-                            && citizenBox.left < window.innerWidth
-                            && citizenBox.bottom > 0
-                            && citizenBox.top < window.innerHeight
-                            ? citizenBox
-                            : null;
-                        const freeTop = Math.max(76, citizenRect ? citizenRect.bottom + 20 : 76);
+                        const searchCard = document.getElementById("map-search-card");
+                        const searchBox = searchCard?.getBoundingClientRect();
+                        const freeTop = Math.max(76, searchBox && searchBox.height > 0 ? searchBox.bottom + 20 : 76);
                         const freeBottom = mapRect.bottom - 70;
                         const targetY = Math.max(freeTop, Math.min((freeTop + freeBottom) / 2, freeBottom));
                         const currentPoint = map.latLngToContainerPoint(center);

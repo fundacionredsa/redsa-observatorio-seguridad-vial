@@ -1548,7 +1548,7 @@
             let top = 24;
             let bottom = 24;
 
-            [".citizen-panel", ".sidebar"].forEach(selector => {
+            [".sidebar"].forEach(selector => {
                 const rect = getVisibleMapObstacleRect(selector);
                 if (rect) left = Math.max(left, rect.right - mapRect.left + margin);
             });

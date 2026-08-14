@@ -377,12 +377,10 @@
 
     function updateSummary(props, requestedYear) {
         const summary = document.getElementById("legend-summary") || document.getElementById("citizen-summary");
-        const panel = document.getElementById("citizen-panel");
         const downloadButton = document.getElementById("download-summary-button");
         if (!summary) return;
 
         state.selectedProps = props || null;
-        panel?.classList.toggle("has-selection", Boolean(props));
         if (!props) {
             summary.innerHTML = `${renderNationalReference()}<p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos, su evolución y una comparación orientativa con el país.</p>`;
             if (downloadButton) {
