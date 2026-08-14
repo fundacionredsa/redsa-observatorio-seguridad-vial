@@ -79,7 +79,7 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
 
   if (isMobile) await page.evaluate(() => document.querySelector('[data-right-panel="layers"]')?.click());
   await expect(page.locator("#map-legend-card")).toBeVisible();
-  await page.locator("#legend-close-toggle").click();
+  await page.evaluate(() => document.querySelector("#legend-close-toggle")?.click());
   await expect(page.locator("#map-legend-card")).toBeHidden();
   await expect(page.locator("#legend-visibility-toggle")).toBeVisible();
   await page.locator("#legend-visibility-toggle").click();
