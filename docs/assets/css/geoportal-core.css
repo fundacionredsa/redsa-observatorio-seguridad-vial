@@ -214,6 +214,13 @@
             opacity: 0;
         }
 
+        .right-control-shell {
+            position: fixed;
+            top: var(--right-context-top, 56px);
+            right: var(--right-context-edge, 12px);
+            z-index: var(--z-public-panels);
+        }
+
         .map-left-column {
             pointer-events: none;
         }
