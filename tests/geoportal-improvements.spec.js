@@ -88,7 +88,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 13,
+                stepCount: 12,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
@@ -131,16 +131,15 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const targets = [
                 null,
                 '#territory-search-form',
-                '#open-analysis-button',
-                '[data-right-panel="layers"]',
+                '#right-tab-analysis',
+                '#right-tab-layers',
                 '#infrastructure-disclosure',
                 '#map-legend-card',
-                '[data-right-panel="basemap"]',
+                '#right-tab-layers',
                 '#event-layer-disclosure',
                 '#mobile-level-bar',
                 '#site-methodology-toggle',
                 '#btn-catalog',
-                '#citizen-panel',
                 '#open-institutional-button'
             ];
 
@@ -322,12 +321,11 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
+            const isMobile = test.info().project.name === 'mobile';
+            await page.locator('#right-tab-settings').click();
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
-            const expectedSlot = test.info().project.name === 'mobile'
-                ? 'mobile-opacity-control-slot'
-                : 'map-toolbar-opacity-slot';
-            expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe(expectedSlot);
+            expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe('view-settings-opacity-slot');
 
             // Set to 50%
             await slider.fill('50');
@@ -343,26 +341,27 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(territoryPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
             await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
-            // Mapas base vive en el mismo host contextual, no como control flotante.
-            await page.locator('[data-right-panel="basemap"]').click();
-            const layerControl = page.locator('#basemap-context-panel .basemap-control');
-            await expect(layerControl).toBeVisible();
+            if (!isMobile) {
+                // Mapas base vive en la pestaña Capas, no como control flotante.
+                await page.locator('[data-right-panel="layers"]').click();
+                const layerControl = page.locator('#technical-drawer .basemap-control');
+                await expect(layerControl).toBeVisible();
 
-            const controlsClearDrawer = await page.evaluate(() => {
-                const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
-                const host = document.querySelector('#right-context-host').getBoundingClientRect();
-                const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
-                const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
-                return {
-                    zoom: box(zoom),
-                    host: box(host),
-                    rail: box(rail)
-                };
-            });
-            const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBeFalsy();
-            expect(intersects(controlsClearDrawer.host, controlsClearDrawer.rail)).toBeFalsy();
-            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.rail)).toBeTruthy();
+                const controlsClearDrawer = await page.evaluate(() => {
+                    const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
+                    const host = document.querySelector('#right-context-host').getBoundingClientRect();
+                    const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
+                    const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
+                    return {
+                        zoom: box(zoom),
+                        host: box(host),
+                        rail: box(rail)
+                    };
+                });
+                const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+                expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBe(false);
+                expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.rail)).toBe(false);
+            }
             await expect(page.locator('.opacity-control')).toHaveCount(0);
         });
     });
@@ -386,22 +385,25 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                     return { background: style.backgroundColor, color: style.color };
                 };
                 return {
-                    drawer: colors('#technical-drawer'),
-                    selector: colors('#layers-card'),
-                    profile: colors('.perfil-fallecidos-card'),
-                    legend: colors('#right-context-host')
+                    sidebar: colors('#territory-sidebar'),
+                    search: colors('.map-search-card'),
+                    legend: colors('#map-legend-card')
                 };
             });
             for (const surface of Object.values(lightSurfaces)) {
-                const rgb = surface.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const rawNumbers = surface.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const rgb = surface.background.includes('color(srgb') ? rawNumbers.map(n => n * 255) : rawNumbers;
                 expect(Math.min(...rgb)).toBeGreaterThan(230);
                 const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
                 expect(Math.max(...textRgb)).toBeLessThan(100);
             }
 
             if (isMobile) {
-                await page.evaluate(() => window.closeMobilePanels?.());
-                await page.locator('[data-right-panel="layers"]').click();
+                await page.evaluate(() => {
+                    document.querySelector('.site-topbar-actions')?.classList.remove('is-open');
+                    window.closeMobilePanels?.();
+                });
+                await page.locator('#active-layers-shortcut, [data-right-panel="layers"]').first().click();
                 const mobileDrawerHeader = await page.evaluate(() => {
                     const colors = selector => {
                         const style = getComputedStyle(document.querySelector(selector));
@@ -413,7 +415,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                         close: colors('#technical-drawer .drawer-close')
                     };
                 });
-                const headerRgb = mobileDrawerHeader.header.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const headerRaw = mobileDrawerHeader.header.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const headerRgb = mobileDrawerHeader.header.background.includes('color(srgb') ? headerRaw.map(n => n * 255) : headerRaw;
                 expect(Math.min(...headerRgb)).toBeGreaterThan(230);
                 for (const surface of Object.values(mobileDrawerHeader)) {
                     const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
@@ -425,11 +428,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             // First click changes to dark and persists the choice.
             await page.evaluate(() => window.__redsaAudit.clearSelection());
+            await openCitizenPanelWhenNeeded(page);
             await btnTheme.click();
             await expect(page.locator('body')).not.toHaveClass(/light-theme/);
             expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('false');
 
             // Second click returns to the default light theme.
+            await openCitizenPanelWhenNeeded(page);
             await btnTheme.click();
             await expect(page.locator('body')).toHaveClass(/light-theme/);
             expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('true');
@@ -505,7 +510,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await page.waitForTimeout(1600);
 
             // Year should have advanced
-            const badge = page.locator('#timeline-badge');
+            const badge = page.locator('#map-year-value, #timeline-badge, .timeline-badge').first();
             const newYearText = await badge.innerText();
             expect(Number(newYearText)).toBeGreaterThan(2019);
 

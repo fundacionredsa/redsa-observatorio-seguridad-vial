@@ -71,11 +71,11 @@ test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page 
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
-  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
-  await expect(page.locator("#citizen-summary")).toContainText("Siniestros de tránsito reportados");
-  await expect(page.locator("#citizen-summary")).toContainText("Referencia nacional");
-  await expect(page.locator("#citizen-summary")).not.toContainText("mediana de los cantones");
-  await expect(page.locator("#citizen-summary")).not.toContainText("Histórico de años completos");
+  await expect(page.locator("#legend-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#legend-summary")).toContainText("Siniestros de tránsito reportados");
+  await expect(page.locator("#legend-summary")).toContainText("Referencia nacional");
+  await expect(page.locator("#legend-summary")).not.toContainText("mediana de los cantones");
+  await expect(page.locator("#legend-summary")).not.toContainText("Histórico de años completos");
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
@@ -91,7 +91,7 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
-  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#legend-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await page.waitForTimeout(700);
 
@@ -787,7 +787,7 @@ test("ficha territorial permanece visible dentro de la tarjeta de leyenda", asyn
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
   const stableTarget = (page.viewportSize()?.width || 0) > 768
-    ? page.locator("#citizen-panel-visibility-toggle")
+    ? page.locator("#site-topbar")
     : page.locator("#mobile-sidebar-toggle");
   await stableTarget.hover();
   await page.waitForTimeout(400);
@@ -1141,7 +1141,7 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(page.locator("#sigla-popover")).toContainText(
     "El INEC no publica proyecciones de población a nivel parroquial."
   );
-  await expect(page.locator("#citizen-summary")).not.toContainText("por cada 100.000 habitantes");
+  await expect(page.locator("#legend-summary")).not.toContainText("por cada 100.000 habitantes");
 
   await page.evaluate(() => window.__redsaAudit.clearSelection());
   await expect(page.locator("#population-detail-row")).toBeHidden();

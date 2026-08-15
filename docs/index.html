@@ -106,11 +106,13 @@
                             <i class="fa-solid fa-play" aria-hidden="true"></i>
                         </button>
                         <label for="map-year-slider" class="sr-only">Año de la variable activa</label>
-                        <input id="map-year-slider" type="range" min="2019" max="2025" step="1" value="2023" aria-label="Año del mapa">
-                        <output id="map-year-value" class="timeline-badge" for="map-year-slider">2023</output>
+                        <input id="map-year-slider" type="range" min="2017" max="2026" step="1" value="2025" aria-label="Año del mapa">
+                        <output id="map-year-value" class="timeline-badge" for="map-year-slider">2025</output>
                     </div>
                 </div>
-                <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite"></div>
+                <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite">
+                    <div id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></div>
+                </div>
             </div>
             <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
                 <i class="fa-solid fa-bars" aria-hidden="true"></i>

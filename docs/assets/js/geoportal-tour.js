@@ -10,7 +10,7 @@
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const variableTourTarget = '#right-tab-layers';
         const infrastructureTourTarget = "#infrastructure-disclosure";
-        const mapControlsTourTarget = isMobile ? "#mobile-level-bar" : "#map-controls-toolbar";
+        const mapControlsTourTarget = isMobile ? "#mobile-level-bar" : ".site-topbar-center-controls";
         const legendWasVisible = document.getElementById("map-legend-card")?.classList.contains("is-visible") ?? true;
         const rightPanelBeforeTour = document.getElementById("right-context-host")?.dataset.activePanel || null;
         const sidebarWasOpen = document.body.classList.contains("mobile-sidebar-open");

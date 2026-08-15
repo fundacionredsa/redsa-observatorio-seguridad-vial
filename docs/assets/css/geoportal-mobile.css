@@ -558,8 +558,14 @@
     }
 
     .ant-mode-controls button,
-    .ant-jump-year,
+    .ant-jump-year {
+        min-height: 44px;
+    }
+
     .event-layer-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         min-height: 44px;
     }
 
@@ -701,11 +707,68 @@
         display: none;
     }
 
+    .mobile-level-bar {
+        position: fixed;
+        z-index: var(--z-mobile-navigation);
+        top: var(--mobile-top-offset, 66px);
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
+        overflow-x: auto;
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 20px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
+    }
+
+    .mobile-level-bar button {
+        min-height: 44px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 16px;
+        background: transparent;
+        color: var(--text-secondary);
+        font: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .mobile-level-bar button.active {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .mobile-level-bar button.level-unavailable {
+        opacity: 0.35;
+    }
+
+    body.mobile-sidebar-open .mobile-level-bar,
+    body.mobile-layers-open .mobile-level-bar,
+    body.mobile-right-context-open .mobile-level-bar,
+    body.mobile-sidebar-open .mobile-year-bar,
+    body.mobile-layers-open .mobile-year-bar,
+    body.mobile-right-context-open .mobile-year-bar {
+        display: none;
+    }
+
     .mobile-year-bar {
+        position: fixed;
+        z-index: var(--z-mobile-navigation);
+        top: calc(var(--mobile-top-offset, 66px) + 44px + 8px);
+        left: var(--mobile-edge, 10px);
+        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
         display: grid;
         grid-template-columns: 44px auto minmax(0, 1fr) minmax(88px, 0.55fr);
         row-gap: 4px;
+        padding: 4px;
         border-radius: 14px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
     }
 
     .mobile-timeline-play-slot {
@@ -726,13 +789,53 @@
         color: var(--accent-hover);
     }
 
-    .mobile-year-bar-label,
-    .mobile-year-bar-scroll {
+    .mobile-year-bar-label {
+        flex: 0 0 auto;
+        padding: 0 4px 0 6px;
+        color: var(--text-muted);
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border-right: 1px solid var(--border-glass);
         align-self: center;
     }
 
     .mobile-year-bar-scroll {
         grid-column: 3 / 5;
+        align-self: center;
+        display: flex;
+        gap: 3px;
+        overflow-x: auto;
+        min-width: 0;
+    }
+
+    .mobile-year-bar button {
+        flex: 0 0 auto;
+        min-width: 44px;
+        min-height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text-secondary);
+        font: inherit;
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .mobile-year-bar button.my-available {
+        background: rgba(14, 165, 233, 0.18);
+        color: var(--accent-hover);
+    }
+
+    .mobile-year-bar button.my-unavailable {
+        opacity: 0.35;
+    }
+
+    .mobile-year-bar button.my-selected {
+        background: var(--accent);
+        color: #fff;
     }
 
     .mobile-map-control-slot {
@@ -848,6 +951,17 @@
         padding: 6px 8px;
     }
 
+    #territory-search-input,
+    .citizen-search-input {
+        font-size: 16px;
+    }
+
+    .map-search-card .citizen-layers-shortcut,
+    .map-search-card .citizen-search-button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
     .map-legend-card {
         position: relative;
         top: auto;
@@ -914,7 +1028,7 @@
 
 @media (max-width: 768px) {
     .right-control-shell {
-        z-index: var(--z-mobile-navigation);
+        z-index: var(--z-drawer);
         top: var(--mobile-context-top);
         right: var(--mobile-edge, 10px);
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)));

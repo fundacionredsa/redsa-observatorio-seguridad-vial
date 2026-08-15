@@ -465,6 +465,7 @@
                     sidebarReturnTarget = "map";
                 }
                 document.body.classList.toggle("mobile-sidebar-open", open);
+                if (territorySidebar) territorySidebar.hidden = !open;
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
@@ -1035,7 +1036,7 @@
 
         function updateTimelinePlayControl() {
             const playBtn = document.getElementById("timeline-play-button");
-            const playIcon = document.getElementById("timeline-play-icon");
+            const playIcon = playBtn?.querySelector("i") || document.getElementById("timeline-play-icon");
             if (!playBtn) return;
 
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
@@ -1163,28 +1164,34 @@
 
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
-            const badge = document.getElementById("timeline-badge");
+            const badge = document.getElementById("map-year-value") || document.getElementById("timeline-badge");
             const marks = document.getElementById("timeline-marks");
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            if (!slider || !badge || !marks) return;
+            if (!slider) return;
 
             const isAnnual = coverage.tipo === "anual";
             const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+            slider.min = String(TIMELINE_MIN_YEAR);
+            slider.max = String(TIMELINE_MAX_YEAR);
             slider.disabled = !isAnnual || accumulated;
             slider.value = String(selectedYear);
-            badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
-            badge.textContent = accumulated
-                ? "Histórico"
-                : isAnnual
-                ? String(selectedYear)
-                : (coverage.anios_disponibles.length
-                    ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
-                    : "Vista territorial");
-            marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
-            marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
-                const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
-            }).join("");
+            if (badge) {
+                badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
+                badge.textContent = accumulated
+                    ? "Histórico"
+                    : isAnnual
+                    ? String(selectedYear)
+                    : (coverage.anios_disponibles.length
+                        ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
+                        : "Vista territorial");
+            }
+            if (marks) {
+                marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
+                marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
+                    const covered = isAnnual && coverage.anios_disponibles.includes(year);
+                    return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
+                }).join("");
+            }
 
             const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
             if (mobileYearBarScroll) {

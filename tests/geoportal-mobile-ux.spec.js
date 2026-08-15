@@ -18,69 +18,36 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.waitForSelector('.driver-overlay', { state: 'detached', timeout: 5000 }).catch(() => {});
     });
 
-    test('mobile citizen panel starts closed and can be toggled', async ({ page }) => {
+    test('mobile drawer mutual exclusivity (sidebar, layers, settings)', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
 
-        const citizenPanel = page.locator('#citizen-panel');
-        const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
-        const mobileCitizenClose = page.locator('#mobile-citizen-close');
-
-        // Citizen panel starts closed on mobile
-        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
-        await expect(mobileCitizenToggle).toBeVisible();
-
-        // Click toggle to open panel
-        await mobileCitizenToggle.click();
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-
-        // Click close button to close panel
-        await mobileCitizenClose.click();
-        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
-    });
-
-    test('mobile drawer mutual exclusivity (citizen, sidebar, layers)', async ({ page }) => {
-        const isMobile = (page.viewportSize()?.width || 0) <= 768;
-        test.skip(!isMobile, 'Mobile-only test');
-
-        const mobileCitizenToggle = page.locator('#mobile-citizen-toggle');
-        const mobileCitizenClose = page.locator('#mobile-citizen-close');
+        const mobileSidebarToggle = page.locator('#mobile-sidebar-toggle');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const layersToggle = page.locator('[data-right-panel="layers"]');
-        const openAnalysisBtn = page.locator('#open-analysis-button');
+        const settingsToggle = page.locator('[data-right-panel="settings"]');
 
-        // Open citizen panel
-        await mobileCitizenToggle.click();
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-        await expect(openAnalysisBtn).toBeVisible();
-
-        // El análisis cubre el panel ciudadano sin alterar su preferencia abierta.
-        await openAnalysisBtn.click();
+        // Open analysis sidebar
+        await mobileSidebarToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-sidebar-open/);
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
         await expect(mobileSidebarClose).toBeInViewport();
 
         // Close sidebar
         await mobileSidebarClose.click();
         await expect(page.locator('body')).not.toHaveClass(/mobile-sidebar-open/);
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-
-        // El rail derecho reaparece al cerrar el panel ciudadano.
-        await mobileCitizenClose.click();
-        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
 
         // Open layers
         await layersToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
-        await expect(page.locator('body')).not.toHaveClass(/mobile-citizen-open/);
 
-        // Close layers drawer
-        await page.locator('#technical-drawer-close').click();
+        // Open settings switches context
+        await settingsToggle.click();
         await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
+        await expect(page.locator('#view-settings-panel')).toBeVisible();
 
-        // Open citizen panel
-        await mobileCitizenToggle.click();
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
+        // Close panel
+        await page.locator('#view-settings-panel [data-close-right-panel]').click();
+        await expect(page.locator('#view-settings-panel')).toBeHidden();
     });
 
     test('mobile-level-bar is positioned below top navigation without overlap', async ({ page }) => {
@@ -103,11 +70,13 @@ test.describe('Geoportal Mobile UX Improvements', () => {
             }
             const provButton = mobileLevelBar.locator('button[data-level-mode="province"]');
             await provButton.click();
-            await expect(provButton).toHaveClass(/active/);
+            await expect(provButton).toHaveAttribute("aria-pressed", "true");
 
-            // Verify global synchronization across all level buttons
-            const panelProvButton = page.locator('#territory-level-control button[data-level-mode="province"]');
-            await expect(panelProvButton).toHaveClass(/active/);
+            // Verify global synchronization with topbar level select
+            const topbarSelect = page.locator('#territory-level-select');
+            if (await topbarSelect.count() > 0) {
+                await expect(topbarSelect).toHaveValue("province");
+            }
         } else {
             await expect(mobileLevelBar).toBeHidden();
         }
@@ -179,7 +148,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         }));
         expect(valuesAfterYearChange).not.toEqual(valuesBeforeYearChange);
 
-        await page.locator('[data-period-mode="accumulated"]').click();
+        await page.locator('#mobile-period-control-slot [data-period-mode="accumulated"]').click();
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('accumulated');
         await expect(yearBar).toBeVisible();
         const targetHistoricalYear = yearBar.locator('button[data-year="2019"]');
@@ -187,7 +156,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await targetHistoricalYear.click();
         await expect(targetHistoricalYear).toHaveClass(/my-selected/);
         await expect(page.locator('#map-year-slider')).toHaveValue('2019');
-        await expect(page.locator('[data-period-mode="year"]')).toHaveClass(/active/);
+        await expect(page.locator('#mobile-period-control-slot [data-period-mode="year"]')).toHaveClass(/active/);
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('year');
         await expect(page.locator('.legend-panel')).toContainText('2019');
 

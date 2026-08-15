@@ -111,8 +111,6 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
   await page.locator("#site-methodology-toggle").click();
   if (isMobile) {
     await page.locator("#site-topbar-menu-toggle").click();
-    await page.locator("#mobile-citizen-toggle").click();
-    await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
   }
 
   const shortcut = page.locator("#active-layers-shortcut");
@@ -134,22 +132,22 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
 test("los cambios cartográficos conservan la pestaña elegida por la persona", async ({ page }) => {
   await loadPortal(page);
   const host = page.locator("#right-context-host");
-  const basemapTab = page.locator('[data-right-panel="basemap"]');
+  const settingsTab = page.locator('[data-right-panel="settings"]');
   const layersTab = page.locator('[data-right-panel="layers"]');
   const expectPanel = async panel => {
     await expect(host).toBeVisible();
     await expect(host).toHaveAttribute("data-active-panel", panel);
   };
 
-  await basemapTab.click();
+  await settingsTab.click();
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expectPanel("basemap");
+  await expectPanel("settings");
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
-  await expectPanel("basemap");
+  await expectPanel("settings");
 
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
-  await expectPanel("basemap");
+  await expectPanel("settings");
 
   await layersTab.click();
   await page.evaluate(() => window.__redsaAudit.showTerritory("province", "17"));
@@ -243,7 +241,7 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
 
 async function assertBasemapControlHasDedicatedSpace(page) {
   const viewport = page.viewportSize();
-  await page.locator('[data-right-panel="basemap"]').click();
+  await page.locator('[data-right-panel="layers"]').click();
   const host = page.locator("#right-context-host");
   const rail = page.locator("#right-tools-rail");
   const basemap = page.locator(".basemap-control");
@@ -556,42 +554,30 @@ test("infraestructura usa SVG compartido y conserva la interacción territorial"
   });
 });
 
-test("pantalla grande abre el panel ciudadano y mantiene la leyenda compacta visible", async ({ page }, testInfo) => {
+test("pantalla grande mantiene el buscador y la leyenda compacta visible", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La comprobación 1920 px se ejecuta una vez.");
   await page.setViewportSize({ width: 1920, height: 1080 });
   await loadPortal(page);
 
-  await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
-  await expect(page.locator("#citizen-panel")).toHaveAttribute("aria-hidden", "false");
+  await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#technical-drawer")).toBeHidden();
-  const citizenBox = await box(page, "#citizen-panel");
+  const searchBox = await box(page, ".map-search-card");
   const railBox = await box(page, "#right-tools-rail");
-  expect(citizenBox.right).toBeLessThan(railBox.left);
+  expect(searchBox.right).toBeLessThan(railBox.left);
   expect(railBox.right).toBeLessThanOrEqual(1920);
 });
 
-test("mobile conserva sus paneles off-canvas y oculta el toggle web", async ({ page }, testInfo) => {
+test("mobile conserva sus paneles off-canvas y barra inferior", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Validación exclusiva del breakpoint móvil.");
   await loadPortal(page);
 
-  await expect(page.locator("#citizen-panel-visibility-toggle")).toBeHidden();
   await expect(page.locator("#right-tools-rail")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toBeVisible();
-  await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
-  await page.locator("#mobile-citizen-toggle").click();
-  await expect(page.locator("body")).toHaveClass(/mobile-citizen-open/);
-  await expect(page.locator("#right-context-host")).toBeHidden();
-  await page.locator("#mobile-citizen-close").click();
-  await expect(page.locator("body")).not.toHaveClass(/mobile-citizen-open/);
-
   await expect(page.locator("#mobile-year-bar")).toBeVisible();
   await expect(page.locator("#mobile-level-bar")).toBeVisible();
   await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
-  await expect(page.locator("#map-legend-card")).toBeVisible();
-  expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe("mobile-period-control-slot");
-  expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe("mobile-opacity-control-slot");
 });
 
 test("mapas base ocupa el panel contextual sin superponerse", async ({ page }, testInfo) => {
@@ -606,7 +592,6 @@ test("mapas base no se superpone en una ventana web angosta", async ({ page }, t
   test.skip(testInfo.project.name !== "desktop", "La ventana angosta se valida una vez.");
   await page.setViewportSize({ width: 820, height: 800 });
   await loadPortal(page);
-  await expect(page.locator("body")).not.toHaveClass(/citizen-panel-open/);
   await assertBasemapControlHasDedicatedSpace(page);
 });
 
@@ -636,7 +621,7 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   await loadPortal(page);
 
   await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(5);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);
@@ -680,14 +665,12 @@ test("ubicación informa cuando el permiso es denegado", async ({ page }, testIn
   await expect(page.locator("#map-locate")).toBeEnabled();
 });
 
-test("catálogo vive en la barra superior y el panel ciudadano conserva una jerarquía compacta", async ({ page }) => {
+test("catálogo vive en la barra superior y la marca oficial se muestra legible", async ({ page }) => {
   await loadPortal(page);
   await expect(page.locator("#citizen-panel #btn-catalog")).toHaveCount(0);
   await expect(page.locator("#right-tools-rail #btn-catalog")).toHaveCount(0);
   await expect(page.locator("#site-topbar #btn-catalog")).toHaveCount(1);
-  await expect(page.locator("#citizen-panel h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
-  await expect(page.locator("#citizen-panel .citizen-intro-prompt")).toHaveText("Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.");
-  await expect(page.locator("#citizen-panel .citizen-intro-full, #citizen-panel .citizen-intro-mobile")).toHaveCount(0);
+  await expect(page.locator(".site-topbar-brand strong")).toHaveText("Fundación REDSA");
   expect(await page.locator("#download-summary-button").evaluate(element => element.hidden)).toBeTruthy();
 
   if ((page.viewportSize()?.width || 0) <= 768) await page.locator("#site-topbar-menu-toggle").click();
@@ -701,7 +684,7 @@ test("catálogo vive en la barra superior y el panel ciudadano conserva una jera
 
 test("Dark Matter activa realce cartográfico sin cambiar el tema de interfaz", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await page.locator('[data-right-panel="basemap"]').click();
+  await page.locator('[data-right-panel="layers"]').click();
   const options = page.locator(".basemap-control .leaflet-control-layers-base label");
   const dark = options.filter({ hasText: "Dark Matter" });
   const positron = options.filter({ hasText: "Positron" });
