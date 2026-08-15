@@ -914,6 +914,7 @@
 
 @media (max-width: 768px) {
     .right-control-shell {
+        z-index: var(--z-mobile-navigation);
         top: var(--mobile-context-top);
         right: var(--mobile-edge, 10px);
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)));
