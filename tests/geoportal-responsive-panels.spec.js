@@ -77,7 +77,11 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(analysisButton).toBeFocused();
   await expect(page.locator("#territory-sidebar")).toBeVisible();
 
-  if (isMobile) await layersButton.click();
+  if (isMobile) {
+    await page.locator("#mobile-sidebar-close").click();
+  } else {
+    await analysisButton.click();
+  }
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await page.locator("#legend-close-toggle").click();
   await expect(page.locator("#map-legend-card")).toBeHidden();
@@ -178,8 +182,8 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(card.locator("#variable-disclosure")).toHaveCount(1);
   await expect(card.locator("#event-layer-disclosure")).toHaveCount(1);
   await expect(card.locator("#infrastructure-disclosure")).toHaveCount(1);
-  await expect(card.locator(".layers-card-section")).toHaveCount(3);
-  await expect(card).toContainText("Capas del mapa");
+  await expect(card.locator(".layers-card-section")).toHaveCount(4);
+  await expect(card).toContainText("Capas disponibles");
   await expect(card.locator("#map-variable-count")).toHaveText("9");
   await expect(card.locator("#infrastructure-layer-count")).toHaveText("10");
   await expect(card.locator(".infrastructure-toggle-row")).toHaveCount(10);
@@ -195,7 +199,7 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(card.locator("#territory-opacity-control")).toHaveCount(0);
   await expect(page.locator("#territory-opacity-control")).toHaveCount(1);
   expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe(
-    testInfo.project.name === "mobile" ? "mobile-opacity-control-slot" : "map-toolbar-opacity-slot"
+    testInfo.project.name === "mobile" ? "mobile-opacity-control-slot" : "view-settings-opacity-slot"
   );
   await expect(page.locator(".opacity-control")).toHaveCount(0);
   await expect(events).not.toHaveAttribute("open", "");
@@ -296,12 +300,13 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
   });
 
   await analysisTab.click();
-  await expect(body).toHaveClass(/mobile-sidebar-open/);
+  await expect(body).toHaveClass(/right-context-open/);
+  await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "analysis");
   await expect(sidebar).toHaveAttribute("aria-hidden", "false");
   await expect.poll(async () => (await box(page, "#territory-sidebar")).left).toBeGreaterThanOrEqual(0);
 
-  await page.locator("#mobile-sidebar-close").click();
-  await expect(body).not.toHaveClass(/mobile-sidebar-open/);
+  await analysisTab.click();
+  await expect(body).not.toHaveClass(/right-context-open/);
   await expect(sidebar).toHaveAttribute("aria-hidden", "true");
 });
 
@@ -342,7 +347,7 @@ test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar
   });
   expect(legendFlow.groupHeight).toBeGreaterThan(0);
   expect(legendFlow.cardTop).toBeGreaterThanOrEqual(legendFlow.groupBottom);
-  await expect(card).toContainText("Ver análisis completo");
+  await expect(card).toContainText("pestaña ANÁLISIS");
   await expect(card.locator(".profile-shortcut-value")).toHaveCount(0);
   const geometry = await measure();
   expect(geometry.cardBox.left).toBeGreaterThanOrEqual(geometry.hostBox.left);
@@ -387,8 +392,8 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   await expect(page.locator(".legend-ordinal-labels span")).toHaveCount(5);
   await expect(page.locator(".legend-ordinal-labels")).toContainText("≤ 160");
   await expect(page.locator(".legend-ordinal-labels")).toContainText("> 4500");
-  await expect(page.locator(".territory-level-segments button")).toHaveCount(4);
-  await expect(page.locator('.territory-level-segments button[aria-label="Parroquias"]')).toHaveCount(1);
+  await expect(page.locator("#territory-level-select option")).toHaveCount(4);
+  await expect(page.locator('#territory-level-select option[value="parish"]')).toHaveCount(1);
   expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-level-slot");
   expect(await page.locator(".timeline-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-year-slot");
   expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe(
@@ -411,7 +416,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   await expect(page.locator("#timeline-marks .timeline-mark").first()).toHaveText(/^20\d{2}$/);
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2024);
-  await expect(page.locator("#timeline-badge")).toHaveText("2024");
+  await expect(page.locator(".timeline-badge")).toHaveText("2024");
   await expect(page.locator('#mobile-year-bar [data-year="2024"]')).toHaveClass(/my-selected/);
 
   await page.locator('[data-right-panel="layers"]').click();
@@ -430,16 +435,14 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   await expect(page.locator("#technical-drawer #territory-opacity-control")).toHaveCount(0);
   await expect(page.locator(".timeline-control")).toContainText("Año");
   await expect(page.locator(".timeline-help")).toHaveCount(0);
-  await expect(page.locator('.control-info-trigger[data-sigla="Año de los datos"]')).toHaveAttribute("data-custom-text", /Mueve el control/);
   await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
 });
 
 test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await expect(page.locator("#territory-level-status")).toHaveClass(/sr-only/);
+  await expect(page.locator('label[for="territory-level-select"]')).toHaveClass(/sr-only/);
   await expect(page.locator("#period-mode-note")).toHaveClass(/sr-only/);
   await expect(page.locator(".timeline-help")).toHaveCount(0);
-  await expect(page.locator("#territory-level-info")).toHaveAttribute("data-custom-text", /Nivel visible:/);
   await expect(page.locator("#period-mode-info")).toHaveAttribute("data-custom-text", /Muestra únicamente/);
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
@@ -476,15 +479,14 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
 test("panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles", async ({ page }) => {
   await loadPortal(page);
 
-  await expect(page.locator(".citizen-brand h1")).toHaveText("Observatorio de Seguridad Vial y Movilidad Sostenible");
-  await expect(page.locator("#citizen-map-description")).toHaveClass(/sr-only/);
-  await expect(page.locator("#citizen-map-info")).toHaveAttribute("data-custom-text", /accidentes|siniestros/i);
+  await expect(page.locator(".site-topbar-brand strong")).toHaveText("Fundación REDSA");
+  await expect(page.locator(".site-topbar-brand small")).toHaveText("Observatorio de Seguridad Vial");
   await expect(page.locator(".citizen-national-info")).toHaveAttribute("data-custom-text", /Fuente:/);
   await expect(page.locator(".citizen-national-meta")).not.toContainText("Fuente:");
 
   const hierarchy = await page.evaluate(() => {
     const main = getComputedStyle(document.querySelector(".citizen-national-value"));
-    const support = getComputedStyle(document.querySelector("#citizen-map-meta"));
+    const support = getComputedStyle(document.querySelector(".citizen-national-meta"));
     return {
       mainSize: Number.parseFloat(main.fontSize),
       supportSize: Number.parseFloat(support.fontSize),
@@ -719,8 +721,7 @@ test("la superficie territorial se oculta solo en zoom profundo y restaura la op
   expect(normalStyle).not.toBeNull();
   expect(normalStyle.fillOpacity).toBeGreaterThan(0);
   await expect(page.locator("#territory-surface-auto-hide-note")).toBeHidden();
-  await testInfo.attach("parroquia-zoom-15-relleno", { body: await page.screenshot(), contentType: "image/png" });
-
+  await page.locator('[data-right-panel="settings"]').click();
   await page.locator("#territory-opacity-slider").fill("55");
   await page.evaluate(() => window.__redsaAudit.setZoom(17));
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().territorySurfaceAutoHidden)).toBeTruthy();

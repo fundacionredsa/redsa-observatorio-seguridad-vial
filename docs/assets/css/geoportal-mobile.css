@@ -943,6 +943,7 @@
         width: auto;
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
         max-height: calc(100dvh - var(--site-topbar-mobile-height) - 110px);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 1);
     }
 
     .map-search-card {

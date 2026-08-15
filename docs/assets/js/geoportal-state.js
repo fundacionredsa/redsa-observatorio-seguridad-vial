@@ -569,7 +569,7 @@
                     mapToolbarLevelSlot.appendChild(levelControl);
                 }
             }
-            const periodTarget = mobileMediaQuery.matches ? mobilePeriodControlSlot : (viewSettingsPeriodSlot || mapToolbarPeriodSlot);
+            const periodTarget = mobileMediaQuery.matches ? mobilePeriodControlSlot : (mapToolbarPeriodSlot || viewSettingsPeriodSlot);
             if (periodControl && periodTarget && periodControl.parentElement !== periodTarget) {
                 periodTarget.appendChild(periodControl);
             }
@@ -586,7 +586,7 @@
                     playTarget.appendChild(timelinePlayButton);
                 }
             }
-            const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : (viewSettingsOpacitySlot || mapToolbarOpacitySlot);
+            const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : (mapToolbarOpacitySlot || viewSettingsOpacitySlot);
             if (territoryOpacityControl && opacityTarget && territoryOpacityControl.parentElement !== opacityTarget) {
                 opacityTarget.appendChild(territoryOpacityControl);
             }
