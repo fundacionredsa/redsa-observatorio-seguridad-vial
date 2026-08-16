@@ -64,7 +64,7 @@ test("aviso accesible explica el ajuste al último año disponible", async ({ pa
   await waitForPortal(page);
   await openTechnicalPanel(page, testInfo.project.name === "mobile");
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expect(page.locator("#timeline-badge")).toHaveText("2024");
+  await expect(page.locator("#map-year-value")).toHaveText("2024");
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
   await expect(page.locator("#timeline-year-adjustment-note")).not.toHaveAttribute("hidden", "");
   await expect(page.locator("#timeline-year-adjustment-note")).toContainText("El año cambió a 2024");
@@ -247,17 +247,35 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
 });
 
 test("modo histórico desactiva Siniestros ANT sin dejar un año individual visible", async ({ page }, testInfo) => {
+  const isMobile = testInfo.project.name === "mobile";
   await waitForPortal(page);
-  await openTechnicalPanel(page, testInfo.project.name === "mobile");
+  await openTechnicalPanel(page, isMobile);
   await page.locator("#event-layer-disclosure summary").click();
   await page.locator("#ant-layer-toggle").check();
   await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
-  if (testInfo.project.name === "mobile") {
-    await page.evaluate(() => window.setRightContextPanel(null, false));
+  if (isMobile) {
+    await page.evaluate(() => {
+      window.setRightContextPanel(null, false);
+      window.hideUnifiedLegend?.();
+    });
   }
 
-  await page.locator("[data-period-mode='accumulated']").click();
-  await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
+  if (!isMobile) {
+    await page.locator("#right-tab-settings").click();
+  }
+  const periodAccumulated = page.locator(
+    isMobile
+      ? "#mobile-period-control-slot [data-period-mode='accumulated']"
+      : "#view-settings-panel [data-period-mode='accumulated']"
+  );
+  const periodYear = page.locator(
+    isMobile
+      ? "#mobile-period-control-slot [data-period-mode='year']"
+      : "#view-settings-panel [data-period-mode='year']"
+  );
+
+  await periodAccumulated.click();
+  await expect(periodAccumulated).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#ant-layer-toggle")).toBeDisabled();
   await expect(page.locator("#ant-layer-toggle")).not.toBeChecked();
   await expect(page.locator("#ant-layer-status")).toContainText("solo por año");
@@ -270,7 +288,7 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
   expect(await page.locator(".leaflet-antHeat-pane canvas").count()).toBe(0);
 
-  await page.locator("[data-period-mode='year']").click();
+  await periodYear.click();
   await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
   await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");
   state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());

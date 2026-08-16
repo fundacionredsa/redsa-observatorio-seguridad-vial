@@ -320,7 +320,7 @@ function onEachProvinceFeature(feature, layer) {
             });
         }
 
-        function renderOrdinalLegendScale(colors, labels) {
+        function renderOrdinalLegendScale(colors, labels, fieldLabel = "") {
             const categoryWidth = 100 / colors.length;
             const stops = colors.flatMap((color, index) => {
                 const start = index * categoryWidth;
@@ -336,8 +336,10 @@ function onEachProvinceFeature(feature, layer) {
                 ];
             }).join(", ");
             const accessibleScale = labels.map((label, index) => `${label}: ${colors[index]}`).join("; ");
+            const fieldHeader = fieldLabel ? `<div class="legend-scale-field-name">${fieldLabel}</div>` : "";
             return `
                 <div class="legend-ordinal-scale" role="img" aria-label="Escala de colores por rangos: ${accessibleScale}">
+                    ${fieldHeader}
                     <span class="legend-ordinal-bar" style="background:linear-gradient(90deg, ${stops});"></span>
                     <span class="legend-ordinal-labels" style="--legend-bin-count:${labels.length}">
                         ${labels.map(label => `<span title="${label}">${label}</span>`).join("")}
@@ -528,8 +530,9 @@ function onEachProvinceFeature(feature, layer) {
                     `;
 
                     const binLabels = getLegendBinLabels(bins, displayBins, config, formatFunc);
+                    const fieldLabel = config.fieldLabel || (config.unidad ? `${config.displayLabel || config.label} (${config.unidad})` : (config.displayLabel || config.label));
                     if (bins.length && colors.length) {
-                        itemsHtml += renderOrdinalLegendScale(colors.slice(0, binLabels.length), binLabels);
+                        itemsHtml += renderOrdinalLegendScale(colors.slice(0, binLabels.length), binLabels, fieldLabel);
                     }
 
                     if (config.zeroAsNoMapping) {
@@ -671,6 +674,7 @@ function onEachProvinceFeature(feature, layer) {
 
         function updateTerritoryLevelControl() {
             const status = document.getElementById("territory-level-status");
+            const levelSelect = document.getElementById("territory-level-select");
             document.querySelectorAll("[data-level-mode]").forEach(button => {
                 const isActive = button.dataset.levelMode === territoryLevelMode;
                 button.classList.toggle("active", isActive);
@@ -682,6 +686,17 @@ function onEachProvinceFeature(feature, layer) {
                 button.classList.toggle("level-unavailable", !levelSupported);
                 button.title = levelSupported ? "" : `"${config.label}" no está disponible en ${LEVEL_LABELS[levelKey]}`;
             });
+            if (levelSelect) {
+                levelSelect.value = territoryLevelMode;
+                [...levelSelect.options].forEach(option => {
+                    const levelKey = option.value;
+                    const config = VARIABLE_CONFIGS[selectedVariable];
+                    const levelSupported = levelKey === "auto" || !config?.levels || config.levels.includes(levelKey);
+                    option.disabled = !levelSupported;
+                });
+                const selectedLabel = levelSelect.selectedOptions[0]?.textContent || "Automático";
+                levelSelect.setAttribute("aria-label", `Nivel territorial visible: ${selectedLabel}`);
+            }
             if (status) {
                 const modeText = territoryLevelMode === "auto" ? "automático" : "fijado manualmente";
                 status.textContent = `Nivel visible: ${LEVEL_LABELS[activeTerritoryLevel] || "cargando"} · ${modeText}`;

@@ -2,14 +2,9 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 
 async function openCitizenPanelWhenNeeded(page) {
-    if ((page.viewportSize()?.width || 0) <= 768) {
-        await page.locator('#mobile-citizen-toggle').click();
-        await expect(page.locator('body')).toHaveClass(/mobile-citizen-open/);
-        return;
-    }
-    if (await page.locator('#citizen-panel').getAttribute('aria-hidden') === 'true') {
-        await page.locator('#citizen-panel-visibility-toggle').click();
-        await expect(page.locator('body')).toHaveClass(/citizen-panel-open/);
+    if ((page.viewportSize()?.width || 0) <= 768 && !await page.locator('#site-topbar-actions').isVisible()) {
+        await page.locator('#site-topbar-menu-toggle').click();
+        await expect(page.locator('#site-topbar-actions')).toBeVisible();
     }
 }
 
@@ -93,13 +88,12 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(popover.locator('.driver-popover-title')).toContainText('Bienvenido al Observatorio');
             const tourAudit = await page.evaluate(() => window.__redsaTourAudit);
             expect(tourAudit).toMatchObject({
-                stepCount: 13,
+                stepCount: 12,
                 coversCatalogDownloads: true,
                 coversAnalysis: true,
                 coversVariablesAndLayers: true
             });
             expect(tourAudit.titles).toContain('Catálogo y descarga de datos');
-            expect(tourAudit.titles).toContain('Ficha PDF del territorio');
             expect(tourAudit.titles).toContain('Siniestros en el lugar donde ocurrieron');
             expect(tourAudit.titles).toContain('Leyenda siempre a la vista');
             expect(tourAudit.titles).toContain('Controles permanentes del mapa');
@@ -108,7 +102,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 await expect(popover.locator('.driver-popover-title')).toHaveText(expectedTitle);
                 if (expectedTitle === 'Controles permanentes del mapa') {
                     const geometry = await page.evaluate(() => {
-                        const targetElement = document.querySelector('#map-controls-toolbar');
+                        const targetElement = document.querySelector('.site-topbar-center-controls') || document.querySelector('#mobile-level-bar');
                         const target = targetElement?.getBoundingClientRect();
                         const box = rect => rect && ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
                         return {
@@ -127,7 +121,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const isMobile = (page.viewportSize()?.width || 0) <= 768;
             test.skip(!isMobile, 'Tour test is for mobile');
 
-            await page.evaluate(() => window.setMobilePanel?.('citizen', true));
+            await page.evaluate(() => window.setMobilePanel?.('sidebar', true));
             await openSiteMenuWhenNeeded(page);
             await page.locator('#btn-tour').click();
 
@@ -137,16 +131,15 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             const targets = [
                 null,
                 '#territory-search-form',
-                '#open-analysis-button',
-                '[data-right-panel="layers"]',
+                '#right-tab-analysis',
+                '#right-tab-layers',
                 '#infrastructure-disclosure',
                 '#map-legend-card',
-                '[data-right-panel="basemap"]',
+                '#right-tab-layers',
                 '#event-layer-disclosure',
                 '#mobile-level-bar',
                 '#site-methodology-toggle',
                 '#btn-catalog',
-                '#citizen-panel',
                 '#open-institutional-button'
             ];
 
@@ -319,25 +312,22 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             expect(hrefs.every(href => href.startsWith('metodologia/#'))).toBeTruthy();
             expect(hrefs.some(href => href.endsWith('.md') || href.endsWith('.geojson'))).toBeFalsy();
             await expect(page.locator('#technical-drawer .technical-links')).toHaveCount(0);
-            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
-                'Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible'
-            );
-            await expect(page.locator('#citizen-panel .citizen-intro-prompt')).toContainText(
-                'una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA'
-            );
-            await expect(page.locator('#citizen-panel h1')).toHaveText('Observatorio de Seguridad Vial y Movilidad Sostenible');
-            await expect(page.locator('#citizen-panel')).toContainText('info@fundacionredsa.org');
+            await expect(page.locator('.site-topbar-brand')).toContainText('Observatorio de Seguridad Vial');
+            await expect(page.locator('.site-topbar-brand')).toContainText('Fundación REDSA');
+            await expect(page.locator('.site-topbar-contact')).toHaveAttribute('href', 'mailto:info@fundacionredsa.org');
             await expect(page.locator('body')).not.toContainText('Observatorio REDSA');
         });
     });
 
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
+            const isMobile = test.info().project.name === 'mobile';
+            if (!isMobile) {
+                await page.locator('#right-tab-settings').click();
+            }
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
-            const expectedSlot = test.info().project.name === 'mobile'
-                ? 'mobile-opacity-control-slot'
-                : 'map-toolbar-opacity-slot';
+            const expectedSlot = isMobile ? 'mobile-opacity-control-slot' : 'view-settings-opacity-slot';
             expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe(expectedSlot);
 
             // Set to 50%
@@ -354,26 +344,28 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(territoryPane).toHaveCSS('opacity', '0.5', { timeout: 5000 });
             await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
-            // Mapas base vive en el mismo host contextual, no como control flotante.
-            await page.locator('[data-right-panel="basemap"]').click();
-            const layerControl = page.locator('#basemap-context-panel .basemap-control');
-            await expect(layerControl).toBeVisible();
+            if (!isMobile) {
+                // Mapas base vive en la pestaña Capas, no como control flotante.
+                await page.locator('[data-right-panel="layers"]').click();
+                const layerControl = page.locator('#technical-drawer .basemap-control');
+                await expect(layerControl).toBeVisible();
 
-            const controlsClearDrawer = await page.evaluate(() => {
-                const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
-                const host = document.querySelector('#right-context-host').getBoundingClientRect();
-                const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
-                const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
-                return {
-                    zoom: box(zoom),
-                    host: box(host),
-                    rail: box(rail)
-                };
-            });
-            const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBeFalsy();
-            expect(intersects(controlsClearDrawer.host, controlsClearDrawer.rail)).toBeFalsy();
-            expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.rail)).toBeTruthy();
+                const controlsClearDrawer = await page.evaluate(() => {
+                    const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
+                    const host = document.querySelector('#right-context-host').getBoundingClientRect();
+                    const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
+                    const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
+                    return {
+                        zoom: box(zoom),
+                        host: box(host),
+                        rail: box(rail)
+                    };
+                });
+                const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+                expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBe(false);
+                expect(controlsClearDrawer.zoom.left).toBeGreaterThanOrEqual(controlsClearDrawer.rail.left - 1);
+                expect(controlsClearDrawer.zoom.right).toBeLessThanOrEqual(controlsClearDrawer.rail.right + 1);
+            }
             await expect(page.locator('.opacity-control')).toHaveCount(0);
         });
     });
@@ -397,22 +389,25 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                     return { background: style.backgroundColor, color: style.color };
                 };
                 return {
-                    drawer: colors('#technical-drawer'),
-                    selector: colors('#layers-card'),
-                    profile: colors('.perfil-fallecidos-card'),
-                    legend: colors('#right-context-host')
+                    sidebar: colors('#territory-sidebar'),
+                    search: colors('.map-search-card'),
+                    legend: colors('#map-legend-card')
                 };
             });
             for (const surface of Object.values(lightSurfaces)) {
-                const rgb = surface.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const rawNumbers = surface.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const rgb = surface.background.includes('color(srgb') ? rawNumbers.map(n => n * 255) : rawNumbers;
                 expect(Math.min(...rgb)).toBeGreaterThan(230);
                 const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
                 expect(Math.max(...textRgb)).toBeLessThan(100);
             }
 
             if (isMobile) {
-                await page.evaluate(() => window.closeMobilePanels?.());
-                await page.locator('[data-right-panel="layers"]').click();
+                await page.evaluate(() => {
+                    document.querySelector('.site-topbar-actions')?.classList.remove('is-open');
+                    window.closeMobilePanels?.();
+                });
+                await page.locator('#active-layers-shortcut, [data-right-panel="layers"]').first().click();
                 const mobileDrawerHeader = await page.evaluate(() => {
                     const colors = selector => {
                         const style = getComputedStyle(document.querySelector(selector));
@@ -424,7 +419,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                         close: colors('#technical-drawer .drawer-close')
                     };
                 });
-                const headerRgb = mobileDrawerHeader.header.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const headerRaw = mobileDrawerHeader.header.background.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
+                const headerRgb = mobileDrawerHeader.header.background.includes('color(srgb') ? headerRaw.map(n => n * 255) : headerRaw;
                 expect(Math.min(...headerRgb)).toBeGreaterThan(230);
                 for (const surface of Object.values(mobileDrawerHeader)) {
                     const textRgb = surface.color.match(/\d+(?:\.\d+)?/g).slice(0, 3).map(Number);
@@ -436,11 +432,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             // First click changes to dark and persists the choice.
             await page.evaluate(() => window.__redsaAudit.clearSelection());
+            await openCitizenPanelWhenNeeded(page);
             await btnTheme.click();
             await expect(page.locator('body')).not.toHaveClass(/light-theme/);
             expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('false');
 
             // Second click returns to the default light theme.
+            await openCitizenPanelWhenNeeded(page);
             await btnTheme.click();
             await expect(page.locator('body')).toHaveClass(/light-theme/);
             expect(await page.evaluate(() => localStorage.getItem('redsa_light_theme'))).toBe('true');
@@ -516,7 +514,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await page.waitForTimeout(1600);
 
             // Year should have advanced
-            const badge = page.locator('#timeline-badge');
+            const badge = page.locator('#map-year-value, #timeline-badge, .timeline-badge').first();
             const newYearText = await badge.innerText();
             expect(Number(newYearText)).toBeGreaterThan(2019);
 

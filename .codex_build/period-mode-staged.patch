@@ -1,0 +1,337 @@
+﻿diff --git a/docs/assets/css/geoportal-experience.css b/docs/assets/css/geoportal-experience.css
+index b89074d..26fa5f5 100644
+--- a/docs/assets/css/geoportal-experience.css
++++ b/docs/assets/css/geoportal-experience.css
+@@ -1110,6 +1110,15 @@ body.technical-drawer-open .technical-drawer {
+     margin: 0;
+ }
+ 
++.event-layer-toggle.period-unavailable {
++    border-style: dashed;
++    opacity: 0.66;
++}
++
++.event-layer-toggle.period-unavailable > input {
++    cursor: not-allowed;
++}
++
+ .event-layer-info {
+     margin-left: auto;
+     border: 0;
+diff --git a/docs/assets/js/geoportal-ant-layer.js b/docs/assets/js/geoportal-ant-layer.js
+index e047c7a..58c5ab7 100644
+--- a/docs/assets/js/geoportal-ant-layer.js
++++ b/docs/assets/js/geoportal-ant-layer.js
+@@ -50,6 +50,7 @@
+         initialized: false,
+         active: false,
+         mode: "heat",
++        periodMode: "year",
+         year: null,
+         loadedYear: null,
+         status: "idle",
+@@ -123,7 +124,11 @@
+         if (Number(audit.invalidDate || 0) > 0) {
+             details.push(`fecha no publicable: ${Number(audit.invalidDate).toLocaleString("es-EC")}`);
+         }
+-        return `${Number(audit.publishedLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} puntos publicados; ${details.join("; ")}.`;
++        return `${periodForYear(year)}: ${Number(audit.publishedLocations).toLocaleString("es-EC")} de ${Number(audit.totalEvents).toLocaleString("es-EC")} puntos publicados; ${details.join("; ")}.`;
++    }
++
++    function isAccumulatedMode() {
++        return state.periodMode === "accumulated";
+     }
+ 
+     function escapeHtml(value) {
+@@ -217,10 +222,11 @@
+         const statusNode = document.getElementById("ant-layer-status");
+         if (statusNode) {
+             const messages = {
+-                idle: "Activa la capa para descargar únicamente el año seleccionado.",
++                idle: `Modo anual · ${periodForYear()}. Activa la capa para descargar únicamente este periodo.`,
+                 loading: `Descargando y preparando ${state.year}…`,
+                 ready: coverageText(),
+                 unavailable: `Sin puntos para ${state.year}. Disponibles: ${availableYears().join(", ")}.`,
++                period_unavailable: "Esta capa se muestra solo por año; no está disponible en modo acumulado. Vuelve a “Año seleccionado” para activarla.",
+                 error: "No se pudo cargar la capa. Intenta nuevamente.",
+                 cancelled: "Carga cancelada al cambiar de año."
+             };
+@@ -233,14 +239,22 @@
+     function syncControls() {
+         const toggle = document.getElementById("ant-layer-toggle");
+         const jumpButton = document.getElementById("ant-jump-year");
+-        if (toggle) toggle.checked = state.active;
++        if (toggle) {
++            toggle.checked = state.active;
++            toggle.disabled = isAccumulatedMode();
++            toggle.setAttribute("aria-disabled", String(isAccumulatedMode()));
++            toggle.title = isAccumulatedMode()
++                ? "Disponible únicamente en modo Año seleccionado"
++                : "Mostrar los siniestros ANT del año seleccionado";
++        }
++        document.querySelector(".event-layer-toggle")?.classList.toggle("period-unavailable", isAccumulatedMode());
+         const latestYear = Math.max(...availableYears());
+-        if (jumpButton) jumpButton.hidden = !state.active || isYearAvailable() || state.year === latestYear;
++        if (jumpButton) jumpButton.hidden = isAccumulatedMode() || !state.active || isYearAvailable() || state.year === latestYear;
+         document.querySelectorAll("[data-ant-mode]").forEach(button => {
+             const active = button.dataset.antMode === state.mode;
+             button.classList.toggle("active", active);
+             button.setAttribute("aria-pressed", String(active));
+-            button.disabled = !state.active || state.status !== "ready" || state.year !== state.loadedYear;
++            button.disabled = isAccumulatedMode() || !state.active || state.status !== "ready" || state.year !== state.loadedYear;
+         });
+     }
+ 
+@@ -587,9 +601,11 @@
+             return;
+         }
+         if (!state.active || state.status !== "ready" || state.year !== state.loadedYear || !state.worker) {
+-            if (status) status.textContent = !isYearAvailable()
+-                ? `Este análisis puntual está disponible en ${availableYears().join(", ")}.`
+-                : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
++            if (status) status.textContent = isAccumulatedMode()
++                ? "El análisis de Siniestros (ANT) se muestra solo por año y no está disponible en modo acumulado."
++                : !isYearAvailable()
++                    ? `Este análisis puntual está disponible en ${availableYears().join(", ")}.`
++                    : "Activa “Siniestros (ANT)” en Datos y capas para consultar los patrones de esta unidad.";
+             if (container) container.hidden = true;
+             return;
+         }
+@@ -642,6 +658,14 @@
+     }
+ 
+     function setActive(active) {
++        if (active && isAccumulatedMode()) {
++            state.active = false;
++            removeCurrentLayer();
++            setStatus("period_unavailable");
++            syncControls();
++            document.getElementById("ant-mode-controls")?.toggleAttribute("hidden", true);
++            return;
++        }
+         state.active = Boolean(active);
+         if (!state.active) {
+             cancelPending("cancelled");
+@@ -678,6 +702,11 @@
+ 
+     function syncYear(year) {
+         state.year = Number(year);
++        if (isAccumulatedMode()) {
++            setStatus("period_unavailable");
++            syncControls();
++            return;
++        }
+         if (!state.active) return;
+         if (!isYearAvailable()) {
+             cancelPending("cancelled");
+@@ -699,6 +728,29 @@
+         requestTerritorySummary();
+     }
+ 
++    function syncPeriodMode(mode) {
++        const nextMode = mode === "accumulated" ? "accumulated" : "year";
++        if (state.periodMode === nextMode) {
++            syncControls();
++            if (isAccumulatedMode()) setStatus("period_unavailable");
++            return;
++        }
++
++        state.periodMode = nextMode;
++        if (isAccumulatedMode()) {
++            cancelPending("cancelled");
++            state.active = false;
++            removeCurrentLayer();
++            setStatus("period_unavailable");
++            document.getElementById("ant-mode-controls")?.toggleAttribute("hidden", true);
++        } else {
++            setStatus("idle");
++        }
++        syncControls();
++        requestTerritorySummary();
++        window.REDSAOverlayState?.notify();
++    }
++
+     function legendEntry() {
+         if (!state.active) return null;
+         const available = isYearAvailable();
+@@ -737,6 +789,7 @@
+         state.map = context.map;
+         state.pane = context.pane || "eventPane";
+         state.year = Number(context.getYear());
++        state.periodMode = context.getPeriodMode?.() === "accumulated" ? "accumulated" : "year";
+         state.bandwidthProfile = HEAT_BANDWIDTH_PROFILES[context.config.heatBandwidthProfile]
+             ? context.config.heatBandwidthProfile
+             : "focused";
+@@ -751,6 +804,7 @@
+         state.map.on("mousemove", handleAntMapMouseMove);
+         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
+         setStatus("idle");
++        if (isAccumulatedMode()) setStatus("period_unavailable");
+         syncControls();
+     }
+ 
+@@ -758,6 +812,7 @@
+         return {
+             active: state.active,
+             mode: state.mode,
++            periodMode: state.periodMode,
+             year: state.year,
+             loadedYear: state.loadedYear,
+             status: state.status,
+@@ -773,6 +828,7 @@
+     window.REDSAAntLayer = Object.freeze({
+         init,
+         syncYear,
++        syncPeriodMode,
+         syncTerritory,
+         setActive,
+         setMode,
+diff --git a/docs/assets/js/geoportal-app.js b/docs/assets/js/geoportal-app.js
+index 3d40a0c..5dc93c1 100644
+--- a/docs/assets/js/geoportal-app.js
++++ b/docs/assets/js/geoportal-app.js
+@@ -369,6 +369,7 @@
+                         pane: "eventPane",
+                         config: antEventConfig,
+                         getYear: () => selectedYear,
++                        getPeriodMode: () => selectedPeriodMode,
+                         setYear: year => setSelectedYearAndRefresh(year),
+                         selectTerritoryBelow: selectTerritoryBelowInfrastructure,
+                         onStateChange: () => updateLegend()
+@@ -433,6 +434,7 @@
+                     updateMapLevelNote(level);
+                     updateLegend();
+                     window.REDSAInstitutional?.refresh();
++                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+                 });
+ 
+                 document.getElementById("map-year-slider").addEventListener("input", function() {
+@@ -449,6 +451,7 @@
+                     if (currentProfileProps) showProfileCard(currentProfileProps, null);
+                     window.REDSAInstitutional?.refresh();
+                     window.REDSAAntLayer?.syncYear(selectedYear);
++                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+                 });
+ 
+                 document.addEventListener("click", (e) => {
+diff --git a/docs/assets/js/geoportal-state.js b/docs/assets/js/geoportal-state.js
+index 5d0da60..74e84a4 100644
+--- a/docs/assets/js/geoportal-state.js
++++ b/docs/assets/js/geoportal-state.js
+@@ -510,6 +510,7 @@
+                         : "Muestra únicamente el año marcado en la línea de tiempo.")
+                     : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
+             }
++            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+         }
+ 
+         function getFatalitiesCoverageWarning(properties, year = selectedYear) {
+@@ -585,6 +586,7 @@
+             if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
+             window.REDSAInstitutional?.refresh();
+             window.REDSAAntLayer?.syncYear(selectedYear);
++            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+         }
+ 
+         function advanceToNextTimelineYear() {
+diff --git a/documentacion/auditorias/AUDITORIA_FACTIBILIDAD_ACUMULADO_ANT.md b/documentacion/auditorias/AUDITORIA_FACTIBILIDAD_ACUMULADO_ANT.md
+new file mode 100644
+index 0000000..afdf98f
+--- /dev/null
++++ b/documentacion/auditorias/AUDITORIA_FACTIBILIDAD_ACUMULADO_ANT.md
+@@ -0,0 +1,56 @@
++# Auditoría de factibilidad del modo acumulado de Siniestros (ANT)
++
++Fecha de medición: 2026-07-28.
++
++## Alcance
++
++Se midió la carga conjunta de los derivados públicos ANT de 2024, 2025 y
++enero-junio de 2026: 52.088 puntos. La prueba reprodujo el procesamiento
++real del geoportal: descarga, decodificación JSON, combinación de
++`features`, construcción del índice Supercluster y primer render de calor
++o agrupaciones con Leaflet.
++
++El escenario móvil usa el perfil acordado para las auditorías del
++geoportal: viewport 390 x 844, CPU 4x, descarga de 1,6 Mbps y 150 ms de
++latencia.
++
++## Resultados
++
++| Métrica | Escritorio | Móvil restringido |
++|---|---:|---:|
++| Transferencia combinada | 1.082.032 bytes | 1.082.032 bytes |
++| Tamaño decodificado | 10.365.985 bytes | 10.365.985 bytes |
++| Descarga | 573 ms | 8.115 ms |
++| Parseo JSON | 275 ms | 1.127 ms |
++| Índice Supercluster | 551 ms | 1.901 ms |
++| Primer render de calor | 84 ms | 723 ms |
++| Consulta + primer render de agrupaciones | 116 ms | 1.473 ms |
++| Total hasta calor utilizable | 1.483 ms | 11.866 ms |
++| Total hasta agrupaciones utilizables | 1.514 ms | 12.616 ms |
++
++Los tiempos son una corrida controlada y deben interpretarse como orden
++de magnitud, no como una garantía para todos los dispositivos.
++
++## Decisión
++
++No se habilita la combinación puntual acumulada en esta versión. En el
++escenario móvil representativo tarda aproximadamente cuatro veces más que
++la carga opt-in de un año que el proyecto ya aceptó como límite práctico.
++También triplica el volumen decodificado y el trabajo de indexación en
++memoria.
++
++Cuando el periodo territorial está en **Acumulado histórico**, la capa
++**Siniestros (ANT)** se desactiva, no puede activarse y explica:
++
++> Esta capa se muestra solo por año; no está disponible en modo acumulado.
++
++La coropleta territorial mantiene su acumulación histórica. Al volver a
++**Año seleccionado**, el control puntual se habilita nuevamente sin
++activar ni descargar datos por sorpresa.
++
++## Revisión futura
++
++La decisión puede revisarse si se adopta un formato de consulta espacial
++por teselas, como PMTiles, que evite descargar e indexar todos los años en
++el dispositivo. La evaluación debe repetir este mismo perfil y conservar
++la carga diferida.
+diff --git a/tests/geoportal-ant-layer.spec.js b/tests/geoportal-ant-layer.spec.js
+index e151aa2..1da83f1 100644
+--- a/tests/geoportal-ant-layer.spec.js
++++ b/tests/geoportal-ant-layer.spec.js
+@@ -131,6 +131,34 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo
+   expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe(before);
+ });
+ 
++test("modo histórico desactiva Siniestros ANT sin dejar un año individual visible", async ({ page }, testInfo) => {
++  await waitForPortal(page);
++  await openTechnicalPanel(page, testInfo.project.name === "mobile");
++  await page.locator("#event-layer-disclosure summary").click();
++  await page.locator("#ant-layer-toggle").check();
++  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
++
++  await page.locator("[data-period-mode='accumulated']").click();
++  await expect(page.locator("[data-period-mode='accumulated']")).toHaveAttribute("aria-pressed", "true");
++  await expect(page.locator("#ant-layer-toggle")).toBeDisabled();
++  await expect(page.locator("#ant-layer-toggle")).not.toBeChecked();
++  await expect(page.locator("#ant-layer-status")).toContainText("solo por año");
++  await expect(page.locator("#ant-layer-status")).toContainText("no está disponible en modo acumulado");
++
++  let state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
++  expect(state.periodMode).toBe("accumulated");
++  expect(state.active).toBe(false);
++  expect(state.status).toBe("period_unavailable");
++  expect(await page.locator(".leaflet-event-pane canvas").count()).toBe(0);
++
++  await page.locator("[data-period-mode='year']").click();
++  await expect(page.locator("#ant-layer-toggle")).toBeEnabled();
++  await expect(page.locator("#ant-layer-status")).toContainText("Modo anual");
++  state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
++  expect(state.periodMode).toBe("year");
++  expect(state.active).toBe(false);
++});
++
+ test("el análisis territorial ANT usa el punto seleccionado y lenguaje metodológico", async ({ page }, testInfo) => {
+   await waitForPortal(page);
+   await openTechnicalPanel(page, testInfo.project.name === "mobile");

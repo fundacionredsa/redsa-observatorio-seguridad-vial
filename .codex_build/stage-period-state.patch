@@ -1,0 +1,20 @@
+diff --git a/docs/assets/js/geoportal-state.js b/docs/assets/js/geoportal-state.js
+index 5d0da60..0000000 100644
+--- a/docs/assets/js/geoportal-state.js
++++ b/docs/assets/js/geoportal-state.js
+@@ -510,6 +510,7 @@
+                         : "Muestra únicamente el año marcado en la línea de tiempo.")
+                     : "Este indicador no se suma entre años; se muestra su año o corte disponible.";
+             }
++            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+         }
+ 
+         function getFatalitiesCoverageWarning(properties, year = selectedYear) {
+@@ -585,6 +586,7 @@
+             if (typeof showProfileCard === "function" && typeof currentProfileProps !== "undefined" && currentProfileProps) showProfileCard(currentProfileProps, null);
+             window.REDSAInstitutional?.refresh();
+             window.REDSAAntLayer?.syncYear(selectedYear);
++            window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
+         }
+ 
+         function advanceToNextTimelineYear() {

@@ -253,10 +253,13 @@
 
         function updateParishPopulationContext(isParish) {
             [domPopulationRow, domSiniestrosRateRow, domFallecidosRateRow].forEach(row => {
-                row?.classList.toggle("u-hidden", isParish);
+                if (!row) return;
+                row.classList.toggle("u-hidden", isParish);
+                row.hidden = isParish;
             });
             if (!domParishPopulationNote) return;
             domParishPopulationNote.classList.toggle("u-hidden", !isParish);
+            domParishPopulationNote.hidden = !isParish;
             domParishPopulationNote.innerHTML = isParish
                 ? `<span>Sobre población y tasas por habitante en parroquias ${siglaInfoIcon(
                     "Población parroquial",
@@ -264,6 +267,7 @@
                 )}</span>`
                 : "";
         }
+        window.updateParishPopulationContext = updateParishPopulationContext;
 
         // Helper to render dynamic progress bar
         defProgressBar = (label, count, pct, color, trendHtml = "") => {
@@ -604,12 +608,8 @@
             body.innerHTML = `
                 <div class="legend-territory-shortcut-copy">
                     <span class="legend-territory-shortcut-meta">${territoryLevel}${territoryCode ? ` · Código DPA ${territoryCode}` : ""}</span>
-                    <p>Consulta indicadores, periodos, fuentes y el perfil territorial sin repetir aquí la cifra principal del mapa.</p>
+                    <p>La consulta detallada, series históricas y perfil demográfico están disponibles en la pestaña ANÁLISIS del panel derecho.</p>
                 </div>
-                <button id="legend-open-analysis-button" class="legend-open-analysis-button" type="button">
-                    <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                    <span>Ver análisis completo</span>
-                </button>
             `;
             card.hidden = false;
             document.body.classList.add("profile-selection-active");
@@ -617,10 +617,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("profile-card-close")?.addEventListener("click", clearTerritorySelection);
-            document.getElementById("demographic-hover-card")?.addEventListener("click", event => {
-                if (!event.target.closest("#legend-open-analysis-button")) return;
-                document.getElementById("open-analysis-button")?.click();
-            });
         });
 
         let currentProps = null;

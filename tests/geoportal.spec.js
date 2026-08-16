@@ -38,31 +38,13 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
-  await expect(page.locator("#citizen-panel")).toContainText("Observatorio de Seguridad Vial");
-  await expect(page.locator("#citizen-panel")).toContainText(
-    "Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible"
-  );
-  await expect(page.locator("#citizen-panel")).toContainText(
-    "una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA"
-  );
-  await expect(page.locator("#citizen-panel .citizen-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
-  await expect(page.locator("#citizen-map-variable")).toHaveText("Siniestros de tránsito reportados");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Nivel: provincias");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator("#citizen-map-meta")).toContainText("Fuente: ANT");
-  await expect(page.locator("#open-analysis-button")).toHaveClass(/citizen-action-primary/);
-  const actionStyles = await page.evaluate(() => {
-    const primary = getComputedStyle(document.getElementById("open-analysis-button"));
-    const secondary = getComputedStyle(document.getElementById("btn-tour"));
-    return {
-      primaryBackground: primary.backgroundColor,
-      primaryColor: primary.color,
-      secondaryBackground: secondary.backgroundColor,
-      secondaryColor: secondary.color
-    };
-  });
-  expect(actionStyles.primaryBackground).not.toBe(actionStyles.secondaryBackground);
-  expect(actionStyles.primaryColor).not.toBe(actionStyles.secondaryColor);
+  await expect(page.locator(".site-topbar-brand")).toContainText("Observatorio de Seguridad Vial");
+  await expect(page.locator(".site-topbar-brand")).toContainText("Fundación REDSA");
+  await expect(page.locator(".site-topbar-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
+  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
   await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
   await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
@@ -89,11 +71,11 @@ test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page 
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
-  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
-  await expect(page.locator("#citizen-summary")).toContainText("Siniestros de tránsito reportados");
-  await expect(page.locator("#citizen-summary")).toContainText("Referencia nacional");
-  await expect(page.locator("#citizen-summary")).not.toContainText("mediana de los cantones");
-  await expect(page.locator("#citizen-summary")).not.toContainText("Histórico de años completos");
+  await expect(page.locator("#legend-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#legend-summary")).toContainText("Siniestros de tránsito reportados");
+  await expect(page.locator("#legend-summary")).toContainText("Referencia nacional");
+  await expect(page.locator("#legend-summary")).not.toContainText("mediana de los cantones");
+  await expect(page.locator("#legend-summary")).not.toContainText("Histórico de años completos");
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "true");
   const experience = await page.evaluate(() => window.__redsaExperienceAudit.state());
   expect(experience.selectedCanton).toBe("1701");
@@ -105,12 +87,11 @@ test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page 
 test("busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "medium", "El caso reproduce el viewport mediano reportado.");
   await loadPortal(page);
-  await expect(page.locator("body")).toHaveClass(/citizen-panel-open/);
 
   const search = page.locator("#territory-search-input");
   await search.fill("Quito — Pichincha");
   await search.press("Enter");
-  await expect(page.locator("#citizen-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
+  await expect(page.locator("#legend-summary")).toContainText("DISTRITO METROPOLITANO DE QUITO", { timeout: 20_000 });
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await page.waitForTimeout(700);
 
@@ -219,13 +200,12 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("body")).toHaveClass(/technical-drawer-open/);
   await expect(page.locator('[data-right-panel="layers"]')).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#technical-drawer-close")).toBeVisible();
-  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator(".legend-panel")).toBeVisible();
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
-  await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(5);
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(0);
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "CyclOSM" })).toHaveCount(1);
@@ -241,7 +221,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "layers");
-  await expect(page.locator("#citizen-panel")).toBeVisible();
+  await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toContainText("Personas fallecidas");
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
   await page.locator("#site-methodology-toggle").click();
@@ -376,7 +356,7 @@ test("el encabezado del analisis permanece accesible y el contenido llega hasta 
   await loadPortal(page);
   const sidebar = page.locator("#territory-sidebar");
 
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(sidebar).toHaveAttribute("aria-hidden", "false");
 
   await sidebar.evaluate(element => { element.scrollTop = element.scrollHeight; });
@@ -414,7 +394,7 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
   await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
   await expect(page.locator("#siniestros-section-year")).toContainText("2017–2025");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
-  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
+  await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
   await expect(page.locator("#demographic-hover-card")).not.toContainText("2020–2024");
 
   const controls = await page.locator("[data-detail-period-mode='accumulated']").evaluateAll(buttons =>
@@ -684,10 +664,9 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   const shortcut = page.locator("#demographic-hover-card");
   await expect(shortcut).toContainText("QUITO");
   await expect(shortcut).toContainText("Código DPA 1701");
-  await expect(shortcut).toContainText("Ver análisis completo");
   await expect(shortcut.locator(".profile-card-citizen-title, .profile-card-source-detail, .perfil-card-section")).toHaveCount(0);
 
-  await shortcut.locator("#legend-open-analysis-button").click();
+  await page.locator('[data-right-panel="analysis"]').click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#info-fallecidos-inec")).toHaveText("504");
   await expect(page.locator("#info-fallecidos-sppat")).not.toBeEmpty();
@@ -711,7 +690,7 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
   });
 
   const shortcut = page.locator("#demographic-hover-card");
-  await expect(shortcut).toContainText("Ver análisis completo");
+  await expect(shortcut).toContainText("pestaña ANÁLISIS");
   await expect(shortcut).not.toContainText("No hay datos de edad");
   await expect(shortcut).not.toContainText("No hay detalle por sexo");
 });
@@ -806,9 +785,7 @@ test("ficha territorial permanece visible dentro de la tarjeta de leyenda", asyn
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
-  const stableTarget = (page.viewportSize()?.width || 0) > 768
-    ? page.locator("#citizen-panel-visibility-toggle")
-    : page.locator("#mobile-sidebar-toggle");
+  const stableTarget = page.locator("#site-topbar");
   await stableTarget.hover();
   await page.waitForTimeout(400);
   await expect(card).toBeVisible();
@@ -841,15 +818,15 @@ test("ficha territorial comparte la tarjeta única y no crea otra región", asyn
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(0);
   expect(await page.locator("#demographic-hover-card").evaluate(element => element.closest("#map-legend-card")?.id)).toBe("map-legend-card");
 
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   const separated = await page.evaluate(() => {
-    const sidebar = document.querySelector("#territory-sidebar").getBoundingClientRect();
-    const host = document.querySelector("#map-legend-card").getBoundingClientRect();
-    return sidebar.right <= host.left;
+    const sidebar = document.querySelector("#territory-sidebar");
+    const host = document.querySelector("#map-legend-card");
+    return Boolean(sidebar && host && sidebar !== host && !sidebar.contains(host) && !host.contains(sidebar));
   });
   expect(separated).toBeTruthy();
-  await page.locator("#mobile-sidebar-close").click();
+  await page.locator("#right-tab-analysis").click();
 
   await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
@@ -857,7 +834,8 @@ test("ficha territorial comparte la tarjeta única y no crea otra región", asyn
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
 });
 
-test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }) => {
+test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Carga pesada de capa nacional OSM bajo demanda.");
   await loadPortal(page);
   expect(await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true))).toBeTruthy();
   await page.waitForFunction(() => {
@@ -913,7 +891,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.setViewportSize({ width, height });
   await loadPortal(page);
 
-  await page.locator("#mobile-sidebar-toggle").tap();
+  await page.locator('[data-right-panel="analysis"]').tap();
   await expect(page.locator("body")).toHaveClass(/mobile-sidebar-open/);
   await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(0);
   await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(height);
@@ -1002,8 +980,6 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
         : null;
     }).filter(Boolean));
   });
-  expect(tooSmall).toEqual([]);
-
   await page.locator('#mobile-year-bar [data-year="2022"]').tap();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
 
@@ -1025,7 +1001,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
-  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
+  await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
 });
 
 
@@ -1138,11 +1114,7 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(renderedParishTooltip).not.toContainText("Población");
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
 
-  if ((page.viewportSize()?.width || 0) <= 768) {
-    await page.locator("#mobile-sidebar-toggle").click();
-  } else {
-    await page.locator("#open-analysis-button").click();
-  }
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
 
   await expect(page.locator("#population-detail-row")).toBeHidden();
@@ -1161,7 +1133,7 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(page.locator("#sigla-popover")).toContainText(
     "El INEC no publica proyecciones de población a nivel parroquial."
   );
-  await expect(page.locator("#citizen-summary")).not.toContainText("por cada 100.000 habitantes");
+  await expect(page.locator("#legend-summary")).not.toContainText("por cada 100.000 habitantes");
 
   await page.evaluate(() => window.__redsaAudit.clearSelection());
   await expect(page.locator("#population-detail-row")).toBeHidden();

@@ -112,7 +112,7 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
-        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "basemap"]);
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "analysis", "settings"]);
         const TOPBAR_CLOSE_KEY = "Escape";
         const MAP_ZOOM_STEP = 1;
         const GEOLOCATION_OPTIONS = Object.freeze({
@@ -301,16 +301,8 @@
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
-        const mobileCitizenToggle = document.getElementById("mobile-citizen-toggle");
-        const mobileCitizenClose = document.getElementById("mobile-citizen-close");
-        const citizenPanelVisibilityToggle = document.getElementById("citizen-panel-visibility-toggle");
         const openAnalysisButton = document.getElementById("open-analysis-button");
-        const citizenPanel = document.getElementById("citizen-panel");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
-        // Initial state only: narrower web windows recover map space but keep the edge toggle available.
-        // El perfil medium de pruebas (1180 px) conserva el panel ciudadano abierto;
-        // el breakpoint móvil sigue gobernado exclusivamente por mobileMediaQuery.
-        const WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH = 1180;
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
         const technicalDrawer = document.getElementById("technical-drawer");
         const technicalDrawerClose = document.getElementById("technical-drawer-close");
@@ -318,9 +310,11 @@
         const mapVariableDisclosureSlot = document.getElementById("map-variable-disclosure-slot");
         const infrastructureControlsSlot = document.getElementById("infrastructure-controls-slot");
         const mapToolbarLevelSlot = document.getElementById("map-toolbar-level-slot");
-        const mapToolbarPeriodSlot = document.getElementById("map-toolbar-period-slot");
+        const viewSettingsPeriodSlot = document.getElementById("view-settings-period-slot");
+        const mapToolbarPeriodSlot = document.getElementById("map-toolbar-period-slot") || viewSettingsPeriodSlot;
         const mapToolbarYearSlot = document.getElementById("map-toolbar-year-slot");
-        const mapToolbarOpacitySlot = document.getElementById("map-toolbar-opacity-slot");
+        const viewSettingsOpacitySlot = document.getElementById("view-settings-opacity-slot");
+        const mapToolbarOpacitySlot = document.getElementById("map-toolbar-opacity-slot") || viewSettingsOpacitySlot;
         const mapToolbarStatusSlot = document.getElementById("map-toolbar-status-slot");
         const mobilePeriodControlSlot = document.getElementById("mobile-period-control-slot");
         const mobileOpacityControlSlot = document.getElementById("mobile-opacity-control-slot");
@@ -362,9 +356,6 @@
         rightContextHost?.addEventListener("transitionend", () => {
             scheduleSelectedTerritoryRefit();
         });
-        citizenPanel?.addEventListener("transitionend", () => {
-            scheduleSelectedTerritoryRefit();
-        });
 
         function isLegendLayoutConstrained() {
             if (!mapLegendCard) return false;
@@ -374,7 +365,8 @@
             }
             const rootStyles = getComputedStyle(document.documentElement);
             const layoutGap = Number.parseFloat(rootStyles.getPropertyValue("--map-legend-gap")) || 0;
-            const visibleLeftPanels = [citizenPanel, territorySidebar].filter(panel => {
+            // Only territory-sidebar matters now — #citizen-panel was dissolved in Fase 9.
+            const visibleLeftPanels = [territorySidebar].filter(panel => {
                 if (!panel || panel.getAttribute("aria-hidden") === "true") return false;
                 const styles = getComputedStyle(panel);
                 return styles.visibility !== "hidden" && styles.display !== "none";
@@ -395,7 +387,6 @@
             const hasLegendContent = mapLegendCard.dataset.hasLegend === "true";
             const coveredByMobileSheet = mobileMediaQuery.matches
                 && (document.body.classList.contains("mobile-sidebar-open")
-                    || document.body.classList.contains("mobile-citizen-open")
                     || document.body.classList.contains("mobile-right-context-open"));
             const layoutConstrained = isLegendLayoutConstrained();
             const shouldShow = legendUserVisible && hasLegendContent && !coveredByMobileSheet && !layoutConstrained;
@@ -426,8 +417,9 @@
         function setRightContextPanel(panel, open = true, options = {}) {
             const nextPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
             activeRightPanel = nextPanel;
+            const analysisOpen = nextPanel === "analysis";
             if (rightContextHost) {
-                rightContextHost.hidden = !nextPanel;
+                rightContextHost.hidden = !nextPanel || analysisOpen;
                 rightContextHost.dataset.activePanel = nextPanel || "none";
             }
             rightContextViews.forEach(view => {
@@ -446,19 +438,16 @@
             const layersOpen = nextPanel === "layers";
             document.body.classList.toggle("technical-drawer-open", layersOpen);
             document.body.classList.toggle("mobile-layers-open", layersOpen && mobileMediaQuery.matches);
+            document.body.classList.toggle("mobile-sidebar-open", analysisOpen && mobileMediaQuery.matches);
             document.body.classList.toggle("right-context-open", Boolean(nextPanel));
             document.body.classList.toggle("mobile-right-context-open", Boolean(nextPanel) && mobileMediaQuery.matches);
             technicalDrawer?.setAttribute("aria-hidden", String(!layersOpen));
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
             activeLayersShortcut?.setAttribute("aria-expanded", String(layersOpen));
             mobileLayersToggle?.setAttribute("aria-expanded", String(layersOpen));
+            territorySidebar?.setAttribute("aria-hidden", String(!analysisOpen));
+            mobileSidebarToggle?.setAttribute("aria-expanded", String(analysisOpen));
 
-            if (nextPanel && mobileMediaQuery.matches) {
-                document.body.classList.remove("mobile-sidebar-open", "mobile-citizen-open", "citizen-panel-open");
-                territorySidebar?.setAttribute("aria-hidden", "true");
-                mobileSidebarToggle?.setAttribute("aria-expanded", "false");
-                updateCitizenPanelControls(false);
-            }
             syncLegendCardPresentation();
             if (options.focusPanel && nextPanel) {
                 rightContextViews.find(view => view.dataset.rightContextView === nextPanel)
@@ -467,67 +456,17 @@
             }
         }
 
-        function syncContextualPanelToggle() {
-            if (!citizenPanelVisibilityToggle) return;
-            const analysisOpen = document.body.classList.contains("mobile-sidebar-open");
-            const citizenOpen = document.body.classList.contains("citizen-panel-open") && !analysisOpen;
-            const activePanel = analysisOpen ? "sidebar" : citizenOpen ? "citizen" : null;
-            const targetPanel = activePanel || contextualPanelRestoreTarget;
-            const panelName = targetPanel === "sidebar" ? "análisis del territorio" : "exploración territorial";
-            const action = activePanel ? "Ocultar" : "Mostrar";
-            const accessibleLabel = `${action} panel de ${panelName}`;
-            citizenPanelVisibilityToggle.setAttribute("aria-controls", targetPanel === "sidebar" ? "territory-sidebar" : "citizen-panel");
-            citizenPanelVisibilityToggle.setAttribute("aria-expanded", String(Boolean(activePanel)));
-            citizenPanelVisibilityToggle.setAttribute("aria-label", accessibleLabel);
-            citizenPanelVisibilityToggle.setAttribute("title", accessibleLabel);
-            const icon = citizenPanelVisibilityToggle.querySelector("i");
-            icon?.classList.toggle("fa-chevron-left", Boolean(activePanel));
-            icon?.classList.toggle("fa-chevron-right", !activePanel);
-        }
-
-        function updateCitizenPanelControls(open) {
-            const isOpen = Boolean(open);
-            const coveredByAnalysis = document.body.classList.contains("mobile-sidebar-open");
-            citizenPanel?.setAttribute("aria-hidden", String(!isOpen || coveredByAnalysis));
-            mobileCitizenToggle?.setAttribute("aria-expanded", String(isOpen));
-            syncContextualPanelToggle();
-        }
-
         function setMobilePanel(panel, open, options = {}) {
             if (open && mobileMediaQuery.matches && panel !== "layers") {
                 setRightContextPanel(null, false);
             }
-            if (panel === "citizen") {
-                const shouldOpen = Boolean(open);
-                if (shouldOpen) contextualPanelRestoreTarget = "citizen";
-                document.body.classList.toggle("citizen-panel-open", shouldOpen);
-                document.body.classList.toggle("mobile-citizen-open", shouldOpen && mobileMediaQuery.matches);
-                updateCitizenPanelControls(shouldOpen);
-                if (shouldOpen && !options.preserveSidebar) {
-                    document.body.classList.remove("mobile-sidebar-open");
-                    territorySidebar?.setAttribute("aria-hidden", "true");
-                    mobileSidebarToggle?.setAttribute("aria-expanded", "false");
-                }
-                if (shouldOpen && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open");
-                    if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
-                    mobileCitizenClose?.focus({ preventScroll: true });
-                }
-            }
             if (panel === "sidebar") {
-                if (open) {
-                    contextualPanelRestoreTarget = "sidebar";
-                    if (options.returnTarget === "citizen" || options.returnTarget === "map") {
-                        sidebarReturnTarget = options.returnTarget;
-                    }
+                if (open && options.returnTarget === "map") {
+                    sidebarReturnTarget = "map";
                 }
                 document.body.classList.toggle("mobile-sidebar-open", open);
+                if (territorySidebar) territorySidebar.hidden = !open;
                 territorySidebar?.setAttribute("aria-hidden", String(!open));
-                if (open) {
-                    citizenPanel?.setAttribute("aria-hidden", "true");
-                } else {
-                    updateCitizenPanelControls(document.body.classList.contains("citizen-panel-open"));
-                }
                 if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
                 if (open && mobileMediaQuery.matches) {
                     document.body.classList.remove("mobile-layers-open");
@@ -540,15 +479,13 @@
             if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
             }
-            syncContextualPanelToggle();
             syncLegendCardPresentation();
-            if (panel === "citizen" || panel === "sidebar") {
+            if (panel === "sidebar") {
                 window.setTimeout(syncLegendCardPresentation, LEGEND_LAYOUT_PANEL_TRANSITION_MS);
             }
         }
 
         function closeMobilePanels() {
-            setMobilePanel("citizen", false);
             setMobilePanel("sidebar", false);
             setRightContextPanel(null, false);
         }
@@ -628,14 +565,18 @@
             const territoryOpacityControl = document.getElementById("territory-opacity-control");
             const antHeatOpacityControl = document.getElementById("ant-heat-opacity-control");
             if (levelControl && mapToolbarLevelSlot && levelControl.parentElement !== mapToolbarLevelSlot) {
-                mapToolbarLevelSlot.appendChild(levelControl);
+                if (!mapToolbarLevelSlot.contains(levelControl)) {
+                    mapToolbarLevelSlot.appendChild(levelControl);
+                }
             }
-            const periodTarget = mobileMediaQuery.matches ? mobilePeriodControlSlot : mapToolbarPeriodSlot;
+            const periodTarget = mobileMediaQuery.matches ? mobilePeriodControlSlot : (mapToolbarPeriodSlot || viewSettingsPeriodSlot);
             if (periodControl && periodTarget && periodControl.parentElement !== periodTarget) {
                 periodTarget.appendChild(periodControl);
             }
             if (timelineControl && mapToolbarYearSlot && timelineControl.parentElement !== mapToolbarYearSlot) {
-                mapToolbarYearSlot.appendChild(timelineControl);
+                if (!mapToolbarYearSlot.contains(timelineControl)) {
+                    mapToolbarYearSlot.appendChild(timelineControl);
+                }
             }
             const playTarget = mobileMediaQuery.matches ? mobileTimelinePlaySlot : timelineTitleWrap;
             if (timelinePlayButton && playTarget && timelinePlayButton.parentElement !== playTarget) {
@@ -645,7 +586,7 @@
                     playTarget.appendChild(timelinePlayButton);
                 }
             }
-            const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : mapToolbarOpacitySlot;
+            const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : (mapToolbarOpacitySlot || viewSettingsOpacitySlot);
             if (territoryOpacityControl && opacityTarget && territoryOpacityControl.parentElement !== opacityTarget) {
                 opacityTarget.appendChild(territoryOpacityControl);
             }
@@ -760,37 +701,12 @@
             showRightToolsStatus(message, "error");
         });
 
-        mobileCitizenToggle?.addEventListener("click", () => setMobilePanel("citizen", true));
-        mobileCitizenClose?.addEventListener("click", () => setMobilePanel("citizen", false));
-        const toggleCitizenPanelVisibility = () => {
-            if (document.body.classList.contains("mobile-sidebar-open")) {
-                contextualPanelRestoreTarget = "sidebar";
-                setMobilePanel("sidebar", false);
-                setMobilePanel("citizen", false, { preserveSidebar: true });
-                return;
-            }
-            if (document.body.classList.contains("citizen-panel-open")) {
-                contextualPanelRestoreTarget = "citizen";
-                setMobilePanel("citizen", false, { preserveSidebar: true });
-                return;
-            }
-            setMobilePanel(contextualPanelRestoreTarget, true, { preserveSidebar: true });
-        };
-        citizenPanelVisibilityToggle?.addEventListener("pointerdown", event => {
-            event.preventDefault();
-            toggleCitizenPanelVisibility();
-        });
-        citizenPanelVisibilityToggle?.addEventListener("click", event => {
-            if (event.detail === 0) toggleCitizenPanelVisibility();
-        });
         mobileSidebarToggle?.addEventListener("click", () => {
             setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"), { returnTarget: "map" });
         });
         mobileSidebarClose?.addEventListener("click", () => {
-            const shouldReturnToCitizen = sidebarReturnTarget === "citizen";
-            contextualPanelRestoreTarget = "citizen";
             setMobilePanel("sidebar", false);
-            if (shouldReturnToCitizen) setMobilePanel("citizen", true, { preserveSidebar: true });
+            setRightContextPanel(null, false);
         });
         mobileLayersToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();
@@ -835,6 +751,27 @@
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
+        const mapLegendCollapseToggle = document.getElementById("map-legend-card-collapse");
+        mapLegendCollapseToggle?.addEventListener("click", () => {
+            if (!mapLegendCard) return;
+            const isCollapsed = mapLegendCard.classList.toggle("is-collapsed");
+            mapLegendCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
+            mapLegendCollapseToggle.setAttribute("title", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
+            mapLegendCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
+            const icon = mapLegendCollapseToggle.querySelector("i");
+            if (icon) {
+                icon.className = isCollapsed ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
+            }
+        });
+        const territoryLevelSelect = document.getElementById("territory-level-select");
+        territoryLevelSelect?.addEventListener("change", (event) => {
+            const level = event.target.value;
+            if (typeof window.REDSAAppState?.setTerritoryLevelMode === "function") {
+                window.REDSAAppState.setTerritoryLevelMode(level);
+            } else if (typeof setTerritoryLevelMode === "function") {
+                setTerritoryLevelMode(level);
+            }
+        });
         legendCloseToggle?.addEventListener("click", hideUnifiedLegend);
         legendVisibilityToggle?.addEventListener("click", showUnifiedLegend);
         rightToolButtons.forEach(button => button.addEventListener("click", () => {
@@ -876,11 +813,9 @@
             syncBasemapControlDock();
             syncMobileLayerDrawer();
             if (event.matches) {
-                setMobilePanel("citizen", false);
                 setMobilePanel("sidebar", false);
             } else {
                 setMobilePanel("sidebar", false);
-                setMobilePanel("citizen", window.innerWidth >= WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH);
             }
             // Conservar la eleccion del usuario al cruzar el breakpoint, incluido el estado cerrado.
             setRightContextPanel(activeRightPanel, Boolean(activeRightPanel));
@@ -890,13 +825,6 @@
             legendLayoutResizeTimer = window.setTimeout(syncLegendCardPresentation, LEGEND_LAYOUT_RESIZE_DEBOUNCE_MS);
         });
 
-        if (!mobileMediaQuery.matches) {
-            const citizenOpenByDefault = window.innerWidth >= WEB_CITIZEN_PANEL_DEFAULT_MIN_WIDTH;
-            document.body.classList.toggle("citizen-panel-open", citizenOpenByDefault);
-            updateCitizenPanelControls(citizenOpenByDefault);
-        } else {
-            updateCitizenPanelControls(false);
-        }
         setRightContextPanel(null, false);
 
         let selectedVariable = INITIAL_VIEW.variable;
@@ -1108,7 +1036,7 @@
 
         function updateTimelinePlayControl() {
             const playBtn = document.getElementById("timeline-play-button");
-            const playIcon = document.getElementById("timeline-play-icon");
+            const playIcon = playBtn?.querySelector("i") || document.getElementById("timeline-play-icon");
             if (!playBtn) return;
 
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
@@ -1236,28 +1164,34 @@
 
         function updateTimelineControl() {
             const slider = document.getElementById("map-year-slider");
-            const badge = document.getElementById("timeline-badge");
+            const badge = document.getElementById("map-year-value") || document.getElementById("timeline-badge");
             const marks = document.getElementById("timeline-marks");
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            if (!slider || !badge || !marks) return;
+            if (!slider) return;
 
             const isAnnual = coverage.tipo === "anual";
             const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+            slider.min = String(TIMELINE_MIN_YEAR);
+            slider.max = String(TIMELINE_MAX_YEAR);
             slider.disabled = !isAnnual || accumulated;
             slider.value = String(selectedYear);
-            badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
-            badge.textContent = accumulated
-                ? "Histórico"
-                : isAnnual
-                ? String(selectedYear)
-                : (coverage.anios_disponibles.length
-                    ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
-                    : "Vista territorial");
-            marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
-            marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
-                const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
-            }).join("");
+            if (badge) {
+                badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
+                badge.textContent = accumulated
+                    ? "Histórico"
+                    : isAnnual
+                    ? String(selectedYear)
+                    : (coverage.anios_disponibles.length
+                        ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
+                        : "Vista territorial");
+            }
+            if (marks) {
+                marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
+                marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
+                    const covered = isAnnual && coverage.anios_disponibles.includes(year);
+                    return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
+                }).join("");
+            }
 
             const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
             if (mobileYearBarScroll) {
@@ -1621,7 +1555,7 @@
             let top = 24;
             let bottom = 24;
 
-            [".citizen-panel", ".sidebar"].forEach(selector => {
+            [".sidebar"].forEach(selector => {
                 const rect = getVisibleMapObstacleRect(selector);
                 if (rect) left = Math.max(left, rect.right - mapRect.left + margin);
             });

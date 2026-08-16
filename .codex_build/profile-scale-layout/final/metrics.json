@@ -1,0 +1,347 @@
+[
+  {
+    "name": "desktop",
+    "visible": {
+      "label": "citizen-visible-or-mobile-default",
+      "card": {
+        "left": 428,
+        "right": 828,
+        "top": 17,
+        "bottom": 218,
+        "width": 400,
+        "height": 201,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "scale": {
+        "left": 626,
+        "right": 740,
+        "top": 696.8,
+        "bottom": 724,
+        "width": 114,
+        "height": 27.2,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "attribution": {
+        "left": 113.5,
+        "right": 1366,
+        "top": 751.2,
+        "bottom": 768,
+        "width": 1252.5,
+        "height": 16.8,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "citizen": {
+        "left": 20,
+        "right": 410,
+        "top": 20,
+        "bottom": 748,
+        "width": 390,
+        "height": 728,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "legend": {
+        "left": 656,
+        "right": 946,
+        "top": 233.2,
+        "bottom": 693.2,
+        "width": 290,
+        "height": 460,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "mobileCitizenToggle": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      }
+    },
+    "hidden": {
+      "label": "citizen-hidden",
+      "card": {
+        "left": 126,
+        "right": 526,
+        "top": 404,
+        "bottom": 740,
+        "width": 400,
+        "height": 336,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "scale": {
+        "left": 626,
+        "right": 740,
+        "top": 696.8,
+        "bottom": 724,
+        "width": 114,
+        "height": 27.2,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "attribution": {
+        "left": 113.5,
+        "right": 1366,
+        "top": 751.2,
+        "bottom": 768,
+        "width": 1252.5,
+        "height": 16.8,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "citizen": {
+        "left": -410,
+        "right": -20,
+        "top": 20,
+        "bottom": 748,
+        "width": 390,
+        "height": 728,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "legend": {
+        "left": 656,
+        "right": 946,
+        "top": 233.2,
+        "bottom": 693.2,
+        "width": 290,
+        "height": 460,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "mobileCitizenToggle": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      }
+    }
+  },
+  {
+    "name": "medium",
+    "visible": {
+      "label": "citizen-visible-or-mobile-default",
+      "card": {
+        "left": 426,
+        "right": 644,
+        "top": 17,
+        "bottom": 233,
+        "width": 218,
+        "height": 216,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "scale": {
+        "left": 541,
+        "right": 639,
+        "top": 728.8,
+        "bottom": 756,
+        "width": 98,
+        "height": 27.2,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "attribution": {
+        "left": 0,
+        "right": 1180,
+        "top": 766.4,
+        "bottom": 800,
+        "width": 1180,
+        "height": 33.6,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "citizen": {
+        "left": 20,
+        "right": 410,
+        "top": 20,
+        "bottom": 780,
+        "width": 390,
+        "height": 760,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "legend": {
+        "left": 470,
+        "right": 760,
+        "top": 248.4,
+        "bottom": 708.4,
+        "width": 290,
+        "height": 460,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "mobileCitizenToggle": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      }
+    },
+    "hidden": {
+      "label": "citizen-hidden",
+      "card": {
+        "left": 33,
+        "right": 433,
+        "top": 419,
+        "bottom": 755,
+        "width": 400,
+        "height": 336,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "scale": {
+        "left": 533,
+        "right": 647,
+        "top": 728.8,
+        "bottom": 756,
+        "width": 114,
+        "height": 27.2,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "attribution": {
+        "left": 0,
+        "right": 1180,
+        "top": 766.4,
+        "bottom": 800,
+        "width": 1180,
+        "height": 33.6,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "citizen": {
+        "left": -410,
+        "right": -20,
+        "top": 20,
+        "bottom": 780,
+        "width": 390,
+        "height": 760,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "legend": {
+        "left": 470,
+        "right": 760,
+        "top": 248.4,
+        "bottom": 708.4,
+        "width": 290,
+        "height": 460,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "mobileCitizenToggle": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0,
+        "display": "none",
+        "visibility": "visible"
+      },
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      }
+    }
+  },
+  {
+    "name": "mobile",
+    "visible": {
+      "label": "citizen-visible-or-mobile-default",
+      "card": {
+        "left": 12,
+        "right": 288,
+        "top": 330,
+        "bottom": 666,
+        "width": 276,
+        "height": 336,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "scale": {
+        "left": 138,
+        "right": 252,
+        "top": 748.8,
+        "bottom": 776,
+        "width": 114,
+        "height": 27.2,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "attribution": {
+        "left": 0,
+        "right": 390,
+        "top": 811.6,
+        "bottom": 844,
+        "width": 390,
+        "height": 32.4,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "citizen": {
+        "left": 0,
+        "right": 390,
+        "top": 866.4,
+        "bottom": 1426.4,
+        "width": 390,
+        "height": 560,
+        "display": "block",
+        "visibility": "hidden"
+      },
+      "legend": {
+        "left": 288,
+        "right": 380,
+        "top": 681.6,
+        "bottom": 725.6,
+        "width": 92,
+        "height": 44,
+        "display": "block",
+        "visibility": "visible"
+      },
+      "mobileCitizenToggle": {
+        "left": 16,
+        "right": 179.9,
+        "top": 784,
+        "bottom": 828,
+        "width": 163.9,
+        "height": 44,
+        "display": "flex",
+        "visibility": "visible"
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    "hidden": null
+  }
+]

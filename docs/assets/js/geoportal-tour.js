@@ -8,21 +8,12 @@
         }
 
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        const variableTourTarget = '[data-right-panel="layers"]';
+        const variableTourTarget = '#right-tab-layers';
         const infrastructureTourTarget = "#infrastructure-disclosure";
-        const mapControlsTourTarget = isMobile ? "#mobile-level-bar" : "#map-controls-toolbar";
-        const citizenWasOpen = document.body.classList.contains("citizen-panel-open");
+        const mapControlsTourTarget = isMobile ? "#mobile-level-bar" : ".site-topbar-center-controls";
         const legendWasVisible = document.getElementById("map-legend-card")?.classList.contains("is-visible") ?? true;
         const rightPanelBeforeTour = document.getElementById("right-context-host")?.dataset.activePanel || null;
-
-        const openCitizenPanelForTour = () => {
-            window.setRightContextPanel?.(null, false);
-            window.setSiteMethodologyMenu?.(false);
-            window.setSiteTopbarMenu?.(false);
-            if (typeof window.setMobilePanel === "function") {
-                window.setMobilePanel("citizen", true);
-            }
-        };
+        const sidebarWasOpen = document.body.classList.contains("mobile-sidebar-open");
 
         const prepareLayersPanelForTour = () => {
             if (typeof window.setRightContextPanel === "function") {
@@ -38,21 +29,18 @@
 
         const prepareActiveLegendForTour = () => {
             window.setRightContextPanel?.(null, false);
-            window.setMobilePanel?.("citizen", false);
             window.showUnifiedLegend?.();
         };
 
         const prepareMapControlsForTour = () => {
             window.setRightContextPanel?.(null, false);
-            window.setMobilePanel?.("citizen", false);
         };
 
         const prepareBasemapsForTour = () => {
-            window.setRightContextPanel?.("basemap", true);
+            window.setRightContextPanel?.("layers", true);
         };
 
         const prepareSiteTopbarForTour = () => {
-            window.setMobilePanel?.("citizen", false);
             window.setSiteTopbarMenu?.(true);
         };
 
@@ -84,15 +72,14 @@
             // En driver.js 1.x, para mostrar botón de cerrar siempre:
             showButtons: ['next', 'previous', 'close'],
             onDestroyed: () => {
-                const restoreRightPanel = ["layers", "basemap"].includes(rightPanelBeforeTour)
+                const restoreRightPanel = ["layers", "analysis", "settings"].includes(rightPanelBeforeTour)
                     ? rightPanelBeforeTour
                     : null;
                 window.setRightContextPanel?.(restoreRightPanel, Boolean(restoreRightPanel));
                 if (!legendWasVisible) window.hideUnifiedLegend?.();
                 window.setSiteMethodologyMenu?.(false);
                 window.setSiteTopbarMenu?.(false);
-                if (!citizenWasOpen) window.setMobilePanel?.("citizen", false);
-                if (isMobile) window.setMobilePanel?.("sidebar", false);
+                if (isMobile) window.setMobilePanel?.("sidebar", sidebarWasOpen);
             },
             onDestroyStarted: () => {
                 if (!driverObj.hasNextStep() || confirm("¿Seguro que deseas omitir el resto del tour?")) {
@@ -109,7 +96,6 @@
                 },
                 {
                     element: '#territory-search-form',
-                    onHighlightStarted: openCitizenPanelForTour,
                     popover: {
                         title: 'Busca tu territorio',
                         description: 'Escribe una provincia, un cantón o una parroquia para centrarla y seleccionarla. También puedes tocar directamente el territorio en el mapa.',
@@ -118,8 +104,7 @@
                     }
                 },
                 {
-                    element: '#open-analysis-button',
-                    onHighlightStarted: openCitizenPanelForTour,
+                    element: '#right-tab-analysis',
                     popover: {
                         title: 'Análisis del territorio',
                         description: 'Abre el panel con indicadores, acumulados históricos, tendencia, fuentes y perfil de personas fallecidas para la unidad seleccionada.',
@@ -158,11 +143,11 @@
                     }
                 },
                 {
-                    element: '[data-right-panel="basemap"]',
+                    element: '#right-tab-layers',
                     onHighlightStarted: prepareBasemapsForTour,
                     popover: {
                         title: 'Mapas base',
-                        description: 'Cambia el mapa de fondo sin alterar los datos seleccionados ni el territorio que estás consultando.',
+                        description: 'Los mapas base de fondo ahora viven en la sección final de la pestaña Capas, permitiéndote cambiar el mapa base sin alterar la variable seleccionada.',
                         side: "left",
                         align: 'start'
                     }
@@ -206,16 +191,6 @@
                         title: 'Catálogo y descarga de datos',
                         description: 'Busca en una grilla de tarjetas compactas, filtra con chips de categorías reales y expande solo la variable que necesites. Cada detalle conserva sus fuentes, metodología y descargas tabulares o geográficas.',
                         side: "bottom",
-                        align: 'start'
-                    }
-                },
-                {
-                    element: '#citizen-panel',
-                    onHighlightStarted: openCitizenPanelForTour,
-                    popover: {
-                        title: 'Ficha PDF del territorio',
-                        description: 'Después de seleccionar una unidad se habilita “Descargar ficha PDF”, con mapa, año consultado, acumulado histórico, comparación territorial, gráficos, fuentes y contacto institucional.',
-                        side: "right",
                         align: 'start'
                     }
                 },
