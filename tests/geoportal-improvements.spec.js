@@ -322,10 +322,13 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
     test.describe('Block D: Basemap and Opacity', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
             const isMobile = test.info().project.name === 'mobile';
-            await page.locator('#right-tab-settings').click();
+            if (!isMobile) {
+                await page.locator('#right-tab-settings').click();
+            }
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
-            expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe('view-settings-opacity-slot');
+            const expectedSlot = isMobile ? 'mobile-opacity-control-slot' : 'view-settings-opacity-slot';
+            expect(await slider.evaluate(element => element.closest('#territory-opacity-control')?.parentElement?.id)).toBe(expectedSlot);
 
             // Set to 50%
             await slider.fill('50');
@@ -360,7 +363,8 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
                 });
                 const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
                 expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.host)).toBe(false);
-                expect(intersects(controlsClearDrawer.zoom, controlsClearDrawer.rail)).toBe(false);
+                expect(controlsClearDrawer.zoom.left).toBeGreaterThanOrEqual(controlsClearDrawer.rail.left - 1);
+                expect(controlsClearDrawer.zoom.right).toBeLessThanOrEqual(controlsClearDrawer.rail.right + 1);
             }
             await expect(page.locator('.opacity-control')).toHaveCount(0);
         });
