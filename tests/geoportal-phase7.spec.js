@@ -77,24 +77,33 @@ test("IB ofrece tres pestañas ARIA y análisis con ancho propio", async ({ page
 });
 
 test("IC mantiene Periodo e Intensidad en Ajustes y la visibilidad parroquial", async ({ page }, testInfo) => {
+  const isMobile = testInfo.project.name === "mobile";
   await loadPortal(page);
-  if (testInfo.project.name === "mobile") {
+  if (isMobile) {
     await expect(page.locator("#mobile-period-control-slot .period-mode-control")).toBeVisible();
     await expect(page.locator("#mobile-opacity-control-slot #territory-opacity-control")).toBeVisible();
+    await page.evaluate(() => window.hideUnifiedLegend?.());
   } else {
     await page.locator("#right-tab-settings").click();
     await expect(page.locator("#view-settings-period-slot .period-mode-control")).toBeVisible();
     await expect(page.locator("#view-settings-opacity-slot #territory-opacity-control")).toBeVisible();
   }
-  await page.locator('[data-period-mode="accumulated"]').click();
-  await expect(page.locator('[data-period-mode="accumulated"]')).toHaveAttribute("aria-pressed", "true");
+  const accumulatedBtn = isMobile
+    ? page.locator("#mobile-period-control-slot [data-period-mode='accumulated']")
+    : page.locator("#view-settings-panel [data-period-mode='accumulated']");
+  await accumulatedBtn.click();
+  await expect(accumulatedBtn).toHaveAttribute("aria-pressed", "true");
 
   await expect(page.locator("#parroquia-row")).toBeHidden();
   await page.evaluate(async () => {
     await window.__redsaAudit.setTerritoryLevelMode("parish");
     await window.__redsaAudit.showTerritory("parish", "170151");
   });
-  await page.locator("#right-tab-analysis").click();
+  if (isMobile) {
+    await page.evaluate(() => window.setMobilePanel?.("sidebar", true));
+  } else {
+    await page.locator("#right-tab-analysis").click();
+  }
   await expect(page.locator("#parroquia-row")).toBeVisible();
   await expect(page.locator("#parroquia-row")).toHaveCSS("display", "grid");
   await expect(page.locator("#parish-population-note")).toBeVisible();

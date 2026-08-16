@@ -412,6 +412,244 @@
             font-weight: 600;
         }
 
+        /* Fase 7: densidad informativa del panel de análisis, sin ocultar contenido. */
+        .sidebar {
+            gap: 10px;
+            padding: var(--analysis-panel-padding);
+            padding-bottom: var(--analysis-drawer-bottom-padding);
+        }
+
+        .mobile-sidebar-topbar {
+            top: calc(var(--analysis-panel-padding) * -1);
+            margin: calc(var(--analysis-panel-padding) * -1) calc(var(--analysis-panel-padding) * -1) 8px;
+        }
+
+        .sidebar .header-brand {
+            padding-bottom: 10px;
+        }
+
+        .sidebar .header-brand p {
+            margin-top: 4px;
+        }
+
+        .sidebar .info-section,
+        .sidebar .canton-details {
+            gap: var(--analysis-compact-gap);
+        }
+
+        .sidebar .canton-details {
+            padding: var(--analysis-compact-padding);
+        }
+
+        .sidebar .detail-period-control {
+            margin: 3px 0 5px;
+            padding: 7px;
+            box-shadow: none;
+        }
+
+        .sidebar .detail-period-label {
+            margin-bottom: 4px;
+            font-size: 0.6rem;
+        }
+
+        .sidebar .detail-period-segments button {
+            min-height: 32px;
+            padding-block: 3px;
+        }
+
+        .territory-identity-block {
+            display: grid;
+            overflow: hidden;
+            border: 1px solid var(--analysis-card-border);
+            border-radius: var(--analysis-disclosure-radius);
+            background: color-mix(in srgb, var(--analysis-card-bg) 82%, transparent);
+        }
+
+        .territory-identity-block .detail-row:not(.u-hidden):not([hidden]) {
+            padding: 6px 8px;
+        }
+
+        .territory-identity-block .detail-row:not(.u-hidden):not([hidden]) + .detail-row:not(.u-hidden):not([hidden]) {
+            border-top: 1px solid var(--analysis-card-border);
+        }
+
+        .sidebar .detail-row:not(.u-hidden):not([hidden]) {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(var(--analysis-detail-value-min-width), auto);
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar .detail-label {
+            min-width: 0;
+            line-height: 1.3;
+        }
+
+        .sidebar .detail-value {
+            min-width: 0;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .sidebar .detail-row:not(.u-hidden):not([hidden]):has(.detail-value.empty) {
+            min-height: 0;
+            padding-block: 3px;
+        }
+
+        .sidebar .detail-row:not(.u-hidden):not([hidden]):has(.detail-value.empty) .detail-label {
+            color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+            font-size: 0.64rem;
+        }
+
+        .sidebar .detail-value.empty {
+            max-width: 175px;
+            color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+            font-size: var(--analysis-empty-font-size);
+            line-height: 1.25;
+        }
+
+        .sidebar .analysis-hero-stat {
+            grid-template-columns: minmax(105px, 0.72fr) minmax(170px, 1.28fr);
+            padding: 7px 9px 7px 11px;
+        }
+
+        .sidebar .analysis-hero-stat .detail-label {
+            font-size: 0.64rem;
+        }
+
+        .sidebar .analysis-hero-stat .detail-value:not(.empty) {
+            font-size: 1.12rem;
+        }
+
+        .sidebar .section-title.u-section-gap,
+        .sidebar .section-title.u-section-gap-large {
+            margin-top: 7px;
+            margin-bottom: 2px;
+        }
+
+        .sidebar .u-chart-wrapper {
+            margin-bottom: 3px;
+            padding-bottom: 6px;
+        }
+
+        .sidebar .u-chart-container {
+            height: 164px;
+        }
+
+        .sidebar .historical-chart-view-controls {
+            margin-top: 4px;
+            padding: 2px;
+        }
+
+        .sidebar :is(.analysis-disclosure, .ant-territory-analysis) {
+            margin-top: 0;
+            border-color: var(--analysis-card-border);
+            border-radius: var(--analysis-disclosure-radius);
+            background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+        }
+
+        .sidebar :is(.analysis-disclosure, .ant-territory-analysis) > summary {
+            min-height: 36px;
+            padding: 7px 9px;
+            color: var(--text-secondary);
+            font-size: var(--analysis-secondary-font-size);
+            font-weight: 700;
+        }
+
+        .sidebar .ant-territory-analysis-status,
+        .sidebar .ant-summary-method {
+            padding: 0 9px 8px;
+        }
+
+        .sidebar .analysis-disclosure-content,
+        .sidebar .analysis-disclosure > .detail-row:not(.u-hidden):not([hidden]) {
+            padding: 3px 9px 8px;
+        }
+
+        .sidebar .analysis-method-info {
+            min-height: 38px;
+            margin: 0;
+            padding: 7px 9px;
+        }
+
+        .sidebar .accordion-btn {
+            min-height: 36px;
+            margin: 0;
+            padding: 7px 9px;
+            border-color: var(--analysis-card-border);
+            border-radius: var(--analysis-disclosure-radius);
+            background: color-mix(in srgb, var(--analysis-card-bg) 72%, transparent);
+            color: var(--text-secondary);
+            font-size: var(--analysis-secondary-font-size);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .sidebar .accordion-btn::after {
+            content: '+';
+            color: var(--accent);
+            font-size: 0.9rem;
+            transform: none;
+        }
+
+        .sidebar .accordion-btn.active::after {
+            content: '−';
+            transform: none;
+        }
+
+        .sidebar .accordion-content {
+            margin: 0;
+            padding: 0 9px;
+            border: 1px solid transparent;
+            border-top: 0;
+            border-radius: 0 0 var(--analysis-disclosure-radius) var(--analysis-disclosure-radius);
+        }
+
+        .sidebar .accordion-content.active {
+            margin-top: -7px;
+            padding: 13px 9px 8px;
+            border-color: var(--analysis-card-border);
+            background: color-mix(in srgb, var(--analysis-card-bg) 62%, transparent);
+        }
+
+        .sidebar .diagnostic-panel {
+            padding: 0;
+            border-radius: var(--analysis-disclosure-radius);
+        }
+
+        .sidebar .diagnostic-title {
+            min-height: 36px;
+            margin: 0;
+            padding: 7px 9px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .sidebar .diagnostic-title::-webkit-details-marker {
+            display: none;
+        }
+
+        .sidebar .diagnostic-title::after {
+            content: '+';
+            margin-left: 7px;
+            color: var(--accent);
+        }
+
+        .sidebar .diagnostic-panel[open] .diagnostic-title::after {
+            content: '−';
+        }
+
+        .sidebar .diagnostic-content {
+            padding: 0 9px 8px;
+        }
+
+        .sidebar .diagnostic-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px;
+        }
+
         /* Panel de Leyenda (Glassmorphism) */
         .legend-panel {
             background: var(--bg-glass);
