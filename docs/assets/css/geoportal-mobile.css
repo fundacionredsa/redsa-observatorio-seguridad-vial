@@ -123,7 +123,7 @@
         display: inline-flex;
         position: fixed;
         top: calc(var(--site-topbar-mobile-height) + var(--mobile-edge));
-        z-index: var(--z-mobile-navigation);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 2);
         min-width: 44px;
         min-height: 44px;
         align-items: center;
@@ -709,7 +709,7 @@
 
     .mobile-level-bar {
         position: fixed;
-        z-index: var(--z-mobile-navigation);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 2);
         top: var(--mobile-top-offset, 66px);
         left: 50%;
         transform: translateX(-50%);
@@ -757,7 +757,7 @@
 
     .mobile-year-bar {
         position: fixed;
-        z-index: var(--z-mobile-navigation);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 2);
         top: calc(var(--mobile-top-offset, 66px) + 44px + 8px);
         left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
@@ -943,7 +943,7 @@
         width: auto;
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
         max-height: calc(100dvh - var(--site-topbar-mobile-height) - 110px);
-        z-index: calc(var(--z-mobile-navigation, 1190) + 1);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 3);
     }
 
     .map-search-card {
@@ -974,6 +974,7 @@
         max-width: 100%;
         max-height: min(36dvh, 320px);
         border-radius: 12px;
+        margin-top: calc(52px + 111px + 16px);
     }
 
     body.mobile-sidebar-open .map-left-column,

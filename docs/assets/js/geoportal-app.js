@@ -923,7 +923,7 @@
                             infrastructureLayerCount: INFRASTRUCTURE_LAYER_CONFIGS.length,
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
                             timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
-                            timelineBadge: document.getElementById("timeline-badge")?.textContent,
+                            timelineBadge: (document.getElementById("map-year-value") || document.getElementById("timeline-badge") || document.querySelector(".timeline-badge"))?.textContent,
                             timelineYearAdjustment: document.getElementById("timeline-year-adjustment-note")?.textContent || "",
                             basemap: document.body.dataset.basemap || "positron",
                             territorySurfaceAutoHideZoom: ZOOM_SURFACE_AUTO_HIDE_MIN,

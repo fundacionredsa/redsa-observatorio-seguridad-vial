@@ -37,7 +37,7 @@
             --site-topbar-height: 44px;
             --site-topbar-mobile-height: 48px;
             --site-topbar-edge: 8px;
-            --mobile-navigation-clearance: 56px;
+            --mobile-navigation-clearance: 92px;
             --right-context-top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
             --right-context-bottom: 12px;
             --right-tool-group-gap: 8px;
@@ -113,6 +113,7 @@
             font-family: var(--font-sans);
             overflow: hidden;
             background-color: var(--bg-glass);
+            scroll-padding-top: var(--site-topbar-height);
         }
 
         #map {
@@ -128,7 +129,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: var(--z-map-controls);
+            z-index: var(--z-drawer, 1400);
             pointer-events: none;
             display: grid;
             grid-template-columns: var(--sidebar-width) 1fr;
@@ -230,8 +231,9 @@
             pointer-events: auto;
         }
 
-        /* Cabecera / Info Panel Izquierdo */
         .sidebar {
+            position: fixed;
+            z-index: var(--z-drawer, 1400);
             grid-column: 1;
             grid-row: 1 / span 2;
             display: flex;
@@ -415,13 +417,12 @@
         /* Fase 7: densidad informativa del panel de análisis, sin ocultar contenido. */
         .sidebar {
             gap: 10px;
-            padding: var(--analysis-panel-padding);
-            padding-bottom: var(--analysis-drawer-bottom-padding);
+            padding: 0 var(--analysis-panel-padding) var(--analysis-drawer-bottom-padding);
         }
 
         .mobile-sidebar-topbar {
-            top: calc(var(--analysis-panel-padding) * -1);
-            margin: calc(var(--analysis-panel-padding) * -1) calc(var(--analysis-panel-padding) * -1) 8px;
+            top: 0;
+            margin: 0 calc(var(--analysis-panel-padding) * -1) 8px;
         }
 
         .sidebar .header-brand {

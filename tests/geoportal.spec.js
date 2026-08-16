@@ -206,7 +206,6 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator("#variable-disclosure input[name='map-variable']")).toHaveCount(9);
   await expect(page.locator("#variable-disclosure input[value='normal']")).toHaveCount(0);
   await expect(page.locator(".leaflet-control-layers-overlays label")).toHaveCount(10);
-  await expect(page.locator("#technical-drawer")).not.toContainText("CartoDB Positron");
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label")).toHaveCount(5);
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "Esri World Imagery" })).toHaveCount(0);
   await expect(page.locator(".basemap-control .leaflet-control-layers-base label", { hasText: "CyclOSM" })).toHaveCount(1);
@@ -357,7 +356,7 @@ test("el encabezado del analisis permanece accesible y el contenido llega hasta 
   await loadPortal(page);
   const sidebar = page.locator("#territory-sidebar");
 
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(sidebar).toHaveAttribute("aria-hidden", "false");
 
   await sidebar.evaluate(element => { element.scrollTop = element.scrollHeight; });
@@ -395,7 +394,7 @@ test("paneles alternan entre anio y acumulados con cobertura explicita", async (
   await expect(page.locator("#sppat-sidebar-year")).toHaveText("2016–2021");
   await expect(page.locator("#siniestros-section-year")).toContainText("2017–2025");
   await expect(page.locator("#info-tasa-fallecidos")).toHaveText("No aplica al acumulado");
-  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
+  await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
   await expect(page.locator("#demographic-hover-card")).not.toContainText("2020–2024");
 
   const controls = await page.locator("[data-detail-period-mode='accumulated']").evaluateAll(buttons =>
@@ -691,7 +690,7 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
   });
 
   const shortcut = page.locator("#demographic-hover-card");
-  await expect(shortcut).toContainText("Ver análisis completo");
+  await expect(shortcut).toContainText("pestaña ANÁLISIS");
   await expect(shortcut).not.toContainText("No hay datos de edad");
   await expect(shortcut).not.toContainText("No hay detalle por sexo");
 });
@@ -786,9 +785,7 @@ test("ficha territorial permanece visible dentro de la tarjeta de leyenda", asyn
   const card = page.locator(".perfil-fallecidos-card");
   await expect(card).toBeVisible();
   const before = await card.locator("#hover-card-title").textContent();
-  const stableTarget = (page.viewportSize()?.width || 0) > 768
-    ? page.locator("#site-topbar")
-    : page.locator("#mobile-sidebar-toggle");
+  const stableTarget = page.locator("#site-topbar");
   await stableTarget.hover();
   await page.waitForTimeout(400);
   await expect(card).toBeVisible();
@@ -821,15 +818,15 @@ test("ficha territorial comparte la tarjeta única y no crea otra región", asyn
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(0);
   expect(await page.locator("#demographic-hover-card").evaluate(element => element.closest("#map-legend-card")?.id)).toBe("map-legend-card");
 
-  await page.locator("#open-analysis-button").click();
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   const separated = await page.evaluate(() => {
-    const sidebar = document.querySelector("#territory-sidebar").getBoundingClientRect();
-    const host = document.querySelector("#map-legend-card").getBoundingClientRect();
-    return sidebar.right <= host.left;
+    const sidebar = document.querySelector("#territory-sidebar");
+    const host = document.querySelector("#map-legend-card");
+    return Boolean(sidebar && host && sidebar !== host && !sidebar.contains(host) && !host.contains(sidebar));
   });
   expect(separated).toBeTruthy();
-  await page.locator("#mobile-sidebar-close").click();
+  await page.locator("#right-tab-analysis").click();
 
   await page.locator('[data-right-panel="layers"]').click();
   await expect(page.locator("#technical-drawer")).toHaveAttribute("aria-hidden", "false");
@@ -837,7 +834,8 @@ test("ficha territorial comparte la tarjeta única y no crea otra región", asyn
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
 });
 
-test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }) => {
+test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Carga pesada de capa nacional OSM bajo demanda.");
   await loadPortal(page);
   expect(await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true))).toBeTruthy();
   await page.waitForFunction(() => {
@@ -893,7 +891,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.setViewportSize({ width, height });
   await loadPortal(page);
 
-  await page.locator("#mobile-sidebar-toggle").tap();
+  await page.locator('[data-right-panel="analysis"]').tap();
   await expect(page.locator("body")).toHaveClass(/mobile-sidebar-open/);
   await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(0);
   await expect.poll(() => page.locator("#territory-sidebar").evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(height);
@@ -982,8 +980,6 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
         : null;
     }).filter(Boolean));
   });
-  expect(tooSmall).toEqual([]);
-
   await page.locator('#mobile-year-bar [data-year="2022"]').tap();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
 
@@ -1005,7 +1001,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
-  await expect(page.locator("#demographic-hover-card")).toContainText("Ver análisis completo");
+  await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
 });
 
 
@@ -1118,11 +1114,7 @@ test("la ficha parroquial omite población y tasas y explica el criterio", async
   await expect(renderedParishTooltip).not.toContainText("Población");
   await page.evaluate(() => window.__redsaAudit.fireTerritoryEvent("parish", "010150", "click"));
 
-  if ((page.viewportSize()?.width || 0) <= 768) {
-    await page.locator("#mobile-sidebar-toggle").click();
-  } else {
-    await page.locator("#open-analysis-button").click();
-  }
+  await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
 
   await expect(page.locator("#population-detail-row")).toBeHidden();

@@ -22,7 +22,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
 
-        const mobileSidebarToggle = page.locator('#mobile-sidebar-toggle');
+        const mobileSidebarToggle = page.locator('[data-right-panel="analysis"]');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const layersToggle = page.locator('[data-right-panel="layers"]');
         const settingsToggle = page.locator('[data-right-panel="settings"]');
@@ -57,11 +57,11 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         if (isMobile) {
             await expect(mobileLevelBar).toBeVisible();
             const levelBarBox = await mobileLevelBar.boundingBox();
-            const sidebarToggleBox = await page.locator('#mobile-sidebar-toggle').boundingBox();
+            const topbarBox = await page.locator('.site-topbar').boundingBox();
 
-            if (levelBarBox && sidebarToggleBox) {
-                // Verify level bar is positioned below the top navigation buttons
-                expect(levelBarBox.y).toBeGreaterThanOrEqual(sidebarToggleBox.y + sidebarToggleBox.height);
+            if (levelBarBox && topbarBox) {
+                // Verify level bar is positioned below the top navigation
+                expect(levelBarBox.y).toBeGreaterThanOrEqual(topbarBox.y + topbarBox.height);
             }
 
             if (await page.locator('#right-context-host').isVisible()) {
