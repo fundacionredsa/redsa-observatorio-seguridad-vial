@@ -57,32 +57,25 @@
     pointer-events: none;
 }
 
-.sidebar {
-    position: fixed;
-    z-index: var(--z-drawer);
-    top: var(--site-topbar-height);
-    bottom: 0;
-    left: 0;
-    width: min(var(--analysis-drawer-width), 100vw);
-    height: calc(100dvh - var(--site-topbar-height));
-    max-height: calc(100dvh - var(--site-topbar-height));
-    padding: 0 var(--analysis-drawer-padding) var(--analysis-drawer-bottom-padding);
+#territory-sidebar.right-context-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    padding: 12px;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
-    border-radius: 0 8px 8px 0;
-    opacity: 0;
-    transform: translateX(-104%);
-    transition: transform 220ms ease, opacity 160ms ease;
-    pointer-events: none;
 }
 
-body.mobile-sidebar-open .sidebar,
-.sidebar:not([hidden]) {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
+#territory-sidebar .mobile-sidebar-close {
+    display: none;
+}
+
+#territory-sidebar .drawer-close {
+    display: inline-flex;
 }
 
 body.basemap-dark-matter .leaflet-territorio-pane,
@@ -98,12 +91,12 @@ body.basemap-dark-matter .leaflet-event-pane {
 .mobile-sidebar-topbar {
     position: sticky;
     z-index: var(--z-map-controls);
-    top: 0;
+    top: -12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    margin: 0 calc(var(--analysis-drawer-padding) * -1) 14px;
+    margin: -12px -12px 14px;
     padding: 10px 12px;
     border-bottom: 1px solid var(--analysis-card-border);
     background: var(--analysis-header-bg);
@@ -1102,9 +1095,13 @@ body.right-context-open .right-tools-rail {
     pointer-events: auto;
 }
 
+.right-context-host[data-active-panel="analysis"] {
+    flex: 0 0 min(var(--right-context-analysis-width, 480px), calc(100vw - var(--right-tool-rail-width, 44px) - (2 * var(--right-context-edge, 12px))));
+    width: min(var(--right-context-analysis-width, 480px), calc(100vw - var(--right-tool-rail-width, 44px) - (2 * var(--right-context-edge, 12px))));
+}
+
 .right-context-host[hidden],
 .right-context-host[data-active-panel="none"],
-.right-context-host[data-active-panel="analysis"],
 .right-context-view[hidden] {
     display: none !important;
 }

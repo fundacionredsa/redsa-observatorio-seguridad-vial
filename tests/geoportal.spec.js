@@ -98,14 +98,14 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   const geometry = await page.evaluate(() => {
     const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
     const map = document.getElementById("map").getBoundingClientRect();
-    const sidebar = document.getElementById("territory-sidebar").getBoundingClientRect();
+    const leftColumn = document.querySelector(".map-left-column")?.getBoundingClientRect();
     const host = document.getElementById("right-context-host");
     const rail = document.getElementById("right-tools-rail").getBoundingClientRect();
     const hostRect = host.hidden ? null : host.getBoundingClientRect();
     return {
       territory,
       visible: {
-        left: Math.max(map.left, sidebar.right),
+        left: Math.max(map.left, leftColumn?.right ?? map.left),
         right: Math.min(map.right, hostRect?.left ?? rail.left),
         top: map.top,
         bottom: map.bottom

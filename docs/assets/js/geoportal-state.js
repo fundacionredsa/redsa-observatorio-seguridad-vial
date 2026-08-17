@@ -419,7 +419,7 @@
             activeRightPanel = nextPanel;
             const analysisOpen = nextPanel === "analysis";
             if (rightContextHost) {
-                rightContextHost.hidden = !nextPanel || analysisOpen;
+                rightContextHost.hidden = !nextPanel;
                 rightContextHost.dataset.activePanel = nextPanel || "none";
             }
             rightContextViews.forEach(view => {
@@ -457,27 +457,18 @@
         }
 
         function setMobilePanel(panel, open, options = {}) {
-            if (open && mobileMediaQuery.matches && panel !== "layers") {
-                setRightContextPanel(null, false);
-            }
             if (panel === "sidebar") {
                 if (open && options.returnTarget === "map") {
                     sidebarReturnTarget = "map";
                 }
-                document.body.classList.toggle("mobile-sidebar-open", open);
-                if (territorySidebar) territorySidebar.hidden = !open;
-                territorySidebar?.setAttribute("aria-hidden", String(!open));
-                if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
+                setRightContextPanel("analysis", Boolean(open), options);
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open");
-                    if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
-                    if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
-                    technicalDrawer?.setAttribute("aria-hidden", "true");
                     mobileSidebarClose?.focus({ preventScroll: true });
                 }
-            }
-            if (panel === "layers") {
+            } else if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
+            } else {
+                setRightContextPanel(null, false);
             }
             syncLegendCardPresentation();
             if (panel === "sidebar") {
@@ -773,6 +764,24 @@
         });
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
+        });
+        const analysisDrawerClose = document.getElementById("analysis-drawer-close");
+        analysisDrawerClose?.addEventListener("click", () => {
+            setRightContextPanel(null, false);
+        });
+        const viewSettingsClose = document.getElementById("view-settings-close");
+        viewSettingsClose?.addEventListener("click", () => {
+            setRightContextPanel(null, false);
+        });
+        rightContextHost?.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                event.stopPropagation();
+                const activeTab = activeRightPanel;
+                setRightContextPanel(null, false);
+                if (activeTab) {
+                    document.querySelector(`.right-tool-button[data-right-panel="${activeTab}"]`)?.focus({ preventScroll: true });
+                }
+            }
         });
         const mapLegendCollapseToggle = document.getElementById("map-legend-card-collapse");
         mapLegendCollapseToggle?.addEventListener("click", () => {
@@ -1578,7 +1587,7 @@
             let top = 24;
             let bottom = 24;
 
-            [".sidebar"].forEach(selector => {
+            [".map-left-column"].forEach(selector => {
                 const rect = getVisibleMapObstacleRect(selector);
                 if (rect) left = Math.max(left, rect.right - mapRect.left + margin);
             });

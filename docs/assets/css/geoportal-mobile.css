@@ -377,6 +377,14 @@
         pointer-events: auto;
     }
 
+    #territory-sidebar .drawer-close {
+        display: none;
+    }
+
+    #territory-sidebar .mobile-sidebar-close {
+        display: inline-flex;
+    }
+
     .sidebar .detail-period-control {
         position: static;
         margin-top: 12px;
@@ -1048,7 +1056,7 @@
         transition: opacity 160ms ease, visibility 160ms ease;
     }
 
-    body.mobile-sidebar-open .right-control-shell {
+    body.mobile-sidebar-open .right-tools-rail {
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
@@ -1063,6 +1071,13 @@
         width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+    }
+
+    body.mobile-sidebar-open .right-context-host {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        overflow: visible;
     }
 
     .legend-shell-action {
