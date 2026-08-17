@@ -506,10 +506,12 @@
         function setSiteTopbarMenu(open, options = {}) {
             const shouldOpen = Boolean(open);
             siteTopbarActions?.classList.toggle("is-open", shouldOpen);
+            siteTopbarActions?.setAttribute("aria-hidden", String(!shouldOpen));
             siteTopbarMenuToggle?.setAttribute("aria-expanded", String(shouldOpen));
             if (!shouldOpen) setSiteMethodologyMenu(false);
-            if (shouldOpen && options.focusFirstAction) {
-                siteTopbarActions?.querySelector("button")?.focus({ preventScroll: true });
+            if (shouldOpen && (options.focusFirstAction !== false)) {
+                const firstItem = siteTopbarActions?.querySelector("button, a");
+                firstItem?.focus({ preventScroll: true });
             }
         }
 
@@ -733,6 +735,27 @@
         });
         siteTopbarActions?.querySelectorAll(":scope > button").forEach(button => {
             button.addEventListener("click", () => setSiteTopbarMenu(false));
+        });
+        siteTopbarActions?.addEventListener("keydown", event => {
+            const focusable = [...siteTopbarActions.querySelectorAll("button, a")].filter(el => {
+                return !el.hidden && getComputedStyle(el).display !== "none" && !el.closest("[hidden]");
+            });
+            const currentIndex = focusable.indexOf(document.activeElement);
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+                const nextIndex = currentIndex < focusable.length - 1 ? currentIndex + 1 : 0;
+                focusable[nextIndex]?.focus({ preventScroll: true });
+            } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : focusable.length - 1;
+                focusable[prevIndex]?.focus({ preventScroll: true });
+            } else if (event.key === "Home") {
+                event.preventDefault();
+                focusable[0]?.focus({ preventScroll: true });
+            } else if (event.key === "End") {
+                event.preventDefault();
+                focusable[focusable.length - 1]?.focus({ preventScroll: true });
+            }
         });
         document.addEventListener("pointerdown", event => {
             if (!siteTopbar?.contains(event.target)) {

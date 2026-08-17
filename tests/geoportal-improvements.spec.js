@@ -2,14 +2,14 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs/promises';
 
 async function openCitizenPanelWhenNeeded(page) {
-    if ((page.viewportSize()?.width || 0) <= 768 && !await page.locator('#site-topbar-actions').isVisible()) {
+    if (!await page.locator('#site-topbar-actions').isVisible()) {
         await page.locator('#site-topbar-menu-toggle').click();
         await expect(page.locator('#site-topbar-actions')).toBeVisible();
     }
 }
 
 async function openSiteMenuWhenNeeded(page) {
-    if ((page.viewportSize()?.width || 0) <= 768 && !await page.locator('#site-topbar-actions').isVisible()) {
+    if (!await page.locator('#site-topbar-actions').isVisible()) {
         await page.locator('#site-topbar-menu-toggle').click();
         await expect(page.locator('#site-topbar-actions')).toBeVisible();
     }
@@ -304,7 +304,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('methodology links use the professional interface and drawer has no direct download', async ({ page }) => {
-            if ((page.viewportSize()?.width || 0) <= 768) await page.locator('#site-topbar-menu-toggle').click();
+            await openSiteMenuWhenNeeded(page);
             await page.locator('#site-methodology-toggle').click();
             const links = page.locator('#site-methodology-menu a');
             await expect(links).toHaveCount(4);
@@ -478,7 +478,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
 
         test('GA4 privacy notice is visible in "¿Por qué confiar?" section', async ({ page }) => {
-            await openCitizenPanelWhenNeeded(page);
             await openSiteMenuWhenNeeded(page);
             const openInstitutionalBtn = page.locator('#open-institutional-button');
             await openInstitutionalBtn.click();

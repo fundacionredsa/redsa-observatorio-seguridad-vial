@@ -224,6 +224,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toContainText("Personas fallecidas");
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#site-methodology-toggle").click();
   await expect(page.locator("#site-methodology-menu")).toBeVisible();
   await expect(page.locator("#site-methodology-menu")).toContainText("Metodología");
@@ -698,6 +699,7 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La logica completa del ranking se valida una vez en desktop.");
   await loadPortal(page);
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#open-institutional-button").click();
   await expect(page.locator("#institutional-modal")).toBeVisible();
 

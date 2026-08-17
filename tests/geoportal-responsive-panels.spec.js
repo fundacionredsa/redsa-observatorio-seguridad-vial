@@ -105,17 +105,13 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
   await expect(page.locator("#citizen-panel #open-institutional-button, #citizen-panel #btn-tour")).toHaveCount(0);
   await expect(page.locator("#right-tools-rail #btn-catalog, #right-tab-methodology, #methodology-context-panel")).toHaveCount(0);
 
-  if (isMobile) {
-    await page.locator("#site-topbar-menu-toggle").click();
-  }
+  await page.locator("#site-topbar-menu-toggle").click();
   await expect(page.locator("#site-topbar-actions")).toBeVisible();
   await page.locator("#site-methodology-toggle").click();
   await expect(page.locator("#site-methodology-menu a")).toHaveCount(4);
   await expect(page.locator("#site-methodology-menu")).toBeVisible();
   await page.locator("#site-methodology-toggle").click();
-  if (isMobile) {
-    await page.locator("#site-topbar-menu-toggle").click();
-  }
+  await page.locator("#site-topbar-menu-toggle").click();
 
   const shortcut = page.locator("#active-layers-shortcut");
   await expect(shortcut).toHaveAttribute("data-active-layer-count", "1");
@@ -675,7 +671,7 @@ test("catálogo vive en la barra superior y la marca oficial se muestra legible"
   await expect(page.locator(".site-topbar-brand strong")).toHaveText("Fundación REDSA");
   expect(await page.locator("#download-summary-button").evaluate(element => element.hidden)).toBeTruthy();
 
-  if ((page.viewportSize()?.width || 0) <= 768) await page.locator("#site-topbar-menu-toggle").click();
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#site-topbar #btn-catalog").click();
   await expect(page.locator("#catalog-modal")).toBeVisible();
   await page.locator("#catalog-modal-close").click();

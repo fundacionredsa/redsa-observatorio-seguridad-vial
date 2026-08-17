@@ -115,11 +115,16 @@
                     <div id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></div>
                 </div>
             </div>
-            <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
-                <i class="fa-solid fa-bars" aria-hidden="true"></i>
-                <span class="sr-only">Menú</span>
-            </button>
-            <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio">
+            <div class="site-topbar-right">
+                <button class="site-topbar-icon-btn site-topbar-action site-topbar-theme" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro">
+                    <i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Claro</span>
+                </button>
+                <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions" aria-label="Menú principal" title="Menú">
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Menú</span>
+                </button>
+            </div>
+            <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio" aria-hidden="true">
                 <button class="site-topbar-action" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal" aria-label="Ranking Nacional" title="Ranking Nacional">
                     <i class="fa-solid fa-ranking-star" aria-hidden="true"></i><span class="site-topbar-action-label">Ranking Nacional</span>
                 </button>
@@ -139,9 +144,6 @@
                 </div>
                 <button class="site-topbar-action" id="btn-tour" type="button" aria-label="Guía y ayuda" title="Guía y ayuda">
                     <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span class="site-topbar-action-label">Ayuda</span>
-                </button>
-                <button class="site-topbar-action site-topbar-theme" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro">
-                    <i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label">Modo Claro</span>
                 </button>
                 <a class="site-topbar-action site-topbar-contact" href="mailto:info@fundacionredsa.org" aria-label="Contactar a Fundación REDSA" title="Contactar a Fundación REDSA">
                     <i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="site-topbar-action-label">Contacto</span>

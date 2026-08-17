@@ -177,13 +177,25 @@ body.basemap-dark-matter .leaflet-event-pane {
     backdrop-filter: blur(14px);
 }
 
+.site-topbar-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    gap: 16px;
+    position: relative;
+}
+
 .site-topbar-brand {
     display: inline-flex;
+    flex: 0 0 auto;
     min-width: 0;
     align-items: center;
     gap: 9px;
     color: var(--text-primary);
     text-decoration: none;
+    flex-shrink: 0;
 }
 
 .site-topbar-brand-mark {
@@ -274,19 +286,24 @@ body:not(.light-theme) .site-topbar-brand-mark {
     font-family: var(--font-display);
     font-size: 0.84rem;
     line-height: 1.1;
+    white-space: nowrap;
 }
 
 .site-topbar-brand small {
     color: var(--text-muted);
     font-size: 0.62rem;
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 .site-topbar-center-controls {
+    flex: 1 1 auto;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 12px;
     min-width: 0;
+    max-height: 36px;
 }
 
 .territory-level-control {
@@ -359,33 +376,89 @@ body:not(.light-theme) .site-topbar-brand-mark {
     font-family: var(--font-mono, monospace);
 }
 
-.site-topbar-actions {
+.site-topbar-right {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.site-topbar-menu-toggle,
+.site-topbar-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-glass-hover) 70%, transparent);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.site-topbar-menu-toggle:hover,
+.site-topbar-menu-toggle:focus-visible,
+.site-topbar-menu-toggle[aria-expanded="true"],
+.site-topbar-icon-btn:hover,
+.site-topbar-icon-btn:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+}
+
+.site-topbar-actions {
+    position: absolute;
+    top: calc(var(--site-topbar-height) + 4px);
+    right: 0;
+    z-index: var(--z-popover);
+    display: none;
+    flex-direction: column;
+    min-width: 220px;
+    padding: 6px;
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    background: var(--bg-panel, var(--bg-glass));
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    gap: 2px;
+}
+
+.site-topbar-actions.is-open {
+    display: flex;
 }
 
 .site-topbar-action {
     display: inline-flex;
-    min-height: 38px;
+    width: 100%;
+    min-height: 36px;
     align-items: center;
-    gap: 7px;
+    gap: 9px;
     padding: 7px 10px;
     border: 1px solid transparent;
     border-radius: 6px;
     background: transparent;
     color: var(--text-secondary);
     font: inherit;
-    font-size: 0.72rem;
-    font-weight: 750;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
 }
 
 .site-topbar-action:hover,
-.site-topbar-action:focus-visible,
-.site-topbar-action[aria-expanded="true"] {
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-    background: color-mix(in srgb, var(--accent) 13%, transparent);
+.site-topbar-action:focus-visible {
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--text-primary);
 }
 
 .map-left-column {
