@@ -61,6 +61,8 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
   await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(1);
+  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
@@ -449,21 +451,22 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
     "data-custom-text",
     /No constituye una serie anual/
   );
+  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   const typography = await page.evaluate(() => {
     const style = element => {
       const computed = getComputedStyle(element);
       return { size: parseFloat(computed.fontSize), weight: Number(computed.fontWeight) };
     };
-    const activeLayerNames = [...document.querySelectorAll("#legend-active-layers-list .legend-active-layer-name")];
     return {
-      territory: style(activeLayerNames[0]),
-      infrastructure: style(activeLayerNames.at(-1)),
+      territory: style(document.querySelector(".legend-reading-group .legend-heading-title")),
+      infrastructure: style(document.querySelector('[data-legend-layer-id="infra-ciclovias"] .legend-overlay-title')),
       control: style(document.querySelector("#territory-level-control"))
     };
   });
-  expect(Math.abs(typography.territory.size - typography.infrastructure.size)).toBeLessThanOrEqual(0.5);
-  expect(typography.territory.weight).toBe(typography.infrastructure.weight);
+  expect(typography.territory.size).toBeGreaterThan(typography.infrastructure.size);
+  expect(typography.territory.weight).toBeGreaterThanOrEqual(typography.infrastructure.weight);
   expect(typography.control.size).toBeLessThan(typography.territory.size);
 
   await testInfo.attach(`jerarquia-leyenda-${testInfo.project.name}`, {

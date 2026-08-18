@@ -348,15 +348,6 @@ function onEachProvinceFeature(feature, layer) {
             `;
         }
 
-        function activeLayerSymbol(item, fallbackColors = []) {
-            const colors = item?.colors?.length ? item.colors : fallbackColors;
-            const background = item?.shape === "gradient" || colors.length > 1
-                ? `linear-gradient(90deg, ${colors.join(", ")})`
-                : (item?.color || colors[0] || COLOR_BOUNDARY);
-            const circleClass = item?.shape === "circle" ? " is-circle" : "";
-            return `<span class="legend-active-layer-symbol${circleClass}" style="background:${background}"></span>`;
-        }
-
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
             const component = document.getElementById("map-legend-card");
             const section = document.getElementById("legend-active-layers-section");
@@ -364,62 +355,26 @@ function onEachProvinceFeature(feature, layer) {
             const count = document.getElementById("legend-active-layers-count");
             if (!component || !section || !list || !count) return;
 
-            const activeLayers = [];
-            if (selectedVariable !== "normal") {
-                const config = VARIABLE_CONFIGS[selectedVariable];
-                const colors = activeVariableBins.colors?.length
-                    ? activeVariableBins.colors
-                    : (config?.colors || []);
-                const levelLabel = LEVEL_LABELS[currentLevel] || "territorio";
-                const unavailable = effectiveVariable === "normal";
-                activeLayers.push({
-                    title: config?.displayLabel || config?.label || "Variable territorial",
-                    subtitle: unavailable ? `No disponible en ${levelLabel}` : `Variable territorial · ${levelLabel}`,
-                    symbol: activeLayerSymbol({ shape: "gradient", colors }),
-                    info: config?.infoSigla ? siglaInfoIcon(config.infoSigla) : siglaInfoIcon("Información", config?.description || "Variable territorial activa.")
-                });
-            }
-
-            overlayEntries.forEach(entry => {
-                const firstItem = entry.items?.[0] || {};
-                const info = entry.id === "siniestros_ant"
-                    ? siglaInfoIcon("ANT_SINIESTROS")
-                    : siglaInfoIcon(
-                        "Información",
-                        entry.infoText || `${entry.title}: capa activa en el mapa.`
-                    );
-                activeLayers.push({
-                    title: entry.title,
-                    subtitle: entry.subtitle || firstItem.label || "Capa de infraestructura vial",
-                    symbol: activeLayerSymbol(firstItem),
-                    info
-                });
-            });
+            const activeLayerCount = (selectedVariable === "normal" ? 0 : 1) + overlayEntries.length;
 
             const layersShortcut = document.getElementById("active-layers-shortcut");
             if (layersShortcut) {
-                const hasExtraLayers = activeLayers.length > 1;
+                const hasExtraLayers = activeLayerCount > 1;
                 layersShortcut.classList.toggle("has-extra-layers", hasExtraLayers);
-                layersShortcut.dataset.activeLayerCount = String(activeLayers.length);
+                layersShortcut.dataset.activeLayerCount = String(activeLayerCount);
                 layersShortcut.setAttribute(
                     "aria-label",
                     hasExtraLayers
-                        ? `Abrir Datos y capas; ${activeLayers.length} capas activas`
+                        ? `Abrir Datos y capas; ${activeLayerCount} capas activas`
                         : "Abrir Datos y capas"
                 );
             }
 
-            list.innerHTML = activeLayers.map(layer => `
-                <div class="legend-active-layer-row" role="listitem">
-                    ${layer.symbol}
-                    <span class="legend-active-layer-name">${layer.title}<small>${layer.subtitle}</small></span>
-                    ${layer.info}
-                </div>
-            `).join("");
-            count.textContent = `${activeLayers.length} ${activeLayers.length === 1 ? "capa" : "capas"}`;
-            count.hidden = activeLayers.length === 0;
-            component.dataset.layerCount = String(activeLayers.length);
-            section.hidden = activeLayers.length === 0;
+            list.replaceChildren();
+            count.textContent = `${activeLayerCount} ${activeLayerCount === 1 ? "capa" : "capas"}`;
+            count.hidden = activeLayerCount === 0;
+            component.dataset.layerCount = String(activeLayerCount);
+            section.hidden = true;
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -530,7 +485,7 @@ function onEachProvinceFeature(feature, layer) {
                     `;
 
                     const binLabels = getLegendBinLabels(bins, displayBins, config, formatFunc);
-                    const fieldLabel = config.fieldLabel || (config.unidad ? `${config.displayLabel || config.label} (${config.unidad})` : (config.displayLabel || config.label));
+                    const fieldLabel = config.fieldLabel || (config.unidad ? `Rangos (${config.unidad})` : "");
                     if (bins.length && colors.length) {
                         itemsHtml += renderOrdinalLegendScale(colors.slice(0, binLabels.length), binLabels, fieldLabel);
                     }
@@ -564,9 +519,9 @@ function onEachProvinceFeature(feature, layer) {
                                 ? "<strong>Corte parcial enero-junio:</strong> no comparar con años completos."
                                 : "";
                             itemsHtml += `
-                                <div class="legend-data-audit legend-territory-audit" role="note">
-                                    <span class="legend-audit-value"><small>Total nacional</small><strong>${total}</strong></span>
-                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio y se conservan en el total sin asignación especulativa.${partial ? `<span>${partial}</span>` : ""}</span>
+                                <div class="legend-data-audit legend-territory-audit" role="note" data-national-total="${total}">
+                                    <strong>Cobertura territorial</strong>
+                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio. La referencia nacional conserva ambos grupos sin asignación especulativa.${partial ? `<span>${partial}</span>` : ""}</span>
                                 </div>
                             `;
                         }

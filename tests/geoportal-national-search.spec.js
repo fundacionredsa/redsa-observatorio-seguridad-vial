@@ -28,6 +28,14 @@ test("el estado inicial muestra una referencia nacional que sigue variable, año
   await expect(reference).toContainText("20.346");
   await expect(reference).toContainText("2025");
   await expect(reference).not.toContainText("Fuente:");
+  const territorialAudit = page.locator(".legend-territory-audit");
+  await expect(territorialAudit).toContainText("Cobertura territorial");
+  await expect(territorialAudit).toContainText("20.328 registros se representan");
+  await expect(territorialAudit).not.toContainText("Total nacional");
+  await expect(territorialAudit).not.toContainText("20.346");
+  await expect(page.locator(".legend-scale-field-name")).toHaveText("Rangos (accidentes reportados)");
+  const visibleLegendText = await page.locator("#map-legend-card").innerText();
+  expect(visibleLegendText.split("Siniestros de tránsito reportados")).toHaveLength(2);
   const referenceInfo = reference.locator(".citizen-national-info");
   await expect(referenceInfo).toBeVisible();
   await expect(referenceInfo).toHaveAttribute("data-custom-text", /Fuente: ANT/);
