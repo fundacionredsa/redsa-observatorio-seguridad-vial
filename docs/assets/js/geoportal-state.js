@@ -365,8 +365,12 @@
             }
             const rootStyles = getComputedStyle(document.documentElement);
             const layoutGap = Number.parseFloat(rootStyles.getPropertyValue("--map-legend-gap")) || 0;
-            // Only territory-sidebar matters now — #citizen-panel was dissolved in Fase 9.
-            const visibleLeftPanels = [territorySidebar].filter(panel => {
+            // Evalúa paneles flotantes u overlays en el lado izquierdo del mapa si existieran,
+            // excluyendo elementos de la columna izquierda y del host derecho.
+            const candidateLeftPanels = Array.from(
+                document.querySelectorAll(".map-left-floating-panel, [data-left-floating-panel], [data-left-overlay]")
+            );
+            const visibleLeftPanels = candidateLeftPanels.filter(panel => {
                 if (!panel || panel.getAttribute("aria-hidden") === "true") return false;
                 const styles = getComputedStyle(panel);
                 return styles.visibility !== "hidden" && styles.display !== "none";
