@@ -9,6 +9,13 @@ async function loadPortal(page) {
   await page.waitForFunction(() => Boolean(window.__redsaAudit && window.__redsaExperienceAudit));
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 async function searchTerritory(page, query, expectedLevel, expectedCode) {
   const input = page.locator("#territory-search-input");
   await input.fill(query);
@@ -23,6 +30,7 @@ async function searchTerritory(page, query, expectedLevel, expectedCode) {
 
 test("el estado inicial muestra una referencia nacional que sigue variable, año y periodo", async ({ page }) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   const reference = page.locator(".citizen-national-reference");
   await expect(reference).toBeVisible();
   await expect(reference).toContainText("20.346");

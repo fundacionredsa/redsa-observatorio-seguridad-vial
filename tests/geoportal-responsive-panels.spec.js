@@ -14,6 +14,13 @@ async function loadPortal(page) {
   await expect(page.locator("#loader")).toBeHidden({ timeout: 90_000 });
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 async function box(page, selector) {
   return page.locator(selector).evaluate(element => {
     const rect = element.getBoundingClientRect();
@@ -310,6 +317,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
 
 test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.showTerritory("canton", "1701");
@@ -438,6 +446,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
 
 test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await expect(page.locator('label[for="territory-level-select"]')).toHaveClass(/sr-only/);
   await expect(page.locator("#period-mode-note")).toHaveClass(/sr-only/);
   await expect(page.locator(".timeline-help")).toHaveCount(0);

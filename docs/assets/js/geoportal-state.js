@@ -788,9 +788,10 @@
             }
         });
         const mapLegendCollapseToggle = document.getElementById("map-legend-card-collapse");
-        mapLegendCollapseToggle?.addEventListener("click", () => {
-            if (!mapLegendCard) return;
-            const isCollapsed = mapLegendCard.classList.toggle("is-collapsed");
+
+        function setLegendCollapsed(isCollapsed) {
+            if (!mapLegendCard || !mapLegendCollapseToggle) return;
+            mapLegendCard.classList.toggle("is-collapsed", isCollapsed);
             mapLegendCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
             mapLegendCollapseToggle.setAttribute("title", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
             mapLegendCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
@@ -798,6 +799,14 @@
             if (icon) {
                 icon.className = isCollapsed ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
             }
+        }
+
+        // Estado inicial únicamente: después se conserva la elección de la persona.
+        setLegendCollapsed(mobileMediaQuery.matches);
+
+        mapLegendCollapseToggle?.addEventListener("click", () => {
+            if (!mapLegendCard) return;
+            setLegendCollapsed(!mapLegendCard.classList.contains("is-collapsed"));
         });
         const territoryLevelSelect = document.getElementById("territory-level-select");
         territoryLevelSelect?.addEventListener("change", (event) => {

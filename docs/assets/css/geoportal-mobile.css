@@ -955,7 +955,7 @@
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
         width: auto;
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
-        max-height: calc(100dvh - var(--site-topbar-mobile-height) - 110px);
+        max-height: min(72dvh, calc(100dvh - var(--site-topbar-mobile-height) - 110px));
         z-index: calc(var(--z-mobile-navigation, 1190) + 3);
     }
 
@@ -1026,7 +1026,8 @@
 }
 
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
-    #territory-sidebar {
+    #territory-sidebar,
+    .map-legend-card {
         transition: none;
     }
 }
@@ -1069,8 +1070,8 @@
     .right-context-host {
         flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
-        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        height: min(72dvh, calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom)));
+        max-height: min(72dvh, calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom)));
     }
 
     body.mobile-sidebar-open .right-context-host {
@@ -1096,20 +1097,20 @@
         gap: 7px;
     }
 
-    .right-context-view,
+    .right-context-host .right-context-view,
     .right-context-host .technical-drawer {
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        max-height: 100%;
     }
 
     .right-context-host .technical-drawer {
-        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        height: 100%;
         padding: 12px 12px 20px;
     }
 
     body.mobile-layers-open .right-context-view,
     body.mobile-layers-open .right-context-host .technical-drawer {
-        height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
-        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        height: 100%;
+        max-height: 100%;
     }
 
     #mobile-layers-toggle {

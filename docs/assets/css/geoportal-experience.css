@@ -462,8 +462,8 @@ body:not(.light-theme) .site-topbar-brand-mark {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: min(360px, calc(100vw - 24px));
-    max-height: calc(100dvh - var(--right-context-top, 52px) - 20px);
+    width: min(272px, calc(100vw - 24px));
+    max-height: min(72dvh, calc(100dvh - var(--right-context-top, 52px) - 20px));
     pointer-events: none;
 }
 
@@ -471,6 +471,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
     position: relative;
     z-index: 2;
     box-sizing: border-box;
+    flex: 0 0 auto;
     width: 100%;
     padding: 8px 10px;
     border: 1px solid var(--border-glass);
@@ -554,13 +555,15 @@ body:not(.light-theme) .site-topbar-brand-mark {
     z-index: 1;
     display: flex;
     box-sizing: border-box;
+    min-height: 48px;
+    flex: 0 1 auto;
     width: 100%;
     min-width: 270px;
     max-width: 440px;
     max-height: calc(100dvh - var(--site-topbar-height) - var(--site-topbar-edge) - 90px);
     flex-direction: column;
     resize: both;
-    overflow: auto;
+    overflow: hidden;
     border: 1px solid var(--border-glass);
     border-radius: var(--map-legend-radius);
     background: color-mix(in srgb, var(--bg-panel, var(--bg-glass)) 96%, transparent);
@@ -583,14 +586,16 @@ body:not(.light-theme) .site-topbar-brand-mark {
     transition-delay: 0s;
 }
 
-.map-legend-card.is-collapsed {
-    max-height: 48px !important;
-    overflow: hidden !important;
-    resize: none !important;
+#map-legend-card.is-collapsed {
+    min-height: 48px;
+    max-height: 48px;
+    flex-basis: 48px;
+    overflow: hidden;
+    resize: none;
 }
 
-.map-legend-card.is-collapsed .map-legend-card-scroll {
-    display: none !important;
+#map-legend-card.is-collapsed .map-legend-card-scroll {
+    display: none;
 }
 
 .map-legend-card-header {
@@ -627,10 +632,17 @@ body:not(.light-theme) .site-topbar-brand-mark {
 
 .map-legend-card-scroll {
     min-height: 0;
+    flex: 1 1 auto;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-legend-card {
+        transition: none;
+    }
 }
 
 .map-legend-card .legend-content-group {
@@ -1014,6 +1026,7 @@ body.right-context-open .right-tools-rail {
 
 .right-tool-button:focus-visible,
 .right-context-close:focus-visible,
+.legend-shell-action:focus-visible,
 .contextual-opacity-control input:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 2px;
@@ -1083,8 +1096,8 @@ body.right-context-open .right-tools-rail {
     z-index: 1;
     flex: 0 0 min(var(--right-context-width, 400px), calc(100vw - var(--right-tool-rail-width, 44px) - (2 * var(--right-context-edge, 12px))));
     width: min(var(--right-context-width, 400px), calc(100vw - var(--right-tool-rail-width, 44px) - (2 * var(--right-context-edge, 12px))));
-    height: calc(100dvh - var(--right-context-top, 52px) - var(--right-context-bottom, 12px));
-    max-height: calc(100dvh - var(--right-context-top, 52px) - var(--right-context-bottom, 12px));
+    height: min(72dvh, calc(100dvh - var(--right-context-top, 52px) - var(--right-context-bottom, 12px)));
+    max-height: min(72dvh, calc(100dvh - var(--right-context-top, 52px) - var(--right-context-bottom, 12px)));
     border: 1px solid var(--border-glass);
     border-right: 0;
     border-radius: 8px 0 0 8px;
@@ -1113,6 +1126,8 @@ body.right-context-open .right-tools-rail {
     max-height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 }
 
 #territory-sidebar {
