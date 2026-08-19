@@ -8,6 +8,28 @@
             --accent: #4D96C2;
             --accent-hover: #7AB2D2;
             --public-action: var(--accent);
+
+            /* Escala tipográfica */
+            --fs-2xs: 0.58rem;
+            --fs-xs: 0.65rem;
+            --fs-sm: 0.72rem;
+            --fs-md: 0.8rem;
+            --fs-base: 0.9rem;
+            --fs-lg: 1rem;
+            --fs-xl: 1.1rem;
+            --fs-2xl: 1.35rem;
+            --fs-3xl: 1.5rem;
+
+            /* Escala de espaciado (grid de 4px) */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-7: 28px;
+            --space-8: 32px;
+
             --font-display: 'Outfit', sans-serif;
             --font-sans: 'Inter', sans-serif;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
