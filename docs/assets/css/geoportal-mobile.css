@@ -166,7 +166,7 @@
     .leaflet-control-layers input:focus-visible,
     .variable-option input:focus-visible,
     #map-year-slider:focus-visible {
-        outline: 3px solid #38bdf8;
+        outline: 3px solid var(--accent-hover);
         outline-offset: 2px;
     }
 
