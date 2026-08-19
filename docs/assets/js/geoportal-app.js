@@ -970,16 +970,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const btnTheme = document.getElementById('btn-theme-toggle');
             if (btnTheme) {
-                // Leer preferencia
-                const savedTheme = localStorage.getItem('redsa_light_theme');
-                const isLight = savedTheme === null ? true : savedTheme === 'true';
+                const isLight = document.body.classList.contains('light-theme');
                 if (isLight) {
-                    document.body.classList.add('light-theme');
                     btnTheme.innerHTML = '<i class="fa-solid fa-moon" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Oscuro</span>';
                     btnTheme.setAttribute('title', 'Modo Oscuro');
                     btnTheme.setAttribute('aria-label', 'Cambiar a modo oscuro');
                 } else {
-                    document.body.classList.remove('light-theme');
                     btnTheme.innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Claro</span>';
                     btnTheme.setAttribute('title', 'Modo Claro');
                     btnTheme.setAttribute('aria-label', 'Cambiar a modo claro');
