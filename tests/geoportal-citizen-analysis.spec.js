@@ -13,6 +13,13 @@ async function loadPortal(page) {
   await expect(page.locator("#loader")).toBeHidden({ timeout: 90_000 });
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 async function exposeTopbarAction(page, selector) {
   const action = page.locator(selector);
   if (!(await action.isVisible())) {
@@ -24,6 +31,7 @@ async function exposeTopbarAction(page, selector) {
 
 test("buscador y leyenda comparten la paleta oscura y conservan el tema claro", async ({ page }) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await expect(page.locator(".citizen-national-reference")).toBeVisible();
 
   const readCitizenTheme = () => page.evaluate(() => {

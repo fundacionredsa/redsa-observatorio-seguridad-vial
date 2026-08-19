@@ -14,6 +14,13 @@ async function loadPortal(page) {
   await expect(page.locator("#loader")).toBeHidden({ timeout: 90_000 });
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 async function box(page, selector) {
   return page.locator(selector).evaluate(element => {
     const rect = element.getBoundingClientRect();
@@ -61,6 +68,8 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
   await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(1);
+  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   await layersButton.click();
   await expect(page.locator("#technical-drawer")).toBeVisible();
@@ -105,17 +114,13 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
   await expect(page.locator("#citizen-panel #open-institutional-button, #citizen-panel #btn-tour")).toHaveCount(0);
   await expect(page.locator("#right-tools-rail #btn-catalog, #right-tab-methodology, #methodology-context-panel")).toHaveCount(0);
 
-  if (isMobile) {
-    await page.locator("#site-topbar-menu-toggle").click();
-  }
+  await page.locator("#site-topbar-menu-toggle").click();
   await expect(page.locator("#site-topbar-actions")).toBeVisible();
   await page.locator("#site-methodology-toggle").click();
   await expect(page.locator("#site-methodology-menu a")).toHaveCount(4);
   await expect(page.locator("#site-methodology-menu")).toBeVisible();
   await page.locator("#site-methodology-toggle").click();
-  if (isMobile) {
-    await page.locator("#site-topbar-menu-toggle").click();
-  }
+  await page.locator("#site-topbar-menu-toggle").click();
 
   const shortcut = page.locator("#active-layers-shortcut");
   await expect(shortcut).toHaveAttribute("data-active-layer-count", "1");
@@ -312,6 +317,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
 
 test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.showTerritory("canton", "1701");
@@ -440,6 +446,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
 
 test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await expect(page.locator('label[for="territory-level-select"]')).toHaveClass(/sr-only/);
   await expect(page.locator("#period-mode-note")).toHaveClass(/sr-only/);
   await expect(page.locator(".timeline-help")).toHaveCount(0);
@@ -453,21 +460,22 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
     "data-custom-text",
     /No constituye una serie anual/
   );
+  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   const typography = await page.evaluate(() => {
     const style = element => {
       const computed = getComputedStyle(element);
       return { size: parseFloat(computed.fontSize), weight: Number(computed.fontWeight) };
     };
-    const activeLayerNames = [...document.querySelectorAll("#legend-active-layers-list .legend-active-layer-name")];
     return {
-      territory: style(activeLayerNames[0]),
-      infrastructure: style(activeLayerNames.at(-1)),
+      territory: style(document.querySelector(".legend-reading-group .legend-heading-title")),
+      infrastructure: style(document.querySelector('[data-legend-layer-id="infra-ciclovias"] .legend-overlay-title')),
       control: style(document.querySelector("#territory-level-control"))
     };
   });
-  expect(Math.abs(typography.territory.size - typography.infrastructure.size)).toBeLessThanOrEqual(0.5);
-  expect(typography.territory.weight).toBe(typography.infrastructure.weight);
+  expect(typography.territory.size).toBeGreaterThan(typography.infrastructure.size);
+  expect(typography.territory.weight).toBeGreaterThanOrEqual(typography.infrastructure.weight);
   expect(typography.control.size).toBeLessThan(typography.territory.size);
 
   await testInfo.attach(`jerarquia-leyenda-${testInfo.project.name}`, {
@@ -675,7 +683,7 @@ test("catálogo vive en la barra superior y la marca oficial se muestra legible"
   await expect(page.locator(".site-topbar-brand strong")).toHaveText("Fundación REDSA");
   expect(await page.locator("#download-summary-button").evaluate(element => element.hidden)).toBeTruthy();
 
-  if ((page.viewportSize()?.width || 0) <= 768) await page.locator("#site-topbar-menu-toggle").click();
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#site-topbar #btn-catalog").click();
   await expect(page.locator("#catalog-modal")).toBeVisible();
   await page.locator("#catalog-modal-close").click();

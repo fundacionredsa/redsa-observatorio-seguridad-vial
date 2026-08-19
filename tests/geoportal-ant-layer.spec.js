@@ -11,6 +11,13 @@ async function waitForPortal(page) {
   await page.locator("#loader").waitFor({ state: "hidden", timeout: 90_000 });
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 async function openTechnicalPanel(page, isMobile) {
   const drawer = page.locator("#technical-drawer");
   if (await drawer.getAttribute("aria-hidden") === "false") return;
@@ -119,6 +126,7 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   expect(paneAudit.infrastructureIndex).toBeLessThan(paneAudit.eventIndex);
   if (testInfo.project.name === "mobile") {
     await page.evaluate(() => window.setRightContextPanel(null, false));
+    await expandLegendOnMobile(page);
   }
   await expect(page.locator("#ant-heat-opacity-control")).toBeVisible();
   expect(await page.locator("#ant-heat-opacity-control").evaluate(element => element.parentElement?.id)).toBe("legend-ant-opacity-slot");

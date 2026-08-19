@@ -18,6 +18,11 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.waitForSelector('.driver-overlay', { state: 'detached', timeout: 5000 }).catch(() => {});
     });
 
+    async function expandLegend(page) {
+        await page.locator('#map-legend-card-collapse').click();
+        await expect(page.locator('#map-legend-card-collapse')).toHaveAttribute('aria-expanded', 'true');
+    }
+
     test('mobile drawer mutual exclusivity (sidebar, layers, settings)', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
@@ -199,6 +204,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         });
 
         await expect(page.locator('#map-legend-card')).toBeVisible();
+        await expandLegend(page);
         const card = page.locator('#demographic-hover-card');
         await expect(card).toBeVisible();
         await card.scrollIntoViewIfNeeded();

@@ -365,8 +365,12 @@
             }
             const rootStyles = getComputedStyle(document.documentElement);
             const layoutGap = Number.parseFloat(rootStyles.getPropertyValue("--map-legend-gap")) || 0;
-            // Only territory-sidebar matters now — #citizen-panel was dissolved in Fase 9.
-            const visibleLeftPanels = [territorySidebar].filter(panel => {
+            // Evalúa paneles flotantes u overlays en el lado izquierdo del mapa si existieran,
+            // excluyendo elementos de la columna izquierda y del host derecho.
+            const candidateLeftPanels = Array.from(
+                document.querySelectorAll(".map-left-floating-panel, [data-left-floating-panel], [data-left-overlay]")
+            );
+            const visibleLeftPanels = candidateLeftPanels.filter(panel => {
                 if (!panel || panel.getAttribute("aria-hidden") === "true") return false;
                 const styles = getComputedStyle(panel);
                 return styles.visibility !== "hidden" && styles.display !== "none";
@@ -419,7 +423,7 @@
             activeRightPanel = nextPanel;
             const analysisOpen = nextPanel === "analysis";
             if (rightContextHost) {
-                rightContextHost.hidden = !nextPanel || analysisOpen;
+                rightContextHost.hidden = !nextPanel;
                 rightContextHost.dataset.activePanel = nextPanel || "none";
             }
             rightContextViews.forEach(view => {
@@ -457,27 +461,18 @@
         }
 
         function setMobilePanel(panel, open, options = {}) {
-            if (open && mobileMediaQuery.matches && panel !== "layers") {
-                setRightContextPanel(null, false);
-            }
             if (panel === "sidebar") {
                 if (open && options.returnTarget === "map") {
                     sidebarReturnTarget = "map";
                 }
-                document.body.classList.toggle("mobile-sidebar-open", open);
-                if (territorySidebar) territorySidebar.hidden = !open;
-                territorySidebar?.setAttribute("aria-hidden", String(!open));
-                if (mobileSidebarToggle) mobileSidebarToggle.setAttribute("aria-expanded", String(open));
+                setRightContextPanel("analysis", Boolean(open), options);
                 if (open && mobileMediaQuery.matches) {
-                    document.body.classList.remove("mobile-layers-open");
-                    if (mobileLayersToggle) mobileLayersToggle.setAttribute("aria-expanded", "false");
-                    if (technicalPanelToggle) technicalPanelToggle.setAttribute("aria-expanded", "false");
-                    technicalDrawer?.setAttribute("aria-hidden", "true");
                     mobileSidebarClose?.focus({ preventScroll: true });
                 }
-            }
-            if (panel === "layers") {
+            } else if (panel === "layers") {
                 setRightContextPanel("layers", Boolean(open), { focusPanel: Boolean(open && mobileMediaQuery.matches) });
+            } else {
+                setRightContextPanel(null, false);
             }
             syncLegendCardPresentation();
             if (panel === "sidebar") {
@@ -506,10 +501,12 @@
         function setSiteTopbarMenu(open, options = {}) {
             const shouldOpen = Boolean(open);
             siteTopbarActions?.classList.toggle("is-open", shouldOpen);
+            siteTopbarActions?.setAttribute("aria-hidden", String(!shouldOpen));
             siteTopbarMenuToggle?.setAttribute("aria-expanded", String(shouldOpen));
             if (!shouldOpen) setSiteMethodologyMenu(false);
-            if (shouldOpen && options.focusFirstAction) {
-                siteTopbarActions?.querySelector("button")?.focus({ preventScroll: true });
+            if (shouldOpen && (options.focusFirstAction !== false)) {
+                const firstItem = siteTopbarActions?.querySelector("button, a");
+                firstItem?.focus({ preventScroll: true });
             }
         }
 
@@ -734,6 +731,27 @@
         siteTopbarActions?.querySelectorAll(":scope > button").forEach(button => {
             button.addEventListener("click", () => setSiteTopbarMenu(false));
         });
+        siteTopbarActions?.addEventListener("keydown", event => {
+            const focusable = [...siteTopbarActions.querySelectorAll("button, a")].filter(el => {
+                return !el.hidden && getComputedStyle(el).display !== "none" && !el.closest("[hidden]");
+            });
+            const currentIndex = focusable.indexOf(document.activeElement);
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+                const nextIndex = currentIndex < focusable.length - 1 ? currentIndex + 1 : 0;
+                focusable[nextIndex]?.focus({ preventScroll: true });
+            } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                const prevIndex = currentIndex > 0 ? currentIndex - 1 : focusable.length - 1;
+                focusable[prevIndex]?.focus({ preventScroll: true });
+            } else if (event.key === "Home") {
+                event.preventDefault();
+                focusable[0]?.focus({ preventScroll: true });
+            } else if (event.key === "End") {
+                event.preventDefault();
+                focusable[focusable.length - 1]?.focus({ preventScroll: true });
+            }
+        });
         document.addEventListener("pointerdown", event => {
             if (!siteTopbar?.contains(event.target)) {
                 setSiteMethodologyMenu(false);
@@ -751,10 +769,29 @@
         technicalDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
+        const analysisDrawerClose = document.getElementById("analysis-drawer-close");
+        analysisDrawerClose?.addEventListener("click", () => {
+            setRightContextPanel(null, false);
+        });
+        const viewSettingsClose = document.getElementById("view-settings-close");
+        viewSettingsClose?.addEventListener("click", () => {
+            setRightContextPanel(null, false);
+        });
+        rightContextHost?.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                event.stopPropagation();
+                const activeTab = activeRightPanel;
+                setRightContextPanel(null, false);
+                if (activeTab) {
+                    document.querySelector(`.right-tool-button[data-right-panel="${activeTab}"]`)?.focus({ preventScroll: true });
+                }
+            }
+        });
         const mapLegendCollapseToggle = document.getElementById("map-legend-card-collapse");
-        mapLegendCollapseToggle?.addEventListener("click", () => {
-            if (!mapLegendCard) return;
-            const isCollapsed = mapLegendCard.classList.toggle("is-collapsed");
+
+        function setLegendCollapsed(isCollapsed) {
+            if (!mapLegendCard || !mapLegendCollapseToggle) return;
+            mapLegendCard.classList.toggle("is-collapsed", isCollapsed);
             mapLegendCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
             mapLegendCollapseToggle.setAttribute("title", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
             mapLegendCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expandir leyenda del mapa" : "Colapsar leyenda del mapa");
@@ -762,6 +799,14 @@
             if (icon) {
                 icon.className = isCollapsed ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
             }
+        }
+
+        // Estado inicial únicamente: después se conserva la elección de la persona.
+        setLegendCollapsed(mobileMediaQuery.matches);
+
+        mapLegendCollapseToggle?.addEventListener("click", () => {
+            if (!mapLegendCard) return;
+            setLegendCollapsed(!mapLegendCard.classList.contains("is-collapsed"));
         });
         const territoryLevelSelect = document.getElementById("territory-level-select");
         territoryLevelSelect?.addEventListener("change", (event) => {
@@ -1555,7 +1600,7 @@
             let top = 24;
             let bottom = 24;
 
-            [".sidebar"].forEach(selector => {
+            [".map-left-column"].forEach(selector => {
                 const rect = getVisibleMapObstacleRect(selector);
                 if (rect) left = Math.max(left, rect.right - mapRect.left + margin);
             });

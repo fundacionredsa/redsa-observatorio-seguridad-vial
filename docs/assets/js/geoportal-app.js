@@ -975,7 +975,14 @@
                 const isLight = savedTheme === null ? true : savedTheme === 'true';
                 if (isLight) {
                     document.body.classList.add('light-theme');
-                    btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i> Modo Oscuro';
+                    btnTheme.innerHTML = '<i class="fa-solid fa-moon" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Oscuro</span>';
+                    btnTheme.setAttribute('title', 'Modo Oscuro');
+                    btnTheme.setAttribute('aria-label', 'Cambiar a modo oscuro');
+                } else {
+                    document.body.classList.remove('light-theme');
+                    btnTheme.innerHTML = '<i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Claro</span>';
+                    btnTheme.setAttribute('title', 'Modo Claro');
+                    btnTheme.setAttribute('aria-label', 'Cambiar a modo claro');
                 }
                 
                 btnTheme.addEventListener('click', () => {
@@ -983,8 +990,10 @@
                     const currentlyLight = document.body.classList.contains('light-theme');
                     localStorage.setItem('redsa_light_theme', currentlyLight);
                     btnTheme.innerHTML = currentlyLight 
-                        ? '<i class="fa-solid fa-moon"></i> Modo Oscuro' 
-                        : '<i class="fa-solid fa-sun"></i> Modo Claro';
+                        ? '<i class="fa-solid fa-moon" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Oscuro</span>' 
+                        : '<i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Claro</span>';
+                    btnTheme.setAttribute('title', currentlyLight ? 'Modo Oscuro' : 'Modo Claro');
+                    btnTheme.setAttribute('aria-label', currentlyLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro');
                     document.dispatchEvent(new CustomEvent('redsa:themechange', {
                         detail: { theme: currentlyLight ? 'light' : 'dark' }
                     }));

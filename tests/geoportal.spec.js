@@ -17,6 +17,13 @@ async function loadPortal(page) {
   await expect(page.locator("#loader")).toBeHidden({ timeout: 90_000 });
 }
 
+async function expandLegendOnMobile(page) {
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.locator("#map-legend-card-collapse").click();
+    await expect(page.locator("#map-legend-card-collapse")).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 test("carga contratos territoriales y atribuciones", async ({ page }) => {
   await loadPortal(page);
   const metrics = await page.evaluate(() => window.__redsaGeojsonLoadMetrics);
@@ -98,14 +105,14 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
   const geometry = await page.evaluate(() => {
     const territory = window.__redsaAudit.selectedTerritoryScreenBounds();
     const map = document.getElementById("map").getBoundingClientRect();
-    const sidebar = document.getElementById("territory-sidebar").getBoundingClientRect();
+    const leftColumn = document.querySelector(".map-left-column")?.getBoundingClientRect();
     const host = document.getElementById("right-context-host");
     const rail = document.getElementById("right-tools-rail").getBoundingClientRect();
     const hostRect = host.hidden ? null : host.getBoundingClientRect();
     return {
       territory,
       visible: {
-        left: Math.max(map.left, sidebar.right),
+        left: Math.max(map.left, leftColumn?.right ?? map.left),
         right: Math.min(map.right, hostRect?.left ?? rail.left),
         top: map.top,
         bottom: map.bottom
@@ -224,6 +231,7 @@ test("modo tecnico conserva variables, capas, metodologia y estado todo apagado"
   await expect(page.locator(".map-search-card")).toBeVisible();
   await expect(page.locator("#map-legend-card")).toContainText("Personas fallecidas");
   await expect(page.locator(".legend-panel")).toContainText("Personas fallecidas");
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#site-methodology-toggle").click();
   await expect(page.locator("#site-methodology-menu")).toBeVisible();
   await expect(page.locator("#site-methodology-menu")).toContainText("Metodología");
@@ -445,6 +453,7 @@ test("clic en canton fija la seleccion sin saltar a parroquias", async ({ page }
 
 test("hover no cambia panel y la seleccion persiste al hacer scroll", async ({ page }) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await page.evaluate(async () => {
     window.__redsaAudit.selectYear(2024);
     await window.__redsaAudit.setZoom(9);
@@ -698,6 +707,7 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La logica completa del ranking se valida una vez en desktop.");
   await loadPortal(page);
+  await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#open-institutional-button").click();
   await expect(page.locator("#institutional-modal")).toBeVisible();
 
@@ -777,6 +787,7 @@ test("modal institucional es usable en movil y publica confianza y cita dinamica
 
 test("ficha territorial permanece visible dentro de la tarjeta de leyenda", async ({ page }) => {
   await loadPortal(page);
+  await expandLegendOnMobile(page);
   await page.evaluate(async () => {
     await window.__redsaAudit.setZoom(9);
     await window.__redsaAudit.showTerritory("canton", "1701");
@@ -1000,6 +1011,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.locator("#legend-visibility-toggle").tap();
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#map-legend-card")).toBeVisible();
+  await expandLegendOnMobile(page);
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
 });
@@ -1008,6 +1020,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
 test("Legend classification tooltips and adaptive color palettes verify correctly", async ({ page }) => {
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__redsaAudit !== undefined);
+  await expandLegendOnMobile(page);
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("parish"));

@@ -115,11 +115,16 @@
                     <div id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></div>
                 </div>
             </div>
-            <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions">
-                <i class="fa-solid fa-bars" aria-hidden="true"></i>
-                <span class="sr-only">Menú</span>
-            </button>
-            <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio">
+            <div class="site-topbar-right">
+                <button class="site-topbar-icon-btn site-topbar-action site-topbar-theme" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro">
+                    <i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label sr-only">Modo Claro</span>
+                </button>
+                <button class="site-topbar-menu-toggle" id="site-topbar-menu-toggle" type="button" aria-expanded="false" aria-controls="site-topbar-actions" aria-label="Menú principal" title="Menú">
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Menú</span>
+                </button>
+            </div>
+            <nav class="site-topbar-actions" id="site-topbar-actions" aria-label="Accesos del Observatorio" aria-hidden="true">
                 <button class="site-topbar-action" id="open-institutional-button" type="button" aria-haspopup="dialog" aria-controls="institutional-modal" aria-label="Ranking Nacional" title="Ranking Nacional">
                     <i class="fa-solid fa-ranking-star" aria-hidden="true"></i><span class="site-topbar-action-label">Ranking Nacional</span>
                 </button>
@@ -139,9 +144,6 @@
                 </div>
                 <button class="site-topbar-action" id="btn-tour" type="button" aria-label="Guía y ayuda" title="Guía y ayuda">
                     <i class="fa-solid fa-circle-question" aria-hidden="true"></i><span class="site-topbar-action-label">Ayuda</span>
-                </button>
-                <button class="site-topbar-action site-topbar-theme" id="btn-theme-toggle" type="button" aria-label="Cambiar tema" title="Modo Claro/Oscuro">
-                    <i class="fa-solid fa-sun" aria-hidden="true"></i><span class="site-topbar-action-label">Modo Claro</span>
                 </button>
                 <a class="site-topbar-action site-topbar-contact" href="mailto:info@fundacionredsa.org" aria-label="Contactar a Fundación REDSA" title="Contactar a Fundación REDSA">
                     <i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="site-topbar-action-label">Contacto</span>
@@ -167,7 +169,7 @@
             </form>
         </section>
 
-        <aside id="map-legend-card" class="map-legend-card" aria-labelledby="map-legend-card-title" aria-hidden="true" data-layer-count="0" data-has-legend="false" inert>
+        <aside id="map-legend-card" class="map-legend-card is-collapsed" aria-labelledby="map-legend-card-title" aria-hidden="true" data-layer-count="0" data-has-legend="false" inert>
             <header class="map-legend-card-header">
                 <span class="map-legend-card-heading">
                     <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
@@ -178,8 +180,8 @@
                 </span>
                 <span class="legend-active-layers-actions">
                     <span id="legend-active-layers-count" class="legend-active-layers-count">0 capas</span>
-                    <button class="legend-shell-action legend-collapse-toggle" id="map-legend-card-collapse" type="button" aria-label="Colapsar leyenda del mapa" title="Colapsar leyenda del mapa" aria-expanded="true">
-                        <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                    <button class="legend-shell-action legend-collapse-toggle" id="map-legend-card-collapse" type="button" aria-label="Expandir leyenda del mapa" title="Expandir leyenda del mapa" aria-expanded="false">
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
                     </button>
                     <button class="legend-shell-action legend-close-toggle" id="legend-close-toggle" type="button" aria-label="Ocultar leyenda del mapa" title="Ocultar leyenda del mapa">&times;</button>
                 </span>
@@ -315,181 +317,6 @@
             </section>
         </div>
     </aside>
-    <section class="right-context-view view-settings-panel" id="view-settings-panel" role="tabpanel" data-right-context-view="settings" hidden aria-hidden="true" aria-labelledby="right-tab-settings" tabindex="0">
-        <header class="right-context-section-header">
-            <div><h2>Ajustes de vista</h2><p>Configura el periodo y la intensidad del mapa.</p></div>
-            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar ajustes de vista" title="Cerrar ajustes de vista">&times;</button>
-        </header>
-        <div class="view-settings-content">
-            <div id="view-settings-period-slot" class="view-settings-slot"></div>
-            <div id="view-settings-opacity-slot" class="view-settings-slot"></div>
-        </div>
-    </section>
-    </div>
-    </div>
-    <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
-        <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
-    </button>
-    <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
-
-    <div id="mobile-level-bar" class="mobile-level-bar" role="group" aria-label="Nivel territorial">
-        <button type="button" data-level-mode="auto" aria-pressed="true" aria-label="Nivel automático">Auto</button>
-        <button type="button" data-level-mode="province" aria-pressed="false" aria-label="Provincias">Prov.</button>
-        <button type="button" data-level-mode="canton" aria-pressed="false" aria-label="Cantones">Cant.</button>
-        <button type="button" data-level-mode="parish" aria-pressed="false" aria-label="Parroquias">Parr.</button>
-    </div>
-    <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año, periodo e intensidad del mapa">
-        <div id="mobile-timeline-play-slot" class="mobile-timeline-play-slot"></div>
-        <span class="mobile-year-bar-label">Año</span>
-        <div id="mobile-year-bar-scroll" class="mobile-year-bar-scroll"></div>
-        <div id="mobile-period-control-slot" class="mobile-map-control-slot mobile-period-control-slot"></div>
-        <div id="mobile-opacity-control-slot" class="mobile-map-control-slot mobile-opacity-control-slot"></div>
-    </div>
-    <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
-        <span aria-hidden="true">&#9776;</span>
-        <span>Análisis</span>
-    </button>
-    <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
-        <span aria-hidden="true">&#9638;</span>
-        <span>Capas</span>
-    </button>
-    <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
-
-    <div class="institutional-modal" id="institutional-modal" role="dialog" aria-modal="true" aria-labelledby="institutional-modal-title" aria-hidden="true" hidden>
-        <div class="institutional-dialog">
-            <header class="institutional-header">
-                <div>
-                    <p class="institutional-eyebrow">Observatorio de Seguridad Vial y Movilidad Sostenible</p>
-                    <h2 id="institutional-modal-title">Ranking nacional y transparencia</h2>
-                </div>
-                <button class="institutional-close" id="institutional-modal-close" type="button" aria-label="Cerrar ranking y transparencia">&times;</button>
-            </header>
-
-            <div class="institutional-tabs" role="tablist" aria-label="Ranking y transparencia">
-                <button id="institutional-tab-ranking" role="tab" type="button" aria-selected="true" aria-controls="institutional-panel-ranking" data-institutional-tab="ranking">Ranking nacional</button>
-                <button id="institutional-tab-trust" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-trust" data-institutional-tab="trust" tabindex="-1">Por qué confiar</button>
-                <button id="institutional-tab-citation" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-citation" data-institutional-tab="citation" tabindex="-1">Cómo citar</button>
-            </div>
-
-            <section class="institutional-panel ranking-panel" id="institutional-panel-ranking" role="tabpanel" aria-labelledby="institutional-tab-ranking" data-institutional-panel="ranking">
-                <div class="ranking-heading">
-                    <p id="ranking-variable-description"></p>
-                    <span class="ranking-period" id="ranking-period"></span>
-                </div>
-                <p class="ranking-coverage" id="ranking-coverage" aria-live="polite"></p>
-                <div class="ranking-toolbar">
-                    <div class="ranking-search-wrap">
-                        <label for="ranking-search-input">Busca tu cantón</label>
-                        <input id="ranking-search-input" type="search" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
-                    </div>
-                    <output id="ranking-variable-title" class="ranking-variable-chip" aria-label="Variable activa">Ranking nacional</output>
-                </div>
-                <p id="ranking-search-status" role="status" aria-live="polite"></p>
-                <div class="ranking-table-wrap" id="ranking-table-wrap">
-                    <table class="ranking-table">
-                        <thead>
-                            <tr>
-                                <th scope="col"><button type="button" data-ranking-sort="rank" aria-label="Ordenar por posición">Posición</button></th>
-                                <th scope="col"><button type="button" data-ranking-sort="canton">Cantón</button></th>
-                                <th scope="col"><button type="button" data-ranking-sort="province">Provincia</button></th>
-                                <th scope="col" class="ranking-value-column"><button type="button" data-ranking-sort="value" aria-label="Ordenar por valor">Valor</button></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ranking-table-body"></tbody>
-                    </table>
-                </div>
-                <footer class="ranking-table-footer" id="ranking-table-footer">
-                    <span id="ranking-count" aria-live="polite"></span>
-                </footer>
-                <div class="ranking-empty" id="ranking-empty" hidden></div>
-            </section>
-
-            <section class="institutional-panel institutional-reading" id="institutional-panel-trust" role="tabpanel" aria-labelledby="institutional-tab-trust" data-institutional-panel="trust" hidden>
-                <h3>¿Por qué confiar en estos datos?</h3>
-                <p class="institutional-intro">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
-                <p>Este observatorio no reemplaza a las fuentes oficiales (INEC, ANT, AMT): las audita, las cruza entre sí y hace visible dónde coinciden y dónde no. Tres cosas nos distinguen:</p>
-                <div class="trust-principles">
-                    <article>
-                        <h4>Independencia institucional</h4>
-                        <p>No dependemos de ninguna administración municipal ni ciclo electoral. Los datos se muestran igual sin importar qué gobierno esté en turno.</p>
-                    </article>
-                    <article>
-                        <h4>Alcance nacional y comparable</h4>
-                        <p>Es el único lugar donde se pueden comparar los 224 cantones del país entre sí, no solo ver una ciudad de forma aislada.</p>
-                    </article>
-                    <article>
-                        <h4>Honestidad sobre lo que no sabemos</h4>
-                        <p>Cuando un dato falta o es de baja calidad, lo decimos explícitamente (ver "sin dato" en cada capa): nunca lo mostramos como cero ni lo escondemos.</p>
-                    </article>
-                </div>
-                <p class="trust-privacy-notice" id="privacy-notice">
-                    <i class="fas fa-shield-halved"></i>
-                    <strong>Medición y privacidad:</strong> Este sitio usa Google Analytics para medir visitas de forma agregada y CounterAPI para contabilizar descargas globales sin identificar personas. No publicamos datos personales de usuarios ni de víctimas.
-                </p>
-                <article class="trust-crosscheck">
-                    <h4>Control cruzado de la estadística oficial</h4>
-                    <p>ANT e INEC/ESTRA coinciden exactamente en siniestros, personas lesionadas y fallecidos en sitio para 2024 anual, los cuatro trimestres de 2025 y 2026-I. Esta consistencia no sustituye a EDG: el Registro Civil mide defunciones y responde a otra metodología.</p>
-                    <a href="metodologia/#control-cruzado">Ver cifras, fuentes y diferencias metodológicas</a>
-                </article>
-                <p class="institutional-open-note">Todo el código, la metodología y los datos de este observatorio son <a href="https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial" target="_blank" rel="noopener">abiertos y auditables</a>.</p>
-            </section>
-
-            <section class="institutional-panel institutional-reading" id="institutional-panel-citation" role="tabpanel" aria-labelledby="institutional-tab-citation" data-institutional-panel="citation" hidden>
-                <h3>Cómo citar estos datos</h3>
-                <blockquote class="citation-block">
-                    Fundación REDSA (2026). <cite>Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible</cite>. Disponible en:
-                    <a href="https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/">https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/</a>.
-                    Consultado el <span id="citation-current-date"></span>.
-                </blockquote>
-            </section>
-        </div>
-    </div>
-
-    <div class="institutional-modal" id="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-modal-title" aria-hidden="true" hidden>
-        <div class="institutional-dialog catalog-dialog">
-            <header class="institutional-header">
-                <div>
-                    <p class="institutional-eyebrow">Diccionario de variables</p>
-                    <h2 id="catalog-modal-title">Catálogo de datos del Observatorio</h2>
-                </div>
-                <button class="institutional-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
-            </header>
-            <div class="institutional-content catalog-content">
-                <div class="catalog-tabs" role="tablist" aria-label="Secciones del catálogo">
-                    <button id="catalog-tab-variables" class="catalog-tab is-active" type="button"
-                        role="tab" aria-selected="true" aria-controls="catalog-panel-variables"
-                        tabindex="0" data-catalog-tab="variables">Variables</button>
-                    <button id="catalog-tab-transparency" class="catalog-tab" type="button"
-                        role="tab" aria-selected="false" aria-controls="catalog-panel-transparency"
-                        tabindex="-1" data-catalog-tab="transparency">Transparencia y confianza</button>
-                </div>
-                <section id="catalog-panel-variables" class="catalog-tab-panel catalog-variables-panel"
-                    role="tabpanel" aria-labelledby="catalog-tab-variables" data-catalog-panel="variables">
-                    <p class="catalog-lead">Consulta qué datos están disponibles y descarga cada variable en un Excel documentado o en GeoJSON listo para análisis geográfico.</p>
-                    <div class="catalog-filters">
-                        <label class="sr-only" for="catalog-search">Buscar una variable</label>
-                        <input type="search" id="catalog-search" placeholder="Buscar variable…">
-                        <div id="catalog-category-filter" class="catalog-category-filter" role="group" aria-label="Filtrar por categoría"></div>
-                    </div>
-                    <div id="catalog-results" class="catalog-results"></div>
-                </section>
-                <section id="catalog-panel-transparency" class="catalog-tab-panel catalog-transparency-panel"
-                    role="tabpanel" aria-labelledby="catalog-tab-transparency"
-                    data-catalog-panel="transparency" hidden>
-                    <div id="catalog-summary-stats" class="catalog-summary"></div>
-                </section>
-            </div>
-        </div>
-    </div>
-
-    <!-- Coordenadas del Cursor -->
-    <div id="cursor-coordinates" class="glass" style="display: none; position: absolute; bottom: 20px; right: 20px; z-index: 1000; padding: 8px 12px; border-radius: 6px; font-size: 12px; pointer-events: none; color: var(--text-primary); transition: opacity 0.2s;">
-        Lat: <span id="coord-lat">--</span> | Lng: <span id="coord-lng">--</span>
-    </div>
-
-    <!-- Contenedor Principal de la Interfaz -->
-    <div class="ui-container">
-        <!-- Sidebar / Panel de Control -->
         <div class="ui-panel sidebar right-context-view" id="territory-sidebar" role="tabpanel" data-right-context-view="analysis" aria-labelledby="right-tab-analysis" aria-label="Informacion del territorio" aria-hidden="true" hidden>
             <div class="mobile-sidebar-topbar">
                 <span class="mobile-sidebar-drag-handle" aria-hidden="true"></span>
@@ -498,6 +325,7 @@
                     <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                     <span>Volver</span>
                 </button>
+                <button class="drawer-close" id="analysis-drawer-close" type="button" aria-label="Cerrar análisis del territorio">&times;</button>
             </div>
             <div id="territory-search-adjustment-note" class="territory-search-adjustment-note" role="status" aria-live="polite" hidden></div>
             <nav id="territory-breadcrumb" class="territory-breadcrumb" aria-label="Ubicación territorial seleccionada" aria-live="polite" hidden></nav>
@@ -681,7 +509,181 @@
                 </div>
             </details>
         </div>
+
+    <section class="right-context-view view-settings-panel" id="view-settings-panel" role="tabpanel" data-right-context-view="settings" hidden aria-hidden="true" aria-labelledby="right-tab-settings" tabindex="0">
+        <header class="right-context-section-header">
+            <div><h2>Ajustes de vista</h2><p>Configura el periodo y la intensidad del mapa.</p></div>
+            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar ajustes de vista" title="Cerrar ajustes de vista">&times;</button>
+        </header>
+        <div class="view-settings-content">
+            <div id="view-settings-period-slot" class="view-settings-slot"></div>
+            <div id="view-settings-opacity-slot" class="view-settings-slot"></div>
+        </div>
+    </section>
     </div>
+    </div>
+    <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
+        <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
+    </button>
+    <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
+
+    <div id="mobile-level-bar" class="mobile-level-bar" role="group" aria-label="Nivel territorial">
+        <button type="button" data-level-mode="auto" aria-pressed="true" aria-label="Nivel automático">Auto</button>
+        <button type="button" data-level-mode="province" aria-pressed="false" aria-label="Provincias">Prov.</button>
+        <button type="button" data-level-mode="canton" aria-pressed="false" aria-label="Cantones">Cant.</button>
+        <button type="button" data-level-mode="parish" aria-pressed="false" aria-label="Parroquias">Parr.</button>
+    </div>
+    <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año, periodo e intensidad del mapa">
+        <div id="mobile-timeline-play-slot" class="mobile-timeline-play-slot"></div>
+        <span class="mobile-year-bar-label">Año</span>
+        <div id="mobile-year-bar-scroll" class="mobile-year-bar-scroll"></div>
+        <div id="mobile-period-control-slot" class="mobile-map-control-slot mobile-period-control-slot"></div>
+        <div id="mobile-opacity-control-slot" class="mobile-map-control-slot mobile-opacity-control-slot"></div>
+    </div>
+    <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
+        <span aria-hidden="true">&#9776;</span>
+        <span>Análisis</span>
+    </button>
+    <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
+        <span aria-hidden="true">&#9638;</span>
+        <span>Capas</span>
+    </button>
+    <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
+
+    <div class="institutional-modal" id="institutional-modal" role="dialog" aria-modal="true" aria-labelledby="institutional-modal-title" aria-hidden="true" hidden>
+        <div class="institutional-dialog">
+            <header class="institutional-header">
+                <div>
+                    <p class="institutional-eyebrow">Observatorio de Seguridad Vial y Movilidad Sostenible</p>
+                    <h2 id="institutional-modal-title">Ranking nacional y transparencia</h2>
+                </div>
+                <button class="institutional-close" id="institutional-modal-close" type="button" aria-label="Cerrar ranking y transparencia">&times;</button>
+            </header>
+
+            <div class="institutional-tabs" role="tablist" aria-label="Ranking y transparencia">
+                <button id="institutional-tab-ranking" role="tab" type="button" aria-selected="true" aria-controls="institutional-panel-ranking" data-institutional-tab="ranking">Ranking nacional</button>
+                <button id="institutional-tab-trust" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-trust" data-institutional-tab="trust" tabindex="-1">Por qué confiar</button>
+                <button id="institutional-tab-citation" role="tab" type="button" aria-selected="false" aria-controls="institutional-panel-citation" data-institutional-tab="citation" tabindex="-1">Cómo citar</button>
+            </div>
+
+            <section class="institutional-panel ranking-panel" id="institutional-panel-ranking" role="tabpanel" aria-labelledby="institutional-tab-ranking" data-institutional-panel="ranking">
+                <div class="ranking-heading">
+                    <p id="ranking-variable-description"></p>
+                    <span class="ranking-period" id="ranking-period"></span>
+                </div>
+                <p class="ranking-coverage" id="ranking-coverage" aria-live="polite"></p>
+                <div class="ranking-toolbar">
+                    <div class="ranking-search-wrap">
+                        <label for="ranking-search-input">Busca tu cantón</label>
+                        <input id="ranking-search-input" type="search" autocomplete="off" placeholder="Ej. Quito, Guayaquil, Cayambe">
+                    </div>
+                    <output id="ranking-variable-title" class="ranking-variable-chip" aria-label="Variable activa">Ranking nacional</output>
+                </div>
+                <p id="ranking-search-status" role="status" aria-live="polite"></p>
+                <div class="ranking-table-wrap" id="ranking-table-wrap">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th scope="col"><button type="button" data-ranking-sort="rank" aria-label="Ordenar por posición">Posición</button></th>
+                                <th scope="col"><button type="button" data-ranking-sort="canton">Cantón</button></th>
+                                <th scope="col"><button type="button" data-ranking-sort="province">Provincia</button></th>
+                                <th scope="col" class="ranking-value-column"><button type="button" data-ranking-sort="value" aria-label="Ordenar por valor">Valor</button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-table-body"></tbody>
+                    </table>
+                </div>
+                <footer class="ranking-table-footer" id="ranking-table-footer">
+                    <span id="ranking-count" aria-live="polite"></span>
+                </footer>
+                <div class="ranking-empty" id="ranking-empty" hidden></div>
+            </section>
+
+            <section class="institutional-panel institutional-reading" id="institutional-panel-trust" role="tabpanel" aria-labelledby="institutional-tab-trust" data-institutional-panel="trust" hidden>
+                <h3>¿Por qué confiar en estos datos?</h3>
+                <p class="institutional-intro">Este es el geoportal del Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible, una iniciativa independiente de la sociedad civil impulsada por Fundación REDSA. Reúne y explica datos oficiales para que cualquier persona pueda conocer y comparar la seguridad vial de su territorio.</p>
+                <p>Este observatorio no reemplaza a las fuentes oficiales (INEC, ANT, AMT): las audita, las cruza entre sí y hace visible dónde coinciden y dónde no. Tres cosas nos distinguen:</p>
+                <div class="trust-principles">
+                    <article>
+                        <h4>Independencia institucional</h4>
+                        <p>No dependemos de ninguna administración municipal ni ciclo electoral. Los datos se muestran igual sin importar qué gobierno esté en turno.</p>
+                    </article>
+                    <article>
+                        <h4>Alcance nacional y comparable</h4>
+                        <p>Es el único lugar donde se pueden comparar los 224 cantones del país entre sí, no solo ver una ciudad de forma aislada.</p>
+                    </article>
+                    <article>
+                        <h4>Honestidad sobre lo que no sabemos</h4>
+                        <p>Cuando un dato falta o es de baja calidad, lo decimos explícitamente (ver "sin dato" en cada capa): nunca lo mostramos como cero ni lo escondemos.</p>
+                    </article>
+                </div>
+                <p class="trust-privacy-notice" id="privacy-notice">
+                    <i class="fas fa-shield-halved"></i>
+                    <strong>Medición y privacidad:</strong> Este sitio usa Google Analytics para medir visitas de forma agregada y CounterAPI para contabilizar descargas globales sin identificar personas. No publicamos datos personales de usuarios ni de víctimas.
+                </p>
+                <article class="trust-crosscheck">
+                    <h4>Control cruzado de la estadística oficial</h4>
+                    <p>ANT e INEC/ESTRA coinciden exactamente en siniestros, personas lesionadas y fallecidos en sitio para 2024 anual, los cuatro trimestres de 2025 y 2026-I. Esta consistencia no sustituye a EDG: el Registro Civil mide defunciones y responde a otra metodología.</p>
+                    <a href="metodologia/#control-cruzado">Ver cifras, fuentes y diferencias metodológicas</a>
+                </article>
+                <p class="institutional-open-note">Todo el código, la metodología y los datos de este observatorio son <a href="https://github.com/fundacionredsa/redsa-observatorio-seguridad-vial" target="_blank" rel="noopener">abiertos y auditables</a>.</p>
+            </section>
+
+            <section class="institutional-panel institutional-reading" id="institutional-panel-citation" role="tabpanel" aria-labelledby="institutional-tab-citation" data-institutional-panel="citation" hidden>
+                <h3>Cómo citar estos datos</h3>
+                <blockquote class="citation-block">
+                    Fundación REDSA (2026). <cite>Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible</cite>. Disponible en:
+                    <a href="https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/">https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/</a>.
+                    Consultado el <span id="citation-current-date"></span>.
+                </blockquote>
+            </section>
+        </div>
+    </div>
+
+    <div class="institutional-modal" id="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-modal-title" aria-hidden="true" hidden>
+        <div class="institutional-dialog catalog-dialog">
+            <header class="institutional-header">
+                <div>
+                    <p class="institutional-eyebrow">Diccionario de variables</p>
+                    <h2 id="catalog-modal-title">Catálogo de datos del Observatorio</h2>
+                </div>
+                <button class="institutional-close" id="catalog-modal-close" type="button" aria-label="Cerrar catálogo">&times;</button>
+            </header>
+            <div class="institutional-content catalog-content">
+                <div class="catalog-tabs" role="tablist" aria-label="Secciones del catálogo">
+                    <button id="catalog-tab-variables" class="catalog-tab is-active" type="button"
+                        role="tab" aria-selected="true" aria-controls="catalog-panel-variables"
+                        tabindex="0" data-catalog-tab="variables">Variables</button>
+                    <button id="catalog-tab-transparency" class="catalog-tab" type="button"
+                        role="tab" aria-selected="false" aria-controls="catalog-panel-transparency"
+                        tabindex="-1" data-catalog-tab="transparency">Transparencia y confianza</button>
+                </div>
+                <section id="catalog-panel-variables" class="catalog-tab-panel catalog-variables-panel"
+                    role="tabpanel" aria-labelledby="catalog-tab-variables" data-catalog-panel="variables">
+                    <p class="catalog-lead">Consulta qué datos están disponibles y descarga cada variable en un Excel documentado o en GeoJSON listo para análisis geográfico.</p>
+                    <div class="catalog-filters">
+                        <label class="sr-only" for="catalog-search">Buscar una variable</label>
+                        <input type="search" id="catalog-search" placeholder="Buscar variable…">
+                        <div id="catalog-category-filter" class="catalog-category-filter" role="group" aria-label="Filtrar por categoría"></div>
+                    </div>
+                    <div id="catalog-results" class="catalog-results"></div>
+                </section>
+                <section id="catalog-panel-transparency" class="catalog-tab-panel catalog-transparency-panel"
+                    role="tabpanel" aria-labelledby="catalog-tab-transparency"
+                    data-catalog-panel="transparency" hidden>
+                    <div id="catalog-summary-stats" class="catalog-summary"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coordenadas del Cursor -->
+    <div id="cursor-coordinates" class="glass" style="display: none; position: absolute; bottom: 20px; right: 20px; z-index: 1000; padding: 8px 12px; border-radius: 6px; font-size: 12px; pointer-events: none; color: var(--text-primary); transition: opacity 0.2s;">
+        Lat: <span id="coord-lat">--</span> | Lng: <span id="coord-lng">--</span>
+    </div>
+
+    <!-- Contenedor Principal de la Interfaz -->
+
 
     <!-- Contenedor del Mapa Leaflet -->
     <div id="map"></div>
