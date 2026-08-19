@@ -7,6 +7,7 @@
             --text-muted: #94a3b8;
             --accent: #4D96C2;
             --accent-hover: #7AB2D2;
+            --public-action: var(--accent);
             --font-display: 'Outfit', sans-serif;
             --font-sans: 'Inter', sans-serif;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
@@ -45,8 +46,8 @@
             --mobile-context-top: calc(var(--site-topbar-mobile-height) + var(--mobile-navigation-clearance));
             --mobile-context-bottom: 108px;
             --redsa-panel-accent: var(--accent);
-            --redsa-panel-accent-soft: rgba(14, 165, 233, 0.13);
-            --redsa-panel-border: rgba(14, 165, 233, 0.34);
+            --redsa-panel-accent-soft: color-mix(in srgb, var(--accent) 13%, transparent);
+            --redsa-panel-border: color-mix(in srgb, var(--accent) 34%, transparent);
             --map-location-fill: var(--accent);
             --map-location-outline: #ffffff;
             --citizen-control-size: 0.72rem;
@@ -172,7 +173,7 @@
             font-weight: bold;
             background: rgba(255, 255, 255, 0.12);
             color: var(--accent-hover);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            border: 1px solid color-mix(in srgb, var(--accent-hover) 30%, transparent);
             border-radius: 50%;
             margin-left: 3px;
             cursor: pointer;
@@ -189,7 +190,7 @@
             background: var(--accent-hover);
             color: #0f172a;
             border-color: var(--accent-hover);
-            box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+            box-shadow: 0 0 6px color-mix(in srgb, var(--accent-hover) 60%, transparent);
         }
         .sigla-tooltip-trigger:focus-visible {
             outline: 2px solid var(--accent-hover);
@@ -202,7 +203,7 @@
             background: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(56, 189, 248, 0.4);
+            border: 1px solid color-mix(in srgb, var(--accent-hover) 40%, transparent);
             border-radius: 8px;
             padding: 8px 12px;
             max-width: 280px;
@@ -700,8 +701,8 @@
 
         /* Panel de Diagnóstico de Rendimiento */
         .diagnostic-panel {
-            background: rgba(14, 165, 233, 0.05);
-            border: 1px solid rgba(14, 165, 233, 0.15);
+            background: color-mix(in srgb, var(--accent) 5%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
             border-radius: 12px;
             padding: 14px;
             font-size: 0.8rem;
@@ -1150,7 +1151,7 @@
 
         .period-mode-segments button.active {
             border-color: var(--accent-hover);
-            background: rgba(14, 165, 233, 0.2);
+            background: color-mix(in srgb, var(--accent) 20%, transparent);
             color: #f8fafc;
         }
 
@@ -1202,7 +1203,7 @@
             margin: 4px 0 8px;
             padding: 8px;
             border-left: 3px solid var(--accent);
-            background: rgba(14, 165, 233, 0.09);
+            background: color-mix(in srgb, var(--accent) 9%, transparent);
             color: var(--text-secondary);
             font-size: 0.68rem;
             line-height: 1.35;
@@ -1241,7 +1242,7 @@
 
         .detail-period-segments button.active {
             border-color: var(--accent-hover);
-            background: rgba(14, 165, 233, 0.2);
+            background: color-mix(in srgb, var(--accent) 20%, transparent);
             color: var(--text-primary);
         }
 
@@ -1276,7 +1277,7 @@
             padding: 2px 6px;
             border-radius: 4px;
             color: #f8fafc;
-            background: rgba(14, 165, 233, 0.22);
+            background: color-mix(in srgb, var(--accent) 22%, transparent);
             font-weight: 700;
         }
 
@@ -1312,7 +1313,7 @@
         }
         .timeline-mark.tm-available {
             color: var(--accent-hover);
-            background: rgba(14, 165, 233, 0.18);
+            background: color-mix(in srgb, var(--accent) 18%, transparent);
             opacity: 1;
         }
         .timeline-mark.tm-unavailable {
@@ -1339,8 +1340,8 @@
             margin: 10px 0 12px 0;
             padding: 12px;
             border-radius: 8px;
-            border: 1px solid rgba(14, 165, 233, 0.25);
-            background: rgba(14, 165, 233, 0.08);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
         }
 
         .interpretation-card.visible {
@@ -1417,7 +1418,7 @@
             padding: 7px 8px;
             border-left: 3px solid var(--accent);
             border-radius: 3px;
-            background: rgba(14, 165, 233, 0.08);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
             color: var(--text-secondary);
             font-size: 0.7rem;
             line-height: 1.4;
@@ -1483,7 +1484,7 @@
         .u-methodology-note { margin: 10px 0 12px; padding: 10px; border: 1px solid var(--border-glass); border-radius: 6px; background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); font-size: 0.68rem; line-height: 1.3; }
         .u-warning-box { display: none; margin: 6px 0 8px; padding: 10px; border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 6px; background: rgba(239, 68, 68, 0.08); color: #fca5a5; font-size: 0.7rem; line-height: 1.35; }
         .u-diagnostic-separator { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-glass); font-size: 0.75rem; }
-        .u-glossary-badge { padding: 2px 6px; border-radius: 4px; background: rgba(14, 165, 233, 0.2); color: var(--accent-hover); font-size: 0.7rem; }
+        .u-glossary-badge { padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent-hover); font-size: 0.7rem; }
         .u-glossary-copy { padding: 6px 0; color: var(--text-secondary); font-size: 0.72rem; line-height: 1.45; }
         .u-glossary-list { margin: 4px 0 0; padding-left: 12px; list-style-type: disc; }
         .u-glossary-emphasis { margin-top: 4px; color: var(--text-primary); font-weight: 500; }
