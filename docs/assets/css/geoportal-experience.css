@@ -728,26 +728,26 @@ body:not(.light-theme) .site-topbar-brand-mark {
 
 .layers-card {
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.13);
+    border: 1px solid var(--border-glass);
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--analysis-card-bg);
 }
 
 .layers-card-header {
     padding: 11px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    border-bottom: 1px solid var(--border-glass);
 }
 
 .layers-card-header h3 {
     margin: 0;
-    color: #f8fafc;
+    color: var(--text-primary);
     font-size: 0.76rem;
     font-weight: 800;
 }
 
 .layers-card-header p {
     margin: 3px 0 0;
-    color: #b8c3cc;
+    color: var(--text-secondary);
     font-size: 0.62rem;
     line-height: 1.35;
 }
@@ -757,7 +757,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
 }
 
 .layers-card-section + .layers-card-section {
-    border-top: 1px solid rgba(255, 255, 255, 0.13);
+    border-top: 1px solid var(--border-glass);
 }
 
 .variable-disclosure,
@@ -805,7 +805,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
 
 .infrastructure-help {
     margin: 0 11px 8px;
-    color: #b8c3cc;
+    color: var(--text-secondary);
     font-size: 0.62rem;
     line-height: 1.35;
 }
@@ -2186,10 +2186,10 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     min-height: 22px;
     place-items: center;
     padding: 2px 6px;
-    border: 1px solid rgba(125, 203, 211, 0.48);
+    border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
     border-radius: 999px;
-    background: rgba(8, 127, 140, 0.2);
-    color: #d8fbff;
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+    color: #fff;
     font-size: 0.61rem;
     font-weight: 800;
     line-height: 1;
@@ -2197,7 +2197,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 
 .variable-help {
     margin: 0 11px 8px;
-    color: #b8c3cc;
+    color: var(--text-secondary);
     font-size: 0.62rem;
     line-height: 1.35;
 }
@@ -2215,7 +2215,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 .event-layer-help,
 .ant-layer-status {
     margin: 0 11px 8px;
-    color: #b8c3cc;
+    color: var(--text-secondary);
     font-size: 0.62rem;
     line-height: 1.35;
 }
