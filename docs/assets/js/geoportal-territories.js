@@ -576,8 +576,8 @@ function onEachProvinceFeature(feature, layer) {
 
             if (hasActiveOsmLayer) {
                 overlayNotesContainer.innerHTML += `
-                    <div class="legend-item" style="margin-top:4px;padding-top:6px;border-top:1px dashed rgba(251,191,36,.25);color:#fbbf24;font-size:.67rem;line-height:1.3;align-items:flex-start;">
-                        <span class="legend-color-line" style="flex:0 0 auto;background-color:rgba(148,163,184,.18);border:1px dashed #94a3b8;height:10px;width:14px;border-radius:2px;margin-top:2px;"></span>
+                    <div class="legend-item legend-overlay-osm-note">
+                        <span class="legend-color-line"></span>
                         <span>Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.</span>
                     </div>`;
             }

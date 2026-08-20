@@ -652,7 +652,7 @@
         border-right: 0;
         padding-bottom: var(--space-3);
         margin-bottom: var(--space-3);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--border-glass);
     }
 
     .perfil-card-section:last-child {
