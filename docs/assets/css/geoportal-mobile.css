@@ -13,7 +13,7 @@
 
     .site-topbar {
         height: var(--site-topbar-mobile-height);
-        padding: 0 10px 0 12px;
+        padding: 0 var(--space-3) 0 var(--space-3);
     }
 
     .site-topbar-center-controls {
@@ -44,7 +44,7 @@
         border-radius: 6px;
         background: color-mix(in srgb, var(--accent) 12%, transparent);
         color: var(--text-primary);
-        font-size: 1rem;
+        font-size: var(--fs-lg);
         cursor: pointer;
     }
 
@@ -55,7 +55,7 @@
         display: none;
         width: min(300px, calc(100vw - 16px));
         align-items: stretch;
-        padding: 7px;
+        padding: var(--space-2);
         border: 1px solid var(--border-glass);
         border-radius: 8px;
         background: var(--bg-panel, var(--bg-glass));
@@ -85,8 +85,8 @@
     .site-methodology-menu {
         position: static;
         width: auto;
-        margin: 2px 4px 6px 28px;
-        padding: 4px;
+        margin: var(--space-1) var(--space-1) var(--space-2) var(--space-7);
+        padding: var(--space-1);
         border-radius: 6px;
         box-shadow: none;
     }
@@ -100,8 +100,8 @@
     }
     :root {
         --sidebar-width: 0px;
-        --ui-padding: 10px;
-        --ui-gap: 10px;
+        --ui-padding: var(--space-3);
+        --ui-gap: var(--space-3);
         --mobile-edge: 10px;
         --mobile-top-offset: var(--mobile-context-top);
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
@@ -130,14 +130,14 @@
         min-height: 44px;
         align-items: center;
         justify-content: center;
-        gap: 7px;
-        padding: 0 12px;
+        gap: var(--space-2);
+        padding: 0 var(--space-3);
         border: 1px solid rgba(255, 255, 255, 0.16);
         border-radius: 10px;
         background: rgba(15, 23, 42, 0.94);
         color: #f8fafc;
         font-family: var(--font-sans);
-        font-size: 0.78rem;
+        font-size: var(--fs-md);
         font-weight: 800;
         letter-spacing: 0.01em;
         box-shadow: var(--shadow);
@@ -166,7 +166,7 @@
     .leaflet-control-layers input:focus-visible,
     .variable-option input:focus-visible,
     #map-year-slider:focus-visible {
-        outline: 3px solid #38bdf8;
+        outline: 3px solid var(--accent-hover);
         outline-offset: 2px;
     }
 
@@ -192,8 +192,8 @@
 
 
     .citizen-national-badge {
-        padding: 3px 6px;
-        font-size: 0.56rem;
+        padding: var(--space-1) var(--space-2);
+        font-size: var(--fs-2xs);
     }
 
     .citizen-question {
@@ -204,18 +204,18 @@
 
     .citizen-intro-mobile {
         display: block;
-        margin: 3px 0 0;
+        margin: var(--space-1) 0 0;
         overflow: hidden;
         color: #52606b;
-        font-size: 0.56rem;
+        font-size: var(--fs-2xs);
         line-height: 1.15;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     .citizen-search-label {
-        margin-top: 3px;
-        margin-bottom: 3px;
+        margin-top: var(--space-1);
+        margin-bottom: var(--space-1);
     }
 
     .citizen-search-status:empty {
@@ -223,16 +223,16 @@
     }
 
     .citizen-map-context {
-        margin-top: 4px;
-        padding: 6px 8px;
+        margin-top: var(--space-1);
+        padding: var(--space-2) var(--space-2);
     }
 
     .citizen-map-context strong {
-        font-size: 0.82rem;
+        font-size: var(--fs-md);
     }
 
     .citizen-map-context span {
-        font-size: 0.68rem;
+        font-size: var(--fs-xs);
         line-height: 1.25;
     }
 
@@ -243,13 +243,13 @@
 
     .citizen-actions {
         grid-template-columns: 1fr 1fr;
-        margin-top: 7px;
+        margin-top: var(--space-2);
     }
 
     .institutional-entry {
         min-height: 44px;
-        margin-top: 4px;
-        padding-block: 7px;
+        margin-top: var(--space-1);
+        padding-block: var(--space-2);
     }
 
     .citizen-action:last-child {
@@ -265,8 +265,8 @@
         width: 100%;
         height: calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-sheet-top-gap));
         max-height: calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-sheet-top-gap));
-        --analysis-drawer-padding: 16px;
-        --analysis-drawer-bottom-padding: 32px;
+        --analysis-drawer-padding: var(--space-4);
+        --analysis-drawer-bottom-padding: var(--space-8);
         padding: var(--analysis-drawer-padding);
         padding-bottom: calc(var(--analysis-drawer-bottom-padding) + var(--mobile-sticky-scroll-clearance));
         overflow-x: hidden;
@@ -300,8 +300,8 @@
         position: sticky;
         top: -12px;
         z-index: var(--z-sticky-content);
-        margin: -12px -12px 12px;
-        padding: 12px 12px 12px;
+        margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) var(--space-3);
+        padding: var(--space-3) var(--space-3) var(--space-3);
         background: #18212a;
     }
 
@@ -330,13 +330,13 @@
         z-index: var(--z-sticky-content);
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
-        margin: calc(var(--analysis-drawer-padding) * -1) calc(var(--analysis-drawer-padding) * -1) 8px;
-        padding: 18px 10px 8px;
+        gap: var(--space-3);
+        margin: calc(var(--analysis-drawer-padding) * -1) calc(var(--analysis-drawer-padding) * -1) var(--space-2);
+        padding: var(--space-5) var(--space-3) var(--space-2);
         border-bottom: 1px solid var(--border-glass);
         background: var(--analysis-header-bg);
         color: var(--text-primary);
-        font-size: 0.76rem;
+        font-size: var(--fs-md);
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -369,9 +369,9 @@
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.08);
         color: var(--text-primary);
-        gap: 6px;
-        padding: 0 10px;
-        font-size: 0.72rem;
+        gap: var(--space-2);
+        padding: 0 var(--space-3);
+        font-size: var(--fs-sm);
         line-height: 1;
         cursor: pointer;
         pointer-events: auto;
@@ -387,7 +387,7 @@
 
     .sidebar .detail-period-control {
         position: static;
-        margin-top: 12px;
+        margin-top: var(--space-3);
     }
 
     .technical-toggle {
@@ -406,30 +406,30 @@
     }
 
     .institutional-header {
-        padding: 11px 12px 9px;
+        padding: var(--space-3) var(--space-3) var(--space-2);
     }
 
     .institutional-header h2 {
-        font-size: 1rem;
+        font-size: var(--fs-lg);
     }
 
     .institutional-tabs {
-        padding-inline: 4px;
+        padding-inline: var(--space-1);
     }
 
     .institutional-tabs button {
         min-height: 48px;
-        padding: 7px 4px;
-        font-size: 0.69rem;
+        padding: var(--space-2) var(--space-1);
+        font-size: var(--fs-sm);
         line-height: 1.25;
     }
 
     .institutional-panel {
-        padding: 12px;
+        padding: var(--space-3);
     }
 
     .institutional-content {
-        padding: 12px;
+        padding: var(--space-3);
     }
 
     .catalog-content {
@@ -438,17 +438,17 @@
 
     .catalog-tabs {
         grid-template-columns: 1fr;
-        gap: 3px;
+        gap: var(--space-1);
     }
 
     .catalog-tab {
         min-height: 44px;
-        padding: 7px 9px;
-        font-size: 0.76rem;
+        padding: var(--space-2) var(--space-2);
+        font-size: var(--fs-md);
     }
 
     .catalog-variables-panel {
-        gap: 10px;
+        gap: var(--space-3);
     }
 
     .catalog-results {
@@ -472,28 +472,28 @@
     }
 
     .ranking-heading {
-        gap: 8px;
+        gap: var(--space-2);
     }
 
     .ranking-heading h3,
     .institutional-reading h3 {
-        font-size: 1rem;
+        font-size: var(--fs-lg);
     }
 
     .ranking-period {
-        padding: 4px 5px;
-        font-size: 0.61rem;
+        padding: var(--space-1) var(--space-1);
+        font-size: var(--fs-2xs);
     }
 
     .ranking-search-wrap {
         grid-template-columns: 1fr;
-        gap: 4px;
+        gap: var(--space-1);
     }
 
     .ranking-toolbar {
         grid-template-columns: 1fr;
         align-items: stretch;
-        gap: 8px;
+        gap: var(--space-2);
     }
 
     .ranking-variable-chip {
@@ -508,12 +508,12 @@
     }
 
     .ranking-table {
-        font-size: 0.67rem;
+        font-size: var(--fs-xs);
     }
 
     .ranking-table th,
     .ranking-table td {
-        padding: 7px 5px;
+        padding: var(--space-2) var(--space-1);
     }
 
     .ranking-table thead th:nth-child(1) {
@@ -530,25 +530,25 @@
 
     .ranking-table thead button {
         min-height: 44px;
-        padding: 6px 4px;
-        font-size: 0.65rem;
+        padding: var(--space-2) var(--space-1);
+        font-size: var(--fs-xs);
     }
 
     .trust-principles {
         grid-template-columns: 1fr;
-        gap: 14px;
-        margin-top: 16px;
+        gap: var(--space-4);
+        margin-top: var(--space-4);
     }
 
     .citation-block {
-        margin-top: 14px;
-        padding: 13px;
-        font-size: 0.78rem;
+        margin-top: var(--space-4);
+        padding: var(--space-3);
+        font-size: var(--fs-md);
     }
 
     .technical-drawer {
         width: var(--mobile-drawer-width);
-        padding: 12px 12px 20px;
+        padding: var(--space-3) var(--space-3) var(--space-5);
         overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
@@ -575,7 +575,7 @@
     .event-layer-toggle {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--space-2);
         min-height: 44px;
     }
 
@@ -593,7 +593,7 @@
         display: flex;
         min-height: 44px;
         align-items: center;
-        gap: 9px;
+        gap: var(--space-2);
         margin: 0;
         line-height: 1.25;
     }
@@ -614,8 +614,8 @@
     }
 
     .variable-option {
-        padding: 9px 8px;
-        font-size: 0.82rem;
+        padding: var(--space-2) var(--space-2);
+        font-size: var(--fs-md);
     }
 
     .zoom-control-container {
@@ -632,7 +632,7 @@
         overflow: visible;
         border: 0;
         border-radius: 0;
-        font-size: 0.68rem;
+        font-size: var(--fs-xs);
     }
 
     .legend-content {
@@ -650,8 +650,8 @@
     .perfil-card-section {
         padding-right: 0;
         border-right: 0;
-        padding-bottom: 12px;
-        margin-bottom: 12px;
+        padding-bottom: var(--space-3);
+        margin-bottom: var(--space-3);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
@@ -694,7 +694,7 @@
 
     .leaflet-control-attribution {
         max-width: 100vw;
-        font-size: 9px;
+        font-size: var(--fs-2xs);
         line-height: 1.2;
         white-space: normal;
     }
@@ -729,8 +729,8 @@
         max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
         overflow-x: auto;
         display: flex;
-        gap: 4px;
-        padding: 4px;
+        gap: var(--space-1);
+        padding: var(--space-1);
         border-radius: 20px;
         background: var(--bg-glass);
         backdrop-filter: blur(12px);
@@ -739,13 +739,13 @@
 
     .mobile-level-bar button {
         min-height: 44px;
-        padding: 0 10px;
+        padding: 0 var(--space-3);
         border: 0;
         border-radius: 16px;
         background: transparent;
         color: var(--text-secondary);
         font: inherit;
-        font-size: 0.72rem;
+        font-size: var(--fs-sm);
         font-weight: 700;
         cursor: pointer;
     }
@@ -776,8 +776,8 @@
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
         display: grid;
         grid-template-columns: 44px auto minmax(0, 1fr) minmax(88px, 0.55fr);
-        row-gap: 4px;
-        padding: 4px;
+        row-gap: var(--space-1);
+        padding: var(--space-1);
         border-radius: 14px;
         background: var(--bg-glass);
         backdrop-filter: blur(12px);
@@ -804,9 +804,9 @@
 
     .mobile-year-bar-label {
         flex: 0 0 auto;
-        padding: 0 4px 0 6px;
+        padding: 0 var(--space-1) 0 var(--space-2);
         color: var(--text-muted);
-        font-size: 0.6rem;
+        font-size: var(--fs-2xs);
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.03em;
@@ -818,7 +818,7 @@
         grid-column: 3 / 5;
         align-self: center;
         display: flex;
-        gap: 3px;
+        gap: var(--space-1);
         overflow-x: auto;
         min-width: 0;
     }
@@ -832,13 +832,13 @@
         background: transparent;
         color: var(--text-secondary);
         font: inherit;
-        font-size: 0.68rem;
+        font-size: var(--fs-xs);
         font-weight: 700;
         cursor: pointer;
     }
 
     .mobile-year-bar button.my-available {
-        background: rgba(14, 165, 233, 0.18);
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
         color: var(--accent-hover);
     }
 
@@ -857,13 +857,13 @@
 
     .mobile-period-control-slot {
         grid-column: 1 / 4;
-        padding-top: 4px;
+        padding-top: var(--space-1);
         border-top: 1px solid var(--border-glass);
     }
 
     .mobile-opacity-control-slot {
         grid-column: 4;
-        padding-top: 4px;
+        padding-top: var(--space-1);
         border-top: 1px solid var(--border-glass);
     }
 
@@ -889,8 +889,8 @@
     .mobile-period-control-slot .period-mode-segments {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 3px;
-        padding: 2px;
+        gap: var(--space-1);
+        padding: var(--space-1);
         border: 1px solid var(--border-glass);
         border-radius: 999px;
         background: color-mix(in srgb, var(--bg-glass-hover) 70%, transparent);
@@ -898,12 +898,12 @@
 
     .mobile-period-control-slot .period-mode-segments button {
         min-height: 44px;
-        padding: 3px 8px;
+        padding: var(--space-1) var(--space-2);
         border: 0;
         border-radius: 999px;
         background: transparent;
         color: var(--text-secondary);
-        font-size: 0.62rem;
+        font-size: var(--fs-xs);
         font-weight: 800;
     }
 
@@ -918,7 +918,7 @@
         align-items: center;
         gap: 0;
         margin: 0;
-        padding: 4px 6px;
+        padding: var(--space-1) var(--space-2);
         border-radius: 999px;
     }
 
@@ -941,12 +941,12 @@
         right: 5px;
         bottom: 4px;
         min-width: 32px;
-        font-size: 0.56rem;
+        font-size: var(--fs-2xs);
     }
 
     .mobile-opacity-control-slot .contextual-opacity-control input[type="range"] {
         min-height: 28px;
-        padding-right: 31px;
+        padding-right: var(--space-8);
     }
 
     .map-left-column {
@@ -962,7 +962,7 @@
     .map-search-card {
         width: 100%;
         min-height: 44px;
-        padding: 6px 8px;
+        padding: var(--space-2) var(--space-2);
     }
 
     #territory-search-input,
@@ -1038,7 +1038,7 @@
     }
 
     .mobile-nav-toggle {
-        padding-inline: 10px;
+        padding-inline: var(--space-3);
     }
 }
 
@@ -1089,12 +1089,12 @@
     }
 
     .legend-ordinal-labels {
-        font-size: 0.52rem;
+        font-size: var(--fs-2xs);
     }
 
     .legend-territory-audit {
         grid-template-columns: 1fr;
-        gap: 7px;
+        gap: var(--space-2);
     }
 
     .right-context-host .right-context-view,
@@ -1104,7 +1104,7 @@
 
     .right-context-host .technical-drawer {
         height: 100%;
-        padding: 12px 12px 20px;
+        padding: var(--space-3) var(--space-3) var(--space-5);
     }
 
     body.mobile-layers-open .right-context-view,

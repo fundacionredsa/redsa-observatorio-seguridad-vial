@@ -66,6 +66,13 @@
     </script>
 </head>
 <body>
+<script>
+(function () {
+    var saved = localStorage.getItem('redsa_light_theme');
+    var isLight = saved === null ? true : saved === 'true';
+    if (isLight) document.body.classList.add('light-theme');
+})();
+</script>
 
     <!-- Loader Overlay -->
     <div id="loader" class="loader-overlay">
