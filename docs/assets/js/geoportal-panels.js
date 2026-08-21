@@ -778,6 +778,13 @@
         function updateSidebar(props) {
             const chartContainer = document.getElementById("chart-container");
             const chartEmptyMsg = document.getElementById("chart-empty-msg");
+            const analysisEmptyState = document.getElementById("analysis-empty-state");
+            const selectionOnlySections = [
+                document.getElementById("chart-wrapper"),
+                document.getElementById("traffic-events-section"),
+                document.getElementById("territory-codes-disclosure"),
+                document.getElementById("fatalities-section")
+            ].filter(Boolean);
 
             let parishProps = null;
             if (props && props.DPA_PARROQ) {
@@ -823,6 +830,8 @@
             }
 
             if (!props) {
+                if (analysisEmptyState) analysisEmptyState.hidden = false;
+                selectionOnlySections.forEach(section => { section.hidden = true; });
                 const promptLevel = activeTerritoryLevel === "province" ? "una provincia" : (activeTerritoryLevel === "parish" ? "una parroquia" : "un cantón");
                 currentProps = null;
                 domCanton.textContent = `Haz clic en ${promptLevel}`;
@@ -870,6 +879,9 @@
                 window.REDSAExperience?.updateSummary(null, selectedYear);
                 return;
             }
+
+            if (analysisEmptyState) analysisEmptyState.hidden = true;
+            selectionOnlySections.forEach(section => { section.hidden = false; });
 
             const isProvinceProps = props.nivel_agregacion === "provincia";
 

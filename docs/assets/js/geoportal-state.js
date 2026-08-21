@@ -822,6 +822,7 @@
         rightToolButtons.forEach(button => button.addEventListener("click", () => {
             const panel = button.dataset.rightPanel;
             if (panel === "layers") syncMobileLayerDrawer();
+            if (panel === "analysis" && !selectedTerritory?.props && !currentProps) updateSidebar(null);
             setRightContextPanel(panel, activeRightPanel !== panel, { focusPanel: false });
         }));
         rightToolRail?.addEventListener("keydown", event => {

@@ -385,6 +385,12 @@
         display: inline-flex;
     }
 
+    .analysis-empty-state {
+        display: grid;
+        min-height: 200px;
+        place-items: center;
+    }
+
     .sidebar .detail-period-control {
         position: static;
         margin-top: var(--space-3);

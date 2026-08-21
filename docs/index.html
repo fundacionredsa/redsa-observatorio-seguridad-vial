@@ -347,7 +347,10 @@
                     </div>
                     <div class="detail-period-note sr-only" data-detail-period-note aria-live="polite">Conteos del año marcado en la línea de tiempo.</div>
                 </div>
-                
+                <div class="analysis-empty-state" id="analysis-empty-state" hidden>
+                    <p class="citizen-summary-empty">Haz clic en una unidad del mapa o busca una provincia, cantón o parroquia para ver su análisis detallado.</p>
+                </div>
+
                 <div class="canton-details">
                     <!-- SECCIÓN 1: IDENTIFICACIÓN -->
                     <div class="territory-identity-block" aria-label="Identificación territorial">
@@ -387,8 +390,8 @@
                     </details>
 
                     <!-- SECCIÓN 2: TENDENCIA HISTÓRICA -->
-                    <div class="section-title u-section-gap-large">Tendencia histórica</div>
                     <div id="chart-wrapper" class="u-chart-wrapper">
+                        <div class="section-title u-section-gap-large">Tendencia histórica</div>
                         <div class="detail-label u-muted-label">Siniestros y personas fallecidas <button type="button" class="sigla-tooltip-trigger" data-sigla="Serie histórica" data-custom-text="Los siniestros provienen de ANT e INEC/ESTRA. Las personas fallecidas provienen del registro civil INEC/EDG y se identifican con códigos CIE-10 V01-V89. Son fuentes con metodologías distintas y no deben sumarse." aria-label="Fuentes de la tendencia histórica">ⓘ</button></div>
                         <div id="historical-chart-view-controls" class="historical-chart-view-controls" role="group" aria-label="Vista del gráfico histórico" hidden>
                             <button type="button" data-historical-chart-view="totals" class="active" aria-pressed="true">Totales</button>
@@ -401,30 +404,32 @@
                     </div>
 
                     <!-- SECCIÓN 3: SINIESTROS DE TRÁNSITO (INEC 2019 - 2024) -->
-                    <div class="section-title u-section-gap">Siniestros de tránsito reportados <button type="button" class="sigla-tooltip-trigger" data-sigla="ANT e INEC/ESTRA" data-custom-text="ANT registra administrativamente los siniestros e INEC/ESTRA publica su procesamiento estadístico. Se muestran como una sola cadena estadística, no como cifras para sumar." aria-label="Fuente de siniestros reportados">ⓘ</button> <span id="siniestros-section-year" class="analysis-period-badge">2024</span></div>
-                    <div class="detail-row">
-                        <div class="detail-label">Accidentes registrados</div>
-                        <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Lesionados / Heridos</div>
-                        <div id="info-lesionados-inec" class="detail-value secondary empty">—</div>
-                    </div>
-                    
-                    <!-- INEC Detailed sub-panel (rendered dynamically in JS) -->
-                    <details id="inec-detailed-stats" class="analysis-disclosure u-stats-block">
-                        <summary>Desglose del periodo</summary>
-                        <div class="analysis-disclosure-content">
-                            <div class="u-stats-heading">Zona donde ocurrieron</div>
-                            <div id="inec-zona-ratio" class="u-stats-value">—</div>
-                            <div class="u-stats-heading">Tipos de siniestro</div>
-                            <div id="inec-clase-list" class="u-list-gap">—</div>
-                            <div class="u-stats-heading">Causas probables registradas</div>
-                            <div id="inec-causa-list" class="u-list-gap">—</div>
-                            <div class="u-stats-heading">Horario con más siniestros</div>
-                            <div id="inec-horapico" class="u-stats-value-compact">—</div>
+                    <section id="traffic-events-section">
+                        <div class="section-title u-section-gap">Siniestros de tránsito reportados <button type="button" class="sigla-tooltip-trigger" data-sigla="ANT e INEC/ESTRA" data-custom-text="ANT registra administrativamente los siniestros e INEC/ESTRA publica su procesamiento estadístico. Se muestran como una sola cadena estadística, no como cifras para sumar." aria-label="Fuente de siniestros reportados">ⓘ</button> <span id="siniestros-section-year" class="analysis-period-badge">2024</span></div>
+                        <div class="detail-row">
+                            <div class="detail-label">Accidentes registrados</div>
+                            <div id="info-siniestros-inec" class="detail-value secondary empty">—</div>
                         </div>
-                    </details>
+                        <div class="detail-row">
+                            <div class="detail-label">Lesionados / Heridos</div>
+                            <div id="info-lesionados-inec" class="detail-value secondary empty">—</div>
+                        </div>
+
+                        <!-- INEC Detailed sub-panel (rendered dynamically in JS) -->
+                        <details id="inec-detailed-stats" class="analysis-disclosure u-stats-block">
+                            <summary>Desglose del periodo</summary>
+                            <div class="analysis-disclosure-content">
+                                <div class="u-stats-heading">Zona donde ocurrieron</div>
+                                <div id="inec-zona-ratio" class="u-stats-value">—</div>
+                                <div class="u-stats-heading">Tipos de siniestro</div>
+                                <div id="inec-clase-list" class="u-list-gap">—</div>
+                                <div class="u-stats-heading">Causas probables registradas</div>
+                                <div id="inec-causa-list" class="u-list-gap">—</div>
+                                <div class="u-stats-heading">Horario con más siniestros</div>
+                                <div id="inec-horapico" class="u-stats-value-compact">—</div>
+                            </div>
+                        </details>
+                    </section>
 
                     <details class="analysis-disclosure ant-territory-analysis" id="ant-territory-analysis">
                         <summary>Patrones de los siniestros registrados por ANT (año seleccionado)</summary>
@@ -433,15 +438,17 @@
                     </details>
 
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
-                    <div class="section-title u-section-gap">Personas fallecidas</div>
-                    <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
-                        <div class="detail-label">Según reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button><span id="sppat-sidebar-year" class="sr-only">2024</span></div>
-                        <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
-                    </div>
-                    <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
-                        <div class="detail-label">Según registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button><span id="edg-sidebar-year" class="sr-only">2024</span></div>
-                        <div id="info-fallecidos-inec" class="detail-value empty">—</div>
-                    </div>
+                    <section id="fatalities-section">
+                        <div class="section-title u-section-gap">Personas fallecidas</div>
+                        <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
+                            <div class="detail-label">Según reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button><span id="sppat-sidebar-year" class="sr-only">2024</span></div>
+                            <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
+                        </div>
+                        <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities">
+                            <div class="detail-label">Según registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button><span id="edg-sidebar-year" class="sr-only">2024</span></div>
+                            <div id="info-fallecidos-inec" class="detail-value empty">—</div>
+                        </div>
+                    </section>
                     <details class="analysis-disclosure analysis-disclosure-secondary" id="complementary-indicators-disclosure">
                         <summary>Indicadores complementarios</summary>
                         <div class="analysis-disclosure-content">
