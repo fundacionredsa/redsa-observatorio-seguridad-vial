@@ -884,6 +884,13 @@ body:not(.light-theme) .site-topbar-brand-mark {
     content: "";
 }
 
+.infrastructure-layer-symbol--point::before {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--infrastructure-layer-color);
+}
+
 .infrastructure-layer-symbol[data-layer-render="mixed"]::before {
     width: 13px;
     height: 7px;
@@ -2229,8 +2236,26 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     padding: 0 var(--space-2) var(--space-1);
 }
 
+.variable-swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    margin-right: var(--space-2);
+    border: 1px solid var(--border-glass);
+    border-radius: 50%;
+    background: var(--accent);
+}
+
 .variable-option input[type="radio"] {
     accent-color: var(--accent);
+}
+
+.basemap-option-icon {
+    width: 16px;
+    margin-right: var(--space-2);
+    color: var(--text-secondary);
+    text-align: center;
 }
 
 .event-layer-help,

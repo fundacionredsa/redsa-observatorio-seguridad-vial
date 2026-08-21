@@ -442,6 +442,7 @@
                                                     value="${id}"
                                                     ${id === selectedVariable ? "checked" : ""}
                                                 >
+                                                <span class="variable-swatch" aria-hidden="true"></span>
                                                 <span>${config.label}</span>
                                             </label>
                                         `).join("")}

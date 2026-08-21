@@ -213,6 +213,13 @@
             cyclosm: "CyclOSM (Ciclismo)",
             relief: "OpenTopoMap (Relieve)"
         });
+        const BASEMAP_ICON_CLASSES = Object.freeze({
+            [BASEMAP_LABELS.positron]: "fa-sun",
+            [BASEMAP_LABELS.darkMatter]: "fa-moon",
+            [BASEMAP_LABELS.osmStandard]: "fa-map",
+            [BASEMAP_LABELS.cyclosm]: "fa-bicycle",
+            [BASEMAP_LABELS.relief]: "fa-mountain-sun"
+        });
         const BASEMAP_TILE_URLS = Object.freeze({
             positron: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
             darkMatter: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
@@ -287,6 +294,25 @@
         const basemapControlContainer = baseLayerControl.getContainer();
         basemapControlContainer?.classList.add("basemap-control");
         basemapControlContainer?.setAttribute("aria-label", "Seleccionar mapa base");
+
+        function decorateBasemapControls(container) {
+            if (!container || container.dataset.basemapDecorated === "true") return;
+
+            const labels = [...container.querySelectorAll(".leaflet-control-layers-base label")];
+            labels.forEach(label => {
+                const iconClass = BASEMAP_ICON_CLASSES[label.textContent.trim()];
+                const name = label.querySelector("span > span");
+                if (!iconClass || !name) return;
+
+                const icon = document.createElement("i");
+                icon.className = `fa-solid ${iconClass} basemap-option-icon`;
+                icon.setAttribute("aria-hidden", "true");
+                name.prepend(icon);
+            });
+            container.dataset.basemapDecorated = "true";
+        }
+
+        decorateBasemapControls(basemapControlContainer);
 
         function syncBasemapControlDock() {
             const target = document.getElementById("basemap-context-slot");
@@ -529,6 +555,7 @@
                 const symbol = document.createElement("span");
                 symbol.className = "infrastructure-layer-symbol";
                 symbol.dataset.layerRender = config.render || "line";
+                if (config.render === "point") symbol.classList.add("infrastructure-layer-symbol--point");
                 symbol.style.setProperty("--infrastructure-layer-color", config.color);
                 symbol.setAttribute("aria-hidden", "true");
 
