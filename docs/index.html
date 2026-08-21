@@ -277,7 +277,10 @@
                     <div class="layers-card-section">
                         <details class="event-layer-disclosure" id="event-layer-disclosure">
                             <summary>
-                                <span>Siniestros en el mapa</span>
+                                <span class="layers-category-heading">
+                                    <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></span>
+                                    <span class="layers-summary-title">Siniestros en el mapa <span class="layers-count-badge" aria-label="Una capa de siniestros">1</span></span>
+                                </span>
                                 <small>Representación puntual</small>
                             </summary>
                             <p class="event-layer-help">Complementa la variable territorial mostrando los mismos eventos en el lugar donde ocurrieron.</p>
@@ -305,7 +308,10 @@
                     <div class="layers-card-section">
                         <details class="infrastructure-disclosure" id="infrastructure-disclosure">
                             <summary>
-                                <span class="layers-summary-title">Infraestructura vial <span class="layers-count-badge" id="infrastructure-layer-count" aria-label="Cantidad de capas de infraestructura"></span></span>
+                                <span class="layers-category-heading">
+                                    <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-road"></i></span>
+                                    <span class="layers-summary-title">Infraestructura vial <span class="layers-count-badge" id="infrastructure-layer-count" aria-label="Cantidad de capas de infraestructura"></span></span>
+                                </span>
                                 <small>Selección múltiple</small>
                             </summary>
                             <p class="infrastructure-help">Activa una o varias capas. El menú permanece abierto mientras haces tu selección.</p>
@@ -314,8 +320,11 @@
                     </div>
                     <div class="layers-card-section basemap-layer-section" id="basemap-layer-section">
                         <div class="basemap-section-header">
-                            <span class="layers-summary-title">Mapa base de fondo</span>
-                            <small>5 mapas</small>
+                            <span class="layers-category-heading">
+                                <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-map"></i></span>
+                                <span class="layers-summary-title">Mapa base <span class="layers-count-badge" aria-label="Cinco mapas base">5</span></span>
+                            </span>
+                            <small>Selección única</small>
                         </div>
                         <p class="basemap-help">Elige el mapa base para explorar el territorio.</p>
                         <div id="basemap-context-slot" class="basemap-context-slot"></div>

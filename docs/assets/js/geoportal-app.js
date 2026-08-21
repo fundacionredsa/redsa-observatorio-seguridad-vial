@@ -426,7 +426,10 @@
                             </div>
                             <details class="variable-disclosure" id="variable-disclosure">
                                 <summary>
-                                    <span class="layers-summary-title">Variables del mapa <span class="layers-count-badge" id="map-variable-count" aria-label="Cantidad de variables disponibles">${Object.keys(VARIABLE_CONFIGS).filter(id => id !== "normal").length}</span></span>
+                                    <span class="layers-category-heading">
+                                        <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span>
+                                        <span class="layers-summary-title">Variables del mapa <span class="layers-count-badge" id="map-variable-count" aria-label="Cantidad de variables disponibles">${Object.keys(VARIABLE_CONFIGS).filter(id => id !== "normal").length}</span></span>
+                                    </span>
                                     <small>Selección única</small>
                                 </summary>
                                 <p class="variable-help">Selecciona una variable territorial. Vuelve a activar la opción seleccionada para dejar solo los límites.</p>

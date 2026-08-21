@@ -780,6 +780,87 @@ body:not(.light-theme) .site-topbar-brand-mark {
     background: transparent;
 }
 
+.layers-card-section > details > summary,
+.basemap-section-header {
+    padding: var(--space-3);
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    font-weight: 800;
+}
+
+.layers-card-section > details > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--space-2);
+    cursor: pointer;
+    list-style: none;
+}
+
+.layers-card-section > details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.layers-card-section > details > summary::after {
+    width: 7px;
+    height: 7px;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    border-right: 2px solid var(--text-secondary);
+    border-bottom: 2px solid var(--text-secondary);
+    content: "";
+    transform: rotate(45deg);
+    transition: transform 0.18s ease;
+}
+
+.layers-card-section > details[open] > summary::after {
+    transform: rotate(225deg);
+}
+
+.layers-category-heading {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.layers-category-icon {
+    display: inline-grid;
+    width: var(--space-7);
+    height: var(--space-7);
+    flex: 0 0 var(--space-7);
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border-glass));
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    font-size: var(--fs-xs);
+}
+
+.layers-card-section > details > summary small,
+.basemap-section-header small {
+    display: block;
+    grid-column: 1 / -1;
+    margin-top: var(--space-1);
+    margin-left: calc(var(--space-7) + var(--space-2));
+    color: var(--text-secondary);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.layers-card-section > details > summary:focus-visible {
+    outline: 3px solid var(--accent-hover);
+    outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .layers-card-section > details > summary::after {
+        transition: none;
+    }
+}
+
 .road-scale-control {
     margin-bottom: var(--space-1) !important;
     padding: var(--space-1) var(--space-2) var(--space-1);
