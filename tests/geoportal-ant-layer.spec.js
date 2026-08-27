@@ -269,17 +269,18 @@ test("modo histórico desactiva Siniestros ANT sin dejar un año individual visi
   }
 
   if (!isMobile) {
-    await page.locator("#right-tab-settings").click();
+    await page.locator("#view-settings-disclosure summary").click();
+    await expect(page.locator("#view-settings-disclosure")).toHaveAttribute("open", "");
   }
   const periodAccumulated = page.locator(
     isMobile
       ? "#mobile-period-control-slot [data-period-mode='accumulated']"
-      : "#view-settings-panel [data-period-mode='accumulated']"
+      : "#view-settings-period-slot [data-period-mode='accumulated']"
   );
   const periodYear = page.locator(
     isMobile
       ? "#mobile-period-control-slot [data-period-mode='year']"
-      : "#view-settings-panel [data-period-mode='year']"
+      : "#view-settings-period-slot [data-period-mode='year']"
   );
 
   await periodAccumulated.click();

@@ -112,7 +112,7 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
-        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "analysis", "settings"]);
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "analysis"]);
         const TOPBAR_CLOSE_KEY = "Escape";
         const MAP_ZOOM_STEP = 1;
         const GEOLOCATION_OPTIONS = Object.freeze({
@@ -798,10 +798,6 @@
         });
         const analysisDrawerClose = document.getElementById("analysis-drawer-close");
         analysisDrawerClose?.addEventListener("click", () => {
-            setRightContextPanel(null, false);
-        });
-        const viewSettingsClose = document.getElementById("view-settings-close");
-        viewSettingsClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
         rightContextHost?.addEventListener("keydown", event => {

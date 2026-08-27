@@ -39,26 +39,24 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page }) => {
+test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPAS", async ({ page }) => {
   await loadPortal(page);
 
   const rail = page.locator("#right-tools-rail");
   const layersButton = page.locator('[data-right-panel="layers"]');
   const analysisButton = page.locator('[data-right-panel="analysis"]');
-  const settingsButton = page.locator('[data-right-panel="settings"]');
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
 
   await expect(rail).toBeVisible();
-  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(3);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(2);
   await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
     "CAPAS",
-    "ANÁLISIS",
-    "AJUSTES"
+    "ANÁLISIS"
   ]);
   await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
   await expect(analysisButton).toHaveAttribute("aria-expanded", "false");
-  await expect(settingsButton).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator('[data-right-panel="settings"]')).toHaveCount(0);
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", "none");
   await expect(page.locator("#map-legend-card")).toBeVisible();
@@ -79,10 +77,19 @@ test("la barra derecha conserva solo Datos y capas y Mapas base", async ({ page 
     await expect(page.locator("#map-legend-card")).toBeVisible();
   }
   await expect(page.locator("[data-right-context-view]:visible")).toHaveCount(1);
-  await settingsButton.click();
-  await expect(page.locator("#view-settings-panel")).toBeVisible();
-  await expect(page.locator("#technical-drawer")).toBeHidden();
-  await settingsButton.press("ArrowUp");
+  const viewSettingsDisclosure = page.locator("#view-settings-disclosure");
+  await viewSettingsDisclosure.locator("summary").click();
+  await expect(viewSettingsDisclosure).toHaveAttribute("open", "");
+  if (isMobile) {
+    await expect(page.locator("#mobile-period-control-slot .period-mode-control")).toHaveCount(1);
+    await expect(page.locator("#mobile-opacity-control-slot #territory-opacity-control")).toHaveCount(1);
+    await expect(page.locator("#view-settings-period-slot .period-mode-control")).toHaveCount(0);
+    await expect(page.locator("#view-settings-opacity-slot #territory-opacity-control")).toHaveCount(0);
+  } else {
+    await expect(page.locator("#view-settings-period-slot .period-mode-control")).toBeVisible();
+    await expect(page.locator("#view-settings-opacity-slot #territory-opacity-control")).toBeVisible();
+  }
+  await layersButton.press("ArrowDown");
   await expect(analysisButton).toBeFocused();
   await expect(page.locator("#territory-sidebar")).toBeVisible();
 
@@ -141,24 +148,24 @@ test("la barra superior concentra accesos y el buscador refleja capas extra en v
 test("los cambios cartográficos conservan la pestaña elegida por la persona", async ({ page }) => {
   await loadPortal(page);
   const host = page.locator("#right-context-host");
-  const settingsTab = page.locator('[data-right-panel="settings"]');
   const layersTab = page.locator('[data-right-panel="layers"]');
   const expectPanel = async panel => {
     await expect(host).toBeVisible();
     await expect(host).toHaveAttribute("data-active-panel", panel);
   };
 
-  await settingsTab.click();
+  await layersTab.click();
+  await page.locator("#view-settings-disclosure summary").click();
+  await expect(page.locator("#view-settings-disclosure")).toHaveAttribute("open", "");
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
-  await expectPanel("settings");
+  await expectPanel("layers");
 
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
-  await expectPanel("settings");
+  await expectPanel("layers");
 
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
-  await expectPanel("settings");
+  await expectPanel("layers");
 
-  await layersTab.click();
   await page.evaluate(() => window.__redsaAudit.showTerritory("province", "17"));
   await expectPanel("layers");
   await expect(page.locator("#demographic-hover-card")).not.toHaveAttribute("hidden", "");
@@ -176,18 +183,20 @@ test("los cambios cartográficos conservan la pestaña elegida por la persona", 
 
 test("las tres capas del mapa comparten una sola tarjeta y conservan controles independientes", async ({ page }, testInfo) => {
   await loadPortal(page);
+  const isMobile = testInfo.project.name === "mobile";
   await page.locator('[data-right-panel="layers"]').click();
 
   const card = page.locator("#layers-card");
   const variables = page.locator("#variable-disclosure");
   const events = page.locator("#event-layer-disclosure");
   const infrastructure = page.locator("#infrastructure-disclosure");
+  const viewSettings = page.locator("#view-settings-disclosure");
 
   await expect(card).toBeVisible();
   await expect(card.locator("#variable-disclosure")).toHaveCount(1);
   await expect(card.locator("#event-layer-disclosure")).toHaveCount(1);
   await expect(card.locator("#infrastructure-disclosure")).toHaveCount(1);
-  await expect(card.locator(".layers-card-section")).toHaveCount(4);
+  await expect(card.locator(".layers-card-section")).toHaveCount(5);
   await expect(card).toContainText("Capas disponibles");
   await expect(card.locator("#map-variable-count")).toHaveText("9");
   await expect(card.locator("#infrastructure-layer-count")).toHaveText("10");
@@ -195,16 +204,18 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(card.locator(".infrastructure-toggle-input")).toHaveCount(10);
   await expect(card.locator(".infrastructure-switch-visual")).toHaveCount(10);
 
-  for (const disclosure of [variables, events, infrastructure]) {
+  for (const disclosure of [variables, events, infrastructure, viewSettings]) {
     await expect(disclosure).not.toHaveAttribute("open", "");
   }
 
   await variables.locator("summary").click();
   await expect(variables).toHaveAttribute("open", "");
-  await expect(card.locator("#territory-opacity-control")).toHaveCount(0);
+  await viewSettings.locator("summary").click();
+  await expect(viewSettings).toHaveAttribute("open", "");
+  await expect(card.locator("#territory-opacity-control")).toHaveCount(isMobile ? 0 : 1);
   await expect(page.locator("#territory-opacity-control")).toHaveCount(1);
   expect(await page.locator("#territory-opacity-control").evaluate(element => element.parentElement?.id)).toBe(
-    testInfo.project.name === "mobile" ? "mobile-opacity-control-slot" : "view-settings-opacity-slot"
+    isMobile ? "mobile-opacity-control-slot" : "view-settings-opacity-slot"
   );
   await expect(page.locator(".opacity-control")).toHaveCount(0);
   await expect(events).not.toHaveAttribute("open", "");
@@ -244,8 +255,13 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
     };
   });
   expect(styles.cardBorder).toBe("1px");
-  expect(styles.detailBorders).toEqual(["0px", "0px", "0px"]);
-  expect(styles.detailBackgrounds).toEqual(["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)"]);
+  expect(styles.detailBorders).toEqual(["0px", "0px", "0px", "0px"]);
+  expect(styles.detailBackgrounds).toEqual([
+    "rgba(0, 0, 0, 0)",
+    "rgba(0, 0, 0, 0)",
+    "rgba(0, 0, 0, 0)",
+    "rgba(0, 0, 0, 0)"
+  ]);
 });
 
 async function assertBasemapControlHasDedicatedSpace(page) {
@@ -389,6 +405,11 @@ test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar
 test("la tarjeta informa y el topbar conserva todos los controles", async ({ page }, testInfo) => {
   await loadPortal(page);
   const isMobile = testInfo.project.name === "mobile";
+  if (!isMobile) {
+    await page.locator('[data-right-panel="layers"]').click();
+    await page.locator("#view-settings-disclosure summary").click();
+    await expect(page.locator("#view-settings-disclosure")).toHaveAttribute("open", "");
+  }
 
   await expect(page.locator("#map-legend-card")).toBeVisible();
   await expect(page.locator("#map-legend-card .legend-content-group")).toHaveCount(1);
@@ -425,7 +446,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   await expect(page.locator(".timeline-badge")).toHaveText("2024");
   await expect(page.locator('#mobile-year-bar [data-year="2024"]')).toHaveClass(/my-selected/);
 
-  await page.locator('[data-right-panel="layers"]').click();
+  if (isMobile) await page.locator('[data-right-panel="layers"]').click();
   const layerOrder = await page.evaluate(() => {
     const top = selector => document.querySelector(selector).getBoundingClientRect().top;
     return {
@@ -438,7 +459,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   expect(layerOrder.events, JSON.stringify(layerOrder)).toBeLessThan(layerOrder.infrastructure);
   await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
-  await expect(page.locator("#technical-drawer #territory-opacity-control")).toHaveCount(0);
+  await expect(page.locator("#technical-drawer #territory-opacity-control")).toHaveCount(isMobile ? 0 : 1);
   await expect(page.locator(".timeline-control")).toContainText("Año");
   await expect(page.locator(".timeline-help")).toHaveCount(0);
   await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
@@ -631,7 +652,7 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   await loadPortal(page);
 
   await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(5);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);
@@ -729,7 +750,8 @@ test("la superficie territorial se oculta solo en zoom profundo y restaura la op
   expect(normalStyle).not.toBeNull();
   expect(normalStyle.fillOpacity).toBeGreaterThan(0);
   await expect(page.locator("#territory-surface-auto-hide-note")).toBeHidden();
-  await page.locator('[data-right-panel="settings"]').click();
+  await page.locator('[data-right-panel="layers"]').click();
+  await page.locator("#view-settings-disclosure summary").click();
   await page.locator("#territory-opacity-slider").fill("55");
   await page.evaluate(() => window.__redsaAudit.setZoom(17));
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().territorySurfaceAutoHidden)).toBeTruthy();

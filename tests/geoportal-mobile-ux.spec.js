@@ -23,14 +23,17 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(page.locator('#map-legend-card-collapse')).toHaveAttribute('aria-expanded', 'true');
     }
 
-    test('mobile drawer mutual exclusivity (sidebar, layers, settings)', async ({ page }) => {
+    test('mobile drawer mutual exclusivity (sidebar, layers) preserves period and intensity controls', async ({ page }) => {
         const isMobile = (page.viewportSize()?.width || 0) <= 768;
         test.skip(!isMobile, 'Mobile-only test');
 
         const mobileSidebarToggle = page.locator('[data-right-panel="analysis"]');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const layersToggle = page.locator('[data-right-panel="layers"]');
-        const settingsToggle = page.locator('[data-right-panel="settings"]');
+        await expect(page.locator('#right-tools-rail [role="tab"]')).toHaveCount(2);
+        await expect(page.locator('[data-right-panel="settings"]')).toHaveCount(0);
+        await expect(page.locator('#mobile-period-control-slot .period-mode-control')).toBeVisible();
+        await expect(page.locator('#mobile-opacity-control-slot #territory-opacity-control')).toBeVisible();
 
         // Open analysis sidebar
         await mobileSidebarToggle.click();
@@ -44,15 +47,20 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         // Open layers
         await layersToggle.click();
         await expect(page.locator('body')).toHaveClass(/mobile-layers-open/);
+        await page.locator('#view-settings-disclosure summary').click();
+        await expect(page.locator('#view-settings-disclosure')).toHaveAttribute('open', '');
+        await expect(page.locator('#view-settings-period-slot')).toBeEmpty();
+        await expect(page.locator('#view-settings-opacity-slot')).toBeEmpty();
 
-        // Open settings switches context
-        await settingsToggle.click();
+        // Open analysis switches context while the controls stay in the mobile bar.
+        await mobileSidebarToggle.click();
         await expect(page.locator('body')).not.toHaveClass(/mobile-layers-open/);
-        await expect(page.locator('#view-settings-panel')).toBeVisible();
+        await expect(page.locator('body')).toHaveClass(/mobile-sidebar-open/);
+        await expect(page.locator('#territory-sidebar')).toBeVisible();
 
         // Close panel
-        await page.locator('#view-settings-panel [data-close-right-panel]').click();
-        await expect(page.locator('#view-settings-panel')).toBeHidden();
+        await mobileSidebarClose.click();
+        await expect(page.locator('body')).not.toHaveClass(/mobile-sidebar-open/);
     });
 
     test('mobile-level-bar is positioned below top navigation without overlap', async ({ page }) => {

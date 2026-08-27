@@ -323,7 +323,9 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         test('opacity slider changes territory opacity without fading infrastructure', async ({ page }) => {
             const isMobile = test.info().project.name === 'mobile';
             if (!isMobile) {
-                await page.locator('#right-tab-settings').click();
+                await page.locator('#right-tab-layers').click();
+                await page.locator('#view-settings-disclosure summary').click();
+                await expect(page.locator('#view-settings-disclosure')).toHaveAttribute('open', '');
             }
             const slider = page.locator('#territory-opacity-slider');
             await expect(slider).toBeVisible();
@@ -346,7 +348,6 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
 
             if (!isMobile) {
                 // Mapas base vive en la pestaña Capas, no como control flotante.
-                await page.locator('[data-right-panel="layers"]').click();
                 const layerControl = page.locator('#technical-drawer .basemap-control');
                 await expect(layerControl).toBeVisible();
 

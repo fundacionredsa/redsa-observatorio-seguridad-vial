@@ -250,10 +250,6 @@
                 <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                 <span class="right-tool-label-vertical">ANÁLISIS</span>
             </button>
-            <button class="right-tool-button right-tab-vertical" id="right-tab-settings" type="button" role="tab" data-right-panel="settings" aria-controls="view-settings-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Ajustes de vista" title="Ajustes de vista">
-                <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                <span class="right-tool-label-vertical">AJUSTES</span>
-            </button>
         </div>
     </nav>
 
@@ -328,6 +324,21 @@
                         </div>
                         <p class="basemap-help">Elige el mapa base para explorar el territorio.</p>
                         <div id="basemap-context-slot" class="basemap-context-slot"></div>
+                    </div>
+                    <div class="layers-card-section" id="view-settings-section">
+                        <details class="view-settings-disclosure" id="view-settings-disclosure">
+                            <summary>
+                                <span class="layers-category-heading">
+                                    <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-gear"></i></span>
+                                    <span class="layers-summary-title">Ajustes de vista</span>
+                                </span>
+                                <small>Periodo e intensidad</small>
+                            </summary>
+                            <div class="view-settings-content">
+                                <div id="view-settings-period-slot" class="view-settings-slot"></div>
+                                <div id="view-settings-opacity-slot" class="view-settings-slot"></div>
+                            </div>
+                        </details>
                     </div>
                 </div>
             </section>
@@ -533,16 +544,6 @@
             </details>
         </div>
 
-    <section class="right-context-view view-settings-panel" id="view-settings-panel" role="tabpanel" data-right-context-view="settings" hidden aria-hidden="true" aria-labelledby="right-tab-settings" tabindex="0">
-        <header class="right-context-section-header">
-            <div><h2>Ajustes de vista</h2><p>Configura el periodo y la intensidad del mapa.</p></div>
-            <button class="right-context-close" type="button" data-close-right-panel aria-label="Cerrar ajustes de vista" title="Cerrar ajustes de vista">&times;</button>
-        </header>
-        <div class="view-settings-content">
-            <div id="view-settings-period-slot" class="view-settings-slot"></div>
-            <div id="view-settings-opacity-slot" class="view-settings-slot"></div>
-        </div>
-    </section>
     </div>
     </div>
     <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>

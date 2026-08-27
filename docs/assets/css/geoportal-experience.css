@@ -774,10 +774,15 @@ body:not(.light-theme) .site-topbar-brand-mark {
 
 .variable-disclosure,
 .infrastructure-disclosure,
-.event-layer-disclosure {
+.event-layer-disclosure,
+.view-settings-disclosure {
     border: 0;
     border-radius: 0;
     background: transparent;
+}
+
+#view-settings-section {
+    clear: both;
 }
 
 .layers-card-section > details > summary,

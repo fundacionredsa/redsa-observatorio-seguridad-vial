@@ -47,7 +47,7 @@ test("IA fija la leyenda a la izquierda sin intersecciones en todas las combinac
   expect(intersects(search, legend), JSON.stringify({ search, legend })).toBeFalsy();
   expect(intersects(legend, rail), JSON.stringify({ legend, rail })).toBeFalsy();
 
-  for (const panel of ["analysis", "layers", "settings"]) {
+  for (const panel of ["analysis", "layers"]) {
     await page.locator(`[data-right-panel="${panel}"]`).click();
     await expect(page.locator("#right-context-host")).toHaveAttribute("data-active-panel", panel);
     const fixedLegend = await rect(page, "#map-legend-card");
@@ -58,9 +58,9 @@ test("IA fija la leyenda a la izquierda sin intersecciones en todas las combinac
   }
 });
 
-test("IB ofrece tres pestañas ARIA y análisis con ancho propio", async ({ page }, testInfo) => {
+test("IB ofrece dos pestañas ARIA y análisis con ancho propio", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await expect(page.locator("[role=tab][data-right-panel]")).toHaveCount(3);
+  await expect(page.locator("[role=tab][data-right-panel]")).toHaveCount(2);
   await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#right-tab-analysis")).toHaveAttribute("aria-selected", "true");
@@ -76,7 +76,7 @@ test("IB ofrece tres pestañas ARIA y análisis con ancho propio", async ({ page
   await expect(page.locator("#right-context-host")).toBeHidden();
 });
 
-test("IC mantiene Periodo e Intensidad en Ajustes y la visibilidad parroquial", async ({ page }, testInfo) => {
+test("IC mantiene Periodo e Intensidad en CAPAS y la visibilidad parroquial", async ({ page }, testInfo) => {
   const isMobile = testInfo.project.name === "mobile";
   await loadPortal(page);
   if (isMobile) {
@@ -84,13 +84,15 @@ test("IC mantiene Periodo e Intensidad en Ajustes y la visibilidad parroquial", 
     await expect(page.locator("#mobile-opacity-control-slot #territory-opacity-control")).toBeVisible();
     await page.evaluate(() => window.hideUnifiedLegend?.());
   } else {
-    await page.locator("#right-tab-settings").click();
+    await page.locator("#right-tab-layers").click();
+    await page.locator("#view-settings-disclosure summary").click();
+    await expect(page.locator("#view-settings-disclosure")).toHaveAttribute("open", "");
     await expect(page.locator("#view-settings-period-slot .period-mode-control")).toBeVisible();
     await expect(page.locator("#view-settings-opacity-slot #territory-opacity-control")).toBeVisible();
   }
   const accumulatedBtn = isMobile
     ? page.locator("#mobile-period-control-slot [data-period-mode='accumulated']")
-    : page.locator("#view-settings-panel [data-period-mode='accumulated']");
+    : page.locator("#view-settings-period-slot [data-period-mode='accumulated']");
   await accumulatedBtn.click();
   await expect(accumulatedBtn).toHaveAttribute("aria-pressed", "true");
 
