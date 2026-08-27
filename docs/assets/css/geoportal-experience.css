@@ -1302,6 +1302,14 @@ body.right-context-open .right-tools-rail {
     gap: var(--space-4);
 }
 
+#view-settings-section .period-label-full {
+    display: none;
+}
+
+#view-settings-section .period-label-compact {
+    display: inline;
+}
+
 .timeline-year-adjustment-note {
     font-size: var(--fs-xs);
     font-weight: 600;
