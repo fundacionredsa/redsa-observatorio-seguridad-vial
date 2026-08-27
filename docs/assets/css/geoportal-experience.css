@@ -1091,7 +1091,12 @@ body.right-context-open .right-tools-rail {
 .right-tool-group + .right-tool-group {
     margin-top: var(--right-tool-group-gap, var(--space-2));
     padding-top: var(--right-tool-group-gap, var(--space-2));
-    border-top: 1px solid var(--border-glass);
+    border-top: 1px solid color-mix(in srgb, var(--text-secondary) 25%, transparent);
+}
+
+.right-panel-tabs {
+    border-radius: 0 0 4px 4px;
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
 .right-tool-button {
