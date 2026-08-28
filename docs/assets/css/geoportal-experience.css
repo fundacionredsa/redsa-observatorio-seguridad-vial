@@ -943,14 +943,36 @@ body:not(.light-theme) .site-topbar-brand-mark {
     margin: 0;
     padding: var(--space-2) var(--space-2);
     border: 1px solid transparent;
-    border-radius: 7px;
-    color: #e8edf2;
+    border-radius: 8px;
+    color: var(--text-primary);
     cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .infrastructure-controls-slot .infrastructure-toggle-row:hover {
-    border-color: rgba(125, 203, 211, 0.42);
-    background: rgba(8, 127, 140, 0.12);
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.infrastructure-controls-slot .infrastructure-toggle-row:has(.infrastructure-toggle-input:checked) {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.infrastructure-layer-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.infrastructure-layer-caption {
+    color: var(--text-secondary);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .infrastructure-layer-symbol {
@@ -2335,6 +2357,74 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     padding: 0 var(--space-2) var(--space-1);
 }
 
+.layers-group {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+}
+
+.layers-group:first-child {
+    margin-top: 0;
+}
+
+.layers-group-title {
+    margin: var(--space-1) 0 var(--space-1) var(--space-1);
+    color: var(--text-secondary);
+    font-size: var(--fs-2xs);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.layers-group-items {
+    display: grid;
+    gap: var(--space-1);
+}
+
+.variable-option {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-2);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.variable-option:hover {
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.variable-option:has(input:checked) {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.variable-option-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.variable-option-title {
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.variable-option-caption {
+    color: var(--text-secondary);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 .variable-swatch {
     display: inline-block;
     width: 8px;
@@ -2350,11 +2440,45 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     accent-color: var(--accent);
 }
 
-.basemap-option-icon {
-    width: 16px;
-    margin-right: var(--space-2);
+.event-layer-toggle {
+    margin: 0 var(--space-2) var(--space-2);
+    padding: var(--space-2) var(--space-2);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.event-layer-toggle:hover {
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.event-layer-toggle:has(input:checked) {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.event-layer-option-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.event-layer-option-title {
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.event-layer-option-caption {
     color: var(--text-secondary);
-    text-align: center;
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .event-layer-help,
@@ -2371,6 +2495,73 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     background: transparent;
     color: var(--accent-hover);
     cursor: pointer;
+}
+
+.basemap-control .leaflet-control-layers-base {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0 var(--space-2) var(--space-2);
+}
+
+.basemap-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-2);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.basemap-toggle-row:hover {
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.basemap-toggle-row:has(input:checked) {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.basemap-toggle-row input[type="radio"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.basemap-option-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+}
+
+.basemap-option-title {
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.basemap-option-icon {
+    width: 16px;
+    margin-right: var(--space-2);
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.basemap-option-caption {
+    margin-left: calc(16px + var(--space-2));
+    color: var(--text-secondary);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .ant-mode-controls button:focus-visible,

@@ -434,21 +434,39 @@
                                 </summary>
                                 <p class="variable-help">Selecciona una variable territorial. Vuelve a activar la opción seleccionada para dejar solo los límites.</p>
                                 <div id="map-variable-options" class="variable-options" role="radiogroup" aria-label="Variable territorial del mapa">
-                                    ${Object.entries(VARIABLE_CONFIGS)
-                                        .filter(([id]) => id !== "normal")
-                                        .map(([id, config]) => `
-                                            <label class="variable-option" for="map-variable-${id}">
-                                                <input
-                                                    id="map-variable-${id}"
-                                                    type="radio"
-                                                    name="map-variable"
-                                                    value="${id}"
-                                                    ${id === selectedVariable ? "checked" : ""}
-                                                >
-                                                <span class="variable-swatch" aria-hidden="true"></span>
-                                                <span>${config.label}</span>
-                                            </label>
-                                        `).join("")}
+                                    ${(() => {
+                                        const groups = {};
+                                        Object.entries(VARIABLE_CONFIGS)
+                                            .filter(([id]) => id !== "normal")
+                                            .forEach(([id, config]) => {
+                                                const cat = config.categoria || "Otras variables";
+                                                if (!groups[cat]) groups[cat] = [];
+                                                groups[cat].push([id, config]);
+                                            });
+                                        return Object.entries(groups).map(([groupName, items]) => `
+                                            <div class="layers-group">
+                                                <h4 class="layers-group-title">${groupName}</h4>
+                                                <div class="layers-group-items">
+                                                    ${items.map(([id, config]) => `
+                                                        <label class="variable-option" for="map-variable-${id}">
+                                                            <input
+                                                                id="map-variable-${id}"
+                                                                type="radio"
+                                                                name="map-variable"
+                                                                value="${id}"
+                                                                ${id === selectedVariable ? "checked" : ""}
+                                                            >
+                                                            <span class="variable-swatch" aria-hidden="true"></span>
+                                                            <span class="variable-option-content">
+                                                                <span class="variable-option-title">${config.displayLabel || config.label}</span>
+                                                                ${config.fuenteCorta ? `<span class="variable-option-caption">${config.fuenteCorta}</span>` : (config.fuente ? `<span class="variable-option-caption">${config.fuente}</span>` : "")}
+                                                            </span>
+                                                        </label>
+                                                    `).join("")}
+                                                </div>
+                                            </div>
+                                        `).join("");
+                                    })()}
                                 </div>
                                 <div id="map-variable-description" class="map-variable-description" aria-live="polite"></div>
                                 <div class="contextual-opacity-control" id="territory-opacity-control">

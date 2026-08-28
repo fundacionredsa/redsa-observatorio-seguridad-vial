@@ -295,23 +295,61 @@
         basemapControlContainer?.classList.add("basemap-control");
         basemapControlContainer?.setAttribute("aria-label", "Seleccionar mapa base");
 
-        function decorateBasemapControls(container) {
-            if (!container || container.dataset.basemapDecorated === "true") return;
+        const BASEMAP_ATTRIBUTION_SHORT = Object.freeze({
+            [BASEMAP_LABELS.positron]: "CARTO / OPENSTREETMAP",
+            [BASEMAP_LABELS.darkMatter]: "CARTO / OPENSTREETMAP",
+            [BASEMAP_LABELS.osmStandard]: "OPENSTREETMAP CONTRIBUTORS",
+            [BASEMAP_LABELS.cyclosm]: "CYCLOSM / OPENSTREETMAP",
+            [BASEMAP_LABELS.relief]: "OPENTOPOMAP / SRTM"
+        });
 
-            const labels = [...container.querySelectorAll(".leaflet-control-layers-base label")];
-            labels.forEach(label => {
-                const iconClass = BASEMAP_ICON_CLASSES[label.textContent.trim()];
-                const name = label.querySelector("span > span");
-                if (!iconClass || !name) return;
+        function decorateBasemapControls(container) {
+            if (!container) return;
+
+            const inputs = [...container.querySelectorAll(".leaflet-control-layers-base input[type='radio']")];
+            inputs.forEach(input => {
+                const label = input.closest("label");
+                if (!label || label.dataset.decorated === "true") return;
+                label.dataset.decorated = "true";
+
+                const rawText = label.textContent.trim();
+                const matchedLabel = Object.values(BASEMAP_LABELS).find(l => rawText.includes(l)) || rawText;
+                const iconClass = BASEMAP_ICON_CLASSES[matchedLabel];
+                if (!iconClass) return;
+
+                label.classList.add("basemap-toggle-row");
+
+                const textContainer = document.createElement("span");
+                textContainer.className = "basemap-option-text";
+
+                const titleSpan = document.createElement("span");
+                titleSpan.className = "basemap-option-title";
 
                 const icon = document.createElement("i");
                 icon.className = `fa-solid ${iconClass} basemap-option-icon`;
                 icon.setAttribute("aria-hidden", "true");
-                name.prepend(icon);
+
+                titleSpan.append(icon, document.createTextNode(matchedLabel));
+                textContainer.appendChild(titleSpan);
+
+                const attribution = BASEMAP_ATTRIBUTION_SHORT[matchedLabel];
+                if (attribution) {
+                    const caption = document.createElement("span");
+                    caption.className = "basemap-option-caption";
+                    caption.textContent = attribution;
+                    textContainer.appendChild(caption);
+                }
+
+                label.replaceChildren(input, textContainer);
             });
-            container.dataset.basemapDecorated = "true";
         }
 
+        const origBaseLayerUpdate = baseLayerControl._update.bind(baseLayerControl);
+        baseLayerControl._update = function() {
+            const res = origBaseLayerUpdate();
+            decorateBasemapControls(basemapControlContainer);
+            return res;
+        };
         decorateBasemapControls(basemapControlContainer);
 
         function syncBasemapControlDock() {
@@ -559,9 +597,20 @@
                 symbol.style.setProperty("--infrastructure-layer-color", config.color);
                 symbol.setAttribute("aria-hidden", "true");
 
+                const textContainer = document.createElement("span");
+                textContainer.className = "infrastructure-layer-text";
+
                 const name = document.createElement("span");
                 name.className = "infrastructure-layer-name";
                 name.textContent = config.label;
+                textContainer.appendChild(name);
+
+                if (config.osmAudit) {
+                    const caption = document.createElement("span");
+                    caption.className = "infrastructure-layer-caption";
+                    caption.textContent = "OPENSTREETMAP (ODbL)";
+                    textContainer.appendChild(caption);
+                }
 
                 const switchControl = document.createElement("span");
                 switchControl.className = "infrastructure-switch";
@@ -570,7 +619,7 @@
                 switchVisual.setAttribute("aria-hidden", "true");
                 switchControl.append(input, switchVisual);
 
-                label.replaceChildren(symbol, name, switchControl);
+                label.replaceChildren(symbol, textContainer, switchControl);
             });
             container.dataset.infrastructureDecorated = "true";
         }
