@@ -347,13 +347,14 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(infrastructurePane).toHaveCSS('opacity', '1');
 
             if (!isMobile) {
-                // Mapas base vive en la pestaña Capas, no como control flotante.
-                const layerControl = page.locator('#technical-drawer .basemap-control');
+                // Mapas base vive en el popover del riel de herramientas.
+                const layerControl = page.locator('#basemap-popover .basemap-control');
+                await page.locator('#map-basemap-toggle').click();
                 await expect(layerControl).toBeVisible();
 
                 const controlsClearDrawer = await page.evaluate(() => {
                     const box = rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
-                    const host = document.querySelector('#right-context-host').getBoundingClientRect();
+                    const host = document.querySelector('#basemap-popover').getBoundingClientRect();
                     const rail = document.querySelector('#right-tools-rail').getBoundingClientRect();
                     const zoom = document.querySelector('#map-zoom-in').getBoundingClientRect();
                     return {

@@ -241,6 +241,12 @@
                 <span class="right-tool-label">Mi ubicación</span>
             </button>
         </div>
+        <div class="right-tool-group" role="group" aria-label="Apariencia del mapa">
+            <button class="right-tool-button" id="map-basemap-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="basemap-popover" aria-label="Apariencia del mapa" title="Apariencia del mapa">
+                <i class="fa-solid fa-map" aria-hidden="true"></i>
+                <span class="right-tool-label">Mapa base</span>
+            </button>
+        </div>
         <div class="right-tool-group right-panel-tabs" role="tablist" aria-label="Panel lateral del mapa" aria-orientation="vertical">
             <button class="right-tool-button right-tab-vertical" id="right-tab-layers" type="button" role="tab" data-right-panel="layers" aria-controls="technical-drawer" aria-selected="false" aria-expanded="false" tabindex="0" aria-label="Capas del mapa" title="Capas del mapa">
                 <i class="fa-solid fa-sliders" aria-hidden="true"></i>
@@ -252,6 +258,21 @@
             </button>
         </div>
     </nav>
+
+    <div class="basemap-popover" id="basemap-popover" role="dialog" aria-label="Apariencia del mapa" aria-hidden="true" hidden>
+        <div class="basemap-popover-header">
+            <div class="basemap-popover-heading">
+                <span class="layers-category-heading">
+                    <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-map"></i></span>
+                    <span class="layers-summary-title">Mapa base <span class="layers-count-badge" aria-label="Cinco mapas base">5</span></span>
+                </span>
+                <small>Selección única</small>
+            </div>
+            <button class="popover-close-button" id="basemap-popover-close" type="button" aria-label="Cerrar opciones de mapa base">&times;</button>
+        </div>
+        <p class="basemap-popover-help">Elige el mapa base para explorar el territorio.</p>
+        <div id="basemap-popover-slot" class="basemap-popover-slot"></div>
+    </div>
 
     <div class="right-context-host" id="right-context-host" data-active-panel="none" aria-label="Panel lateral del mapa" hidden>
     <aside class="technical-drawer right-context-view" id="technical-drawer" role="tabpanel" data-right-context-view="layers" hidden aria-hidden="true" aria-labelledby="right-tab-layers" tabindex="0">
@@ -316,17 +337,6 @@
                             <p class="infrastructure-help">Activa una o varias capas. El menú permanece abierto mientras haces tu selección.</p>
                             <div class="infrastructure-controls-slot" id="infrastructure-controls-slot"></div>
                         </details>
-                    </div>
-                    <div class="layers-card-section basemap-layer-section" id="basemap-layer-section">
-                        <div class="basemap-section-header">
-                            <span class="layers-category-heading">
-                                <span class="layers-category-icon" aria-hidden="true"><i class="fa-solid fa-map"></i></span>
-                                <span class="layers-summary-title">Mapa base <span class="layers-count-badge" aria-label="Cinco mapas base">5</span></span>
-                            </span>
-                            <small>Selección única</small>
-                        </div>
-                        <p class="basemap-help">Elige el mapa base para explorar el territorio.</p>
-                        <div id="basemap-context-slot" class="basemap-context-slot"></div>
                     </div>
                     <div class="layers-card-section" id="view-settings-section">
                         <details class="view-settings-disclosure" id="view-settings-disclosure">

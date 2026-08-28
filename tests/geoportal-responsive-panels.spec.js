@@ -196,7 +196,7 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
   await expect(card.locator("#variable-disclosure")).toHaveCount(1);
   await expect(card.locator("#event-layer-disclosure")).toHaveCount(1);
   await expect(card.locator("#infrastructure-disclosure")).toHaveCount(1);
-  await expect(card.locator(".layers-card-section")).toHaveCount(5);
+  await expect(card.locator(".layers-card-section")).toHaveCount(4);
   await expect(card).toContainText("Capas disponibles");
   await expect(card.locator("#map-variable-count")).toHaveText("9");
   await expect(card.locator("#infrastructure-layer-count")).toHaveText("10");
@@ -266,17 +266,17 @@ test("las tres capas del mapa comparten una sola tarjeta y conservan controles i
 
 async function assertBasemapControlHasDedicatedSpace(page) {
   const viewport = page.viewportSize();
-  await page.locator('[data-right-panel="layers"]').click();
-  const host = page.locator("#right-context-host");
+  await page.locator("#map-basemap-toggle").click();
+  const popover = page.locator("#basemap-popover");
   const rail = page.locator("#right-tools-rail");
   const basemap = page.locator(".basemap-control");
 
-  await expect(host).toBeVisible();
+  await expect(popover).toBeVisible();
   await expect(basemap).toBeVisible();
   await expect(basemap).toHaveAttribute("aria-label", "Seleccionar mapa base");
-  expect(await basemap.evaluate(element => element.parentElement?.id)).toBe("basemap-context-slot");
+  expect(await basemap.evaluate(element => element.parentElement?.id)).toBe("basemap-popover-slot");
 
-  const panel = await box(page, "#right-context-host");
+  const panel = await box(page, "#basemap-popover");
   const railBox = await box(page, "#right-tools-rail");
   const zoom = await box(page, "#map-zoom-in");
   expect(panel.left).toBeGreaterThanOrEqual(0);
@@ -651,8 +651,8 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   });
   await loadPortal(page);
 
-  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(2);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(5);
+  await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(3);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);
@@ -715,7 +715,7 @@ test("catálogo vive en la barra superior y la marca oficial se muestra legible"
 
 test("Dark Matter activa realce cartográfico sin cambiar el tema de interfaz", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await page.locator('[data-right-panel="layers"]').click();
+  await page.locator("#map-basemap-toggle").click();
   const options = page.locator(".basemap-control .leaflet-control-layers-base label");
   const dark = options.filter({ hasText: "Dark Matter" });
   const positron = options.filter({ hasText: "Positron" });

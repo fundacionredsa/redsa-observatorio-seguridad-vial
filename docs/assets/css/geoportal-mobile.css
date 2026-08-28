@@ -1073,6 +1073,13 @@
         display: none;
     }
 
+    .basemap-popover {
+        flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
+        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
+        max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
+        padding: var(--space-3);
+    }
+
     .right-context-host {
         flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
         width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
@@ -1141,7 +1148,8 @@
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
     }
 
-    body.mobile-right-context-open .mobile-overlay-backdrop {
+    body.mobile-right-context-open .mobile-overlay-backdrop,
+    body.mobile-basemap-popover-open .mobile-overlay-backdrop {
         display: block;
         opacity: 1;
         pointer-events: auto;

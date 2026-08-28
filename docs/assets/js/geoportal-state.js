@@ -353,7 +353,7 @@
         decorateBasemapControls(basemapControlContainer);
 
         function syncBasemapControlDock() {
-            const target = document.getElementById("basemap-context-slot");
+            const target = document.getElementById("basemap-popover-slot");
             if (!basemapControlContainer || !target) return;
             if (basemapControlContainer.parentElement !== target) target.appendChild(basemapControlContainer);
         }
@@ -389,6 +389,9 @@
         const legendVisibilityToggle = document.getElementById("legend-visibility-toggle");
         const rightContextHost = document.getElementById("right-context-host");
         const rightToolRail = document.getElementById("right-tools-rail");
+        const mapBasemapToggle = document.getElementById("map-basemap-toggle");
+        const basemapPopover = document.getElementById("basemap-popover");
+        const basemapPopoverClose = document.getElementById("basemap-popover-close");
         const rightRailButtons = [...document.querySelectorAll(".right-tool-button")];
         const rightToolButtons = [...document.querySelectorAll("[data-right-panel]")];
         const rightContextViews = [...document.querySelectorAll("[data-right-context-view]")];
@@ -403,6 +406,32 @@
         const siteMethodologyToggle = document.getElementById("site-methodology-toggle");
         const siteMethodologyMenu = document.getElementById("site-methodology-menu");
         let activeRightPanel = null;
+
+        function setBasemapPopover(open, options = {}) {
+            const shouldOpen = Boolean(open);
+            if (!basemapPopover || !mapBasemapToggle) return;
+            if (shouldOpen) {
+                if (activeRightPanel) {
+                    setRightContextPanel(null, false);
+                }
+            }
+            basemapPopover.hidden = !shouldOpen;
+            basemapPopover.setAttribute("aria-hidden", String(!shouldOpen));
+            mapBasemapToggle.setAttribute("aria-expanded", String(shouldOpen));
+            mapBasemapToggle.classList.toggle("active", shouldOpen);
+            document.body.classList.toggle("basemap-popover-open", shouldOpen);
+            document.body.classList.toggle("mobile-basemap-popover-open", shouldOpen && mobileMediaQuery.matches);
+
+            if (shouldOpen) {
+                syncBasemapControlDock();
+                if (options.focusFirst) {
+                    const firstControl = basemapPopover.querySelector("input:checked, input, button");
+                    firstControl?.focus({ preventScroll: true });
+                }
+            } else if (options.returnFocus) {
+                mapBasemapToggle.focus({ preventScroll: true });
+            }
+        }
         let legendUserVisible = true;
         let contextualPanelRestoreTarget = "citizen";
         let sidebarReturnTarget = "map";
@@ -484,6 +513,9 @@
 
         function setRightContextPanel(panel, open = true, options = {}) {
             const nextPanel = open && RIGHT_CONTEXT_PANELS.includes(panel) ? panel : null;
+            if (nextPanel) {
+                setBasemapPopover(false, { returnFocus: false });
+            }
             activeRightPanel = nextPanel;
             const analysisOpen = nextPanel === "analysis";
             if (rightContextHost) {
@@ -545,6 +577,7 @@
         }
 
         function closeMobilePanels() {
+            setBasemapPopover(false, { returnFocus: false });
             setMobilePanel("sidebar", false);
             setRightContextPanel(null, false);
         }
@@ -891,6 +924,25 @@
         });
         legendCloseToggle?.addEventListener("click", hideUnifiedLegend);
         legendVisibilityToggle?.addEventListener("click", showUnifiedLegend);
+        mapBasemapToggle?.addEventListener("click", () => {
+            const isOpen = !basemapPopover?.hidden;
+            setBasemapPopover(!isOpen, { focusFirst: false });
+        });
+        basemapPopoverClose?.addEventListener("click", () => {
+            setBasemapPopover(false, { returnFocus: true });
+        });
+        basemapPopover?.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                event.stopPropagation();
+                setBasemapPopover(false, { returnFocus: true });
+            }
+        });
+        document.addEventListener("click", event => {
+            if (!basemapPopover || basemapPopover.hidden) return;
+            if (!basemapPopover.contains(event.target) && !mapBasemapToggle?.contains(event.target)) {
+                setBasemapPopover(false, { returnFocus: false });
+            }
+        });
         rightToolButtons.forEach(button => button.addEventListener("click", () => {
             const panel = button.dataset.rightPanel;
             if (panel === "layers") syncMobileLayerDrawer();
@@ -924,6 +976,9 @@
         mobileOverlayBackdrop?.addEventListener("click", closeMobilePanels);
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
+                if (basemapPopover && !basemapPopover.hidden) {
+                    setBasemapPopover(false, { returnFocus: true });
+                }
                 closeMobilePanels();
             }
         });
@@ -1278,6 +1333,7 @@
         window.showUnifiedLegend = showUnifiedLegend;
         window.setSiteTopbarMenu = setSiteTopbarMenu;
         window.setSiteMethodologyMenu = setSiteMethodologyMenu;
+        window.setBasemapPopover = setBasemapPopover;
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
 
         function updateTimelineControl() {
