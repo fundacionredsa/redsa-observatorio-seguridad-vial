@@ -519,7 +519,7 @@ function onEachProvinceFeature(feature, layer) {
                                 ? "<strong>Corte parcial enero-junio:</strong> no comparar con años completos."
                                 : "";
                             itemsHtml += `
-                                <div class="legend-data-audit legend-territory-audit" role="note" data-national-total="${total}">
+                                <div class="legend-data-audit legend-territory-audit redsa-callout redsa-callout--emphasis" role="note" data-national-total="${total}">
                                     <strong>Cobertura territorial</strong>
                                     <span class="legend-audit-note">${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio. La referencia nacional conserva ambos grupos sin asignación especulativa.${partial ? `<span>${partial}</span>` : ""}</span>
                                 </div>
@@ -552,13 +552,13 @@ function onEachProvinceFeature(feature, layer) {
                         </div>`;
                 }).join("");
                 const audit = entry.audit
-                    ? `<div class="legend-data-audit">
+                    ? `<div class="legend-data-audit redsa-callout">
                         <strong>${Number(entry.audit.published).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} puntos publicados</strong>
                         <span>Sin ubicación: ${Number(entry.audit.noLocation || 0).toLocaleString("es-EC")} · Ubicación no verificable: ${Number(entry.audit.unverifiableLocation || 0).toLocaleString("es-EC")}${Number(entry.audit.invalidDate || 0) ? ` · Fecha no publicable: ${Number(entry.audit.invalidDate).toLocaleString("es-EC")}` : ""}</span>
                     </div>`
                     : "";
                 const notes = (entry.notes || []).map(note => `<span>${note}</span>`).join("");
-                const noteBlock = notes ? `<div class="legend-overlay-notes" role="note">${notes}</div>` : "";
+                const noteBlock = notes ? `<div class="legend-overlay-notes redsa-callout" role="note">${notes}</div>` : "";
                 const loading = entry.status === "loading"
                     ? `<div class="legend-overlay-status" role="status">Preparando la capa…</div>`
                     : "";

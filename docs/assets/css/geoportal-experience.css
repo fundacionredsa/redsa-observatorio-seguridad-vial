@@ -614,7 +614,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
     min-width: 0;
     flex: 1 1 auto;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
 }
 
 .map-legend-card-heading > i {
@@ -631,7 +631,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
     margin: 0;
     color: var(--text-primary);
     font-family: var(--font-display);
-    font-size: 0.86rem;
+    font-size: var(--fs-md);
     line-height: 1.2;
     white-space: nowrap;
 }
@@ -671,21 +671,12 @@ body:not(.light-theme) .site-topbar-brand-mark {
     padding: 0;
 }
 
-.map-legend-card .legend-heading-title {
-    font-size: 0.96rem;
-}
-
-.map-legend-card .legend-heading-meta {
-    margin-top: 4px;
-    font-size: 0.61rem;
-}
-
 .map-legend-card .legend-ordinal-bar {
     height: 12px;
 }
 
 .map-legend-card .legend-data-audit {
-    margin-block: 8px;
+    margin-block: var(--space-2);
 }
 
 .map-legend-card .legend-active-layers-list {
@@ -3027,7 +3018,7 @@ body.light-theme .territory-hover-tooltip {
 }
 
 .legend-reading-group .legend-heading-title {
-    font-size: var(--fs-lg);
+    font-size: var(--fs-base);
     font-weight: 800;
     line-height: 1.25;
 }
@@ -3040,6 +3031,8 @@ body.light-theme .territory-hover-tooltip {
     color: var(--text-muted);
     font-size: var(--fs-xs);
     line-height: 1.45;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .legend-heading-technical {

@@ -701,9 +701,9 @@
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-2);
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: var(--space-1);
         }
         .legend-color-line {
             width: 18px;
@@ -1219,11 +1219,32 @@
             color: #fbbf24;
         }
 
+        /* Componente compartido de Callout / Destacado */
+        .redsa-callout {
+            display: grid;
+            gap: var(--space-1);
+            padding: var(--space-2);
+            border-left: 3px solid var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+            color: var(--text-secondary);
+            font-size: var(--fs-xs);
+            line-height: 1.35;
+        }
+
+        .redsa-callout--emphasis {
+            border-left-width: 4px;
+            padding: var(--space-3);
+        }
+
+        .redsa-callout--subtle {
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+        }
+
         .legend-data-audit {
             display: grid;
-            gap: 4px;
-            margin: 4px 0 8px;
-            padding: 8px;
+            gap: var(--space-1);
+            margin: var(--space-1) 0 var(--space-2);
+            padding: var(--space-2);
             border-left: 3px solid var(--accent);
             background: color-mix(in srgb, var(--accent) 9%, transparent);
             color: var(--text-secondary);

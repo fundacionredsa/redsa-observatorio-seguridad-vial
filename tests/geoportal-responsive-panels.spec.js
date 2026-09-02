@@ -315,7 +315,7 @@ test("panel ciudadano web conserva estado y separa selección de análisis", asy
 
   await search.fill("Cayambe");
   await search.press("Enter");
-  await expect.poll(async () => page.evaluate(() => window.__redsaAudit.state().selectedTerritory)).toEqual({
+  await expect.poll(async () => page.evaluate(() => window.__redsaAudit?.state?.()?.selectedTerritory)).toEqual({
     level: "canton",
     code: "1702"
   });

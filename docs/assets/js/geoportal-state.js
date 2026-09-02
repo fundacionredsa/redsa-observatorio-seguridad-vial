@@ -177,10 +177,10 @@
                 div.innerHTML = `<div class="legend-content" id="legend-content">
                     <div id="legend-items" class="legend-items-structured">
                         <div id="legend-territory-items" class="legend-layer-items"></div>
-                        <p id="territory-surface-auto-hide-note" class="territory-surface-auto-hide-note" role="status" hidden>Superficie oculta a este nivel de acercamiento; se prioriza el detalle del mapa base.</p>
+                        <p id="territory-surface-auto-hide-note" class="territory-surface-auto-hide-note redsa-callout" role="status" hidden>Superficie oculta a este nivel de acercamiento; se prioriza el detalle del mapa base.</p>
                         <div id="legend-overlay-items" class="legend-layer-items"></div>
                         <div id="legend-ant-opacity-slot" class="legend-opacity-slot" data-legend-layer="siniestros_ant"></div>
-                        <div id="legend-overlay-notes" class="legend-overlay-notes"></div>
+                        <div id="legend-overlay-notes" class="legend-overlay-notes redsa-callout"></div>
                     </div>
                 </div>`;
                 return div;
