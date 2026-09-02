@@ -23,7 +23,6 @@
     --brand-logo-dark-filter: brightness(1.22) saturate(1.08) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
     --analysis-callout-accent: #4d96c2;
     --analysis-callout-bg: color-mix(in srgb, var(--accent) 10%, var(--analysis-card-bg));
-    --analysis-hero-value-size: 1.42rem;
     --analysis-hero-radius: 8px;
     --analysis-hero-accent-width: 4px;
     --historical-view-radius: 7px;
@@ -40,7 +39,6 @@
     --map-legend-radius: 12px;
     --analysis-compact-gap: 7px;
     --analysis-compact-padding: 10px;
-    --analysis-panel-padding: 16px;
     --analysis-empty-font-size: 0.68rem;
     --analysis-detail-value-min-width: 108px;
 }
@@ -2781,7 +2779,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 
 .sidebar .analysis-hero-stat .detail-value:not(.empty) {
     color: var(--text-primary);
-    font-size: var(--analysis-hero-value-size);
+    font-size: var(--fs-xl);
     font-style: normal;
     font-weight: 800;
     letter-spacing: -0.02em;

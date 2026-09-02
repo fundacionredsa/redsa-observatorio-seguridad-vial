@@ -82,13 +82,11 @@
             --ui-secondary-info-size: 28px;
             --ui-secondary-info-size-mobile: 24px;
             --ui-secondary-gap: 6px;
-            --analysis-drawer-padding: 20px;
             --analysis-drawer-bottom-padding: 40px;
             --analysis-card-bg: rgba(255, 255, 255, 0.035);
             --analysis-card-border: rgba(255, 255, 255, 0.09);
             --analysis-header-bg: #172235;
             --analysis-secondary-font-size: 0.7rem;
-            --analysis-primary-value-size: 1.1rem;
             --analysis-disclosure-radius: 6px;
             --loader-background: #0f172a;
             --loader-mark-size: 190px;
@@ -323,10 +321,11 @@
 
         .section-title {
             font-family: var(--font-display);
-            font-size: var(--analysis-secondary-font-size);
-            letter-spacing: 0;
+            font-size: var(--fs-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            font-weight: 750;
+            font-weight: 700;
         }
 
         .canton-details {
@@ -346,13 +345,13 @@
         }
 
         .detail-label {
-            font-size: var(--analysis-secondary-font-size);
+            font-size: var(--fs-xs);
             color: var(--text-muted);
             letter-spacing: 0;
         }
 
         .detail-value {
-            font-size: var(--analysis-primary-value-size);
+            font-size: var(--fs-xl);
             font-weight: 600;
             color: var(--text-primary);
             line-height: 1.35;
@@ -440,12 +439,12 @@
         /* Fase 7: densidad informativa del panel de análisis, sin ocultar contenido. */
         .sidebar {
             gap: var(--space-3);
-            padding: 0 var(--analysis-panel-padding) var(--analysis-drawer-bottom-padding);
+            padding: 0 var(--space-4) var(--analysis-drawer-bottom-padding);
         }
 
         .mobile-sidebar-topbar {
             top: 0;
-            margin: 0 calc(var(--analysis-panel-padding) * -1) 8px;
+            margin: 0 calc(var(--space-4) * -1) var(--space-2);
         }
 
         .sidebar .header-brand {
