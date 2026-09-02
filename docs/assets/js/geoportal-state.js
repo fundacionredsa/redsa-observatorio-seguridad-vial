@@ -206,6 +206,11 @@
         // Definir Atribuciones Requeridas
         const attributionCantonales = ' | <strong>Límites cantonales: INEC/CONALI vía datosabiertos.gob.ec, licencia CC-BY</strong> | Límites provinciales y parroquiales: CONALI, vigencia 2025-02-20 y 2026-02-03, licencia CC-BY';
 
+        // API key gratuita de CARTO Basemaps (obtenida en carto.com/basemaps/apikey,
+        // límite de 5M tiles/mes, restringida al dominio geoportal.observatorio.fundacionredsa.org).
+        // Si se necesita rotar, basta con cambiar este único valor.
+        const CARTO_API_KEY = "cb1_2t1l_1_674d0b91da9ed2834a9efaba";
+
         const BASEMAP_LABELS = Object.freeze({
             positron: "CartoDB Positron (Claro)",
             darkMatter: "CartoDB Dark Matter (Oscuro)",
@@ -221,8 +226,8 @@
             [BASEMAP_LABELS.relief]: "fa-mountain-sun"
         });
         const BASEMAP_TILE_URLS = Object.freeze({
-            positron: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-            darkMatter: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            positron: `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`,
+            darkMatter: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`,
             osmStandard: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             cyclosm: "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
             relief: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
