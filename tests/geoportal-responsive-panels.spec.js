@@ -90,7 +90,11 @@ test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPA
     await expect(page.locator("#view-settings-opacity-slot #territory-opacity-control")).toBeVisible();
   }
   await layersButton.press("ArrowDown");
-  await expect(analysisButton).toBeFocused();
+  if (isMobile) {
+    await expect(page.locator("#mobile-sidebar-close")).toBeFocused();
+  } else {
+    await expect(analysisButton).toBeFocused();
+  }
   await expect(page.locator("#territory-sidebar")).toBeVisible();
 
   if (isMobile) {

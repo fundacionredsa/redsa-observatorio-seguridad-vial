@@ -972,7 +972,11 @@
             if (isPanelTab) {
                 const panel = buttons[nextIndex].dataset.rightPanel;
                 if (panel === "layers") syncMobileLayerDrawer();
-                setRightContextPanel(panel, true);
+                if (panel === "analysis" && mobileMediaQuery.matches) {
+                    setMobilePanel("sidebar", true);
+                } else {
+                    setRightContextPanel(panel, true);
+                }
             }
         });
         document.querySelectorAll("[data-close-right-panel]").forEach(button => {
