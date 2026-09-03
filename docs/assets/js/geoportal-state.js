@@ -11,7 +11,6 @@
         const LEGEND_LAYOUT_PANEL_TRANSITION_MS = 240;
 
         // --- CONSTANTES DE ANIMACION Y TRANSICION ---
-        const INTERVALO_REPRODUCCION_MS = 1200; // Intervalo de avance automático entre años (ms)
         const DURACION_TRANSICION_MS = 400;     // Duración de la transición suave de color (ms)
 
         // --- PALETAS SEMANTICAS (ColorBrewer) ---
@@ -387,7 +386,6 @@
         const mapToolbarStatusSlot = document.getElementById("map-toolbar-status-slot");
         const mobilePeriodControlSlot = document.getElementById("mobile-period-control-slot");
         const mobileOpacityControlSlot = document.getElementById("mobile-opacity-control-slot");
-        const mobileTimelinePlaySlot = document.getElementById("mobile-timeline-play-slot");
         const mapLegendCard = document.getElementById("map-legend-card");
         const territorySidebar = document.getElementById("territory-sidebar");
         const legendCloseToggle = document.getElementById("legend-close-toggle");
@@ -668,8 +666,6 @@
             if (!technicalControlsSlot) return;
             const timelineBlock = document.querySelector(".timeline-filter-block");
             const timelineControl = document.querySelector(".timeline-control");
-            const timelinePlayButton = document.getElementById("timeline-play-button");
-            const timelineTitleWrap = document.getElementById("timeline-title-wrap");
             const periodControl = document.querySelector(".period-mode-control");
             const levelControl = document.getElementById("territory-level-control");
             const mapLevelNote = document.getElementById("map-level-note");
@@ -687,14 +683,6 @@
             if (timelineControl && mapToolbarYearSlot && timelineControl.parentElement !== mapToolbarYearSlot) {
                 if (!mapToolbarYearSlot.contains(timelineControl)) {
                     mapToolbarYearSlot.appendChild(timelineControl);
-                }
-            }
-            const playTarget = mobileMediaQuery.matches ? mobileTimelinePlaySlot : timelineTitleWrap;
-            if (timelinePlayButton && playTarget && timelinePlayButton.parentElement !== playTarget) {
-                if (playTarget === timelineTitleWrap) {
-                    playTarget.prepend(timelinePlayButton);
-                } else {
-                    playTarget.appendChild(timelinePlayButton);
                 }
             }
             const opacityTarget = mobileMediaQuery.matches ? mobileOpacityControlSlot : (mapToolbarOpacitySlot || viewSettingsOpacitySlot);
@@ -721,7 +709,7 @@
             // Remove the empty Leaflet shell so it cannot look like an inert search field.
             if (timelineBlock && timelineBlock.childElementCount === 0) timelineBlock.remove();
             if (selector && selector.childElementCount === 0) selector.remove();
-            if (container && variableDisclosure && levelControl && periodControl && timelineControl) {
+            if (container && variableDisclosure && levelControl && periodControl && (timelineControl || document.getElementById("timeline-years-bar"))) {
                 document.body.classList.add("technical-ready");
             }
         }
@@ -1212,61 +1200,9 @@
             return `Cobertura parcial: ${Number(coverage).toLocaleString("es-EC", { maximumFractionDigits: 2 })}% de las parroquias tiene dato para ${year}.`;
         }
 
-        // --- TIMELINE PLAYBACK ENGINE ---
-        let isPlayingTimeline = false;
-        let timelinePlaybackTimer = null;
-
-        function updateTimelinePlayControl() {
-            const playBtn = document.getElementById("timeline-play-button");
-            const playIcon = playBtn?.querySelector("i") || document.getElementById("timeline-play-icon");
-            if (!playBtn) return;
-
-            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            const isAnnual = coverage.tipo === "anual";
-            const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
-            const availableYears = coverage.anios_disponibles || [];
-            const isSingleYear = !isAnnual || accumulated || availableYears.length <= 1;
-
-            if (isSingleYear) {
-                if (isPlayingTimeline) {
-                    stopTimelinePlayback();
-                }
-                playBtn.disabled = true;
-                playBtn.classList.add("disabled");
-                playBtn.title = "Esta variable solo tiene un año disponible";
-                playBtn.setAttribute("aria-label", "Esta variable solo tiene un año disponible");
-                if (playIcon) playIcon.className = "fa-solid fa-play";
-            } else {
-                playBtn.disabled = false;
-                playBtn.classList.remove("disabled");
-                if (isPlayingTimeline) {
-                    playBtn.title = "Pausar animación";
-                    playBtn.setAttribute("aria-label", "Pausar línea de tiempo");
-                    if (playIcon) playIcon.className = "fa-solid fa-pause";
-                    playBtn.classList.add("playing");
-                } else {
-                    playBtn.title = "Reproducir animación año a año";
-                    playBtn.setAttribute("aria-label", "Reproducir línea de tiempo");
-                    if (playIcon) playIcon.className = "fa-solid fa-play";
-                    playBtn.classList.remove("playing");
-                }
-            }
-        }
-
-        function stopTimelinePlayback() {
-            if (timelinePlaybackTimer) {
-                clearInterval(timelinePlaybackTimer);
-                timelinePlaybackTimer = null;
-            }
-            isPlayingTimeline = false;
-            updateTimelinePlayControl();
-        }
-
         function setSelectedYearAndRefresh(newYear, { preserveYearAdjustmentNotice = false } = {}) {
             selectedYear = Number(newYear);
             if (!preserveYearAdjustmentNotice) clearYearAdjustmentNotice();
-            const slider = document.getElementById("map-year-slider");
-            if (slider) slider.value = String(selectedYear);
 
             const level = activeTerritoryLevel || getTerritoryLevelForZoom();
             if (typeof updateMapVariableDescription === "function") updateMapVariableDescription();
@@ -1283,57 +1219,6 @@
             refreshCitizenSummary();
         }
 
-        function advanceToNextTimelineYear() {
-            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            const availableYears = coverage.anios_disponibles || [];
-            if (availableYears.length <= 1) {
-                stopTimelinePlayback();
-                return;
-            }
-
-            let currentIndex = availableYears.indexOf(selectedYear);
-            if (currentIndex < availableYears.length - 1) {
-                const nextYear = availableYears[currentIndex + 1];
-                setSelectedYearAndRefresh(nextYear);
-                if (currentIndex + 1 === availableYears.length - 1) {
-                    stopTimelinePlayback();
-                }
-            } else {
-                stopTimelinePlayback();
-            }
-        }
-
-        function startTimelinePlayback() {
-            const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            const availableYears = coverage.anios_disponibles || [];
-            if (availableYears.length <= 1) return;
-
-            isPlayingTimeline = true;
-
-            let currentIndex = availableYears.indexOf(selectedYear);
-            if (currentIndex < 0 || currentIndex >= availableYears.length - 1) {
-                setSelectedYearAndRefresh(availableYears[0]);
-            }
-
-            updateTimelinePlayControl();
-
-            if (timelinePlaybackTimer) clearInterval(timelinePlaybackTimer);
-            timelinePlaybackTimer = setInterval(() => {
-                advanceToNextTimelineYear();
-            }, INTERVALO_REPRODUCCION_MS);
-        }
-
-        function toggleTimelinePlayback() {
-            if (isPlayingTimeline) {
-                stopTimelinePlayback();
-            } else {
-                startTimelinePlayback();
-            }
-        }
-
-        window.toggleTimelinePlayback = toggleTimelinePlayback;
-        window.stopTimelinePlayback = stopTimelinePlayback;
-        window.startTimelinePlayback = startTimelinePlayback;
         window.setMobilePanel = setMobilePanel;
         window.closeMobilePanels = closeMobilePanels;
         window.setRightContextPanel = setRightContextPanel;
@@ -1346,48 +1231,41 @@
         window.getTerritoryTooltipContent = getTerritoryTooltipContent;
 
         function updateTimelineControl() {
-            const slider = document.getElementById("map-year-slider");
-            const badge = document.getElementById("map-year-value") || document.getElementById("timeline-badge");
-            const marks = document.getElementById("timeline-marks");
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
-            if (!slider) return;
-
             const isAnnual = coverage.tipo === "anual";
             const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
-            slider.min = String(TIMELINE_MIN_YEAR);
-            slider.max = String(TIMELINE_MAX_YEAR);
-            slider.disabled = !isAnnual || accumulated;
-            slider.value = String(selectedYear);
-            if (badge) {
-                badge.className = `timeline-badge${isAnnual && !accumulated ? "" : " fixed"}`;
-                badge.textContent = accumulated
-                    ? "Histórico"
-                    : isAnnual
-                    ? String(selectedYear)
-                    : (coverage.anios_disponibles.length
-                        ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
-                        : "Vista territorial");
+
+            function renderYearButton(year, isMobile) {
+                const covered = isAnnual && coverage.anios_disponibles.includes(year);
+                const isSelected = isAnnual && !accumulated && Number(selectedYear) === year;
+                const availableCls = covered ? "is-available" : "is-unavailable";
+                const selectedCls = isSelected ? "is-selected" : "";
+                const title = covered
+                    ? `Dato disponible para ${year}`
+                    : `Sin dato disponible para ${year} en la variable activa`;
+                const disabledAttr = (!isAnnual || !covered) ? "disabled" : "";
+                const ariaCurrent = isSelected ? ' aria-current="true"' : "";
+
+                if (isMobile) {
+                    const mobileCls = covered ? "my-available" : "my-unavailable";
+                    const mobileSelectedCls = isSelected ? "my-selected" : "";
+                    const cls = ["tm-year-btn", mobileCls, mobileSelectedCls, availableCls, selectedCls].filter(Boolean).join(" ");
+                    return `<button type="button" class="${cls}" data-year="${year}" data-timeline-year="${year}" title="${title}" aria-label="${title}"${ariaCurrent} ${disabledAttr}>${String(year).slice(2)}</button>`;
+                }
+                const cls = ["tm-year-btn", availableCls, selectedCls].filter(Boolean).join(" ");
+                return `<button type="button" class="${cls}" data-year="${year}" data-timeline-year="${year}" title="${title}" aria-label="${title}"${ariaCurrent} ${disabledAttr}>${year}</button>`;
             }
-            if (marks) {
-                marks.style.setProperty("--timeline-year-count", ALL_TIMELINE_YEARS.length);
-                marks.innerHTML = ALL_TIMELINE_YEARS.map(year => {
-                    const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                    return `<span class="timeline-mark${covered ? " tm-available" : " tm-unavailable"}" title="${covered ? "Dato disponible para " + year : "Sin dato disponible para " + year + " en la variable activa"}">${year}</span>`;
-                }).join("");
+
+            const desktopYearsBar = document.getElementById("timeline-years-bar");
+            if (desktopYearsBar) {
+                desktopYearsBar.innerHTML = ALL_TIMELINE_YEARS.map(year => renderYearButton(year, false)).join("");
             }
 
             const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
             if (mobileYearBarScroll) {
-                mobileYearBarScroll.innerHTML = ALL_TIMELINE_YEARS.map(year => {
-                    const covered = isAnnual && coverage.anios_disponibles.includes(year);
-                    const isSelected = isAnnual && Number(selectedYear) === year;
-                    const cls = [`my-${covered ? "available" : "unavailable"}`, isSelected ? "my-selected" : ""].filter(Boolean).join(" ");
-                    const label = covered ? `Dato disponible para ${year}` : `Sin dato disponible para ${year} en la variable activa`;
-                    return `<button type="button" data-year="${year}" class="${cls}" title="${label}" aria-label="${label}" ${!isAnnual || !covered ? "disabled" : ""}>${String(year).slice(2)}</button>`;
-                }).join("");
+                mobileYearBarScroll.innerHTML = ALL_TIMELINE_YEARS.map(year => renderYearButton(year, true)).join("");
             }
 
-            updateTimelinePlayControl();
             updateYearAdjustmentNotice();
         }
 

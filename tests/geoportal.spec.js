@@ -581,13 +581,12 @@ test("variables de foto unica deshabilitan slider y muestran badge", async ({ pa
   expect(state.timelineDisabled).toBeTruthy();
   expect(state.timelineBadge).toContain("Dato fijo");
   expect(state.timelineBadge).toContain("2024");
-  await expect(page.locator("#map-year-slider")).toBeDisabled();
-  await expect(page.locator("#map-year-slider")).toHaveAttribute("min", "2016");
-  await expect(page.locator("#map-year-slider")).toHaveAttribute("max", "2026");
+  await expect(page.locator("#timeline-years-bar .tm-year-btn")).toHaveCount(11);
+  await expect(page.locator("#timeline-years-bar .tm-year-btn:disabled")).toHaveCount(11);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
-  await expect(page.locator("#timeline-marks .timeline-mark")).toHaveCount(11);
-  await expect(page.locator("#timeline-marks .timeline-mark.tm-unavailable")).toHaveCount(1);
+  await expect(page.locator("#timeline-years-bar .tm-year-btn")).toHaveCount(11);
+  await expect(page.locator("#timeline-years-bar .tm-year-btn.is-unavailable")).toHaveCount(1);
 });
 
 test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío", async ({ page }) => {
@@ -961,7 +960,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(technical.drawer.right).toBeLessThanOrEqual(width);
   expect(technical.drawer.bottom).toBeLessThanOrEqual(height);
   await expect(page.locator(".map-selector-control")).toHaveCount(0);
-  await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
+  await expect(page.locator("#technical-drawer #timeline-years-bar")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
 
   await page.locator('[data-right-panel="layers"]').tap();

@@ -479,16 +479,6 @@
                             </details>
                         `;
                         L.DomEvent.disableClickPropagation(div);
-                        const playBtn = div.querySelector("#timeline-play-button");
-                        if (playBtn) {
-                            L.DomEvent.on(playBtn, "click", function(e) {
-                                L.DomEvent.stopPropagation(e);
-                                L.DomEvent.preventDefault(e);
-                                if (!playBtn.disabled && window.toggleTimelinePlayback) {
-                                    window.toggleTimelinePlayback();
-                                }
-                            });
-                        }
                         return div;
                     }
                 });
@@ -515,13 +505,6 @@
                 updateMapLevelNote(activeTerritoryLevel);
                 updateTerritoryLevelControl();
                 updateLegend();
-
-                document.addEventListener("click", (e) => {
-                    const playBtn = e.target.closest("#timeline-play-button");
-                    if (playBtn && !playBtn.disabled) {
-                        window.toggleTimelinePlayback?.();
-                    }
-                });
 
                 document.addEventListener("click", (event) => {
                     const variableInput = event.target.closest("#variable-disclosure input[name='map-variable']");
@@ -560,7 +543,6 @@
                 }
 
                 function handleVariableChange() {
-                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     resolveSelectedYearForVariable(selectedVariable);
                     updateMapVariableDescription();
@@ -593,7 +575,6 @@
                 document.addEventListener("click", (event) => {
                     const periodButton = event.target.closest("[data-period-mode]");
                     if (!periodButton || periodButton.disabled) return;
-                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
                     selectedPeriodMode = periodButton.dataset.periodMode;
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();
                     updateMapVariableDescription();
@@ -608,37 +589,19 @@
                     window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
                 });
 
-                document.getElementById("map-year-slider").addEventListener("input", function() {
-                    if (window.stopTimelinePlayback) window.stopTimelinePlayback();
-                    selectedYear = Number(this.value);
-                    clearYearAdjustmentNotice();
-                    const level = activeTerritoryLevel || getTerritoryLevelForZoom();
-                    updateMapVariableDescription();
-                    updateTimelineControl();
-                    recalculateActiveVariableBins(selectedVariable, level);
-                    refreshTerritoryLayerStyles(level, true);
-                    updateMapLevelNote(level);
-                    updateLegend();
-                    if (currentProps) updateSidebar(currentProps);
-                    if (currentProfileProps) showProfileCard(currentProfileProps, null);
-                    refreshCitizenSummary();
-                    window.REDSAInstitutional?.refresh();
-                    window.REDSAAntLayer?.syncYear(selectedYear);
-                    window.REDSAAntLayer?.syncPeriodMode(selectedPeriodMode);
-                });
-
                 document.addEventListener("click", (e) => {
                     const levelButton = e.target.closest("[data-level-mode]");
                     if (levelButton) setTerritoryLevelMode(levelButton.dataset.levelMode);
                 });
 
                 document.addEventListener("click", (e) => {
-                    const yearButton = e.target.closest("#mobile-year-bar [data-year]");
-                    if (!yearButton || yearButton.disabled) return;
-                    window.stopTimelinePlayback?.();
+                    const yearButton = e.target.closest("[data-timeline-year]:not([disabled]), #mobile-year-bar [data-year]:not([disabled])");
+                    if (!yearButton) return;
+                    const year = Number(yearButton.dataset.timelineYear || yearButton.dataset.year);
+                    if (!year) return;
                     selectedPeriodMode = "year";
                     updatePeriodModeControl();
-                    setSelectedYearAndRefresh(Number(yearButton.dataset.year));
+                    setSelectedYearAndRefresh(year);
                 });
 
                 // profile-accordion-btn listener removed
@@ -862,11 +825,12 @@
                     resolveYearForVariable: (variable, year) => resolveYearForVariable(variable, year),
                     selectYear(year) {
                         const numericYear = Number(year);
-                        const slider = document.getElementById("map-year-slider");
-                        if (!ALL_TIMELINE_YEARS.includes(numericYear) || !slider || slider.disabled) return false;
-                        selectedYear = numericYear;
-                        slider.value = String(numericYear);
-                        slider.dispatchEvent(new Event("input", { bubbles: true }));
+                        const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+                        const isAnnual = coverage.tipo === "anual";
+                        if (!ALL_TIMELINE_YEARS.includes(numericYear) || !isAnnual) return false;
+                        selectedPeriodMode = "year";
+                        updatePeriodModeControl();
+                        setSelectedYearAndRefresh(numericYear);
                         return true;
                     },
                     async showTerritory(level, code) {
@@ -944,8 +908,24 @@
                             variableCount: Object.keys(VARIABLE_CONFIGS).length,
                             infrastructureLayerCount: INFRASTRUCTURE_LAYER_CONFIGS.length,
                             temporalCoverage: TEMPORAL_COVERAGE[selectedVariable],
-                            timelineDisabled: Boolean(document.getElementById("map-year-slider")?.disabled),
-                            timelineBadge: (document.getElementById("map-year-value") || document.getElementById("timeline-badge") || document.querySelector(".timeline-badge"))?.textContent,
+                            timelineDisabled: (() => {
+                                const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+                                const isAnnual = coverage.tipo === "anual";
+                                const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+                                return !isAnnual || accumulated;
+                            })(),
+                            timelineBadge: (() => {
+                                const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+                                const isAnnual = coverage.tipo === "anual";
+                                const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
+                                return accumulated
+                                    ? "Histórico"
+                                    : isAnnual
+                                    ? String(selectedYear)
+                                    : (coverage.anios_disponibles.length
+                                        ? `Dato fijo · ${coverage.anios_disponibles.join("–")}`
+                                        : "Vista territorial");
+                            })(),
                             timelineYearAdjustment: document.getElementById("timeline-year-adjustment-note")?.textContent || "",
                             basemap: document.body.dataset.basemap || "positron",
                             territorySurfaceAutoHideZoom: ZOOM_SURFACE_AUTO_HIDE_MIN,

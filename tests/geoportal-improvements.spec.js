@@ -494,53 +494,49 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
         });
     });
 
-    test.describe('Block G: Timeline Playback & Color Transition', () => {
-        test('timeline play button advances year, pauses on click and auto-stops on last year', async ({ page }) => {
-            const playBtn = page.locator('#timeline-play-button');
-            await expect(playBtn).toBeVisible();
+    test.describe('Block G: Timeline Year Buttons & 3 Visual States', () => {
+        test('timeline year buttons show available, unavailable and selected states, and update on click', async ({ page }) => {
+            const isMobile = await page.evaluate(() => window.matchMedia('(max-width: 768px)').matches);
+            const container = isMobile ? page.locator('#mobile-year-bar-scroll') : page.locator('#timeline-years-bar');
+            await expect(container).toBeVisible();
 
-            // Select an annual variable (e.g. siniestros_inec_2019)
+            // Select an annual variable (e.g. siniestros_inec_2019, covering 2019-2025)
             await page.evaluate(() => window.__redsaAudit.selectVariable('siniestros_inec_2019'));
             await page.waitForTimeout(500);
 
-            // Should not be disabled for annual variable with multiple years
-            await expect(playBtn).not.toBeDisabled();
+            // Available year button (2020)
+            const btn2020 = container.locator('[data-timeline-year="2020"], [data-year="2020"]').first();
+            await expect(btn2020).toBeVisible();
+            await expect(btn2020).not.toBeDisabled();
 
-            // Start playback
-            await page.evaluate(() => window.toggleTimelinePlayback());
-            await expect(playBtn).toHaveClass(/playing/);
-            await expect(playBtn.locator('i')).toHaveClass(/fa-pause/);
+            // Click available year
+            await btn2020.click();
+            await expect(btn2020).toHaveClass(/is-selected|my-selected/);
+            expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2020);
 
-            // Wait for 1.5 seconds (INTERVALO_REPRODUCCION_MS is 1200ms)
-            await page.waitForTimeout(1600);
-
-            // Year should have advanced
-            const badge = page.locator('#map-year-value, #timeline-badge, .timeline-badge').first();
-            const newYearText = await badge.innerText();
-            expect(Number(newYearText)).toBeGreaterThan(2019);
-
-            // Pause playback
-            await page.evaluate(() => window.toggleTimelinePlayback());
-            await expect(playBtn).not.toHaveClass(/playing/);
-            await expect(playBtn.locator('i')).toHaveClass(/fa-play/);
-
-            // Verify paused year stays stable
-            const yearAtPause = await badge.innerText();
-            await page.waitForTimeout(1500);
-            expect(await badge.innerText()).toBe(yearAtPause);
+            // Unavailable year button (2016)
+            const btn2016 = container.locator('[data-timeline-year="2016"], [data-year="2016"]').first();
+            await expect(btn2016).toBeVisible();
+            await expect(btn2016).toBeDisabled();
+            const title = await btn2016.getAttribute('title');
+            expect(title).toContain('Sin dato disponible para 2016');
         });
 
-        test('timeline play button is disabled with tooltip for foto_unica variables', async ({ page }) => {
-            const playBtn = page.locator('#timeline-play-button');
-            await expect(playBtn).toBeVisible();
+        test('timeline year buttons are disabled for foto_unica variables', async ({ page }) => {
+            const isMobile = await page.evaluate(() => window.matchMedia('(max-width: 768px)').matches);
+            const container = isMobile ? page.locator('#mobile-year-bar-scroll') : page.locator('#timeline-years-bar');
+            await expect(container).toBeVisible();
 
             // Switch to a single year / foto_unica variable (e.g., normal / límites administrativos)
             await page.evaluate(() => window.__redsaAudit.selectVariable('normal'));
             await page.waitForTimeout(500);
 
-            await expect(playBtn).toBeDisabled();
-            const title = await playBtn.getAttribute('title');
-            expect(title).toBe('Esta variable solo tiene un año disponible');
+            const buttons = container.locator('button');
+            const count = await buttons.count();
+            expect(count).toBeGreaterThan(0);
+            for (let i = 0; i < count; i++) {
+                await expect(buttons.nth(i)).toBeDisabled();
+            }
         });
     });
 });

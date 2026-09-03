@@ -67,7 +67,12 @@ test("E4 limita los paneles y mantiene el scroll en su contenido", async ({ page
     };
   });
 
-  expect(leftGeometry.height).toBeLessThanOrEqual(viewport.height * 0.72 + 1);
+  const expectedLeftMaxHeight = await page.evaluate(() => {
+    const top = parseFloat(getComputedStyle(document.querySelector(".map-left-column")).top) || 52;
+    const bottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--left-context-bottom")) || 12;
+    return window.innerHeight - top - bottom;
+  });
+  expect(leftGeometry.height).toBeLessThanOrEqual(expectedLeftMaxHeight + 1);
   expect(leftGeometry.overflowY).toBe("visible");
   await expect(legendScroll).toHaveCSS("overflow-y", "auto");
 
@@ -97,8 +102,23 @@ test("E4 limita los paneles y mantiene el scroll en su contenido", async ({ page
   await expect(host).toBeVisible();
   await expect(drawer).toBeVisible();
 
-  const hostHeight = await host.evaluate(element => element.getBoundingClientRect().height);
-  expect(hostHeight).toBeLessThanOrEqual(viewport.height * 0.72 + 1);
+  const hostGeometry = await host.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return {
+      height: rect.height,
+      bottomGap: window.innerHeight - rect.bottom
+    };
+  });
+  if (isMobile) {
+    const expectedMobileHeight = await page.evaluate(() => {
+      const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--mobile-context-top")) || 140;
+      const bottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--mobile-context-bottom")) || 108;
+      return window.innerHeight - top - bottom;
+    });
+    expect(hostGeometry.height).toBeLessThanOrEqual(expectedMobileHeight + 1);
+  } else {
+    expect(hostGeometry.bottomGap).toBeLessThanOrEqual(14);
+  }
   await expect(host).toHaveCSS("overflow", "hidden");
   await expect(drawer).toHaveCSS("overflow-y", "auto");
 

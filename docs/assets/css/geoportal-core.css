@@ -63,6 +63,7 @@
             --mobile-navigation-clearance: 92px;
             --right-context-top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
             --right-context-bottom: 12px;
+            --left-context-bottom: 12px;
             --right-tool-group-gap: var(--space-3);
             --right-tools-status-width: 280px;
             --mobile-context-top: calc(var(--site-topbar-mobile-height) + var(--mobile-navigation-clearance));

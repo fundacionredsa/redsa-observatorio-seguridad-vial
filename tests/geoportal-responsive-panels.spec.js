@@ -426,7 +426,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   await expect(page.locator("#territory-level-select option")).toHaveCount(4);
   await expect(page.locator('#territory-level-select option[value="parish"]')).toHaveCount(1);
   expect(await page.locator("#territory-level-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-level-slot");
-  expect(await page.locator(".timeline-control").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-year-slot");
+  expect(await page.locator("#timeline-years-bar").evaluate(element => element.parentElement?.id)).toBe("map-toolbar-year-slot");
   expect(await page.locator(".period-mode-control").evaluate(element => element.parentElement?.id)).toBe(
     isMobile ? "mobile-period-control-slot" : "view-settings-period-slot"
   );
@@ -442,12 +442,13 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
     await expect(page.locator("#site-topbar")).toHaveCSS("height", "44px");
   }
   const coverage = await page.evaluate(() => window.__redsaAudit.state().temporalCoverage);
-  await expect(page.locator("#timeline-marks .tm-available")).toHaveCount(coverage.anios_disponibles.length);
-  await expect(page.locator("#timeline-marks .tm-unavailable")).toHaveCount(11 - coverage.anios_disponibles.length);
-  await expect(page.locator("#timeline-marks .timeline-mark").first()).toHaveText(/^20\d{2}$/);
+  const yearContainer = isMobile ? page.locator("#mobile-year-bar-scroll") : page.locator("#timeline-years-bar");
+  await expect(yearContainer.locator(".is-available")).toHaveCount(coverage.anios_disponibles.length);
+  await expect(yearContainer.locator(".is-unavailable")).toHaveCount(11 - coverage.anios_disponibles.length);
+  await expect(yearContainer.locator("button").first()).toHaveText(/^20\d{2}$|^\d{2}$/);
   await page.evaluate(() => window.__redsaAudit.selectYear(2024));
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2024);
-  await expect(page.locator(".timeline-badge")).toHaveText("2024");
+  if (!isMobile) await expect(page.locator('#timeline-years-bar [data-timeline-year="2024"]')).toHaveClass(/is-selected/);
   await expect(page.locator('#mobile-year-bar [data-year="2024"]')).toHaveClass(/my-selected/);
 
   if (isMobile) await page.locator('[data-right-panel="layers"]').click();
@@ -462,11 +463,10 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
   expect(layerOrder.variables, JSON.stringify(layerOrder)).toBeLessThan(layerOrder.events);
   expect(layerOrder.events, JSON.stringify(layerOrder)).toBeLessThan(layerOrder.infrastructure);
   await expect(page.locator("#technical-drawer #territory-level-control")).toHaveCount(0);
-  await expect(page.locator("#technical-drawer #map-year-slider")).toHaveCount(0);
+  await expect(page.locator("#technical-drawer #timeline-years-bar")).toHaveCount(0);
   await expect(page.locator("#technical-drawer #territory-opacity-control")).toHaveCount(isMobile ? 0 : 1);
-  await expect(page.locator(".timeline-control")).toContainText("Año");
   await expect(page.locator(".timeline-help")).toHaveCount(0);
-  await expect(page.locator("#map-year-slider")).toHaveAttribute("aria-label", "Año de los datos mostrados");
+  await expect(page.locator("#timeline-years-bar")).toHaveAttribute("aria-label", "Año de los datos mostrados");
 });
 
 test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {

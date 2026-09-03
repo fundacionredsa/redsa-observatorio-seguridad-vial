@@ -108,15 +108,7 @@
                     </div>
                 </div>
                 <div id="map-toolbar-year-slot" class="map-toolbar-slot map-toolbar-year-slot">
-                    <div class="timeline-control" id="map-timeline-control">
-                        <button type="button" class="timeline-play-button" id="timeline-play-button" aria-label="Reproducir evolución temporal" title="Reproducir evolución temporal">
-                            <i class="fa-solid fa-play" aria-hidden="true"></i>
-                        </button>
-                        <label for="map-year-slider" class="sr-only">Año de la variable activa</label>
-                        <input id="map-year-slider" type="range" min="2015" max="2025" step="1" value="2025" aria-label="Año de los datos mostrados">
-                        <div id="timeline-marks" class="timeline-marks" aria-hidden="true"></div>
-                        <output id="map-year-value" class="timeline-badge" for="map-year-slider">2025</output>
-                    </div>
+                    <div class="timeline-years-bar" id="timeline-years-bar" role="group" aria-label="Año de los datos mostrados"></div>
                 </div>
                 <div id="map-toolbar-status-slot" class="map-toolbar-status-slot" aria-live="polite">
                     <div id="timeline-year-adjustment-note" class="timeline-year-adjustment-note" role="status" aria-live="polite" hidden></div>
@@ -571,7 +563,6 @@
         <button type="button" data-level-mode="parish" aria-pressed="false" aria-label="Parroquias">Parr.</button>
     </div>
     <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año, periodo e intensidad del mapa">
-        <div id="mobile-timeline-play-slot" class="mobile-timeline-play-slot"></div>
         <span class="mobile-year-bar-label">Año</span>
         <div id="mobile-year-bar-scroll" class="mobile-year-bar-scroll"></div>
         <div id="mobile-period-control-slot" class="mobile-map-control-slot mobile-period-control-slot"></div>

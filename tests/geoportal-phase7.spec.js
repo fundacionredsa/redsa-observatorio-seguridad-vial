@@ -32,8 +32,7 @@ test("Fase 9 conserva Nivel y Año visibles sin saturar el topbar", async ({ pag
   await expect(page.locator("#territory-level-select option")).toHaveCount(4);
   await page.locator("#territory-level-select").selectOption("canton");
   await expect(page.locator("#territory-level-select")).toHaveValue("canton");
-  await expect(page.locator("#map-year-slider")).toBeVisible();
-  await expect(page.locator("#timeline-play-button")).toBeVisible();
+  await expect(page.locator("#timeline-years-bar")).toBeVisible();
   const topbar = await rect(page, ".site-topbar");
   expect(topbar.height).toBeLessThanOrEqual(48);
 });

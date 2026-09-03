@@ -152,7 +152,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const targetYear = yearBar.locator('button[data-year="2020"]');
         await targetYear.click();
         await expect(targetYear).toHaveClass(/my-selected/);
-        await expect(page.locator('#map-year-slider')).toHaveValue('2020');
+        await expect(targetYear).toHaveAttribute('aria-current', 'true');
         expect(await page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2020);
         await expect(page.locator('.legend-panel')).toContainText('2020');
         const valuesAfterYearChange = await page.evaluate(() => ["01", "09", "17"].map(code => {
@@ -168,7 +168,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(targetHistoricalYear).toBeEnabled();
         await targetHistoricalYear.click();
         await expect(targetHistoricalYear).toHaveClass(/my-selected/);
-        await expect(page.locator('#map-year-slider')).toHaveValue('2019');
+        await expect(targetHistoricalYear).toHaveAttribute('aria-current', 'true');
         await expect(page.locator('#mobile-period-control-slot [data-period-mode="year"]')).toHaveClass(/active/);
         expect((await page.evaluate(() => window.__redsaAudit.state())).selectedPeriodMode).toBe('year');
         await expect(page.locator('.legend-panel')).toContainText('2019');
