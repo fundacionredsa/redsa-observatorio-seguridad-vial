@@ -37,7 +37,7 @@
     --map-legend-min-width: 240px;
     --map-legend-bottom: 132px;
     --map-legend-radius: 12px;
-    --analysis-compact-gap: 7px;
+    --analysis-compact-gap: var(--space-2);
     --analysis-compact-padding: 10px;
     --analysis-empty-font-size: 0.68rem;
     --analysis-detail-value-min-width: 108px;
