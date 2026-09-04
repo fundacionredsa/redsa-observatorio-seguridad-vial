@@ -1619,7 +1619,7 @@ body.institutional-modal-open {
 
 .ranking-period {
     flex: 0 0 auto;
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
     border: 1px solid #b9d9dc;
     border-radius: 4px;
     background: #effafa;
@@ -2208,7 +2208,7 @@ body:not(.light-theme) #institutional-modal .ranking-table tbody tr:hover {
 
 .catalog-category {
     display: inline-block;
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
     border-radius: 999px;
     background: #e6f3f5;
     color: var(--accent);
@@ -2438,7 +2438,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     min-width: 22px;
     min-height: 22px;
     place-items: center;
-    padding: 2px 6px;
+    padding: var(--space-1) var(--space-2);
     border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
     border-radius: 999px;
     background: color-mix(in srgb, var(--accent) 20%, transparent);

@@ -545,7 +545,7 @@
                 if (total_cond > 0 || total_tipo > 0) {
                     html += `
                         <div class="perfil-card-section">
-                            <div class="profile-section-title">Cómo se desplazaban y tipo de accidente</div>
+                            <div class="profile-section-title">Cómo se desplazaban y tipo de siniestro</div>
                     `;
                     if (total_cond > 0) {
                         html += `<div class="profile-section-subtitle">Cómo se desplazaba la víctima:</div>`;
@@ -562,7 +562,7 @@
                         });
                     }
                     if (total_tipo > 0) {
-                        html += `<div class="profile-section-subtitle" style="margin-top: 6px;">Tipo de Accidente:</div>`;
+                        html += `<div class="profile-section-subtitle" style="margin-top: 6px;">Tipo de Siniestro:</div>`;
                         Object.keys(tipoObj).forEach(k => {
                             const count = tipoObj[k];
                             const pct = (count / total_tipo) * 100;
@@ -572,7 +572,7 @@
                     html += `</div>`;
                 }
             } else {
-                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">No hay detalle por sexo, forma de desplazamiento o tipo de accidente en las reclamaciones de ${sppatPeriod}.</div>`;
+                html += `<div class="perfil-card-section" style="grid-column: 1 / -1; color: var(--text-muted); font-size: 0.68rem;">No hay detalle por sexo, forma de desplazamiento o tipo de siniestro en las reclamaciones de ${sppatPeriod}.</div>`;
             }
 
             html += `

@@ -41,7 +41,7 @@ test("el estado inicial muestra una referencia nacional que sigue variable, año
   await expect(territorialAudit).toContainText("20.328 registros se representan");
   await expect(territorialAudit).not.toContainText("Total nacional");
   await expect(territorialAudit).not.toContainText("20.346");
-  await expect(page.locator(".legend-scale-field-name")).toHaveText("Rangos (accidentes reportados)");
+  await expect(page.locator(".legend-scale-field-name")).toHaveText("Rangos (siniestros reportados)");
   const visibleLegendText = await page.locator("#map-legend-card").innerText();
   expect(visibleLegendText.split("Siniestros de tránsito reportados")).toHaveLength(2);
   const referenceInfo = reference.locator(".citizen-national-info");

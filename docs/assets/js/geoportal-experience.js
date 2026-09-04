@@ -554,7 +554,7 @@
         y += 24;
         if (hasPopulationRate) {
             const populationText = population !== null ? `${formatNumber(population)} habitantes` : "población sin dato";
-            const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} accidentes por cada 100.000 habitantes` : "tasa sin dato";
+            const rateText = Number.isFinite(rate) ? `${formatNumber(rate, 1)} siniestros por cada 100.000 habitantes` : "tasa sin dato";
             addParagraph(`Contexto del período ${accidentPeriod?.year || year}: ${populationText} (fuente: INEC) y ${rateText} (cálculo REDSA con ANT/INEC e INEC población). Los años ausentes no se imputan ni se cuentan como cero.`, { color: ink });
         }
         if (Number(year) === 2026 && accidentPeriod?.year === 2026) {
@@ -738,7 +738,7 @@
             const columnWidth = 55;
             const sexEnd = drawBarList("Sexo registrado", sexEntries, margin, columnWidth, [14, 165, 233]);
             const conditionEnd = drawBarList("Condición", conditionEntries, margin + 63, columnWidth, [8, 145, 178]);
-            const typeEnd = drawBarList("Tipo de accidente", typeEntries, margin + 126, columnWidth, [168, 85, 247]);
+            const typeEnd = drawBarList("Tipo de siniestro", typeEntries, margin + 126, columnWidth, [168, 85, 247]);
             y = Math.max(sexEnd, conditionEnd, typeEnd) + 2;
         } else {
             addParagraph(`Periodo ${year}: sin detalle SPPAT disponible. La cobertura publicada corresponde a 2016-2021 y no existe un último registro territorial recuperable; la ausencia posterior no significa cero reclamaciones.`, { color: ink });
