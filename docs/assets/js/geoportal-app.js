@@ -373,6 +373,7 @@
                         return placeholder._redsaLoadPromise;
                     };
                     placeholder.on("add", () => {
+                        placeholder._wasActiveInLegend = true;
                         updateLegend();
                         startLoad();
                     });
@@ -380,10 +381,13 @@
                     placeholder._redsaStartLoad = startLoad;
                     overlayMaps[config.label] = placeholder;
                     window.REDSAOverlayState?.register(`infra-${config.id}`, () => {
-                        if (!map.hasLayer(placeholder)) return null;
+                        const isVisible = map.hasLayer(placeholder);
+                        if (!isVisible && !placeholder._wasActiveInLegend) return null;
                         return {
+                            id: `infra-${config.id}`,
                             title: config.label,
-                            items: config.legend || [],
+                            disabled: !isVisible,
+                            items: !isVisible ? [] : (config.legend || []),
                             osmAudit: Boolean(config.osmAudit),
                             infoText: config.osmAudit
                                 ? `Fotografía del mapeo colaborativo OpenStreetMap${placeholder._redsaExtractionDates?.length ? `, extraída el ${placeholder._redsaExtractionDates.join(", ")}` : ""}. No constituye una serie anual y no cambia con el año seleccionado.`
@@ -523,6 +527,9 @@
                     document.querySelectorAll("#variable-disclosure input[name='map-variable']").forEach(input => {
                         input.checked = selectedVariable !== "normal" && input.value === selectedVariable;
                     });
+                    document.querySelectorAll("[data-legend-variable-toggle]").forEach(input => {
+                        input.checked = selectedVariable !== "normal";
+                    });
                     const disclosure = document.getElementById("variable-disclosure");
                     if (disclosure) disclosure.dataset.selectedVariable = selectedVariable;
                 }
@@ -534,13 +541,22 @@
                     return changed;
                 }
 
-                function selectMapVariable(variable) {
+                function selectMapVariable(variable, options = {}) {
                     if (!VARIABLE_CONFIGS[variable]) return false;
+                    if (variable !== "normal") {
+                        window._lastActiveVariable = variable;
+                        window._territoryToggledOffInLegend = false;
+                    } else if (!options.fromLegend) {
+                        window._territoryToggledOffInLegend = false;
+                    }
                     selectedVariable = variable;
                     syncVariableSelectionUI();
                     handleVariableChange();
                     return true;
                 }
+
+                window.toggleMapVariable = toggleMapVariable;
+                window.selectMapVariable = selectMapVariable;
 
                 function handleVariableChange() {
                     const level = activeTerritoryLevel || getTerritoryLevelForZoom();

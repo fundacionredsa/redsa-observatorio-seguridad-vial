@@ -279,6 +279,9 @@
                 ? "Disponible únicamente en modo Año seleccionado"
                 : "Mostrar los siniestros ANT del año seleccionado";
         }
+        document.querySelectorAll('[data-legend-layer-toggle="siniestros_ant"]').forEach(el => {
+            el.checked = state.active;
+        });
         document.querySelector(".event-layer-toggle")?.classList.toggle(
             "period-unavailable",
             isAccumulatedMode() || (state.active && !isYearAvailable())
@@ -845,6 +848,9 @@
             return;
         }
         state.active = Boolean(active);
+        if (state.active) {
+            state.wasActiveInLegend = true;
+        }
         if (!state.active) {
             cancelPending("cancelled");
             removeCurrentLayer();
@@ -931,23 +937,25 @@
     }
 
     function legendEntry() {
-        if (!state.active) return null;
+        if (!state.active && !state.wasActiveInLegend) return null;
         const available = isYearAvailable();
         const audit = auditForYear();
         const modeLabels = { heat: "Calor", clusters: "Agrupaciones", cases: "Casos individuales" };
         return {
+            id: "siniestros_ant",
             title: "Siniestros (ANT)",
             subtitle: `${modeLabels[state.mode]} · ${state.year}${available ? ` (${periodForYear()})` : " · No disponible para este periodo"}`,
             status: state.status,
             available,
-            items: !available
+            disabled: !state.active,
+            items: (!available || !state.active)
                 ? []
                 : state.mode === "heat"
                 ? [{ shape: "gradient", colors: Object.values(HEAT_GRADIENT), label: "Menor a mayor concentración de registros" }]
                 : state.mode === "clusters"
                 ? [{ shape: "circle", color: CLUSTER_COLOR, label: "El tamaño indica cantidad agrupada" }]
                 : [{ shape: "circle", color: CASE_COLOR, label: "Un símbolo por siniestro con ubicación válida" }],
-            audit: available && audit ? {
+            audit: (available && state.active && audit) ? {
                 published: audit.publishedLocations,
                 total: audit.totalEvents,
                 noLocation: audit.noLocation,

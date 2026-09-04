@@ -288,17 +288,45 @@ function onEachProvinceFeature(feature, layer) {
             return years.length > 1 ? formatCoveredYears(years) : "";
         }
 
-        function renderLegendHeading(title, metadataParts = [], technicalInfo = "") {
-            const metadata = metadataParts
-                .filter(Boolean)
-                .map(part => String(part).trim().replace(/[.]+$/, ""))
-                .join(". ");
-            const secondaryLine = metadata || technicalInfo
-                ? `<div class="legend-heading-meta">${metadata ? `<span>${metadata}.</span>` : ""}${technicalInfo ? `<span class="legend-heading-technical">${technicalInfo}</span>` : ""}</div>`
+        function renderLegendHeading(title, metadataParts = [], technicalInfo = "", options = {}) {
+            let fuente = typeof options === "string" ? options : (options?.fuente || "");
+            const isVariableActive = options?.active !== undefined ? Boolean(options.active) : selectedVariable !== "normal";
+            const visibleParts = [];
+            metadataParts.filter(Boolean).forEach(part => {
+                const str = String(part).trim().replace(/[.]+$/, "");
+                if (/^fuente:\s*/i.test(str)) {
+                    if (!fuente) fuente = str;
+                } else {
+                    visibleParts.push(str);
+                }
+            });
+
+            if (fuente && !/^fuente:\s*/i.test(fuente)) {
+                fuente = `Fuente: ${fuente}`;
+            }
+
+            const metadata = visibleParts.join(" · ");
+            const fuenteTrigger = fuente
+                ? `<button type="button" class="sigla-tooltip-trigger" data-sigla="Fuente de datos" data-custom-text="${String(fuente).replace(/"/g, '&quot;')}" aria-label="Fuente de los datos">ⓘ</button>`
                 : "";
+
+            const switchHtml = options?.showSwitch === false
+                ? ""
+                : `<label class="legend-layer-switch" aria-label="Activar o desactivar ${title}">
+                    <input type="checkbox" class="infrastructure-toggle-input" data-legend-variable-toggle="true" ${isVariableActive ? "checked" : ""}>
+                    <span class="infrastructure-switch-visual" aria-hidden="true"></span>
+                </label>`;
+
+            const secondaryLine = metadata || technicalInfo || fuenteTrigger
+                ? `<div class="legend-heading-meta">${metadata ? `<span>${metadata}</span>` : ""}${fuenteTrigger}${technicalInfo ? `<span class="legend-heading-technical">${technicalInfo}</span>` : ""}</div>`
+                : "";
+
             return `
                 <div class="legend-heading">
-                    <div class="legend-heading-title">${title}</div>
+                    <div class="legend-heading-header">
+                        <div class="legend-heading-title">${title}</div>
+                        ${switchHtml}
+                    </div>
                     ${secondaryLine}
                 </div>
             `;
@@ -355,7 +383,7 @@ function onEachProvinceFeature(feature, layer) {
             const count = document.getElementById("legend-active-layers-count");
             if (!component || !section || !list || !count) return;
 
-            const activeLayerCount = (selectedVariable === "normal" ? 0 : 1) + overlayEntries.length;
+            const activeLayerCount = (selectedVariable === "normal" ? 0 : 1) + overlayEntries.filter(e => !e.disabled).length;
 
             const layersShortcut = document.getElementById("active-layers-shortcut");
             if (layersShortcut) {
@@ -428,7 +456,8 @@ function onEachProvinceFeature(feature, layer) {
                                 `Nivel: ${levelName}`,
                                 getLegendPeriodLabel(requestedConfig) ? `Periodo: ${getLegendPeriodLabel(requestedConfig)}` : ""
                             ],
-                            technicalInfo
+                            technicalInfo,
+                            { fuente: requestedConfig.fuente, active: true }
                         )}
                         <div class="legend-unavailable ${yearUnavailable ? "legend-period-unavailable" : ""}" role="status">
                             <strong>${yearUnavailable ? "No disponible para este periodo." : "Sin datos disponibles en este nivel territorial."}</strong>
@@ -449,7 +478,7 @@ function onEachProvinceFeature(feature, layer) {
                         ${renderLegendHeading(levelTitle, [
                             "Vista: límites administrativos",
                             `Nivel: ${LEVEL_LABELS[currentLevel]}`,
-                        ])}
+                        ], "", { active: false })}
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
                             <span>Límites administrativos</span>
@@ -480,7 +509,8 @@ function onEachProvinceFeature(feature, layer) {
                                 LEVEL_LABELS[currentLevel] ? `Nivel: ${LEVEL_LABELS[currentLevel]}` : "",
                                 getLegendPeriodLabel(config) ? `Periodo: ${getLegendPeriodLabel(config)}` : ""
                             ],
-                            technicalInfo
+                            technicalInfo,
+                            { fuente: config.fuente, active: true }
                         )}
                     `;
 
@@ -523,10 +553,12 @@ function onEachProvinceFeature(feature, layer) {
                             itemsHtml += `
                                 <div class="legend-data-audit legend-territory-audit redsa-callout redsa-callout--emphasis" role="note" data-national-total="${total}">
                                     <div class="legend-audit-header">
-                                        <strong>Cobertura territorial</strong>
+                                        <span class="legend-audit-title-wrap">
+                                            <strong>Cobertura territorial:</strong>
+                                            <span class="legend-audit-note">${mapped} registros se representan en este nivel</span>
+                                        </span>
                                         <button type="button" class="sigla-tooltip-trigger" data-sigla="Cobertura territorial" data-custom-text="${auditExplanation}" aria-label="Detalle de cobertura territorial">ⓘ</button>
                                     </div>
-                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel</span>
                                 </div>
                             `;
                         }
@@ -585,8 +617,14 @@ function onEachProvinceFeature(feature, layer) {
                     : "";
                 const info = entry.infoText ? siglaInfoIcon("Información", entry.infoText) : "";
                 overlayContainer.innerHTML += `
-                    <section class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""}" data-legend-layer-id="${entry.id}">
-                        <div class="legend-item legend-overlay-title">${entry.title}${info}</div>
+                    <section class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""} ${entry.disabled ? "legend-overlay-block--disabled" : ""}" data-legend-layer-id="${entry.id}">
+                        <div class="legend-overlay-header">
+                            <div class="legend-item legend-overlay-title">${entry.title}${info}</div>
+                            <label class="legend-layer-switch" aria-label="Activar o desactivar ${entry.title}">
+                                <input type="checkbox" class="infrastructure-toggle-input" data-legend-layer-toggle="${entry.id}" ${entry.disabled ? "" : "checked"}>
+                                <span class="infrastructure-switch-visual" aria-hidden="true"></span>
+                            </label>
+                        </div>
                         ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
                         ${legendItems}${audit}${loading}${unavailable}
                     </section>`;
@@ -608,7 +646,10 @@ function onEachProvinceFeature(feature, layer) {
             panel.style.display = hasItems ? "block" : "none";
             const mapLegendCard = document.getElementById("map-legend-card");
             if (mapLegendCard) {
-                mapLegendCard.dataset.hasLegend = String(selectedVariable !== "normal" || overlayLegendEntries.length > 0);
+                const hasLegend = selectedVariable !== "normal"
+                    || overlayLegendEntries.length > 0
+                    || Boolean(window._territoryToggledOffInLegend);
+                mapLegendCard.dataset.hasLegend = String(hasLegend);
             }
             window.syncLegendCardPresentation?.();
         }
@@ -617,6 +658,49 @@ function onEachProvinceFeature(feature, layer) {
         map.on('overlayadd', updateLegend);
         map.on('overlayremove', updateLegend);
         window.REDSAOverlayState?.subscribe(updateLegend);
+
+        document.addEventListener("change", event => {
+            const layerToggle = event.target.closest("[data-legend-layer-toggle]");
+            if (layerToggle) {
+                const layerId = layerToggle.getAttribute("data-legend-layer-toggle");
+                const isChecked = layerToggle.checked;
+                if (layerId === "siniestros_ant") {
+                    window.REDSAAntLayer?.setActive(isChecked);
+                } else if (layerId && layerId.startsWith("infra-")) {
+                    const infraId = layerId.replace(/^infra-/, "");
+                    const chk = document.getElementById(`infrastructure-layer-${infraId}`);
+                    if (chk && chk.checked !== isChecked) {
+                        chk.click();
+                    }
+                }
+                return;
+            }
+
+            const variableToggle = event.target.closest("[data-legend-variable-toggle]");
+            if (variableToggle) {
+                const isChecked = variableToggle.checked;
+                if (!isChecked) {
+                    window._territoryToggledOffInLegend = true;
+                    if (typeof selectMapVariable === "function") {
+                        selectMapVariable("normal", { fromLegend: true });
+                    } else if (typeof toggleMapVariable === "function") {
+                        toggleMapVariable(selectedVariable);
+                    } else if (window.__redsaAudit?.selectVariable) {
+                        window.__redsaAudit.selectVariable("normal");
+                    }
+                } else {
+                    window._territoryToggledOffInLegend = false;
+                    const targetVar = window._lastActiveVariable || "siniestros";
+                    if (typeof selectMapVariable === "function") {
+                        selectMapVariable(targetVar);
+                    } else if (typeof toggleMapVariable === "function") {
+                        toggleMapVariable(targetVar);
+                    } else if (window.__redsaAudit?.selectVariable) {
+                        window.__redsaAudit.selectVariable(targetVar);
+                    }
+                }
+            }
+        });
 
         function updateMapLevelNote(level = activeTerritoryLevel) {
             const note = document.getElementById("map-level-note");

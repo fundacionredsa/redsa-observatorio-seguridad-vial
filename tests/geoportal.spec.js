@@ -51,11 +51,11 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
   await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
+  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
   await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
   await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
+  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
   const versionedAssets = await page.evaluate(() => [
     ...Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(node => node.href),
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
@@ -355,7 +355,7 @@ test("leyenda declara cuando la variable no existe en el nivel territorial", asy
   await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: parroquias");
   await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2023");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Fuente: ANT");
+  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
   await expect(page.locator(".legend-panel")).toContainText("Límites administrativos");
 });
 
@@ -1066,7 +1066,7 @@ test("EDG parish-derived fatalities are available at province, canton and parish
     );
     await expect(page.locator("#map-level-note")).toBeHidden();
     await expect(page.locator(".legend-heading-title")).toHaveText("Personas fallecidas");
-    await expect(page.locator(".legend-heading-meta")).toContainText("Registro Estadístico de Defunciones Generales (EDG)");
+    await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Registro Estadístico de Defunciones Generales \(EDG\)/);
   }
 
   await page.evaluate(() => window.__redsaAudit.setTerritoryLevelMode("canton"));
