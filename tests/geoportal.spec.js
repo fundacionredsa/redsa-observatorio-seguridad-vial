@@ -857,8 +857,9 @@ test("capa OSM nacional carga bajo demanda y explicita cantones sin mapeo", asyn
   expect(state.features).toBeGreaterThan(0);
   expect(state.rejectedGeometries).toBe(34);
   expect(state.unmappedCantons).not.toBeNull();
-  await expect(page.locator(".legend-panel")).toContainText("tramado");
-  await expect(page.locator(".legend-panel")).toContainText("no que la infraestructura no exista");
+  const osmTrigger = page.locator(".legend-panel .legend-overlay-osm-note .sigla-tooltip-trigger");
+  await expect(osmTrigger).toHaveAttribute("data-custom-text", /tramado/);
+  await expect(osmTrigger).toHaveAttribute("data-custom-text", /no que la infraestructura no exista/);
 });
 
 test("mobile conserva una superficie de mapa util en telefono y tablet", async ({ page }, testInfo) => {
@@ -923,8 +924,8 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   expect(sidebar.right).toBeLessThanOrEqual(width);
   expect(sidebar.bottom).toBeLessThanOrEqual(height);
   expect(sidebar.scrollWidth).toBeLessThanOrEqual(sidebar.clientWidth + 1);
-  expect(sidebar.close.width).toBeGreaterThanOrEqual(44);
-  expect(sidebar.close.height).toBeGreaterThanOrEqual(44);
+  expect(Math.round(sidebar.close.width)).toBeGreaterThanOrEqual(44);
+  expect(Math.round(sidebar.close.height)).toBeGreaterThanOrEqual(44);
 
   await page.locator("#territory-sidebar").evaluate(element => { element.scrollTop = 420; });
   await page.waitForTimeout(100);

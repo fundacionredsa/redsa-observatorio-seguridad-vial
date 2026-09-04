@@ -491,10 +491,12 @@ function onEachProvinceFeature(feature, layer) {
                     }
 
                     if (config.zeroAsNoMapping) {
+                        const osmTooltip = 'Un valor de cero indica que no se han registrado elementos en OpenStreetMap; no implica que la infraestructura no exista.';
                         itemsHtml += `
                             <div class="legend-item legend-special-swatch">
                                 <span class="legend-color-line" style="background-color: #475569; border: 1px dashed #94a3b8;"></span>
-                                <span>Sin elementos mapeados en OSM; no implica ausencia</span>
+                                <span>Sin elementos mapeados (OSM)</span>
+                                <button type="button" class="sigla-tooltip-trigger" data-sigla="Cobertura OSM" data-custom-text="${osmTooltip}" aria-label="Aclaración sobre cobertura OpenStreetMap">ⓘ</button>
                             </div>
                         `;
                     }
@@ -515,13 +517,16 @@ function onEachProvinceFeature(feature, layer) {
                             const total = Number(yearAudit.total_nacional || 0).toLocaleString("es-EC");
                             const mapped = Number(yearAudit.suma_publicada_en_este_nivel || 0).toLocaleString("es-EC");
                             const special = Number(yearAudit.no_representados_en_este_nivel ?? yearAudit.zona_especial_sin_asignar ?? 0).toLocaleString("es-EC");
-                            const partial = String(yearAudit.estado || "").includes("parcial")
-                                ? "<strong>Corte parcial enero-junio:</strong> no comparar con años completos."
-                                : "";
+                            const isPartial = String(yearAudit.estado || "").includes("parcial");
+                            const partialText = isPartial ? "\n\nCorte parcial enero-junio: no comparar con años completos." : "";
+                            const auditExplanation = `${special} registros corresponden a zonas en estudio. La referencia nacional conserva ambos grupos sin asignación especulativa.${partialText}`.replace(/"/g, '&quot;');
                             itemsHtml += `
                                 <div class="legend-data-audit legend-territory-audit redsa-callout redsa-callout--emphasis" role="note" data-national-total="${total}">
-                                    <strong>Cobertura territorial</strong>
-                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel; ${special} corresponden a zonas en estudio. La referencia nacional conserva ambos grupos sin asignación especulativa.${partial ? `<span>${partial}</span>` : ""}</span>
+                                    <div class="legend-audit-header">
+                                        <strong>Cobertura territorial</strong>
+                                        <button type="button" class="sigla-tooltip-trigger" data-sigla="Cobertura territorial" data-custom-text="${auditExplanation}" aria-label="Detalle de cobertura territorial">ⓘ</button>
+                                    </div>
+                                    <span class="legend-audit-note">${mapped} registros se representan en este nivel</span>
                                 </div>
                             `;
                         }
@@ -551,14 +556,27 @@ function onEachProvinceFeature(feature, layer) {
                             <span>${item.label}</span>
                         </div>`;
                 }).join("");
+                const notesList = [...(entry.notes || [])];
+                if (entry.audit && (entry.audit.noLocation || entry.audit.unverifiableLocation || entry.audit.invalidDate)) {
+                    const auditDetails = [
+                        `Sin ubicación: ${Number(entry.audit.noLocation || 0).toLocaleString("es-EC")}`,
+                        `Ubicación no verificable: ${Number(entry.audit.unverifiableLocation || 0).toLocaleString("es-EC")}`,
+                        entry.audit.invalidDate ? `Fecha no publicable: ${Number(entry.audit.invalidDate).toLocaleString("es-EC")}` : ""
+                    ].filter(Boolean).join(" · ");
+                    notesList.unshift(`Geolocalización: ${auditDetails}.`);
+                }
+                const combinedNotes = notesList.join("\n\n").replace(/"/g, '&quot;');
+                const notesTrigger = combinedNotes
+                    ? `<button type="button" class="sigla-tooltip-trigger" data-sigla="${(entry.title || 'Metodología').replace(/"/g, '&quot;')}" data-custom-text="${combinedNotes}" aria-label="Notas metodológicas de ${(entry.title || 'la capa').replace(/"/g, '&quot;')}">ⓘ</button>`
+                    : "";
                 const audit = entry.audit
                     ? `<div class="legend-data-audit redsa-callout">
-                        <strong>${Number(entry.audit.published).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} puntos publicados</strong>
-                        <span>Sin ubicación: ${Number(entry.audit.noLocation || 0).toLocaleString("es-EC")} · Ubicación no verificable: ${Number(entry.audit.unverifiableLocation || 0).toLocaleString("es-EC")}${Number(entry.audit.invalidDate || 0) ? ` · Fecha no publicable: ${Number(entry.audit.invalidDate).toLocaleString("es-EC")}` : ""}</span>
+                        <div class="legend-audit-header">
+                            <strong>${Number(entry.audit.published).toLocaleString("es-EC")} de ${Number(entry.audit.total).toLocaleString("es-EC")} puntos publicados</strong>
+                            ${notesTrigger}
+                        </div>
                     </div>`
-                    : "";
-                const notes = (entry.notes || []).map(note => `<span>${note}</span>`).join("");
-                const noteBlock = notes ? `<div class="legend-overlay-notes redsa-callout" role="note">${notes}</div>` : "";
+                    : (notesTrigger ? `<div class="legend-audit-notes-slot">${notesTrigger}</div>` : "");
                 const loading = entry.status === "loading"
                     ? `<div class="legend-overlay-status" role="status">Preparando la capa…</div>`
                     : "";
@@ -570,15 +588,17 @@ function onEachProvinceFeature(feature, layer) {
                     <section class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""}" data-legend-layer-id="${entry.id}">
                         <div class="legend-item legend-overlay-title">${entry.title}${info}</div>
                         ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
-                        ${legendItems}${audit}${loading}${unavailable}${noteBlock}
+                        ${legendItems}${audit}${loading}${unavailable}
                     </section>`;
             });
 
             if (hasActiveOsmLayer) {
+                const osmNoteTooltip = 'Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.';
                 overlayNotesContainer.innerHTML += `
                     <div class="legend-item legend-overlay-osm-note">
                         <span class="legend-color-line"></span>
-                        <span>Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.</span>
+                        <span>Sin elementos mapeados (OSM)</span>
+                        <button type="button" class="sigla-tooltip-trigger" data-sigla="Cobertura OSM" data-custom-text="${osmNoteTooltip.replace(/"/g, '&quot;')}" aria-label="Aclaración sobre cobertura OpenStreetMap">ⓘ</button>
                     </div>`;
             }
             if (typeof syncMobileLayerDrawer === "function") syncMobileLayerDrawer();

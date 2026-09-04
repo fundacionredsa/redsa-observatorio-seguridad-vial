@@ -608,7 +608,7 @@
             body.innerHTML = `
                 <div class="legend-territory-shortcut-copy">
                     <span class="legend-territory-shortcut-meta">${territoryLevel}${territoryCode ? ` · Código DPA ${territoryCode}` : ""}</span>
-                    <p>La consulta detallada, series históricas y perfil demográfico están disponibles en la pestaña ANÁLISIS del panel derecho.</p>
+                    <p class="legend-demographic-guide">Ver más en pestaña ANÁLISIS →</p>
                 </div>
             `;
             card.hidden = false;

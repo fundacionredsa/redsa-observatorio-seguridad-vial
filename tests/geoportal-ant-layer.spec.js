@@ -181,8 +181,9 @@ test("Calor carga el compacto y los tres modos reutilizan datos sin descargas du
   const legend = page.locator("#legend-items");
   await expect(legend).toContainText("Siniestros (ANT)");
   await expect(legend).toContainText("20.148 de 20.346");
-  await expect(legend).toContainText("Ubicación no verificable: 8");
-  await expect(legend).toContainText("no mide riesgo individual");
+  const trigger = legend.locator(".legend-overlay-block[data-legend-layer-id='siniestros_ant'] .sigla-tooltip-trigger");
+  await expect(trigger).toHaveAttribute("data-custom-text", /Ubicación no verificable: 8/);
+  await expect(trigger).toHaveAttribute("data-custom-text", /no mide riesgo individual/);
 });
 
 test("Casos se dibuja con el compacto antes de completar sus atributos", async ({ page }, testInfo) => {

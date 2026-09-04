@@ -1437,7 +1437,7 @@ body.basemap-popover-open .right-tools-rail {
     font-size: var(--fs-xs);
     font-weight: 600;
     color: var(--accent);
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
     border-radius: 4px;
     background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
@@ -1619,7 +1619,7 @@ body.institutional-modal-open {
 
 .ranking-period {
     flex: 0 0 auto;
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
     border: 1px solid #b9d9dc;
     border-radius: 4px;
     background: #effafa;
@@ -2208,7 +2208,7 @@ body:not(.light-theme) #institutional-modal .ranking-table tbody tr:hover {
 
 .catalog-category {
     display: inline-block;
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
     border-radius: 999px;
     background: #e6f3f5;
     color: var(--accent);
@@ -2438,7 +2438,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
     min-width: 22px;
     min-height: 22px;
     place-items: center;
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
     border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
     border-radius: 999px;
     background: color-mix(in srgb, var(--accent) 20%, transparent);
@@ -2739,7 +2739,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 }
 
 .legend-overlay-osm-note {
-    align-items: flex-start;
+    align-items: center;
     margin-top: var(--space-1);
     padding-top: var(--space-2);
     border-top: 1px dashed var(--border-glass);
@@ -2867,6 +2867,7 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 
 .sigla-popover-copy {
     min-width: 0;
+    white-space: pre-line;
 }
 
 body.light-theme .sigla-popover-icon {
@@ -3127,6 +3128,13 @@ body.light-theme .territory-hover-tooltip {
     line-height: 1;
 }
 
+.legend-audit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+}
+
 .legend-audit-note {
     color: var(--text-secondary);
     font-size: var(--fs-xs);
@@ -3206,7 +3214,7 @@ body.light-theme .territory-hover-tooltip {
     min-width: 0;
     flex: 0 1 auto;
     overflow: hidden;
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
     border-radius: 999px;
     background: color-mix(in srgb, var(--accent) 16%, transparent);
     color: var(--accent-hover);
@@ -3220,9 +3228,32 @@ body.light-theme .territory-hover-tooltip {
 .legend-active-layers-actions {
     display: inline-flex;
     min-width: 0;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     align-items: center;
     gap: var(--space-1);
+}
+
+.legend-shell-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid var(--border-glass);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: var(--fs-md);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.legend-shell-action:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: var(--bg-glass-hover);
+    color: var(--accent);
 }
 
 .legend-active-layer-symbol {
@@ -3273,6 +3304,13 @@ body.light-theme .territory-hover-tooltip {
     color: var(--text-secondary);
     font-size: var(--fs-sm);
     line-height: 1.45;
+}
+
+.legend-demographic-guide {
+    margin: 0;
+    color: var(--accent-hover);
+    font-size: var(--fs-xs);
+    font-weight: 700;
 }
 
 .legend-open-analysis-button {
