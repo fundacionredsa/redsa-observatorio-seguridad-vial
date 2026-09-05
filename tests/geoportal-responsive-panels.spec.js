@@ -65,8 +65,8 @@ test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPA
   await expect(page.locator("#demographic-hover-card")).toBeHidden();
   await expect(page.locator("#technical-drawer")).toBeHidden();
   await expect(page.locator("#basemap-context-panel")).toBeHidden();
-  await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(1);
-  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#map-legend-card #legend-active-layers-list")).toHaveCount(0);
+  await expect(page.locator("#legend-active-layers-section")).toHaveCount(0);
   await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   await layersButton.click();
@@ -485,7 +485,7 @@ test("Leyenda distingue representaciones principales de controles secundarios", 
     "data-custom-text",
     /No constituye una serie anual/
   );
-  await expect(page.locator("#legend-active-layers-section")).toBeHidden();
+  await expect(page.locator("#legend-active-layers-section")).toHaveCount(0);
   await expect(page.locator("#legend-active-layers-list .legend-active-layer-row")).toHaveCount(0);
 
   const typography = await page.evaluate(() => {

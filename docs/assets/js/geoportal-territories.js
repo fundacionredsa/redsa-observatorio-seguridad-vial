@@ -378,10 +378,8 @@ function onEachProvinceFeature(feature, layer) {
 
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
             const component = document.getElementById("map-legend-card");
-            const section = document.getElementById("legend-active-layers-section");
-            const list = document.getElementById("legend-active-layers-list");
             const count = document.getElementById("legend-active-layers-count");
-            if (!component || !section || !list || !count) return;
+            if (!component || !count) return;
 
             const activeLayerCount = (selectedVariable === "normal" ? 0 : 1) + overlayEntries.filter(e => !e.disabled).length;
 
@@ -398,11 +396,9 @@ function onEachProvinceFeature(feature, layer) {
                 );
             }
 
-            list.replaceChildren();
             count.textContent = `${activeLayerCount} ${activeLayerCount === 1 ? "capa" : "capas"}`;
             count.hidden = activeLayerCount === 0;
             component.dataset.layerCount = String(activeLayerCount);
-            section.hidden = true;
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
