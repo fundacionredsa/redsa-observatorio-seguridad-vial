@@ -6,6 +6,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.addInitScript(() => {
             window.localStorage.setItem('redsa_tour_seen', 'true');
             window.localStorage.setItem('has_seen_geoportal_tour', 'true');
+            window.localStorage.setItem('redsa_tour_v2_visto', 'true');
         });
         await page.goto('http://127.0.0.1:4173/docs/', { waitUntil: 'domcontentloaded' });
         await page.waitForSelector('.driver-popover-close-btn', { state: 'visible', timeout: 5000 }).catch(() => {});

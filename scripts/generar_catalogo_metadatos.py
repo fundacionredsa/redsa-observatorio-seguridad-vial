@@ -150,6 +150,19 @@ def main():
     vars_declarando_sin_dato = 0
     vars_con_faltantes = 0
 
+    # Cargar declaraciones de calidad previas para preservarlas
+    catalog_path = "docs/data/catalogo_metadatos.json"
+    existing_quality = {}
+    if os.path.exists(catalog_path):
+        try:
+            with open(catalog_path, "r", encoding="utf-8") as f:
+                prev_json = json.load(f)
+                for var in prev_json.get("variables", []):
+                    if "calidad" in var and var.get("id"):
+                        existing_quality[var["id"]] = var["calidad"]
+        except Exception as e:
+            print(f"Warning al leer declaraciones de calidad previas: {e}")
+
     for var_id, var_data in raw_vars.items():
         if var_id == "normal":
             continue # Omitir el mapa base administrativo de las metricas
@@ -174,7 +187,7 @@ def main():
             vars_con_faltantes += 1
 
         direct_downloads = var_data.get("catalog_downloads") or []
-        catalogo.append({
+        var_entry = {
             "id": var_data["id"],
             "label": var_data["label"],
             "categoria": infer_categoria(var_id),
@@ -196,10 +209,13 @@ def main():
                 "geojson_niveles": [] if direct_downloads else var_data["nivel_territorial_disponible"],
                 "archivos_directos": direct_downloads,
             },
-        })
+        }
+        if var_data["id"] in existing_quality:
+            var_entry["calidad"] = existing_quality[var_data["id"]]
+        catalogo.append(var_entry)
 
     for entry in infrastructure_entries:
-        catalogo.append({
+        infra_entry = {
             "id": entry["id"],
             "label": entry["label"],
             "categoria": "Otras variables",
@@ -217,10 +233,13 @@ def main():
                 "geojson_niveles": [],
                 "archivos_directos": entry["downloads"],
             },
-        })
+        }
+        if entry["id"] in existing_quality:
+            infra_entry["calidad"] = existing_quality[entry["id"]]
+        catalogo.append(infra_entry)
 
     for entry in event_entries:
-        catalogo.append({
+        event_entry = {
             "id": entry["id"],
             "label": entry["label"],
             "categoria": "Siniestralidad",
@@ -238,7 +257,10 @@ def main():
                 "geojson_niveles": [],
                 "archivos_directos": entry["downloads"],
             },
-        })
+        }
+        if entry["id"] in existing_quality:
+            event_entry["calidad"] = existing_quality[entry["id"]]
+        catalogo.append(event_entry)
 
     pct_fuente = (vars_con_fuente / vars_total) * 100 if vars_total > 0 else 0
     pct_sindato = (vars_declarando_sin_dato / vars_con_faltantes) * 100 if vars_con_faltantes > 0 else 100
@@ -256,8 +278,9 @@ def main():
     }
 
     os.makedirs("docs/data", exist_ok=True)
-    with open("docs/data/catalogo_metadatos.json", "w", encoding="utf-8") as f:
+    with open(catalog_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
+        f.write("\n")
         
     print("\n--- RESUMEN ---")
     print(f"Variables analizadas: {vars_total}")

@@ -35,6 +35,7 @@ test("descarga mapa de calor ANT por defecto al cargar y no descarga GeoJSON com
     if (/siniestros_ant_20(24|25|26)(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
   });
   await waitForPortal(page);
+  await page.waitForFunction(() => window.REDSAAntLayer.getAuditState().status === "ready", null, { timeout: 90_000 });
   expect(requests.some(url => url.includes("siniestros_ant_2025_heat.json"))).toBe(true);
   expect(requests.some(url => isFullAntGeoJson(url))).toBe(false);
   const state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
