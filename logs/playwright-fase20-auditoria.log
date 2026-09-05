@@ -1,0 +1,466 @@
+
+Running 327 tests using 2 workers
+
+
+=== Medición en 1920px ===
+Topbar: { x: 0, y: 0, width: 1920, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1896, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1593.828125, height: 34 }
+Right Group: { x: 1833.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok   1 [desktop] › tests\fase10-e4.spec.js:51:1 › E4 limita los paneles y mantiene el scroll en su contenido (3.4s)
+  ok   3 [desktop] › tests\fase10-e4.spec.js:143:1 › E4 aumenta el área útil con el mismo cálculo territorial (2.5s)
+  ok   2 [desktop] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1920px (6.6s)
+  ok   4 [desktop] › tests\geoportal-ant-layer.spec.js:32:1 › descarga mapa de calor ANT por defecto al cargar y no descarga GeoJSON completo (2.3s)
+
+=== Medición en 1440px ===
+Topbar: { x: 0, y: 0, width: 1440, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1416, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1113.828125, height: 34 }
+Right Group: { x: 1353.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok   5 [desktop] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1440px (5.6s)
+
+=== Medición en 1180px ===
+Topbar: { x: 0, y: 0, width: 1180, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1156, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 853.828125, height: 34 }
+Right Group: { x: 1093.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok   6 [desktop] › tests\geoportal-ant-layer.spec.js:45:1 › el perfil focused conserva la vista macro y afina ciudad y calle (6.5s)
+  ok   7 [desktop] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1180px (4.7s)
+  ok   8 [desktop] › tests\geoportal-ant-layer.spec.js:71:1 › aviso accesible explica el ajuste al último año disponible (2.7s)
+
+=== Medición en 390px ===
+Topbar: { x: 0, y: 0, width: 390, height: 48 }
+Topbar Main: { x: 12, y: 0, width: 366, height: 47 }
+Brand: { x: 12, y: 7.5, width: 144.0625, height: 32 }
+Brand Mark: { x: 12, y: 7.5, width: 30, height: 32 }
+  ok   9 [desktop] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 390px (3.3s)
+  ok  11 [desktop] › tests\geoportal-citizen-analysis.spec.js:32:1 › buscador y leyenda comparten la paleta oscura y conservan el tema claro (2.2s)
+  ok  10 [desktop] › tests\geoportal-ant-layer.spec.js:86:1 › Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas (5.8s)
+  ok  12 [desktop] › tests\geoportal-citizen-analysis.spec.js:93:1 › Ranking y Catálogo comparten el tema oscuro y restauran su apariencia clara (3.8s)
+  ok  13 [desktop] › tests\geoportal-ant-layer.spec.js:190:1 › Casos se dibuja con el compacto antes de completar sus atributos (5.1s)
+  ok  14 [desktop] › tests\geoportal-citizen-analysis.spec.js:147:1 › la identidad, introducción y resumen territorial permanecen accesibles sin duplicarse (4.6s)
+  ok  15 [desktop] › tests\geoportal-ant-layer.spec.js:225:1 › la capa sigue el año global, cancela cargas obsoletas y conserva un solo año en caché (3.3s)
+  ok  17 [desktop] › tests\geoportal-ant-layer.spec.js:263:1 › modo histórico desactiva Siniestros ANT sin dejar un año individual visible (3.8s)
+  ok  16 [desktop] › tests\geoportal-citizen-analysis.spec.js:163:1 › análisis tiene volver independiente, tema completo y scroll hasta el final (7.2s)
+  ok  18 [desktop] › tests\geoportal-ant-layer.spec.js:315:1 › el análisis territorial ANT usa el punto seleccionado y lenguaje metodológico (4.1s)
+  ok  19 [desktop] › tests\geoportal-citizen-analysis.spec.js:227:1 › Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador (2.4s)
+  ok  20 [desktop] › tests\geoportal-ant-layer.spec.js:333:1 › la leyenda usa cero explícito y nunca muestra el rango confuso menor o igual a cero (3.4s)
+  -   22 [desktop] › tests\geoportal-ant-layer.spec.js:346:1 › controles ANT caben en el drawer móvil y tienen objetivos táctiles
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  21 [desktop] › tests\geoportal-citizen-analysis.spec.js:237:1 › fase 4 usa la marca real y presenta análisis, callouts y serie por tipo (5.6s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  24 [desktop] › tests\geoportal-citizen-analysis.spec.js:317:1 › breadcrumb usa exactamente provincia, cantón y parroquia seleccionados (4.2s)
+  ok  25 [desktop] › tests\geoportal-lazy-load.spec.js:3:1 › la carga inicial usa provincias e índice y difiere cantones (2.0s)
+  ok  26 [desktop] › tests\geoportal-lazy-load.spec.js:21:1 › búsqueda, ranking y ficha activan datos cantonales bajo demanda (3.3s)
+  ok  23 [desktop] › tests\geoportal-improvements.spec.js:48:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › tour appears on first visit, can be closed and reopened (13.1s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  -   27 [desktop] › tests\geoportal-mobile-ux.spec.js:26:5 › Geoportal Mobile UX Improvements › mobile drawer mutual exclusivity (sidebar, layers) preserves period and intensity controls
+  -   28 [desktop] › tests\geoportal-improvements.spec.js:120:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › mobile tour highlights every visible target inside the viewport
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  29 [desktop] › tests\geoportal-mobile-ux.spec.js:66:5 › Geoportal Mobile UX Improvements › mobile-level-bar is positioned below top navigation without overlap (2.4s)
+  -   31 [desktop] › tests\geoportal-mobile-ux.spec.js:98:5 › Geoportal Mobile UX Improvements › mobile year bar shows coverage and stays synchronized with the main timeline
+  ok  30 [desktop] › tests\geoportal-improvements.spec.js:191:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › catalog modal opens and displays variables (6.2s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  -   32 [desktop] › tests\geoportal-mobile-ux.spec.js:203:5 › Geoportal Mobile UX Improvements › mobile territorial shortcut has no horizontal scroll and exposes both actions
+  ok  33 [desktop] › tests\geoportal-improvements.spec.js:306:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › methodology links use the professional interface and drawer has no direct download (2.8s)
+  -   34 [desktop] › tests\geoportal-mobile-ux.spec.js:229:5 › Geoportal Mobile UX Improvements › mobile panel topbars have sticky positioning for close button accessibility
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  -   36 [desktop] › tests\geoportal-mobile-ux.spec.js:240:5 › Geoportal Mobile UX Improvements › search input has font-size 16px on mobile to prevent iOS auto-zoom
+  ok  35 [desktop] › tests\geoportal-improvements.spec.js:323:9 › Observatory Improvements (Blocks B, C, D, E) › Block D: Basemap and Opacity › opacity slider changes territory opacity without fading infrastructure (3.2s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  37 [desktop] › tests\geoportal-mobile-ux.spec.js:249:5 › Geoportal Mobile UX Improvements › desktop search and legend remain visible and mobile controls are hidden (2.8s)
+BROWSER CONSOLE: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  ok  38 [desktop] › tests\geoportal-improvements.spec.js:376:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › theme toggle changes body class and localstorage (4.8s)
+  ok  39 [desktop] › tests\geoportal-national-search.spec.js:31:1 › el estado inicial muestra una referencia nacional que sigue variable, año y periodo (2.9s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  40 [desktop] › tests\geoportal-improvements.spec.js:449:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › cursor coordinates display on mousemove (5.5s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  41 [desktop] › tests\geoportal-national-search.spec.js:69:1 › la búsqueda selecciona provincia, cantón y parroquia sin abrir el análisis (6.3s)
+  ok  42 [desktop] › tests\geoportal-improvements.spec.js:472:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA_MEASUREMENT_ID constant is defined and correctly configured (2.3s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  44 [desktop] › tests\geoportal-improvements.spec.js:477:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 script is NOT loaded in localhost / 127.0.0.1 development environment (2.3s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  43 [desktop] › tests\geoportal-national-search.spec.js:88:1 › una búsqueda parroquial conserva la variable y muestra límites con aviso cuando no aplica (4.6s)
+  ok  45 [desktop] › tests\geoportal-improvements.spec.js:482:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 privacy notice is visible in "¿Por qué confiar?" section (3.4s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  46 [desktop] › tests\geoportal-phase6-visual.spec.js:27:1 › captura la barra de controles y la leyenda única en claro y oscuro (4.5s)
+  ok  47 [desktop] › tests\geoportal-improvements.spec.js:498:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons show available, unavailable and selected states, and update on click (3.1s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok  48 [desktop] › tests\geoportal-phase7.spec.js:24:1 › Fase 9 conserva Nivel y Año visibles sin saturar el topbar (3.0s)
+  ok  49 [desktop] › tests\geoportal-improvements.spec.js:525:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons are disabled for foto_unica variables (3.4s)
+  ok  50 [desktop] › tests\geoportal-phase7.spec.js:40:1 › IA fija la leyenda a la izquierda sin intersecciones en todas las combinaciones (2.6s)
+  ok  51 [desktop] › tests\geoportal-responsive-panels.spec.js:42:1 › la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPAS (3.6s)
+  ok  52 [desktop] › tests\geoportal-phase7.spec.js:60:1 › IB ofrece dos pestañas ARIA y análisis con ancho propio (2.4s)
+  ok  53 [desktop] › tests\geoportal-responsive-panels.spec.js:117:1 › la barra superior concentra accesos y el buscador refleja capas extra en vivo (4.4s)
+  ok  54 [desktop] › tests\geoportal-phase7.spec.js:78:1 › IC mantiene Periodo e Intensidad en CAPAS y la visibilidad parroquial (4.4s)
+  ok  56 [desktop] › tests\geoportal.spec.js:27:1 › carga contratos territoriales y atribuciones (2.8s)
+  ok  55 [desktop] › tests\geoportal-responsive-panels.spec.js:152:1 › los cambios cartográficos conservan la pestaña elegida por la persona (5.3s)
+  ok  57 [desktop] › tests\geoportal.spec.js:39:1 › abre como observatorio nacional con mapa de calor y sin infraestructura (2.6s)
+  ok  59 [desktop] › tests\geoportal.spec.js:74:1 › encuentra un canton y mantiene el resumen ciudadano breve (4.0s)
+  -   60 [desktop] › tests\geoportal.spec.js:92:1 › busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana
+  ok  58 [desktop] › tests\geoportal-responsive-panels.spec.js:188:1 › las tres capas del mapa comparten una sola tarjeta y conservan controles independientes (7.9s)
+  ok  61 [desktop] › tests\geoportal.spec.js:142:1 › genera una ficha PDF territorial en memoria (4.5s)
+  ok  62 [desktop] › tests\geoportal-responsive-panels.spec.js:308:1 › panel ciudadano web conserva estado y separa selección de análisis (4.7s)
+  ok  63 [desktop] › tests\geoportal.spec.js:179:1 › la ficha PDF parroquial omite el contexto de población y tasas (5.6s)
+  ok  64 [desktop] › tests\geoportal-responsive-panels.spec.js:338:1 › ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección (4.4s)
+  ok  66 [desktop] › tests\geoportal-responsive-panels.spec.js:409:1 › la tarjeta informa y el topbar conserva todos los controles (3.5s)
+  ok  65 [desktop] › tests\geoportal.spec.js:201:1 › modo tecnico conserva variables, capas, metodologia y estado todo apagado (7.0s)
+  ok  67 [desktop] › tests\geoportal-responsive-panels.spec.js:473:1 › Leyenda distingue representaciones principales de controles secundarios (4.0s)
+  ok  68 [desktop] › tests\geoportal.spec.js:254:1 › selector de variables permite selección única y deselección accesible (4.7s)
+  ok  69 [desktop] › tests\geoportal-responsive-panels.spec.js:514:1 › panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles (2.4s)
+  ok  71 [desktop] › tests\geoportal-responsive-panels.spec.js:535:1 › variable territorial y Siniestros ANT explican los periodos no disponibles (2.7s)
+  ok  72 [desktop] › tests\geoportal-responsive-panels.spec.js:553:1 › infraestructura usa SVG compartido y conserva la interacción territorial (3.9s)
+  ok  73 [desktop] › tests\geoportal-responsive-panels.spec.js:601:1 › pantalla grande mantiene el buscador y la leyenda compacta visible (2.3s)
+  -   74 [desktop] › tests\geoportal-responsive-panels.spec.js:616:1 › mobile conserva sus paneles off-canvas y barra inferior
+  ok  75 [desktop] › tests\geoportal-responsive-panels.spec.js:627:1 › mapas base ocupa el panel contextual sin superponerse (2.6s)
+  ok  76 [desktop] › tests\geoportal-responsive-panels.spec.js:635:1 › mapas base no se superpone en una ventana web angosta (2.5s)
+  ok  70 [desktop] › tests\geoportal.spec.js:299:1 › carga vias OSM independientes y conserva la escala grafica (18.7s)
+  ok  77 [desktop] › tests\geoportal-responsive-panels.spec.js:642:1 › zoom, ubicación y grupos de herramientas son operables en la barra (6.9s)
+  ok  78 [desktop] › tests\geoportal.spec.js:349:1 › leyenda declara cuando la variable no existe en el nivel territorial (3.6s)
+  ok  79 [desktop] › tests\geoportal-responsive-panels.spec.js:694:1 › ubicación informa cuando el permiso es denegado (2.5s)
+  ok  80 [desktop] › tests\geoportal.spec.js:365:1 › el encabezado del analisis permanece accesible y el contenido llega hasta el final (2.6s)
+  ok  81 [desktop] › tests\geoportal-responsive-panels.spec.js:712:1 › catálogo vive en la barra superior y la marca oficial se muestra legible (3.0s)
+  ok  82 [desktop] › tests\geoportal.spec.js:394:1 › paneles alternan entre anio y acumulados con cobertura explicita (3.5s)
+  ok  83 [desktop] › tests\geoportal-responsive-panels.spec.js:729:1 › Dark Matter activa realce cartográfico sin cambiar el tema de interfaz (3.4s)
+  ok  84 [desktop] › tests\geoportal.spec.js:417:1 › cambia una sola capa territorial por zoom (5.0s)
+  ok  85 [desktop] › tests\geoportal-responsive-panels.spec.js:754:1 › la superficie territorial se oculta solo en zoom profundo y restaura la opacidad (6.1s)
+  ok  86 [desktop] › tests\geoportal.spec.js:438:1 › clic en canton fija la seleccion sin saltar a parroquias (4.6s)
+
+=== Medición en 1920px ===
+Topbar: { x: 0, y: 0, width: 1920, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1896, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1593.828125, height: 34 }
+Right Group: { x: 1833.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok  87 [desktop] › tests\geoportal.spec.js:457:1 › hover no cambia panel y la seleccion persiste al hacer scroll (4.1s)
+  ok  88 [medium] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1920px (6.3s)
+  ok  89 [desktop] › tests\geoportal.spec.js:492:1 › solo conserva resaltada la unidad territorial seleccionada (3.7s)
+
+=== Medición en 1440px ===
+Topbar: { x: 0, y: 0, width: 1440, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1416, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1113.828125, height: 34 }
+Right Group: { x: 1353.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok  90 [medium] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1440px (4.8s)
+  ok  91 [desktop] › tests\geoportal.spec.js:514:1 › control territorial permite fijar nivel y volver a modo automatico (4.2s)
+
+=== Medición en 1180px ===
+Topbar: { x: 0, y: 0, width: 1180, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1156, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 853.828125, height: 34 }
+Right Group: { x: 1093.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok  92 [medium] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1180px (4.5s)
+  ok  93 [desktop] › tests\geoportal.spec.js:536:1 › recalcula bins por nivel y cae a limites cuando no aplica (4.6s)
+
+=== Medición en 390px ===
+Topbar: { x: 0, y: 0, width: 390, height: 48 }
+Topbar Main: { x: 12, y: 0, width: 366, height: 47 }
+Brand: { x: 12, y: 7.5, width: 144.0625, height: 32 }
+Brand Mark: { x: 12, y: 7.5, width: 30, height: 32 }
+  ok  94 [medium] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 390px (3.5s)
+  ok  95 [desktop] › tests\geoportal.spec.js:556:1 › slider global cambia dos variables anuales sin consolidar (4.7s)
+  ok  96 [medium] › tests\fase10-e4.spec.js:51:1 › E4 limita los paneles y mantiene el scroll en su contenido (2.9s)
+  ok  97 [desktop] › tests\geoportal.spec.js:580:1 › variables de foto unica deshabilitan slider y muestran badge (2.6s)
+  ok  98 [medium] › tests\fase10-e4.spec.js:143:1 › E4 aumenta el área útil con el mismo cálculo territorial (2.7s)
+  ok  99 [desktop] › tests\geoportal.spec.js:595:1 › cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío (3.4s)
+  ok 100 [medium] › tests\geoportal-ant-layer.spec.js:32:1 › descarga mapa de calor ANT por defecto al cargar y no descarga GeoJSON completo (2.3s)
+  ok 101 [desktop] › tests\geoportal.spec.js:635:1 › cambio de nivel resuelve el año de la variable efectiva (4.5s)
+  ok 102 [medium] › tests\geoportal-ant-layer.spec.js:45:1 › el perfil focused conserva la vista macro y afina ciudad y calle (6.2s)
+  ok 104 [medium] › tests\geoportal-ant-layer.spec.js:71:1 › aviso accesible explica el ajuste al último año disponible (2.9s)
+  ok 103 [desktop] › tests\geoportal.spec.js:654:1 › explica variables y perfiles en lenguaje ciudadano (5.7s)
+  ok 106 [desktop] › tests\geoportal.spec.js:694:1 › perfil distingue ausencia de desglose de un conteo de cero fallecidos (3.6s)
+  ok 105 [medium] › tests\geoportal-ant-layer.spec.js:86:1 › Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas (6.3s)
+  ok 107 [desktop] › tests\geoportal.spec.js:710:1 › ranking nacional ordena, excluye sin dato y busca la posicion cantonal (4.6s)
+  -  109 [desktop] › tests\geoportal.spec.js:759:1 › modal institucional es usable en movil y publica confianza y cita dinamica
+  ok 108 [medium] › tests\geoportal-ant-layer.spec.js:190:1 › Casos se dibuja con el compacto antes de completar sus atributos (4.9s)
+  ok 110 [desktop] › tests\geoportal.spec.js:792:1 › ficha territorial permanece visible dentro de la tarjeta de leyenda (3.8s)
+  ok 111 [medium] › tests\geoportal-ant-layer.spec.js:225:1 › la capa sigue el año global, cancela cargas obsoletas y conserva un solo año en caché (3.3s)
+  ok 112 [desktop] › tests\geoportal.spec.js:823:1 › ficha territorial comparte la tarjeta única y no crea otra región (4.4s)
+  ok 113 [medium] › tests\geoportal-ant-layer.spec.js:263:1 › modo histórico desactiva Siniestros ANT sin dejar un año individual visible (3.6s)
+  ok 114 [desktop] › tests\geoportal.spec.js:852:1 › capa OSM nacional carga bajo demanda y explicita cantones sin mapeo (3.3s)
+  -  116 [desktop] › tests\geoportal.spec.js:870:1 › mobile conserva una superficie de mapa util en telefono y tablet
+  -  117 [desktop] › tests\geoportal.spec.js:903:1 › mobile completa el flujo tactil sin paneles fuera del viewport
+  ok 115 [medium] › tests\geoportal-ant-layer.spec.js:315:1 › el análisis territorial ANT usa el punto seleccionado y lenguaje metodológico (4.5s)
+  ok 118 [desktop] › tests\geoportal.spec.js:1027:1 › Legend classification tooltips and adaptive color palettes verify correctly (4.5s)
+  ok 119 [medium] › tests\geoportal-ant-layer.spec.js:333:1 › la leyenda usa cero explícito y nunca muestra el rango confuso menor o igual a cero (3.9s)
+  -  121 [medium] › tests\geoportal-ant-layer.spec.js:346:1 › controles ANT caben en el drawer móvil y tienen objetivos táctiles
+  ok 122 [medium] › tests\geoportal-citizen-analysis.spec.js:32:1 › buscador y leyenda comparten la paleta oscura y conservan el tema claro (3.1s)
+  -  123 [medium] › tests\geoportal-citizen-analysis.spec.js:93:1 › Ranking y Catálogo comparten el tema oscuro y restauran su apariencia clara
+  ok 120 [desktop] › tests\geoportal.spec.js:1061:1 › EDG parish-derived fatalities are available at province, canton and parish levels (5.8s)
+  ok 124 [medium] › tests\geoportal-citizen-analysis.spec.js:147:1 › la identidad, introducción y resumen territorial permanecen accesibles sin duplicarse (5.0s)
+  ok 125 [desktop] › tests\geoportal.spec.js:1090:1 › Territory tooltip displays Siniestros and Fallecidos in dedicated lines without cross-fallbacks (4.8s)
+  ok 126 [medium] › tests\geoportal-citizen-analysis.spec.js:163:1 › análisis tiene volver independiente, tema completo y scroll hasta el final (6.9s)
+  ok 127 [desktop] › tests\geoportal.spec.js:1124:1 › la ficha parroquial omite población y tasas y explica el criterio (7.1s)
+  ok 128 [medium] › tests\geoportal-citizen-analysis.spec.js:227:1 › Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador (2.8s)
+  ok 129 [desktop] › tests\geoportal.spec.js:1183:1 › Territory tooltip deduplicates fixed lines by source field (3.0s)
+  ok 130 [medium] › tests\geoportal-citizen-analysis.spec.js:237:1 › fase 4 usa la marca real y presenta análisis, callouts y serie por tipo (5.9s)
+  -  132 [medium] › tests\geoportal-citizen-analysis.spec.js:317:1 › breadcrumb usa exactamente provincia, cantón y parroquia seleccionados
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 131 [desktop] › tests\geoportal.spec.js:1215:1 › switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincronizacion bidireccional (12.1s)
+  ok 133 [medium] › tests\geoportal-improvements.spec.js:48:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › tour appears on first visit, can be closed and reopened (10.5s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 134 [medium] › tests\geoportal-lazy-load.spec.js:3:1 › la carga inicial usa provincias e índice y difiere cantones (2.3s)
+  -  135 [medium] › tests\geoportal-improvements.spec.js:120:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › mobile tour highlights every visible target inside the viewport
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 136 [medium] › tests\geoportal-lazy-load.spec.js:21:1 › búsqueda, ranking y ficha activan datos cantonales bajo demanda (3.9s)
+  -  138 [medium] › tests\geoportal-mobile-ux.spec.js:26:5 › Geoportal Mobile UX Improvements › mobile drawer mutual exclusivity (sidebar, layers) preserves period and intensity controls
+  ok 137 [medium] › tests\geoportal-improvements.spec.js:191:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › catalog modal opens and displays variables (6.6s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 139 [medium] › tests\geoportal-mobile-ux.spec.js:66:5 › Geoportal Mobile UX Improvements › mobile-level-bar is positioned below top navigation without overlap (2.8s)
+  ok 140 [medium] › tests\geoportal-improvements.spec.js:306:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › methodology links use the professional interface and drawer has no direct download (3.3s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  -  141 [medium] › tests\geoportal-mobile-ux.spec.js:98:5 › Geoportal Mobile UX Improvements › mobile year bar shows coverage and stays synchronized with the main timeline
+  ok 142 [medium] › tests\geoportal-improvements.spec.js:323:9 › Observatory Improvements (Blocks B, C, D, E) › Block D: Basemap and Opacity › opacity slider changes territory opacity without fading infrastructure (3.4s)
+  -  143 [medium] › tests\geoportal-mobile-ux.spec.js:203:5 › Geoportal Mobile UX Improvements › mobile territorial shortcut has no horizontal scroll and exposes both actions
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+BROWSER CONSOLE: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  -  145 [medium] › tests\geoportal-mobile-ux.spec.js:229:5 › Geoportal Mobile UX Improvements › mobile panel topbars have sticky positioning for close button accessibility
+  ok 144 [medium] › tests\geoportal-improvements.spec.js:376:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › theme toggle changes body class and localstorage (4.8s)
+  -  146 [medium] › tests\geoportal-mobile-ux.spec.js:240:5 › Geoportal Mobile UX Improvements › search input has font-size 16px on mobile to prevent iOS auto-zoom
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 148 [medium] › tests\geoportal-mobile-ux.spec.js:249:5 › Geoportal Mobile UX Improvements › desktop search and legend remain visible and mobile controls are hidden (2.4s)
+  ok 149 [medium] › tests\geoportal-national-search.spec.js:31:1 › el estado inicial muestra una referencia nacional que sigue variable, año y periodo (2.2s)
+  ok 147 [medium] › tests\geoportal-improvements.spec.js:449:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › cursor coordinates display on mousemove (5.5s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 151 [medium] › tests\geoportal-improvements.spec.js:472:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA_MEASUREMENT_ID constant is defined and correctly configured (2.6s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 152 [medium] › tests\geoportal-improvements.spec.js:477:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 script is NOT loaded in localhost / 127.0.0.1 development environment (2.4s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 150 [medium] › tests\geoportal-national-search.spec.js:69:1 › la búsqueda selecciona provincia, cantón y parroquia sin abrir el análisis (6.6s)
+  ok 153 [medium] › tests\geoportal-improvements.spec.js:482:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 privacy notice is visible in "¿Por qué confiar?" section (3.6s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 154 [medium] › tests\geoportal-national-search.spec.js:88:1 › una búsqueda parroquial conserva la variable y muestra límites con aviso cuando no aplica (5.2s)
+  ok 155 [medium] › tests\geoportal-improvements.spec.js:498:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons show available, unavailable and selected states, and update on click (3.4s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 157 [medium] › tests\geoportal-improvements.spec.js:525:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons are disabled for foto_unica variables (3.6s)
+  ok 156 [medium] › tests\geoportal-phase6-visual.spec.js:27:1 › captura la barra de controles y la leyenda única en claro y oscuro (4.9s)
+  ok 158 [medium] › tests\geoportal-phase7.spec.js:24:1 › Fase 9 conserva Nivel y Año visibles sin saturar el topbar (3.3s)
+  ok 159 [medium] › tests\geoportal-responsive-panels.spec.js:42:1 › la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPAS (4.3s)
+  ok 160 [medium] › tests\geoportal-phase7.spec.js:40:1 › IA fija la leyenda a la izquierda sin intersecciones en todas las combinaciones (2.8s)
+  ok 162 [medium] › tests\geoportal-phase7.spec.js:60:1 › IB ofrece dos pestañas ARIA y análisis con ancho propio (2.6s)
+  ok 161 [medium] › tests\geoportal-responsive-panels.spec.js:117:1 › la barra superior concentra accesos y el buscador refleja capas extra en vivo (4.4s)
+  ok 163 [medium] › tests\geoportal-phase7.spec.js:78:1 › IC mantiene Periodo e Intensidad en CAPAS y la visibilidad parroquial (4.5s)
+  ok 164 [medium] › tests\geoportal-responsive-panels.spec.js:152:1 › los cambios cartográficos conservan la pestaña elegida por la persona (4.7s)
+  ok 165 [medium] › tests\geoportal.spec.js:27:1 › carga contratos territoriales y atribuciones (2.4s)
+  ok 167 [medium] › tests\geoportal.spec.js:39:1 › abre como observatorio nacional con mapa de calor y sin infraestructura (2.7s)
+  ok 168 [medium] › tests\geoportal.spec.js:74:1 › encuentra un canton y mantiene el resumen ciudadano breve (3.8s)
+  ok 166 [medium] › tests\geoportal-responsive-panels.spec.js:188:1 › las tres capas del mapa comparten una sola tarjeta y conservan controles independientes (8.4s)
+  ok 170 [medium] › tests\geoportal-responsive-panels.spec.js:308:1 › panel ciudadano web conserva estado y separa selección de análisis (4.5s)
+  ok 169 [medium] › tests\geoportal.spec.js:92:1 › busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana (5.6s)
+  -  172 [medium] › tests\geoportal.spec.js:142:1 › genera una ficha PDF territorial en memoria
+  -  173 [medium] › tests\geoportal.spec.js:179:1 › la ficha PDF parroquial omite el contexto de población y tasas
+  -  174 [medium] › tests\geoportal.spec.js:201:1 › modo tecnico conserva variables, capas, metodologia y estado todo apagado
+  ok 171 [medium] › tests\geoportal-responsive-panels.spec.js:338:1 › ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección (4.1s)
+  ok 175 [medium] › tests\geoportal.spec.js:254:1 › selector de variables permite selección única y deselección accesible (4.5s)
+  -  177 [medium] › tests\geoportal.spec.js:299:1 › carga vias OSM independientes y conserva la escala grafica
+  ok 176 [medium] › tests\geoportal-responsive-panels.spec.js:409:1 › la tarjeta informa y el topbar conserva todos los controles (3.8s)
+  ok 178 [medium] › tests\geoportal.spec.js:349:1 › leyenda declara cuando la variable no existe en el nivel territorial (3.7s)
+  -  180 [medium] › tests\geoportal.spec.js:365:1 › el encabezado del analisis permanece accesible y el contenido llega hasta el final
+  -  181 [medium] › tests\geoportal.spec.js:394:1 › paneles alternan entre anio y acumulados con cobertura explicita
+  ok 179 [medium] › tests\geoportal-responsive-panels.spec.js:473:1 › Leyenda distingue representaciones principales de controles secundarios (4.1s)
+  ok 183 [medium] › tests\geoportal-responsive-panels.spec.js:514:1 › panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles (2.3s)
+  ok 182 [medium] › tests\geoportal.spec.js:417:1 › cambia una sola capa territorial por zoom (5.2s)
+  ok 184 [medium] › tests\geoportal-responsive-panels.spec.js:535:1 › variable territorial y Siniestros ANT explican los periodos no disponibles (2.6s)
+  ok 185 [medium] › tests\geoportal.spec.js:438:1 › clic en canton fija la seleccion sin saltar a parroquias (4.8s)
+  ok 186 [medium] › tests\geoportal-responsive-panels.spec.js:553:1 › infraestructura usa SVG compartido y conserva la interacción territorial (4.5s)
+  -  188 [medium] › tests\geoportal-responsive-panels.spec.js:601:1 › pantalla grande mantiene el buscador y la leyenda compacta visible
+  -  189 [medium] › tests\geoportal-responsive-panels.spec.js:616:1 › mobile conserva sus paneles off-canvas y barra inferior
+  ok 187 [medium] › tests\geoportal.spec.js:457:1 › hover no cambia panel y la seleccion persiste al hacer scroll (4.4s)
+  ok 190 [medium] › tests\geoportal-responsive-panels.spec.js:627:1 › mapas base ocupa el panel contextual sin superponerse (3.1s)
+  -  192 [medium] › tests\geoportal-responsive-panels.spec.js:635:1 › mapas base no se superpone en una ventana web angosta
+  ok 191 [medium] › tests\geoportal.spec.js:492:1 › solo conserva resaltada la unidad territorial seleccionada (3.6s)
+  ok 193 [medium] › tests\geoportal-responsive-panels.spec.js:642:1 › zoom, ubicación y grupos de herramientas son operables en la barra (7.0s)
+  ok 194 [medium] › tests\geoportal.spec.js:514:1 › control territorial permite fijar nivel y volver a modo automatico (4.0s)
+  -  195 [medium] › tests\geoportal-responsive-panels.spec.js:694:1 › ubicación informa cuando el permiso es denegado
+  ok 197 [medium] › tests\geoportal-responsive-panels.spec.js:712:1 › catálogo vive en la barra superior y la marca oficial se muestra legible (3.2s)
+  ok 196 [medium] › tests\geoportal.spec.js:536:1 › recalcula bins por nivel y cae a limites cuando no aplica (4.9s)
+  ok 198 [medium] › tests\geoportal-responsive-panels.spec.js:729:1 › Dark Matter activa realce cartográfico sin cambiar el tema de interfaz (3.8s)
+  -  200 [medium] › tests\geoportal-responsive-panels.spec.js:754:1 › la superficie territorial se oculta solo en zoom profundo y restaura la opacidad
+  ok 199 [medium] › tests\geoportal.spec.js:556:1 › slider global cambia dos variables anuales sin consolidar (4.2s)
+
+=== Medición en 1920px ===
+Topbar: { x: 0, y: 0, width: 1920, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1896, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1593.828125, height: 34 }
+Right Group: { x: 1833.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok 202 [medium] › tests\geoportal.spec.js:580:1 › variables de foto unica deshabilitan slider y muestran badge (2.8s)
+  ok 203 [medium] › tests\geoportal.spec.js:595:1 › cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío (2.8s)
+  -  204 [medium] › tests\geoportal.spec.js:635:1 › cambio de nivel resuelve el año de la variable efectiva
+  ok 205 [medium] › tests\geoportal.spec.js:654:1 › explica variables y perfiles en lenguaje ciudadano (4.7s)
+  -  206 [medium] › tests\geoportal.spec.js:694:1 › perfil distingue ausencia de desglose de un conteo de cero fallecidos
+  -  207 [medium] › tests\geoportal.spec.js:710:1 › ranking nacional ordena, excluye sin dato y busca la posicion cantonal
+  -  208 [medium] › tests\geoportal.spec.js:759:1 › modal institucional es usable en movil y publica confianza y cita dinamica
+  ok 209 [medium] › tests\geoportal.spec.js:792:1 › ficha territorial permanece visible dentro de la tarjeta de leyenda (3.7s)
+  -  210 [medium] › tests\geoportal.spec.js:823:1 › ficha territorial comparte la tarjeta única y no crea otra región
+  -  211 [medium] › tests\geoportal.spec.js:852:1 › capa OSM nacional carga bajo demanda y explicita cantones sin mapeo
+  -  212 [medium] › tests\geoportal.spec.js:870:1 › mobile conserva una superficie de mapa util en telefono y tablet
+  -  213 [medium] › tests\geoportal.spec.js:903:1 › mobile completa el flujo tactil sin paneles fuera del viewport
+  ok 214 [medium] › tests\geoportal.spec.js:1027:1 › Legend classification tooltips and adaptive color palettes verify correctly (3.4s)
+  ok 201 [mobile] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1920px (21.3s)
+
+=== Medición en 1440px ===
+Topbar: { x: 0, y: 0, width: 1440, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1416, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 1113.828125, height: 34 }
+Right Group: { x: 1353.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok 215 [medium] › tests\geoportal.spec.js:1061:1 › EDG parish-derived fatalities are available at province, canton and parish levels (4.7s)
+  ok 217 [medium] › tests\geoportal.spec.js:1090:1 › Territory tooltip displays Siniestros and Fallecidos in dedicated lines without cross-fallbacks (3.9s)
+  ok 218 [medium] › tests\geoportal.spec.js:1124:1 › la ficha parroquial omite población y tasas y explica el criterio (5.2s)
+  ok 219 [medium] › tests\geoportal.spec.js:1183:1 › Territory tooltip deduplicates fixed lines by source field (2.1s)
+  -  220 [medium] › tests\geoportal.spec.js:1215:1 › switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincronizacion bidireccional
+  ok 216 [mobile] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1440px (16.1s)
+
+=== Medición en 1180px ===
+Topbar: { x: 0, y: 0, width: 1180, height: 44 }
+Topbar Main: { x: 12, y: 0, width: 1156, height: 43 }
+Brand: { x: 12, y: 3.5, width: 195.53125, height: 36 }
+Brand Mark: { x: 12, y: 3.5, width: 34, height: 36 }
+Center Controls: { x: 223.53125, y: 4.5, width: 853.828125, height: 34 }
+Right Group: { x: 1093.359375, y: 3.5, width: 74.640625, height: 36 }
+  ok 221 [mobile] › tests\fase10-e4.spec.js:51:1 › E4 limita los paneles y mantiene el scroll en su contenido (4.1s)
+  ok 223 [mobile] › tests\fase10-e4.spec.js:143:1 › E4 aumenta el área útil con el mismo cálculo territorial (2.5s)
+  ok 224 [mobile] › tests\geoportal-ant-layer.spec.js:32:1 › descarga mapa de calor ANT por defecto al cargar y no descarga GeoJSON completo (2.2s)
+  ok 225 [mobile] › tests\geoportal-ant-layer.spec.js:45:1 › el perfil focused conserva la vista macro y afina ciudad y calle (5.9s)
+  ok 222 [mobile] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 1180px (15.4s)
+
+=== Medición en 390px ===
+Topbar: { x: 0, y: 0, width: 390, height: 48 }
+Topbar Main: { x: 12, y: 0, width: 366, height: 47 }
+Brand: { x: 12, y: 7.5, width: 144.0625, height: 32 }
+Brand Mark: { x: 12, y: 7.5, width: 30, height: 32 }
+  ok 226 [mobile] › tests\geoportal-ant-layer.spec.js:71:1 › aviso accesible explica el ajuste al último año disponible (3.2s)
+  ok 227 [mobile] › tests\fase10-e1.spec.js:14:5 › Fase 10 - E1: Estructura de Barra Superior › E1 medicion y comportamiento en 390px (6.2s)
+  ok 228 [mobile] › tests\geoportal-ant-layer.spec.js:86:1 › Calor carga el compacto y los tres modos reutilizan datos sin descargas duplicadas (6.8s)
+  ok 229 [mobile] › tests\geoportal-citizen-analysis.spec.js:32:1 › buscador y leyenda comparten la paleta oscura y conservan el tema claro (3.1s)
+  -  231 [mobile] › tests\geoportal-citizen-analysis.spec.js:93:1 › Ranking y Catálogo comparten el tema oscuro y restauran su apariencia clara
+  ok 232 [mobile] › tests\geoportal-citizen-analysis.spec.js:147:1 › la identidad, introducción y resumen territorial permanecen accesibles sin duplicarse (4.3s)
+  ok 230 [mobile] › tests\geoportal-ant-layer.spec.js:190:1 › Casos se dibuja con el compacto antes de completar sus atributos (5.4s)
+  ok 234 [mobile] › tests\geoportal-ant-layer.spec.js:225:1 › la capa sigue el año global, cancela cargas obsoletas y conserva un solo año en caché (3.5s)
+  ok 235 [mobile] › tests\geoportal-ant-layer.spec.js:263:1 › modo histórico desactiva Siniestros ANT sin dejar un año individual visible (3.3s)
+  ok 233 [mobile] › tests\geoportal-citizen-analysis.spec.js:163:1 › análisis tiene volver independiente, tema completo y scroll hasta el final (10.5s)
+  ok 236 [mobile] › tests\geoportal-ant-layer.spec.js:315:1 › el análisis territorial ANT usa el punto seleccionado y lenguaje metodológico (4.3s)
+  ok 237 [mobile] › tests\geoportal-citizen-analysis.spec.js:227:1 › Datos y capas no conserva el contenedor Leaflet vacío que parecía un buscador (2.8s)
+  ok 238 [mobile] › tests\geoportal-ant-layer.spec.js:333:1 › la leyenda usa cero explícito y nunca muestra el rango confuso menor o igual a cero (4.1s)
+  ok 240 [mobile] › tests\geoportal-ant-layer.spec.js:346:1 › controles ANT caben en el drawer móvil y tienen objetivos táctiles (3.2s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 239 [mobile] › tests\geoportal-citizen-analysis.spec.js:237:1 › fase 4 usa la marca real y presenta análisis, callouts y serie por tipo (6.5s)
+  -  242 [mobile] › tests\geoportal-citizen-analysis.spec.js:317:1 › breadcrumb usa exactamente provincia, cantón y parroquia seleccionados
+  -  241 [mobile] › tests\geoportal-improvements.spec.js:48:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › tour appears on first visit, can be closed and reopened
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 243 [mobile] › tests\geoportal-lazy-load.spec.js:3:1 › la carga inicial usa provincias e índice y difiere cantones (2.7s)
+  ok 245 [mobile] › tests\geoportal-lazy-load.spec.js:21:1 › búsqueda, ranking y ficha activan datos cantonales bajo demanda (4.7s)
+  ok 246 [mobile] › tests\geoportal-mobile-ux.spec.js:26:5 › Geoportal Mobile UX Improvements › mobile drawer mutual exclusivity (sidebar, layers) preserves period and intensity controls (4.6s)
+  ok 244 [mobile] › tests\geoportal-improvements.spec.js:120:9 › Observatory Improvements (Blocks B, C, D, E) › Block B: Guided Tour › mobile tour highlights every visible target inside the viewport (11.3s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 247 [mobile] › tests\geoportal-mobile-ux.spec.js:66:5 › Geoportal Mobile UX Improvements › mobile-level-bar is positioned below top navigation without overlap (3.2s)
+  ok 249 [mobile] › tests\geoportal-mobile-ux.spec.js:98:5 › Geoportal Mobile UX Improvements › mobile year bar shows coverage and stays synchronized with the main timeline (4.3s)
+  ok 248 [mobile] › tests\geoportal-improvements.spec.js:191:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › catalog modal opens and displays variables (6.4s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 251 [mobile] › tests\geoportal-improvements.spec.js:306:9 › Observatory Improvements (Blocks B, C, D, E) › Block C: Data Catalog › methodology links use the professional interface and drawer has no direct download (3.7s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 250 [mobile] › tests\geoportal-mobile-ux.spec.js:203:5 › Geoportal Mobile UX Improvements › mobile territorial shortcut has no horizontal scroll and exposes both actions (4.5s)
+  ok 252 [mobile] › tests\geoportal-improvements.spec.js:323:9 › Observatory Improvements (Blocks B, C, D, E) › Block D: Basemap and Opacity › opacity slider changes territory opacity without fading infrastructure (3.0s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 253 [mobile] › tests\geoportal-mobile-ux.spec.js:229:5 › Geoportal Mobile UX Improvements › mobile panel topbars have sticky positioning for close button accessibility (3.3s)
+BROWSER CONSOLE: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
+  ok 255 [mobile] › tests\geoportal-mobile-ux.spec.js:240:5 › Geoportal Mobile UX Improvements › search input has font-size 16px on mobile to prevent iOS auto-zoom (3.0s)
+  ok 254 [mobile] › tests\geoportal-improvements.spec.js:376:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › theme toggle changes body class and localstorage (5.3s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  -  256 [mobile] › tests\geoportal-mobile-ux.spec.js:249:5 › Geoportal Mobile UX Improvements › desktop search and legend remain visible and mobile controls are hidden
+  -  257 [mobile] › tests\geoportal-improvements.spec.js:449:9 › Observatory Improvements (Blocks B, C, D, E) › Block E: UI Theme & Coordinates › cursor coordinates display on mousemove
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 258 [mobile] › tests\geoportal-national-search.spec.js:31:1 › el estado inicial muestra una referencia nacional que sigue variable, año y periodo (3.7s)
+  ok 259 [mobile] › tests\geoportal-improvements.spec.js:472:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA_MEASUREMENT_ID constant is defined and correctly configured (3.4s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 261 [mobile] › tests\geoportal-improvements.spec.js:477:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 script is NOT loaded in localhost / 127.0.0.1 development environment (2.6s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 260 [mobile] › tests\geoportal-national-search.spec.js:69:1 › la búsqueda selecciona provincia, cantón y parroquia sin abrir el análisis (7.0s)
+  ok 262 [mobile] › tests\geoportal-improvements.spec.js:482:9 › Observatory Improvements (Blocks B, C, D, E) › Block F: Google Analytics 4 (GA4) › GA4 privacy notice is visible in "¿Por qué confiar?" section (3.7s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 264 [mobile] › tests\geoportal-improvements.spec.js:498:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons show available, unavailable and selected states, and update on click (3.9s)
+BROWSER CONSOLE: [GA4] Entorno local/pruebas detectado (127.0.0.1). No se envía telemetría a Google Analytics.
+  ok 263 [mobile] › tests\geoportal-national-search.spec.js:88:1 › una búsqueda parroquial conserva la variable y muestra límites con aviso cuando no aplica (5.0s)
+  ok 265 [mobile] › tests\geoportal-improvements.spec.js:525:9 › Observatory Improvements (Blocks B, C, D, E) › Block G: Timeline Year Buttons & 3 Visual States › timeline year buttons are disabled for foto_unica variables (3.6s)
+  ok 267 [mobile] › tests\geoportal-phase7.spec.js:24:1 › Fase 9 conserva Nivel y Año visibles sin saturar el topbar (2.2s)
+  -  268 [mobile] › tests\geoportal-phase7.spec.js:40:1 › IA fija la leyenda a la izquierda sin intersecciones en todas las combinaciones
+  ok 266 [mobile] › tests\geoportal-phase6-visual.spec.js:27:1 › captura la barra de controles y la leyenda única en claro y oscuro (5.8s)
+  ok 269 [mobile] › tests\geoportal-phase7.spec.js:60:1 › IB ofrece dos pestañas ARIA y análisis con ancho propio (3.0s)
+  ok 270 [mobile] › tests\geoportal-responsive-panels.spec.js:42:1 › la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPAS (4.5s)
+  ok 271 [mobile] › tests\geoportal-phase7.spec.js:78:1 › IC mantiene Periodo e Intensidad en CAPAS y la visibilidad parroquial (4.8s)
+  ok 272 [mobile] › tests\geoportal-responsive-panels.spec.js:117:1 › la barra superior concentra accesos y el buscador refleja capas extra en vivo (4.7s)
+  ok 273 [mobile] › tests\geoportal.spec.js:27:1 › carga contratos territoriales y atribuciones (2.6s)
+  ok 275 [mobile] › tests\geoportal.spec.js:39:1 › abre como observatorio nacional con mapa de calor y sin infraestructura (3.3s)
+  ok 274 [mobile] › tests\geoportal-responsive-panels.spec.js:152:1 › los cambios cartográficos conservan la pestaña elegida por la persona (4.7s)
+  ok 276 [mobile] › tests\geoportal.spec.js:74:1 › encuentra un canton y mantiene el resumen ciudadano breve (4.1s)
+  -  278 [mobile] › tests\geoportal.spec.js:92:1 › busqueda cantonal encuadra el territorio entre los paneles en pantalla mediana
+  -  279 [mobile] › tests\geoportal.spec.js:142:1 › genera una ficha PDF territorial en memoria
+  -  280 [mobile] › tests\geoportal.spec.js:179:1 › la ficha PDF parroquial omite el contexto de población y tasas
+  -  281 [mobile] › tests\geoportal.spec.js:201:1 › modo tecnico conserva variables, capas, metodologia y estado todo apagado
+  ok 277 [mobile] › tests\geoportal-responsive-panels.spec.js:188:1 › las tres capas del mapa comparten una sola tarjeta y conservan controles independientes (7.6s)
+  -  283 [mobile] › tests\geoportal-responsive-panels.spec.js:308:1 › panel ciudadano web conserva estado y separa selección de análisis
+  ok 282 [mobile] › tests\geoportal.spec.js:254:1 › selector de variables permite selección única y deselección accesible (4.5s)
+  -  285 [mobile] › tests\geoportal.spec.js:299:1 › carga vias OSM independientes y conserva la escala grafica
+  ok 286 [mobile] › tests\geoportal.spec.js:349:1 › leyenda declara cuando la variable no existe en el nivel territorial (3.9s)
+  ok 284 [mobile] › tests\geoportal-responsive-panels.spec.js:338:1 › ficha territorial vive dentro de la tarjeta única y desaparece al limpiar la selección (5.7s)
+  -  287 [mobile] › tests\geoportal.spec.js:365:1 › el encabezado del analisis permanece accesible y el contenido llega hasta el final
+  -  289 [mobile] › tests\geoportal.spec.js:394:1 › paneles alternan entre anio y acumulados con cobertura explicita
+  ok 288 [mobile] › tests\geoportal-responsive-panels.spec.js:409:1 › la tarjeta informa y el topbar conserva todos los controles (4.1s)
+  ok 290 [mobile] › tests\geoportal.spec.js:417:1 › cambia una sola capa territorial por zoom (5.2s)
+  ok 291 [mobile] › tests\geoportal-responsive-panels.spec.js:473:1 › Leyenda distingue representaciones principales de controles secundarios (5.2s)
+  ok 292 [mobile] › tests\geoportal.spec.js:438:1 › clic en canton fija la seleccion sin saltar a parroquias (5.1s)
+  ok 293 [mobile] › tests\geoportal-responsive-panels.spec.js:514:1 › panel ciudadano prioriza cifras y conserva la metodología en ayudas accesibles (2.8s)
+  ok 295 [mobile] › tests\geoportal-responsive-panels.spec.js:535:1 › variable territorial y Siniestros ANT explican los periodos no disponibles (2.8s)
+  ok 294 [mobile] › tests\geoportal.spec.js:457:1 › hover no cambia panel y la seleccion persiste al hacer scroll (5.1s)
+  ok 297 [mobile] › tests\geoportal.spec.js:492:1 › solo conserva resaltada la unidad territorial seleccionada (3.8s)
+  ok 296 [mobile] › tests\geoportal-responsive-panels.spec.js:553:1 › infraestructura usa SVG compartido y conserva la interacción territorial (6.9s)
+  -  299 [mobile] › tests\geoportal-responsive-panels.spec.js:601:1 › pantalla grande mantiene el buscador y la leyenda compacta visible
+  ok 298 [mobile] › tests\geoportal.spec.js:514:1 › control territorial permite fijar nivel y volver a modo automatico (4.4s)
+  ok 300 [mobile] › tests\geoportal-responsive-panels.spec.js:616:1 › mobile conserva sus paneles off-canvas y barra inferior (2.4s)
+  ok 302 [mobile] › tests\geoportal-responsive-panels.spec.js:627:1 › mapas base ocupa el panel contextual sin superponerse (3.6s)
+  -  303 [mobile] › tests\geoportal-responsive-panels.spec.js:635:1 › mapas base no se superpone en una ventana web angosta
+  ok 301 [mobile] › tests\geoportal.spec.js:536:1 › recalcula bins por nivel y cae a limites cuando no aplica (4.7s)
+  ok 305 [mobile] › tests\geoportal.spec.js:556:1 › slider global cambia dos variables anuales sin consolidar (5.3s)
+  ok 304 [mobile] › tests\geoportal-responsive-panels.spec.js:642:1 › zoom, ubicación y grupos de herramientas son operables en la barra (6.4s)
+  -  307 [mobile] › tests\geoportal-responsive-panels.spec.js:694:1 › ubicación informa cuando el permiso es denegado
+  ok 306 [mobile] › tests\geoportal.spec.js:580:1 › variables de foto unica deshabilitan slider y muestran badge (3.3s)
+  ok 308 [mobile] › tests\geoportal-responsive-panels.spec.js:712:1 › catálogo vive en la barra superior y la marca oficial se muestra legible (3.4s)
+  ok 309 [mobile] › tests\geoportal.spec.js:595:1 › cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío (4.1s)
+  -  311 [mobile] › tests\geoportal.spec.js:635:1 › cambio de nivel resuelve el año de la variable efectiva
+  ok 310 [mobile] › tests\geoportal-responsive-panels.spec.js:729:1 › Dark Matter activa realce cartográfico sin cambiar el tema de interfaz (6.6s)
+  -  313 [mobile] › tests\geoportal-responsive-panels.spec.js:754:1 › la superficie territorial se oculta solo en zoom profundo y restaura la opacidad
+  ok 312 [mobile] › tests\geoportal.spec.js:654:1 › explica variables y perfiles en lenguaje ciudadano (5.5s)
+  -  314 [mobile] › tests\geoportal.spec.js:694:1 › perfil distingue ausencia de desglose de un conteo de cero fallecidos
+  -  315 [mobile] › tests\geoportal.spec.js:710:1 › ranking nacional ordena, excluye sin dato y busca la posicion cantonal
+  ok 316 [mobile] › tests\geoportal.spec.js:759:1 › modal institucional es usable en movil y publica confianza y cita dinamica (4.0s)
+  ok 317 [mobile] › tests\geoportal.spec.js:792:1 › ficha territorial permanece visible dentro de la tarjeta de leyenda (3.6s)
+  -  318 [mobile] › tests\geoportal.spec.js:823:1 › ficha territorial comparte la tarjeta única y no crea otra región
+  -  319 [mobile] › tests\geoportal.spec.js:852:1 › capa OSM nacional carga bajo demanda y explicita cantones sin mapeo
+  ok 320 [mobile] › tests\geoportal.spec.js:870:1 › mobile conserva una superficie de mapa util en telefono y tablet (5.2s)
+  ok 321 [mobile] › tests\geoportal.spec.js:903:1 › mobile completa el flujo tactil sin paneles fuera del viewport (4.7s)
+  ok 322 [mobile] › tests\geoportal.spec.js:1027:1 › Legend classification tooltips and adaptive color palettes verify correctly (3.8s)
+  ok 323 [mobile] › tests\geoportal.spec.js:1061:1 › EDG parish-derived fatalities are available at province, canton and parish levels (3.6s)
+  ok 324 [mobile] › tests\geoportal.spec.js:1090:1 › Territory tooltip displays Siniestros and Fallecidos in dedicated lines without cross-fallbacks (3.0s)
+  ok 325 [mobile] › tests\geoportal.spec.js:1124:1 › la ficha parroquial omite población y tasas y explica el criterio (4.9s)
+  ok 326 [mobile] › tests\geoportal.spec.js:1183:1 › Territory tooltip deduplicates fixed lines by source field (2.1s)
+  -  327 [mobile] › tests\geoportal.spec.js:1215:1 › switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincronizacion bidireccional
+
+  65 skipped
+  262 passed (10.7m)

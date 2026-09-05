@@ -21,7 +21,7 @@
     --brand-logo-width: 34px;
     --brand-logo-height: 36px;
     --brand-logo-dark-filter: brightness(1.22) saturate(1.08) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
-    --analysis-callout-accent: #4d96c2;
+    --analysis-callout-accent: var(--accent);
     --analysis-callout-bg: color-mix(in srgb, var(--accent) 10%, var(--analysis-card-bg));
     --analysis-hero-radius: 8px;
     --analysis-hero-accent-width: 4px;
@@ -1059,7 +1059,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
 }
 
 .infrastructure-toggle-input:checked + .infrastructure-switch-visual {
-    border-color: #4d96c2;
+    border-color: var(--accent);
     background: var(--accent);
 }
 
@@ -1963,6 +1963,12 @@ body:not(.light-theme) #institutional-modal .ranking-variable-chip {
     color: var(--text-primary);
 }
 
+body:not(.light-theme) #institutional-modal .trust-crosscheck {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border-glass));
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg-soft));
+    color: var(--text-secondary);
+}
+
 body:not(.light-theme) #institutional-modal .ranking-coverage,
 body:not(.light-theme) #institutional-modal .trust-privacy-notice {
     border-left-color: var(--accent);
@@ -2774,9 +2780,9 @@ body:not(.light-theme) #catalog-modal :is(button, input, a, summary):focus-visib
 .trust-crosscheck {
     margin-top: var(--space-4);
     padding: var(--space-4);
-    border: 1px solid #99d8df;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
     border-radius: 6px;
-    background: #effbfc;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .trust-crosscheck h4 {
@@ -2897,8 +2903,8 @@ body.light-theme .period-mode-note {
 }
 
 body.light-theme .layers-count-badge {
-    border-color: #99d8df;
-    background: #dff4f6;
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
     color: var(--accent);
 }
 
@@ -3496,7 +3502,7 @@ body.light-theme .territory-hover-tooltip {
 }
 
 .legend-layer-switch .infrastructure-toggle-input:checked + .infrastructure-switch-visual {
-    border-color: #4d96c2;
+    border-color: var(--accent);
     background: var(--accent);
 }
 
