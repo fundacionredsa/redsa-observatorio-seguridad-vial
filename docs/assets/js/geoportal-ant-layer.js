@@ -56,7 +56,8 @@
 
     const state = {
         initialized: false,
-        active: false,
+        active: true,
+        wasActiveInLegend: true,
         mode: "heat",
         periodMode: "year",
         year: null,
@@ -997,9 +998,16 @@
         state.map.on("click", handleAntMapClick);
         state.map.on("mousemove", handleAntMapMouseMove);
         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
-        setStatus("idle");
         setHeatOpacity(state.heatOpacity);
-        if (isAccumulatedMode()) setStatus("period_unavailable");
+        if (isAccumulatedMode()) {
+            state.active = false;
+            setStatus("period_unavailable");
+        } else if (!isYearAvailable()) {
+            setStatus("unavailable");
+        } else {
+            loadYear();
+        }
+        document.getElementById("ant-mode-controls")?.toggleAttribute("hidden", !state.active);
         syncControls();
     }
 

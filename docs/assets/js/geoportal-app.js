@@ -188,13 +188,22 @@
                     getSelectedYear: () => selectedYear,
                     getSelectedVariable: () => selectedVariable,
                     getVariableConfig: variable => VARIABLE_CONFIGS[variable] || null,
-                    getActivePeriodLabel: () => getActivePeriodLabel(VARIABLE_CONFIGS[selectedVariable]),
-                    getNationalSummary: () => calculateNationalVariableSummary(selectedVariable, selectedYear, selectedPeriodMode),
-                    getTerritorySummary: properties => ({
-                        variable: selectedVariable,
-                        value: getVariableValue(properties, selectedVariable, selectedYear),
-                        period: getActivePeriodLabel(VARIABLE_CONFIGS[selectedVariable])
-                    })
+                    getActivePeriodLabel: (config) => {
+                        const targetConfig = config || VARIABLE_CONFIGS[selectedVariable === "normal" ? (window._lastActiveVariable || "siniestros_inec_2019") : selectedVariable];
+                        return getActivePeriodLabel(targetConfig);
+                    },
+                    getNationalSummary: () => {
+                        const targetVar = selectedVariable === "normal" ? (window._lastActiveVariable || "siniestros_inec_2019") : selectedVariable;
+                        return calculateNationalVariableSummary(targetVar, selectedYear, selectedPeriodMode);
+                    },
+                    getTerritorySummary: properties => {
+                        const targetVar = selectedVariable === "normal" ? (window._lastActiveVariable || "siniestros_inec_2019") : selectedVariable;
+                        return {
+                            variable: targetVar,
+                            value: getVariableValue(properties, targetVar, selectedYear),
+                            period: getActivePeriodLabel(VARIABLE_CONFIGS[targetVar])
+                        };
+                    }
                 });
                 window.REDSAInstitutional?.init({
                     // El indice liviano sirve para buscar, pero no contiene las
@@ -541,6 +550,8 @@
                     return changed;
                 }
 
+                window._lastActiveVariable = window._lastActiveVariable || "siniestros_inec_2019";
+
                 function selectMapVariable(variable, options = {}) {
                     if (!VARIABLE_CONFIGS[variable]) return false;
                     if (variable !== "normal") {
@@ -841,7 +852,10 @@
                     resolveYearForVariable: (variable, year) => resolveYearForVariable(variable, year),
                     selectYear(year) {
                         const numericYear = Number(year);
-                        const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
+                        const effectiveVar = (selectedVariable === "normal")
+                            ? (window._lastActiveVariable || "siniestros_inec_2019")
+                            : selectedVariable;
+                        const coverage = TEMPORAL_COVERAGE[effectiveVar] || { tipo: "foto_unica", anios_disponibles: [] };
                         const isAnnual = coverage.tipo === "anual";
                         if (!ALL_TIMELINE_YEARS.includes(numericYear) || !isAnnual) return false;
                         selectedPeriodMode = "year";

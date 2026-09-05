@@ -29,16 +29,17 @@ function isFullAntGeoJson(url) {
   return new URL(url).pathname.endsWith(".geojson");
 }
 
-test("no descarga puntos ANT antes de activar la capa", async ({ page }) => {
+test("descarga mapa de calor ANT por defecto al cargar y no descarga GeoJSON completo", async ({ page }) => {
   const requests = [];
   page.on("request", request => {
     if (/siniestros_ant_20(24|25|26)(?:_heat\.json|\.geojson)/.test(request.url())) requests.push(request.url());
   });
   await waitForPortal(page);
-  expect(requests).toHaveLength(0);
+  expect(requests.some(url => url.includes("siniestros_ant_2025_heat.json"))).toBe(true);
+  expect(requests.some(url => isFullAntGeoJson(url))).toBe(false);
   const state = await page.evaluate(() => window.REDSAAntLayer.getAuditState());
-  expect(state.downloaded).toBe(false);
-  expect(state.active).toBe(false);
+  expect(state.active).toBe(true);
+  expect(state.mode).toBe("heat");
 });
 
 test("el perfil focused conserva la vista macro y afina ciudad y calle", async ({ page }, testInfo) => {
@@ -262,6 +263,7 @@ test("la capa sigue el año global, cancela cargas obsoletas y conserva un solo 
 test("modo histórico desactiva Siniestros ANT sin dejar un año individual visible", async ({ page }, testInfo) => {
   const isMobile = testInfo.project.name === "mobile";
   await waitForPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await openTechnicalPanel(page, isMobile);
   await page.locator("#event-layer-disclosure summary").click();
   await page.locator("#ant-layer-toggle").check();

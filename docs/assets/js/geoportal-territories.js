@@ -431,7 +431,7 @@ function onEachProvinceFeature(feature, layer) {
                     && activeVariableBins.method === "Sin datos";
                 const territoryOpacityControl = document.getElementById("territory-opacity-control");
                 const territoryOpacityLabel = document.getElementById("territory-opacity-label");
-                const hasTerritorialSurface = effectiveVariable !== "normal" && !unavailableAtLevel && !noValuesAtLevel;
+                const hasTerritorialSurface = Boolean(currentLevel) && !unavailableAtLevel && !noValuesAtLevel;
                 if (territoryOpacityControl) territoryOpacityControl.hidden = !hasTerritorialSurface;
                 if (territoryOpacityLabel && hasTerritorialSurface) {
                     territoryOpacityLabel.textContent = "Intensidad";
@@ -642,10 +642,7 @@ function onEachProvinceFeature(feature, layer) {
             panel.style.display = hasItems ? "block" : "none";
             const mapLegendCard = document.getElementById("map-legend-card");
             if (mapLegendCard) {
-                const hasLegend = selectedVariable !== "normal"
-                    || overlayLegendEntries.length > 0
-                    || Boolean(window._territoryToggledOffInLegend);
-                mapLegendCard.dataset.hasLegend = String(hasLegend);
+                mapLegendCard.dataset.hasLegend = "true";
             }
             window.syncLegendCardPresentation?.();
         }
@@ -677,6 +674,9 @@ function onEachProvinceFeature(feature, layer) {
                 const isChecked = variableToggle.checked;
                 if (!isChecked) {
                     window._territoryToggledOffInLegend = true;
+                    if (selectedVariable && selectedVariable !== "normal") {
+                        window._lastActiveVariable = selectedVariable;
+                    }
                     if (typeof selectMapVariable === "function") {
                         selectMapVariable("normal", { fromLegend: true });
                     } else if (typeof toggleMapVariable === "function") {
@@ -686,7 +686,7 @@ function onEachProvinceFeature(feature, layer) {
                     }
                 } else {
                     window._territoryToggledOffInLegend = false;
-                    const targetVar = window._lastActiveVariable || "siniestros";
+                    const targetVar = window._lastActiveVariable || "siniestros_inec_2019";
                     if (typeof selectMapVariable === "function") {
                         selectMapVariable(targetVar);
                     } else if (typeof toggleMapVariable === "function") {

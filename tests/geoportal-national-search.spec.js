@@ -30,6 +30,7 @@ async function searchTerritory(page, query, expectedLevel, expectedCode) {
 
 test("el estado inicial muestra una referencia nacional que sigue variable, año y periodo", async ({ page }) => {
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await expandLegendOnMobile(page);
   const reference = page.locator(".citizen-national-reference");
   await expect(reference).toBeVisible();

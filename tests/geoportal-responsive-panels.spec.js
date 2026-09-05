@@ -103,15 +103,15 @@ test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPA
     await analysisButton.click();
   }
   await expect(page.locator("#map-legend-card")).toBeVisible();
-  await page.locator("#legend-close-toggle").click();
-  await expect(page.locator("#map-legend-card")).toBeHidden();
-  await expect(page.locator("#legend-visibility-toggle")).toBeVisible();
-  await page.locator("#legend-visibility-toggle").click();
-  await expect(page.locator("#map-legend-card")).toBeVisible();
+  if (!await page.locator("#map-legend-card").evaluate(el => el.classList.contains("is-collapsed"))) {
+    await page.locator("#map-legend-card-collapse").click();
+  }
+  await expect(page.locator("#map-legend-card")).toHaveClass(/is-collapsed/);
+  await page.locator("#map-legend-card-collapse").click();
+  await expect(page.locator("#map-legend-card")).not.toHaveClass(/is-collapsed/);
   await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
-  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "0");
-  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-has-legend", "false");
-  await expect(page.locator("#map-legend-card")).toBeHidden();
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-has-legend", "true");
+  await expect(page.locator("#map-legend-card")).toBeVisible();
 });
 
 test("la barra superior concentra accesos y el buscador refleja capas extra en vivo", async ({ page }) => {
@@ -176,7 +176,7 @@ test("los cambios cartográficos conservan la pestaña elegida por la persona", 
 
   await page.evaluate(() => window.__redsaAudit.setOverlay("Ciclovías", true));
   await expectPanel("layers");
-  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "2");
+  await expect(page.locator("#map-legend-card")).toHaveAttribute("data-layer-count", "3");
   if ((page.viewportSize()?.width || 0) <= 768) {
     await expect(page.locator("#map-legend-card")).toBeHidden();
   } else {
@@ -408,6 +408,7 @@ test("ficha territorial vive dentro de la tarjeta única y desaparece al limpiar
 
 test("la tarjeta informa y el topbar conserva todos los controles", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   const isMobile = testInfo.project.name === "mobile";
   if (!isMobile) {
     await page.locator('[data-right-panel="layers"]').click();
@@ -471,6 +472,7 @@ test("la tarjeta informa y el topbar conserva todos los controles", async ({ pag
 
 test("Leyenda distingue representaciones principales de controles secundarios", async ({ page }, testInfo) => {
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await expandLegendOnMobile(page);
   await expect(page.locator('label[for="territory-level-select"]')).toHaveClass(/sr-only/);
   await expect(page.locator("#period-mode-note")).toHaveClass(/sr-only/);
@@ -565,12 +567,19 @@ test("infraestructura usa SVG compartido y conserva la interacción territorial"
   expect(renderer.canvasCount).toBe(0);
   expect(renderer.interactivePaths).toBeGreaterThan(0);
 
-  const point = await page.evaluate(() => {
+  const isMobile = testInfo.project.name === "mobile";
+  const point = await page.evaluate(async mobile => {
+    if (mobile) {
+      const tap = await window.__redsaAudit.prepareTerritoryTap?.("province", "17");
+      if (tap) return tap;
+    }
     const layer = window.__redsaAudit.findTerritoryLayer("province", "17");
     const center = layer.getCenter();
     return window.geoportalMap.latLngToContainerPoint(center);
-  });
-  await page.locator("#legend-close-toggle").click();
+  }, isMobile);
+  if (!await page.locator("#map-legend-card").evaluate(el => el.classList.contains("is-collapsed"))) {
+    await page.locator("#map-legend-card-collapse").click();
+  }
   if (testInfo.project.name === "mobile") {
     await expect(page.locator("#right-context-host")).toBeHidden();
     await page.touchscreen.tap(point.x, point.y);
@@ -745,6 +754,7 @@ test("Dark Matter activa realce cartográfico sin cambiar el tema de interfaz", 
 test("la superficie territorial se oculta solo en zoom profundo y restaura la opacidad", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La regla cartográfica es común; se valida una vez con capturas.");
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await page.evaluate(async () => {
     await window.__redsaAudit.setTerritoryLevelMode("parish");
     await window.__redsaAudit.setZoom(15);

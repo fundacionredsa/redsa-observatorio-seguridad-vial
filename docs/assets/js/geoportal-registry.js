@@ -478,7 +478,7 @@
             bounds: [[-5.05, -81.2], [1.65, -75.1]],
             center: [-1.7, -78.45],
             zoom: 6,
-            variable: "siniestros_inec_2019",
+            variable: "normal",
             year: 2025
         }),
         variables: Object.freeze(variables),

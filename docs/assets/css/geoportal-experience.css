@@ -3532,3 +3532,9 @@ body.light-theme .territory-hover-tooltip {
     display: none;
 }
 
+.legend-country-badge {
+    display: inline-block;
+    margin-inline-start: var(--space-3);
+    margin-block-start: var(--space-2);
+    margin-block-end: var(--space-1);
+}

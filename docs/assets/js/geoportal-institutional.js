@@ -46,7 +46,15 @@
     }
 
     function currentSelection() {
-        return state.context?.getState?.() || { selectedVariable: "siniestros_inec_2019", selectedYear: 2025 };
+        const ctxState = state.context?.getState?.();
+        const effectiveVar = (ctxState?.selectedVariable && ctxState.selectedVariable !== "normal")
+            ? ctxState.selectedVariable
+            : (window._lastActiveVariable || "siniestros_inec_2019");
+        return {
+            selectedVariable: effectiveVar,
+            selectedYear: ctxState?.selectedYear || 2025,
+            selectedPeriodMode: ctxState?.selectedPeriodMode || "year"
+        };
     }
 
     function formatPeriod(config, year, periodMode = "year") {

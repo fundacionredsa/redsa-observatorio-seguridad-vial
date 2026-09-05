@@ -78,6 +78,7 @@ test("IB ofrece dos pestañas ARIA y análisis con ancho propio", async ({ page 
 test("IC mantiene Periodo e Intensidad en CAPAS y la visibilidad parroquial", async ({ page }, testInfo) => {
   const isMobile = testInfo.project.name === "mobile";
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   if (isMobile) {
     await expect(page.locator("#mobile-period-control-slot .period-mode-control")).toBeVisible();
     await expect(page.locator("#mobile-opacity-control-slot #territory-opacity-control")).toBeVisible();

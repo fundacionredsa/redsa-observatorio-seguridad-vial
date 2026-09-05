@@ -36,26 +36,24 @@ test("carga contratos territoriales y atribuciones", async ({ page }) => {
   await expect(page.locator(".leaflet-control-attribution")).toContainText("2026-02-03");
 });
 
-test("abre como observatorio nacional con siniestros y sin infraestructura", async ({ page }) => {
+test("abre como observatorio nacional con mapa de calor y sin infraestructura", async ({ page }) => {
   await loadPortal(page);
   const state = await page.evaluate(() => window.__redsaAudit.state());
   expect(state.level).toBe("province");
-  expect(state.selectedVariable).toBe("siniestros_inec_2019");
+  expect(state.selectedVariable).toBe("normal");
   expect(state.selectedYear).toBe(2025);
   expect(state.variableCount).toBeGreaterThanOrEqual(10);
   expect(state.infrastructureLayerCount).toBe(10);
   expect(Object.values(state.osmLayers).every(layer => !layer.visible)).toBeTruthy();
+  const antState = await page.evaluate(() => window.REDSAAntLayer?.getAuditState());
+  expect(antState.active).toBe(true);
+  expect(antState.mode).toBe("heat");
   await expect(page.locator(".site-topbar-brand")).toContainText("Observatorio de Seguridad Vial");
   await expect(page.locator(".site-topbar-brand")).toContainText("Fundación REDSA");
   await expect(page.locator(".site-topbar-contact")).toHaveAttribute("href", "mailto:info@fundacionredsa.org");
-  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-title")).toHaveText("Sin variable seleccionada");
   await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
-  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
-  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
+  await expect(page.locator(".legend-overlay-title")).toHaveText("Siniestros (ANT)");
   const versionedAssets = await page.evaluate(() => [
     ...Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(node => node.href),
     ...Array.from(document.scripts).map(node => node.src).filter(Boolean)
@@ -66,11 +64,11 @@ test("abre como observatorio nacional con siniestros y sin infraestructura", asy
   expect(new Set(assetVersions).size).toBe(1);
   expect(assetVersions[0]).toMatch(/^\d+\.\d+\.\d+$/);
 
-  await page.evaluate(() => window.__redsaAudit.selectVariable("normal"));
-  await expect(page.locator(".legend-heading-title")).toHaveText("Sin variable seleccionada");
-  await expect(page.locator(".legend-heading-meta")).toContainText("Vista: límites administrativos");
-  await expect(page.locator(".legend-panel")).not.toContainText("Pichincha");
-  await expect(page.locator(".legend-panel")).not.toContainText("Resto del país");
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
+  await expect(page.locator(".legend-heading-title")).toHaveText("Siniestros de tránsito reportados");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Nivel: provincias");
+  await expect(page.locator(".legend-heading-meta")).toContainText("Periodo: 2025");
+  await expect(page.locator(".legend-heading-meta .sigla-tooltip-trigger[data-sigla='Fuente de datos']")).toHaveAttribute("data-custom-text", /Fuente: ANT/);
 });
 
 test("encuentra un canton y mantiene el resumen ciudadano breve", async ({ page }) => {
@@ -144,6 +142,7 @@ test("busqueda cantonal encuadra el territorio entre los paneles en pantalla med
 test("genera una ficha PDF territorial en memoria", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La generación binaria se prueba una vez.");
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await page.evaluate(() => window.__redsaAudit.showTerritory("canton", "1701"));
   await page.evaluate(() => window.__redsaAudit.selectYear(2026));
   await expect(page.locator("#download-summary-button")).toBeEnabled();
@@ -261,18 +260,22 @@ test("selector de variables permite selección única y deselección accesible",
   const accidents = page.locator("#variable-disclosure input[value='siniestros_inec_2019']");
   const fatalities = page.locator("#variable-disclosure input[value='fallecidos_inec_2019']");
   await expect(disclosure).not.toHaveAttribute("open", "");
-  await expect(accidents).toBeChecked();
+  await expect(accidents).not.toBeChecked();
   await expect(fatalities).not.toBeChecked();
   await disclosure.locator("summary").click();
   await expect(disclosure).toHaveAttribute("open", "");
 
+  const boundaryStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
+  await accidents.click();
+  await expect(accidents).toBeChecked();
+  await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
   const choroplethStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
+  expect(choroplethStyle.fillOpacity).toBeGreaterThan(boundaryStyle.fillOpacity);
+
   await accidents.click();
   await expect(accidents).not.toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
   await expect(page.locator(".legend-panel")).toContainText("Sin variable seleccionada");
-  const boundaryStyle = await page.evaluate(() => window.__redsaAudit.territoryStyle("province", "17"));
-  expect(boundaryStyle.fillOpacity).toBeLessThan(choroplethStyle.fillOpacity);
 
   await fatalities.click();
   await expect(fatalities).toBeChecked();
@@ -594,7 +597,7 @@ test("cambio de variable ajusta el año a su cobertura sin dejar el mapa vacío"
 
   await page.locator('[data-right-panel="layers"]').click();
   const initial = await page.evaluate(() => window.__redsaAudit.state());
-  expect(initial.selectedVariable).toBe("siniestros_inec_2019");
+  expect(initial.selectedVariable).toBe("normal");
   expect(initial.selectedYear).toBe(2025);
 
   await page.evaluate(() => window.__redsaAudit.selectVariable("fallecidos_inec_2019"));
@@ -650,6 +653,7 @@ test("cambio de nivel resuelve el año de la variable efectiva", async ({ page }
 
 test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   const description = page.locator("#map-variable-description");
   await expect(description).toContainText("Número de siniestros de tránsito registrados oficialmente.");
 
@@ -706,6 +710,7 @@ test("perfil distingue ausencia de desglose de un conteo de cero fallecidos", as
 test("ranking nacional ordena, excluye sin dato y busca la posicion cantonal", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "La logica completa del ranking se valida una vez en desktop.");
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
   await page.locator("#site-topbar-menu-toggle").click();
   await page.locator("#open-institutional-button").click();
   await expect(page.locator("#institutional-modal")).toBeVisible();
@@ -901,6 +906,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   const height = 844;
   await page.setViewportSize({ width, height });
   await loadPortal(page);
+  await page.evaluate(() => window.__redsaAudit.selectVariable("siniestros_inec_2019"));
 
   await page.locator('[data-right-panel="analysis"]').tap();
   await expect(page.locator("body")).toHaveClass(/mobile-sidebar-open/);
@@ -980,7 +986,7 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
       ".variable-option",
       "#mobile-level-bar button",
       ".mobile-period-control-slot button",
-      "#legend-close-toggle"
+      "#map-legend-card-collapse"
     ];
     return selectors.flatMap(selector => Array.from(document.querySelectorAll(selector)).map(element => {
       const rect = element.getBoundingClientRect();
@@ -994,8 +1000,10 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await page.locator('#mobile-year-bar [data-year="2022"]').tap();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().selectedYear)).toBe(2022);
 
-  await page.locator("#legend-close-toggle").tap();
-  await expect(page.locator("#map-legend-card")).toBeHidden();
+  if (!await page.locator("#map-legend-card").evaluate(el => el.classList.contains("is-collapsed"))) {
+    await page.locator("#map-legend-card-collapse").tap();
+  }
+  await expect(page.locator("#map-legend-card")).toHaveClass(/is-collapsed/);
 
   const tapPoint = await page.evaluate(() => window.__redsaAudit.prepareTerritoryTap("canton", "1701"));
   expect(tapPoint).not.toBeNull();
@@ -1008,10 +1016,9 @@ test("mobile completa el flujo tactil sin paneles fuera del viewport", async ({ 
   await expect(page.locator("#right-context-host")).toBeHidden();
   await expect(page.locator("#demographic-hover-card")).not.toHaveAttribute("hidden", "");
 
-  await page.locator("#legend-visibility-toggle").tap();
-  await expect(page.locator("#right-context-host")).toBeHidden();
+  await page.locator("#map-legend-card-collapse").tap();
   await expect(page.locator("#map-legend-card")).toBeVisible();
-  await expandLegendOnMobile(page);
+  await expect(page.locator("#map-legend-card")).not.toHaveClass(/is-collapsed/);
   await expect(page.locator("#demographic-hover-card")).toBeVisible();
   await expect(page.locator("#demographic-hover-card")).toContainText("pestaña ANÁLISIS");
 });
@@ -1205,4 +1212,75 @@ test("Territory tooltip deduplicates fixed lines by source field", async ({ page
   expect(rateTooltip).toContain("Fallecidos por cada 100.000 habitantes:");
 });
 
+test("switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincronizacion bidireccional", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Verificación exhaustiva de switches en desktop");
+  await loadPortal(page);
 
+  // 1. Capa ANT (siniestros_ant) - Nace activa en modo calor
+  const antSwitch = page.locator('.infrastructure-toggle-input[data-legend-layer-toggle="siniestros_ant"]');
+  await expect(antSwitch).toBeChecked();
+
+  // Abrir panel lateral de capas para observar los controles del drawer
+  await page.locator('[data-right-panel="layers"]').click();
+  await page.locator('#event-layer-disclosure summary').click();
+  const antDrawerCheckbox = page.locator("#ant-layer-toggle");
+  await expect(antDrawerCheckbox).toBeChecked();
+
+  for (let i = 1; i <= 3; i++) {
+    // Apagar desde la leyenda
+    await antSwitch.click();
+    await expect(antSwitch).not.toBeChecked();
+    await expect(antDrawerCheckbox).not.toBeChecked();
+    expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().active)).toBe(false);
+
+    // Reencender desde la leyenda
+    await antSwitch.click();
+    await expect(antSwitch).toBeChecked();
+    await expect(antDrawerCheckbox).toBeChecked();
+    expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().active)).toBe(true);
+  }
+
+  // 2. Capas OSM de infraestructura (Ciclovías)
+  await page.locator('#infrastructure-disclosure summary').click();
+  const osmCheckbox = page.locator("#infrastructure-layer-ciclovias");
+  await osmCheckbox.click();
+  await expect(osmCheckbox).toBeChecked();
+  const osmSwitch = page.locator('.infrastructure-toggle-input[data-legend-layer-toggle="infra-ciclovias"]');
+  await expect(osmSwitch).toBeChecked();
+
+  for (let i = 1; i <= 3; i++) {
+    // Apagar desde la leyenda
+    await osmSwitch.click();
+    await expect(osmSwitch).not.toBeChecked();
+    await expect(osmCheckbox).not.toBeChecked();
+    expect(await page.evaluate(() => window.__redsaAudit.state().osmLayers["Ciclovías"]?.visible)).toBe(false);
+
+    // Reencender desde la leyenda
+    await osmSwitch.click();
+    await expect(osmSwitch).toBeChecked();
+    await expect(osmCheckbox).toBeChecked();
+    expect(await page.evaluate(() => window.__redsaAudit.state().osmLayers["Ciclovías"]?.visible)).toBe(true);
+  }
+
+  // 3. Variable territorial (coropleta)
+  await page.locator('#variable-disclosure summary').click();
+  const varInput = page.locator("#variable-disclosure input[value='siniestros_inec_2019']");
+  await varInput.click();
+  const varSwitch = page.locator('.infrastructure-toggle-input[data-legend-variable-toggle="true"]');
+  await expect(varSwitch).toBeChecked();
+  await expect(varInput).toBeChecked();
+
+  for (let i = 1; i <= 3; i++) {
+    // Apagar desde la leyenda
+    await varSwitch.click();
+    await expect(varSwitch).not.toBeChecked();
+    await expect(varInput).not.toBeChecked();
+    expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
+
+    // Reencender desde la leyenda
+    await varSwitch.click();
+    await expect(varSwitch).toBeChecked();
+    await expect(varInput).toBeChecked();
+    expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
+  }
+});

@@ -388,7 +388,6 @@
         const mobileOpacityControlSlot = document.getElementById("mobile-opacity-control-slot");
         const mapLegendCard = document.getElementById("map-legend-card");
         const territorySidebar = document.getElementById("territory-sidebar");
-        const legendCloseToggle = document.getElementById("legend-close-toggle");
         const legendVisibilityToggle = document.getElementById("legend-visibility-toggle");
         const rightContextHost = document.getElementById("right-context-host");
         const rightToolRail = document.getElementById("right-tools-rail");
@@ -511,7 +510,7 @@
         function showUnifiedLegend() {
             legendUserVisible = true;
             syncLegendCardPresentation();
-            legendCloseToggle?.focus({ preventScroll: true });
+            document.getElementById("map-legend-card-collapse")?.focus({ preventScroll: true });
         }
 
         function setRightContextPanel(panel, open = true, options = {}) {
@@ -915,7 +914,6 @@
                 setTerritoryLevelMode(level);
             }
         });
-        legendCloseToggle?.addEventListener("click", hideUnifiedLegend);
         legendVisibilityToggle?.addEventListener("click", showUnifiedLegend);
         mapBasemapToggle?.addEventListener("click", () => {
             const isOpen = !basemapPopover?.hidden;

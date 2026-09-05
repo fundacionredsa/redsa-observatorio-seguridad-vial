@@ -359,12 +359,13 @@
     }
 
     function renderNationalReference() {
-        const variable = state.context?.getSelectedVariable?.();
+        const rawVar = state.context?.getSelectedVariable?.();
+        const variable = (rawVar === "normal") ? (window._lastActiveVariable || "siniestros_inec_2019") : rawVar;
         const config = state.context?.getVariableConfig?.(variable);
         const summary = state.context?.getNationalSummary?.();
         const value = formatNationalSummaryValue(summary, config);
-        if (!config || variable === "normal" || value === null) return "";
-        const period = state.context?.getActivePeriodLabel?.() || "Periodo no especificado";
+        if (!config || value === null) return "";
+        const period = state.context?.getActivePeriodLabel?.(config) || "Periodo no especificado";
         const detail = `Fuente: ${config.fuente || "documentada en el catálogo"}. ${config.description || "La metodología está documentada en el catálogo de datos."}`;
         const infoIcon = `<button type="button" class="sigla-tooltip-trigger citizen-national-info" data-sigla="Referencia nacional" data-custom-text="${escapeHtml(detail)}" aria-label="Fuente y metodología de la referencia nacional">ⓘ</button>`;
         return `
@@ -393,11 +394,12 @@
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
         const province = props.DPA_DESPRO || "";
-        const variable = state.context?.getSelectedVariable?.();
+        const rawVar = state.context?.getSelectedVariable?.();
+        const variable = (rawVar === "normal") ? (window._lastActiveVariable || "siniestros_inec_2019") : rawVar;
         const config = state.context?.getVariableConfig?.(variable);
         const territorySummary = state.context?.getTerritorySummary?.(props);
         const value = formatNationalSummaryValue(territorySummary, config);
-        const period = territorySummary?.period || state.context?.getActivePeriodLabel?.() || requestedYear || "Periodo no especificado";
+        const period = territorySummary?.period || state.context?.getActivePeriodLabel?.(config) || requestedYear || "Periodo no especificado";
         const detail = `Fuente: ${config?.fuente || "documentada en el catálogo"}. ${config?.description || "La metodología está documentada en el catálogo de datos."}`;
         const infoIcon = `<button type="button" class="sigla-tooltip-trigger citizen-summary-info" data-sigla="Dato territorial" data-custom-text="${escapeHtml(detail)}" aria-label="Fuente y metodología del dato territorial">ⓘ</button>`;
 

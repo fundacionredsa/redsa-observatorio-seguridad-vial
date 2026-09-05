@@ -453,7 +453,7 @@ test.describe('Observatory Improvements (Blocks B, C, D, E)', () => {
             await expect(mapContainer).toBeVisible();
 
             // Hover over map
-            await page.locator('#legend-close-toggle').click();
+            await page.locator('#map-legend-card-collapse').click();
             await mapContainer.hover({ position: { x: 600, y: 320 } });
             await page.mouse.move(500, 500);
 
