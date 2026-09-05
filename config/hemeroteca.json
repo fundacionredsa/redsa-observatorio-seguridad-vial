@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "name": "El Comercio",
+      "feed_url": "https://www.elcomercio.com/feed/",
+      "enabled": true
+    },
+    {
+      "name": "Primicias",
+      "feed_url": "https://www.primicias.ec/rss/home.xml",
+      "enabled": true
+    },
+    {
+      "name": "El Universo",
+      "feed_url": "https://www.eluniverso.com/arc/outboundfeeds/rss/?outputType=xml",
+      "enabled": true
+    },
+    {
+      "name": "Expreso",
+      "feed_url": "https://www.expreso.ec/rss",
+      "enabled": true
+    },
+    {
+      "name": "ECU 911",
+      "feed_url": "https://www.ecu911.gob.ec/feed/",
+      "enabled": true
+    }
+  ],
+  "keywords": [
+    "siniestro",
+    "siniestros",
+    "choque",
+    "atropello",
+    "motociclista",
+    "seguridad vial",
+    "accidente de tránsito",
+    "ciclista atropellado"
+  ],
+  "topics": [
+    "siniestro",
+    "seguridad vial",
+    "política pública",
+    "infraestructura"
+  ],
+  "ai_provider": {
+    "name": "Z.AI",
+    "base_url": "https://api.z.ai/api/paas/v4/",
+    "chat_completions_path": "chat/completions",
+    "model": "glm-4.7-flash",
+    "api_key_env": "HEMEROTECA_AI_API_KEY",
+    "timeout_seconds": 45,
+    "max_tokens": 500,
+    "temperature": 0.1,
+    "response_format": {
+      "type": "json_object"
+    },
+    "extra_body": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "max_retries": 2,
+    "retry_backoff_seconds": 2,
+    "retry_http_status_codes": [
+      408,
+      409,
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "rate_limit_http_status_codes": [
+      429
+    ],
+    "retry_provider_codes": [
+      1303,
+      1304,
+      1305,
+      1308,
+      1310,
+      1312
+    ],
+    "rate_limit_provider_codes": [
+      1303,
+      1304,
+      1305,
+      1308,
+      1310,
+      1312
+    ]
+  },
+  "budget": {
+    "require_zero_cost_model": true,
+    "input_cost_per_million_tokens_usd": 0,
+    "output_cost_per_million_tokens_usd": 0,
+    "planning_daily_request_limit": 1000,
+    "pricing_verified_on": "2026-09-05",
+    "pricing_reference": "https://docs.z.ai/guides/overview/pricing",
+    "rate_limit_reference": "https://z.ai/manage-apikey/rate-limits"
+  },
+  "ingestion": {
+    "output_path": "docs/data/hemeroteca.json",
+    "lookback_days": 3,
+    "max_items_per_source": 60,
+    "max_candidates_per_run": 40,
+    "max_feed_description_characters": 3000,
+    "max_summary_characters": 360,
+    "request_timeout_seconds": 30,
+    "user_agent": "REDSA-Observa-Hemeroteca/1.0 (+https://observatorio.fundacionredsa.org/)",
+    "minimum_successful_sources": 1,
+    "fail_if_all_new_candidates_fail": false,
+    "tracking_query_parameters": [
+      "fbclid",
+      "gclid",
+      "mc_cid",
+      "mc_eid",
+      "utm_campaign",
+      "utm_content",
+      "utm_medium",
+      "utm_source",
+      "utm_term"
+    ]
+  },
+  "verification": {
+    "fixture_feed_path": "tests_python/fixtures/hemeroteca_feed.xml",
+    "fixture_source_name": "Fuente RSS de prueba",
+    "reference_time": "2026-09-05T12:00:00Z"
+  }
+}

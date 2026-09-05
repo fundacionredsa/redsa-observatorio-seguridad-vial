@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Fuente RSS de prueba</title>
+    <link>https://example.org/</link>
+    <description>Fixture controlado para la hemeroteca</description>
+    <item>
+      <title>Choque entre dos buses activa operativo vial</title>
+      <link>https://example.org/noticias/choque-buses?utm_source=prueba</link>
+      <description>Las autoridades cerraron temporalmente una vía después de la colisión y coordinaron la atención a los ocupantes.</description>
+      <pubDate>Fri, 05 Sep 2026 10:30:00 GMT</pubDate>
+      <guid>https://example.org/noticias/choque-buses</guid>
+    </item>
+    <item>
+      <title>Municipio presenta nueva estrategia de seguridad vial</title>
+      <link>https://example.org/noticias/estrategia-seguridad-vial</link>
+      <description>El plan contempla educación, control y mejoras de cruces para reducir riesgos en las calles.</description>
+      <pubDate>Fri, 05 Sep 2026 09:00:00 GMT</pubDate>
+      <guid>https://example.org/noticias/estrategia-seguridad-vial</guid>
+    </item>
+    <item>
+      <title>Actriz recuerda un accidente durante el rodaje de su película</title>
+      <link>https://example.org/cultura/accidente-rodaje</link>
+      <description>La intérprete relató una anécdota ocurrida dentro de un estudio de grabación.</description>
+      <pubDate>Fri, 05 Sep 2026 08:00:00 GMT</pubDate>
+      <guid>https://example.org/cultura/accidente-rodaje</guid>
+    </item>
+    <item>
+      <title>Pronóstico del tiempo para el fin de semana</title>
+      <link>https://example.org/tiempo/pronostico</link>
+      <description>Se esperan lluvias aisladas en varias provincias.</description>
+      <pubDate>Fri, 05 Sep 2026 07:00:00 GMT</pubDate>
+      <guid>https://example.org/tiempo/pronostico</guid>
+    </item>
+  </channel>
+</rss>

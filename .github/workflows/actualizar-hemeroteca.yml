@@ -1,0 +1,77 @@
+name: Actualizar hemeroteca diaria
+
+on:
+  schedule:
+    - cron: "15 11 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Ejecutar sin modificar ni commitear datos
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hemeroteca-diaria-main
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+
+      - name: Validar tests del pipeline
+        run: python -m unittest tests_python.test_actualizar_hemeroteca -v
+
+      - name: Resolver ruta de salida desde CONFIG
+        id: config
+        run: echo "output_path=$(python scripts/actualizar_hemeroteca.py --print-output-path)" >> "$GITHUB_OUTPUT"
+
+      - name: Ejecutar agente diario
+        env:
+          HEMEROTECA_AI_API_KEY: ${{ secrets.HEMEROTECA_AI_API_KEY }}
+          RUN_DRY: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+        run: |
+          if [ "$RUN_DRY" = "true" ]; then
+            python scripts/actualizar_hemeroteca.py --dry-run --report-path "${{ runner.temp }}/hemeroteca-report.json"
+          else
+            python scripts/actualizar_hemeroteca.py --report-path "${{ runner.temp }}/hemeroteca-report.json"
+          fi
+
+      - name: Guardar reporte de ejecución
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-hemeroteca
+          path: ${{ runner.temp }}/hemeroteca-report.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit y push de entradas nuevas
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
+        env:
+          OUTPUT_PATH: ${{ steps.config.outputs.output_path }}
+        run: |
+          git add -- "$OUTPUT_PATH"
+          if git diff --cached --quiet; then
+            echo "No hay noticias nuevas para publicar."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: actualizar hemeroteca $(date -u +'%Y-%m-%d')"
+          git pull --rebase origin main
+          git push origin HEAD:main
