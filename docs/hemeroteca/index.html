@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hemeroteca de Seguridad Vial | Observatorio Fundación REDSA</title>
+    <meta name="description" content="Archivo y monitoreo de noticias de seguridad vial, siniestros y movilidad en medios ecuatorianos. Observatorio Ciudadano de Fundación REDSA.">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Hemeroteca de Seguridad Vial | Fundación REDSA">
+    <meta property="og:description" content="Monitoreo y archivo de noticias de seguridad vial y movilidad en Ecuador con fuentes citadas.">
+    <meta property="og:image" content="https://fundacionredsa.github.io/redsa-observatorio-seguridad-vial/img/og-cover.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/hemeroteca.css?v=0.1.0">
+</head>
+<body>
+    <header class="hemeroteca-header">
+        <div>
+            <p class="hemeroteca-eyebrow">Fundación REDSA</p>
+            <h1>Hemeroteca de Seguridad Vial</h1>
+            <p>Monitoreo y archivo sistemático de noticias, siniestros viales y pronunciamientos sobre movilidad sostenible en los principales medios de comunicación de Ecuador.</p>
+        </div>
+        <div class="hemeroteca-header-actions">
+            <a href="../" class="hemeroteca-nav-btn" id="hemeroteca-back-map" title="Volver al mapa">
+                <i class="fa-solid fa-map" aria-hidden="true"></i>
+                <span>Volver al mapa</span>
+            </a>
+            <a href="../metodologia/" class="hemeroteca-nav-btn hemeroteca-nav-btn-secondary" id="hemeroteca-to-methodology" title="Metodología del Observatorio">
+                <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                <span>Metodología</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="hemeroteca-container">
+        <section class="hemeroteca-toolbar" aria-label="Filtros de noticias">
+            <div class="hemeroteca-search-row">
+                <input type="search" id="hemeroteca-search" class="hemeroteca-search-input" placeholder="Buscar por palabra clave en título..." aria-label="Buscar noticias por título o contenido">
+                
+                <select id="hemeroteca-source-select" class="hemeroteca-select" aria-label="Filtrar por medio o fuente">
+                    <option value="all">Todas las fuentes</option>
+                </select>
+
+                <select id="hemeroteca-date-select" class="hemeroteca-select" aria-label="Filtrar por fecha o periodo">
+                    <option value="all">Todos los periodos</option>
+                </select>
+            </div>
+
+            <div class="hemeroteca-chips-wrap" role="group" aria-label="Filtrar por tema">
+                <span class="hemeroteca-chip-label">Tema:</span>
+                <button type="button" class="hemeroteca-chip" data-topic="all" aria-pressed="true">Todos</button>
+                <button type="button" class="hemeroteca-chip" data-topic="siniestro" aria-pressed="false">Siniestros</button>
+                <button type="button" class="hemeroteca-chip" data-topic="seguridad vial" aria-pressed="false">Seguridad vial</button>
+                <button type="button" class="hemeroteca-chip" data-topic="política pública" aria-pressed="false">Política pública</button>
+                <button type="button" class="hemeroteca-chip" data-topic="infraestructura" aria-pressed="false">Infraestructura</button>
+                <button type="button" id="hemeroteca-reset-filters" class="hemeroteca-reset-btn" title="Limpiar todos los filtros">
+                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Restablecer filtros
+                </button>
+            </div>
+        </section>
+
+        <div class="hemeroteca-meta-bar">
+            <div id="hemeroteca-counter" class="hemeroteca-counter" role="status" aria-live="polite">
+                Cargando noticias...
+            </div>
+        </div>
+
+        <section id="hemeroteca-feed" class="hemeroteca-feed" role="feed" aria-busy="true" aria-label="Listado cronológico de noticias">
+            <!-- Renderizado dinámico vía JavaScript -->
+        </section>
+    </main>
+
+    <footer class="hemeroteca-footer">
+        <p><strong>Observatorio Ciudadano de Seguridad Vial y Movilidad Sostenible</strong> — Una iniciativa de <a href="https://fundacionredsa.org" target="_blank" rel="noopener">Fundación REDSA</a>.</p>
+        <p>Las noticias provienen de fuentes públicas y se resumen de forma automática e imparcial con fines estadísticos y de interés público. Los derechos de cada publicación pertenecen a sus respectivos autores y medios.</p>
+        <p><a href="../">Volver al Geoportal</a> · <a href="../metodologia/">Metodología</a> · <a href="mailto:info@fundacionredsa.org">Contacto</a></p>
+    </footer>
+
+    <script>
+    (function () {
+        "use strict";
+
+        const DATA_URL = "../data/hemeroteca.json";
+
+        const elements = {
+            feed: document.getElementById("hemeroteca-feed"),
+            counter: document.getElementById("hemeroteca-counter"),
+            search: document.getElementById("hemeroteca-search"),
+            sourceSelect: document.getElementById("hemeroteca-source-select"),
+            dateSelect: document.getElementById("hemeroteca-date-select"),
+            topicChips: document.querySelectorAll(".hemeroteca-chip[data-topic]"),
+            resetBtn: document.getElementById("hemeroteca-reset-filters")
+        };
+
+        let rawNoticias = [];
+        let activeTopic = "all";
+        let activeSource = "all";
+        let activeDate = "all";
+        let searchQuery = "";
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) return "";
+            try {
+                const date = new Date(dateValue);
+                if (isNaN(date.getTime())) return String(dateValue);
+                return date.toLocaleDateString("es-EC", {
+                    timeZone: "America/Guayaquil",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                });
+            } catch (e) {
+                return String(dateValue);
+            }
+        }
+
+        function getDateKey(dateValue) {
+            if (!dateValue) return "";
+            try {
+                const date = new Date(dateValue);
+                if (isNaN(date.getTime())) return "";
+                const y = date.getUTCFullYear();
+                const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+                return `${y}-${m}`;
+            } catch (e) {
+                return "";
+            }
+        }
+
+        function getDateLabel(key) {
+            if (!key) return "";
+            const [y, m] = key.split("-");
+            const months = [
+                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+            ];
+            const monthIdx = parseInt(m, 10) - 1;
+            return `${months[monthIdx] || m} ${y}`;
+        }
+
+        function createNewsCard(item) {
+            const article = document.createElement("article");
+            article.className = "hemeroteca-card";
+            article.dataset.newsId = item.id || "";
+            article.dataset.topic = item.tema || "";
+            article.dataset.source = item.fuente || "";
+
+            const header = document.createElement("header");
+            header.className = "hemeroteca-card-meta";
+
+            if (item.fuente) {
+                const sourceBadge = document.createElement("span");
+                sourceBadge.className = "hemeroteca-source-badge";
+                sourceBadge.textContent = item.fuente;
+                header.appendChild(sourceBadge);
+            }
+
+            const rawDate = item.fecha_publicacion || item.fecha;
+            if (rawDate) {
+                const dateElem = document.createElement("time");
+                dateElem.className = "hemeroteca-date";
+                dateElem.setAttribute("datetime", rawDate);
+                dateElem.textContent = formatDate(rawDate);
+                header.appendChild(dateElem);
+            }
+
+            if (item.tema) {
+                const topicBadge = document.createElement("span");
+                topicBadge.className = "hemeroteca-topic-tag";
+                topicBadge.dataset.topic = item.tema;
+                topicBadge.textContent = item.tema;
+                header.appendChild(topicBadge);
+            }
+
+            article.appendChild(header);
+
+            const titleHeading = document.createElement("h2");
+            titleHeading.className = "hemeroteca-card-title";
+            const titleLink = document.createElement("a");
+            titleLink.href = item.url || "#";
+            titleLink.target = "_blank";
+            titleLink.rel = "noopener noreferrer";
+            titleLink.textContent = item.titulo || "Sin título";
+
+            const extIcon = document.createElement("i");
+            extIcon.className = "fa-solid fa-arrow-up-right-from-square";
+            extIcon.setAttribute("aria-hidden", "true");
+            extIcon.style.marginLeft = "6px";
+            extIcon.style.fontSize = "0.75em";
+            titleLink.appendChild(extIcon);
+
+            titleHeading.appendChild(titleLink);
+            article.appendChild(titleHeading);
+
+            // Resumen corto: Solo si viene en el JSON, nunca inventar texto
+            if (item.resumen && item.resumen.trim()) {
+                const summaryPara = document.createElement("p");
+                summaryPara.className = "hemeroteca-card-resumen";
+                summaryPara.textContent = item.resumen.trim();
+                article.appendChild(summaryPara);
+            }
+
+            if (item.url) {
+                const footer = document.createElement("footer");
+                footer.className = "hemeroteca-card-footer";
+                const footerLink = document.createElement("a");
+                footerLink.href = item.url;
+                footerLink.target = "_blank";
+                footerLink.rel = "noopener noreferrer";
+                footerLink.className = "hemeroteca-card-link";
+                footerLink.innerHTML = `Leer noticia original en ${escapeHtml(item.fuente || "el medio")} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>`;
+                footer.appendChild(footerLink);
+                article.appendChild(footer);
+            }
+
+            return article;
+        }
+
+        function populateFilters(noticias) {
+            // Populate Sources
+            const uniqueSources = [...new Set(noticias.map(n => n.fuente).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+            elements.sourceSelect.innerHTML = '<option value="all">Todas las fuentes</option>';
+            uniqueSources.forEach(source => {
+                const opt = document.createElement("option");
+                opt.value = source;
+                opt.textContent = source;
+                elements.sourceSelect.appendChild(opt);
+            });
+
+            // Populate Dates (Month-Year)
+            const uniqueDates = [...new Set(noticias.map(n => getDateKey(n.fecha_publicacion || n.fecha)).filter(Boolean))].sort().reverse();
+            elements.dateSelect.innerHTML = '<option value="all">Todos los periodos</option>';
+            uniqueDates.forEach(dateKey => {
+                const opt = document.createElement("option");
+                opt.value = dateKey;
+                opt.textContent = getDateLabel(dateKey);
+                elements.dateSelect.appendChild(opt);
+            });
+        }
+
+        function filterAndRender() {
+            const query = searchQuery.trim().toLowerCase();
+
+            const filtered = rawNoticias.filter(item => {
+                // Topic filter
+                if (activeTopic !== "all" && item.tema !== activeTopic) {
+                    return false;
+                }
+                // Source filter
+                if (activeSource !== "all" && item.fuente !== activeSource) {
+                    return false;
+                }
+                // Date filter
+                if (activeDate !== "all") {
+                    const itemKey = getDateKey(item.fecha_publicacion || item.fecha);
+                    if (itemKey !== activeDate) return false;
+                }
+                // Text search filter
+                if (query) {
+                    const titleText = (item.titulo || "").toLowerCase();
+                    const summaryText = (item.resumen || "").toLowerCase();
+                    const sourceText = (item.fuente || "").toLowerCase();
+                    if (!titleText.includes(query) && !summaryText.includes(query) && !sourceText.includes(query)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            elements.feed.replaceChildren();
+            elements.feed.setAttribute("aria-busy", "false");
+
+            if (rawNoticias.length === 0) {
+                // Empty state when JSON has no news yet
+                const emptyWrap = document.createElement("div");
+                emptyWrap.className = "hemeroteca-empty";
+                emptyWrap.id = "hemeroteca-empty";
+                emptyWrap.innerHTML = `
+                    <div class="hemeroteca-empty-icon"><i class="fa-regular fa-newspaper" aria-hidden="true"></i></div>
+                    <h3>Sin noticias registradas todavía</h3>
+                    <p>El sistema de recopilación automática de noticias de seguridad vial se actualiza periódicamente. En cuanto se procesen las primeras publicaciones de los medios, aparecerán registradas en este archivo cronológico.</p>
+                `;
+                elements.feed.appendChild(emptyWrap);
+                elements.counter.textContent = "0 noticias registradas";
+                return;
+            }
+
+            if (filtered.length === 0) {
+                // Empty state when filters return 0 results
+                const noResultsWrap = document.createElement("div");
+                noResultsWrap.className = "hemeroteca-empty";
+                noResultsWrap.id = "hemeroteca-no-results";
+                noResultsWrap.innerHTML = `
+                    <div class="hemeroteca-empty-icon"><i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i></div>
+                    <h3>No se encontraron noticias</h3>
+                    <p>No hay publicaciones que coincidan con los criterios de búsqueda aplicados. Intenta restablecer los filtros o buscar con otro término.</p>
+                `;
+                elements.feed.appendChild(noResultsWrap);
+                elements.counter.textContent = "0 noticias encontradas";
+                return;
+            }
+
+            filtered.forEach(item => {
+                elements.feed.appendChild(createNewsCard(item));
+            });
+
+            const countText = filtered.length === 1 ? "1 noticia encontrada" : `${filtered.length} noticias encontradas`;
+            elements.counter.textContent = countText;
+        }
+
+        function setupListeners() {
+            // Search input
+            elements.search.addEventListener("input", e => {
+                searchQuery = e.target.value;
+                filterAndRender();
+            });
+
+            // Source select
+            elements.sourceSelect.addEventListener("change", e => {
+                activeSource = e.target.value;
+                filterAndRender();
+            });
+
+            // Date select
+            elements.dateSelect.addEventListener("change", e => {
+                activeDate = e.target.value;
+                filterAndRender();
+            });
+
+            // Topic chips
+            elements.topicChips.forEach(chip => {
+                chip.addEventListener("click", () => {
+                    activeTopic = chip.dataset.topic;
+                    elements.topicChips.forEach(c => {
+                        c.setAttribute("aria-pressed", String(c.dataset.topic === activeTopic));
+                    });
+                    filterAndRender();
+                });
+            });
+
+            // Reset filters
+            elements.resetBtn.addEventListener("click", () => {
+                searchQuery = "";
+                activeTopic = "all";
+                activeSource = "all";
+                activeDate = "all";
+
+                elements.search.value = "";
+                elements.sourceSelect.value = "all";
+                elements.dateSelect.value = "all";
+                elements.topicChips.forEach(c => {
+                    c.setAttribute("aria-pressed", String(c.dataset.topic === "all"));
+                });
+
+                filterAndRender();
+            });
+        }
+
+        async function init() {
+            setupListeners();
+
+            try {
+                const response = await fetch(DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                
+                // REQUISITO ESTRICTO: Filtrar en el cliente cualquier entrada con oculto: true
+                // NUNCA debe llegar a renderizarse ni almacenarse en el feed activo
+                const rawList = Array.isArray(data.noticias) ? data.noticias : [];
+                rawNoticias = rawList.filter(item => item && item.oculto !== true && item.oculto !== "true");
+
+                // Ordenar feed cronológico: más reciente primero
+                rawNoticias.sort((a, b) => {
+                    const timeA = new Date(a.fecha_publicacion || a.fecha || 0).getTime();
+                    const timeB = new Date(b.fecha_publicacion || b.fecha || 0).getTime();
+                    return timeB - timeA;
+                });
+
+                populateFilters(rawNoticias);
+                filterAndRender();
+
+                // Exponer para auditoría automatizada
+                window.__hemerotecaLoaded = true;
+                window.__hemerotecaData = rawNoticias;
+            } catch (err) {
+                console.error("Error al cargar la hemeroteca:", err);
+                elements.feed.innerHTML = `
+                    <div class="hemeroteca-empty" id="hemeroteca-error">
+                        <div class="hemeroteca-empty-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+                        <h3>Sin noticias disponibles</h3>
+                        <p>No fue posible cargar el archivo de noticias en este momento. Por favor intenta más tarde.</p>
+                    </div>
+                `;
+                elements.counter.textContent = "0 noticias registradas";
+                window.__hemerotecaLoaded = true;
+                window.__hemerotecaData = [];
+            }
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init);
+        } else {
+            init();
+        }
+    })();
+    </script>
+</body>
+</html>
