@@ -109,6 +109,10 @@
         --legend-bottom-clearance: 86px;
     }
 
+    body:has(#map-legend-card:not(.is-collapsed)) {
+        --road-scale-bottom-offset: calc(min(48dvh, 420px) + 16px);
+    }
+
     .ui-container {
         display: block;
         padding: 0;
@@ -213,8 +217,15 @@
     }
 
     .citizen-search-label {
-        margin-top: var(--space-1);
-        margin-bottom: var(--space-1);
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 
     .citizen-search-status:empty {
@@ -727,7 +738,7 @@
     .mobile-level-bar {
         position: fixed;
         z-index: calc(var(--z-mobile-navigation, 1190) + 2);
-        top: var(--mobile-top-offset, 66px);
+        top: calc(var(--site-topbar-mobile-height) + 54px);
         left: 50%;
         transform: translateX(-50%);
         max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
@@ -775,7 +786,7 @@
     .mobile-year-bar {
         position: fixed;
         z-index: calc(var(--z-mobile-navigation, 1190) + 2);
-        top: calc(var(--mobile-top-offset, 66px) + 44px + 8px);
+        bottom: calc(var(--mobile-edge, 10px) + 48px + 6px);
         left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
         display: grid;
@@ -954,19 +965,27 @@
     }
 
     .map-left-column {
+        position: fixed;
         top: calc(var(--site-topbar-mobile-height) + 6px);
+        bottom: var(--left-context-bottom, 12px);
         left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
         width: auto;
         max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
-        max-height: calc(100dvh - var(--site-topbar-mobile-height) - 110px);
+        max-height: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
         z-index: calc(var(--z-mobile-navigation, 1190) + 3);
     }
 
     .map-search-card {
         width: 100%;
         min-height: 44px;
-        padding: var(--space-2) var(--space-2);
+        padding: var(--space-1) var(--space-2);
+        border-radius: 12px;
+        pointer-events: auto;
     }
 
     #territory-search-input,
@@ -989,9 +1008,15 @@
         width: 100%;
         min-width: 0;
         max-width: 100%;
-        max-height: min(36dvh, 320px);
+        max-height: min(48dvh, 420px);
         border-radius: 12px;
-        margin-top: calc(52px + 111px + 16px);
+        margin-top: auto;
+        pointer-events: auto;
+    }
+
+    .map-legend-card:not(.is-collapsed) {
+        z-index: 10;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.32);
     }
 
     body.mobile-sidebar-open .map-left-column,

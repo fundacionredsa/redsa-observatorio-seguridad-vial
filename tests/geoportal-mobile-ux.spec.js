@@ -261,4 +261,34 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await expect(searchCard).toBeVisible();
         await expect(legendCard).toBeVisible();
     });
+
+    test('mobile viewport preserves over 55% of height for clear unobstructed map on load', async ({ page }) => {
+        const isMobile = (page.viewportSize()?.width || 0) <= 768;
+        test.skip(!isMobile, 'Mobile-only test');
+
+        await page.waitForFunction(() => Boolean(window.__redsaAudit && window.REDSAAntLayer));
+        await page.locator('#loader').waitFor({ state: 'hidden', timeout: 90000 });
+
+        const budget = await page.evaluate(() => {
+            const topbar = document.querySelector('.site-topbar').getBoundingClientRect();
+            const search = document.querySelector('.map-search-card').getBoundingClientRect();
+            const level = document.querySelector('#mobile-level-bar').getBoundingClientRect();
+            const year = document.querySelector('#mobile-year-bar').getBoundingClientRect();
+            const legend = document.querySelector('#map-legend-card').getBoundingClientRect();
+
+            const topEnd = Math.max(topbar.bottom, search.bottom, level.bottom);
+            const bottomStart = Math.min(year.top, legend.top);
+            const clearHeight = bottomStart - topEnd;
+            const totalHeight = window.innerHeight;
+            return {
+                topEnd,
+                bottomStart,
+                clearHeight,
+                totalHeight,
+                ratio: clearHeight / totalHeight
+            };
+        });
+
+        expect(budget.ratio).toBeGreaterThanOrEqual(0.55);
+    });
 });
