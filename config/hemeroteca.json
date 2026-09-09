@@ -24,7 +24,7 @@
     {
       "name": "ECU 911",
       "feed_url": "https://www.ecu911.gob.ec/feed/",
-      "enabled": true
+      "enabled": false
     }
   ],
   "keywords": [
@@ -60,8 +60,8 @@
         "type": "disabled"
       }
     },
-    "max_retries": 2,
-    "retry_backoff_seconds": 2,
+    "max_retries": 3,
+    "retry_backoff_seconds": 4,
     "retry_http_status_codes": [
       408,
       409,
