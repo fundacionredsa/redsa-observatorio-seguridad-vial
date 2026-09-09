@@ -521,7 +521,7 @@ body:not(.light-theme) .site-topbar-brand-mark {
 .map-search-card .citizen-search-input {
     flex: 1 1 auto;
     min-width: 0;
-    min-height: 36px;
+    min-height: 44px;
     padding: 6px 10px;
     border: 1px solid var(--border-glass);
     border-radius: 6px;
@@ -3203,8 +3203,12 @@ body.light-theme .territory-hover-tooltip {
     order: 2;
     flex: 1 1 auto;
     min-width: 50px;
-    height: 16px;
+    height: 44px;
+    padding-block: 14px;
+    box-sizing: border-box;
+    background: transparent;
     margin: 0;
+    cursor: pointer;
 }
 
 .legend-opacity-slot .contextual-opacity-heading output {
