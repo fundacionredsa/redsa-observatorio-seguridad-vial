@@ -1,5 +1,54 @@
 {
   "schema_version": 1,
-  "actualizado_en": null,
-  "noticias": []
+  "actualizado_en": "2026-09-09T12:08:35.047067Z",
+  "noticias": [
+    {
+      "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
+      "titulo": "Caos vehicular en Quito por siniestro en El Trébol, con dirección a la Autopista General Rumiñahui",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-09T00:27:35Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/caos-vehicular-quito-siniestro-trebol-direccion-autopista-general-ruminahui/",
+      "resumen": "La AMT reportó un siniestro en El Trébol que generó cierres y congestión vehicular hacia la Autopista General Rumiñahui.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-09T12:08:35.047067Z",
+      "palabra_clave": "siniestro"
+    },
+    {
+      "id": "da01a1fd8279727ebf49f78f5f755c36c9f1e5656c56ada9c2e311190e6054dd",
+      "titulo": "El choque cósmico que destruyó al planeta Theia en 300 minutos: el evento catastrófico que dio origen a la Luna",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-09T03:00:00Z",
+      "url": "https://eluniverso.com/estados-unidos/estilo-de-vida/el-choque-cosmico-que-destruyo-al-planeta-theia-en-300-minutos-el-evento-catastrofico-que-dio-origen-a-la-luna-nota/",
+      "resumen": "Un choque cósmico entre la Tierra y el planeta Theia, ocurrido en 300 minutos, dispersó escombros que eventualmente formaron la Luna.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-09T12:08:35.047067Z",
+      "palabra_clave": "choque"
+    },
+    {
+      "id": "440aa26055775cdfbc65052637d2d4315647dddc066743ed1cb0d3a6337a2282",
+      "titulo": "Motociclista muere por choque con un bus en la Simón Bolívar",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-08T23:16:51Z",
+      "url": "https://eluniverso.com/noticias/ecuador/quito-ecuador-siniestro-de-transito-en-quito-bus-mata-a-hombre-en-moto-en-quito-nota/",
+      "resumen": "Un motociclista falleció tras colisionar con un bus en la avenida Simón Bolívar, lo que obligó al cierre de dos carriles.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-09T12:08:35.047067Z",
+      "palabra_clave": "choque"
+    },
+    {
+      "id": "f120f2ec4b470746ef432303bf38d63441787baa3f8d0d8f93a517c5a506c8c8",
+      "titulo": "Una persona fallece tras siniestro de tránsito en la avenida Simón Bolívar sur de Quito",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-08T22:08:03Z",
+      "url": "https://www.expreso.ec/quito/persona-fallece-siniestro-transito-avenida-simon-bolivar-295055.html",
+      "resumen": "Un siniestro de tránsito protagonizado por un bus y una motocicleta en la avenida Simón Bolívar de Quito dejó una persona fallecida y generó cierres viales.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-09T12:08:35.047067Z",
+      "palabra_clave": "siniestro"
+    }
+  ]
 }
