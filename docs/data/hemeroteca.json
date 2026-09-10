@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-09T12:08:35.047067Z",
+  "actualizado_en": "2026-09-10T14:58:09.327880Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -48,6 +48,18 @@
       "tema": "siniestro",
       "oculto": false,
       "fecha_ingesta": "2026-09-09T12:08:35.047067Z",
+      "palabra_clave": "siniestro"
+    },
+    {
+      "id": "9a73941e0d8c28f449ae8b2dcc029d04adfbc3d6b6caa3ecad2becbf28417fb2",
+      "titulo": "Siniestro de tránsito en la vía Calacalí – La Independencia deja un fallecido y un niño herido",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-10T03:32:25Z",
+      "url": "https://www.elcomercio.com/actualidad/seguridad/siniestro-transito-via-calacali-independencia-fallecido-nino-herido/",
+      "resumen": "Un siniestro vial en la vía Calacalí-La Independencia dejó un fallecido y un niño herido alrededor de las 19:00.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-10T14:58:09.327880Z",
       "palabra_clave": "siniestro"
     }
   ]
