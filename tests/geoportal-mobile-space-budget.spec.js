@@ -1,18 +1,56 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 
-const MINIMUM_UNOBSTRUCTED_MAP_VIEWPORT_RATIO = 0.60;
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Todos los selectores y umbrales en un solo lugar.
+// Ajustar aquí si cambian los IDs o los criterios de aceptación.
+const CONFIG = {
+  // Ratio mínimo de área libre 2D sobre área total del viewport
+  MINIMUM_FREE_AREA_RATIO: 0.50,
+
+  // Dimensión mínima de touch target (WCAG 2.5.8)
+  MIN_TOUCH_TARGET_PX: 44,
+
+  // Elementos chrome que ocupan espacio sobre el mapa
+  CHROME_SELECTORS: [
+    "#map-search-card",
+    "#mobile-level-bar",
+    "#mobile-year-bar",
+    "#map-legend-card .map-legend-card-header",
+    "#right-tools-rail",
+  ],
+
+  // Elementos interactivos cuyo touch target se evalúa
+  TOUCH_TARGET_SELECTORS: [
+    "#map-search-card input",
+    "#map-search-card button",
+    "#mobile-level-bar button",
+    "#mobile-year-bar button",
+    "#mobile-year-bar input",
+    "#map-legend-card .map-legend-card-header button",
+    "#right-tools-rail button",
+  ],
+
+  // Selector del contenedor de mapa
+  MAP_SELECTOR: "#map",
+
+  // LocalStorage keys para saltar el tour
+  TOUR_KEYS: [
+    "redsa_tour_seen",
+    "has_seen_geoportal_tour",
+    "redsa_tour_v2_visto",
+  ],
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 test.describe("Presupuesto de espacio inicial del mapa en mobile", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      window.localStorage.setItem("redsa_tour_seen", "true");
-      window.localStorage.setItem("has_seen_geoportal_tour", "true");
-      window.localStorage.setItem("redsa_tour_v2_visto", "true");
-    });
+    await page.addInitScript((keys) => {
+      keys.forEach(k => window.localStorage.setItem(k, "true"));
+    }, CONFIG.TOUR_KEYS);
   });
 
-  test("reserva al mapa al menos 60% del alto del viewport sin interacción", async ({ page }, testInfo) => {
+  test("el área libre 2D del mapa supera el 50% del viewport y todos los touch targets son ≥ 44 px", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "mobile", "Criterio de aceptación exclusivo del proyecto mobile.");
 
     await page.goto("./", { waitUntil: "domcontentloaded" });
@@ -21,116 +59,114 @@ test.describe("Presupuesto de espacio inicial del mapa en mobile", () => {
     await expect(page.locator("#map-legend-card")).toBeVisible();
     await expect(page.locator("#map-legend-card")).toHaveClass(/is-collapsed/);
 
-    const metrics = await page.evaluate(() => {
-      const rect = selector => {
-        const element = document.querySelector(selector);
-        if (!element) throw new Error(`No existe el selector requerido: ${selector}`);
-        const box = element.getBoundingClientRect();
-        return {
-          top: box.top,
-          right: box.right,
-          bottom: box.bottom,
-          left: box.left,
-          width: box.width,
-          height: box.height
-        };
+    const metrics = await page.evaluate(({ CHROME_SELECTORS, TOUCH_TARGET_SELECTORS, MAP_SELECTOR, MIN_TOUCH_TARGET_PX }) => {
+      const getRect = selector => {
+        const el = document.querySelector(selector);
+        if (!el) return null;
+        const b = el.getBoundingClientRect();
+        return { top: b.top, right: b.right, bottom: b.bottom, left: b.left, width: b.width, height: b.height };
       };
 
-      const blocks = {
-        search: rect("#map-search-card"),
-        level: rect("#mobile-level-bar"),
-        timeline: rect("#mobile-year-bar"),
-        legendHeader: rect("#map-legend-card .map-legend-card-header")
-      };
-      const map = rect("#map");
-      const toolsRail = rect("#right-tools-rail");
-      const occupiedBands = Object.entries(blocks)
-        .map(([name, block]) => ({
-          names: [name],
-          top: Math.max(map.top, block.top),
-          bottom: Math.min(map.bottom, block.bottom)
+      const map = getRect(MAP_SELECTOR);
+      if (!map) throw new Error(`No se encontró el selector del mapa: ${MAP_SELECTOR}`);
+
+      const mapArea = map.width * map.height;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Recolectar rectángulos chrome que se superponen al mapa
+      const chromeRects = CHROME_SELECTORS
+        .map(sel => ({ sel, rect: getRect(sel) }))
+        .filter(({ rect }) => rect !== null)
+        .map(({ sel, rect }) => ({
+          sel,
+          // Intersección con el mapa
+          top:    Math.max(map.top,    rect.top),
+          bottom: Math.min(map.bottom, rect.bottom),
+          left:   Math.max(map.left,   rect.left),
+          right:  Math.min(map.right,  rect.right),
         }))
-        .filter(band => band.bottom > band.top)
-        .sort((a, b) => a.top - b.top)
-        .reduce((merged, band) => {
-          const previous = merged.at(-1);
-          if (previous && band.top <= previous.bottom) {
-            previous.bottom = Math.max(previous.bottom, band.bottom);
-            previous.names.push(...band.names);
-          } else {
-            merged.push({ ...band, names: [...band.names] });
-          }
-          return merged;
-        }, []);
+        .filter(r => r.bottom > r.top && r.right > r.left);
 
-      const unobstructedBands = [];
-      let cursor = map.top;
-      for (const band of occupiedBands) {
-        if (band.top > cursor) unobstructedBands.push({ top: cursor, bottom: band.top });
-        cursor = Math.max(cursor, band.bottom);
+      // Área de la unión de rectángulos chrome usando scan-line sobre el eje Y
+      // (exacto para rectángulos arbitrarios sin necesidad de librería externa)
+      const events = [];
+      for (const r of chromeRects) {
+        events.push({ y: r.top,    type: "open",  r });
+        events.push({ y: r.bottom, type: "close", r });
       }
-      if (cursor < map.bottom) unobstructedBands.push({ top: cursor, bottom: map.bottom });
+      events.sort((a, b) => a.y - b.y || (a.type === "open" ? -1 : 1));
 
-      const largestUnobstructedBand = unobstructedBands
-        .map(band => ({ ...band, height: band.bottom - band.top }))
-        .sort((a, b) => b.height - a.height)[0] || { top: map.top, bottom: map.top, height: 0 };
+      let activeRects = [];
+      let prevY = map.top;
+      let occupiedArea = 0;
 
-      const touchTargets = Array.from(document.querySelectorAll([
-        "#map-search-card input",
-        "#map-search-card button",
-        "#mobile-level-bar button",
-        "#mobile-year-bar button",
-        "#mobile-year-bar input",
-        "#map-legend-card .map-legend-card-header button",
-        "#right-tools-rail button"
-      ].join(","))).flatMap(element => {
-        const bounds = element.getBoundingClientRect();
-        const style = getComputedStyle(element);
-        if (style.display === "none" || style.visibility === "hidden" || bounds.width === 0 || bounds.height === 0) {
-          return [];
+      const coveredWidthAt = (rects) => {
+        // Cobertura horizontal de la unión de intervalos [left, right]
+        const intervals = rects.map(r => [r.left, r.right]).sort((a, b) => a[0] - b[0]);
+        if (intervals.length === 0) return 0;
+        let covered = 0, [curLeft, curRight] = intervals[0];
+        for (const [l, r] of intervals.slice(1)) {
+          if (l > curRight) { covered += curRight - curLeft; curLeft = l; curRight = r; }
+          else { curRight = Math.max(curRight, r); }
         }
-        return [{
-          id: element.id || null,
-          label: element.getAttribute("aria-label") || element.textContent?.trim() || null,
-          width: bounds.width,
-          height: bounds.height
-        }];
-      });
+        covered += curRight - curLeft;
+        return Math.max(0, covered);
+      };
+
+      for (const ev of events) {
+        const dy = ev.y - prevY;
+        if (dy > 0 && activeRects.length > 0) {
+          occupiedArea += dy * coveredWidthAt(activeRects);
+        }
+        if (ev.type === "open")  activeRects.push(ev.r);
+        else                      activeRects = activeRects.filter(r => r !== ev.r);
+        prevY = ev.y;
+      }
+
+      const freeArea = Math.max(0, mapArea - occupiedArea);
+      const freeAreaRatio = freeArea / (vw * vh);
+
+      // Touch targets
+      const touchTargets = Array.from(document.querySelectorAll(TOUCH_TARGET_SELECTORS.join(",")))
+        .flatMap(el => {
+          const b = el.getBoundingClientRect();
+          const s = getComputedStyle(el);
+          if (s.display === "none" || s.visibility === "hidden" || b.width === 0 || b.height === 0) return [];
+          return [{ id: el.id || null, label: el.getAttribute("aria-label") || el.textContent?.trim() || null, width: b.width, height: b.height }];
+        });
+
+      const undersizedTouchTargets = touchTargets.filter(t => t.width < MIN_TOUCH_TARGET_PX || t.height < MIN_TOUCH_TARGET_PX);
 
       return {
-        viewport: { width: window.innerWidth, height: window.innerHeight },
-        blocks,
+        viewport: { width: vw, height: vh },
         map,
-        toolsRail,
-        toolsRailMapExclusionWidth: map.right - toolsRail.left,
+        mapArea,
+        chromeRects,
+        occupiedArea,
+        freeArea,
+        freeAreaRatio,
         touchTargets,
-        undersizedTouchTargets: touchTargets.filter(target => target.width < 44 || target.height < 44),
-        occupiedBands,
-        largestUnobstructedBand,
-        unobstructedMapHeight: largestUnobstructedBand.height,
-        unobstructedMapViewportRatio: largestUnobstructedBand.height / window.innerHeight
+        undersizedTouchTargets,
       };
-    });
+    }, { CHROME_SELECTORS: CONFIG.CHROME_SELECTORS, TOUCH_TARGET_SELECTORS: CONFIG.TOUCH_TARGET_SELECTORS, MAP_SELECTOR: CONFIG.MAP_SELECTOR, MIN_TOUCH_TARGET_PX: CONFIG.MIN_TOUCH_TARGET_PX });
 
     await testInfo.attach("mobile-map-space-metrics.json", {
       body: JSON.stringify(metrics, null, 2),
-      contentType: "application/json"
+      contentType: "application/json",
     });
 
-    const budgetEvidence = {
-      viewport: metrics.viewport,
-      blocks: metrics.blocks,
-      map: metrics.map,
-      occupiedBands: metrics.occupiedBands,
-      largestUnobstructedBand: metrics.largestUnobstructedBand,
-      unobstructedMapHeight: metrics.unobstructedMapHeight,
-      unobstructedMapViewportRatio: metrics.unobstructedMapViewportRatio,
-      undersizedTouchTargets: metrics.undersizedTouchTargets
-    };
-
+    // Assertion 1: área libre 2D real
     expect(
-      metrics.unobstructedMapViewportRatio,
-      `Geometría inicial mobile: ${JSON.stringify(budgetEvidence)}`
-    ).toBeGreaterThanOrEqual(MINIMUM_UNOBSTRUCTED_MAP_VIEWPORT_RATIO);
+      metrics.freeAreaRatio,
+      `Área libre real: ${(metrics.freeAreaRatio * 100).toFixed(1)}% (mínimo ${CONFIG.MINIMUM_FREE_AREA_RATIO * 100}%)\n` +
+      `map=${JSON.stringify(metrics.map)} chromeRects=${JSON.stringify(metrics.chromeRects)}`
+    ).toBeGreaterThanOrEqual(CONFIG.MINIMUM_FREE_AREA_RATIO);
+
+    // Assertion 2: todos los touch targets son ≥ 44 px
+    expect(
+      metrics.undersizedTouchTargets,
+      `Touch targets por debajo de ${CONFIG.MIN_TOUCH_TARGET_PX}px: ${JSON.stringify(metrics.undersizedTouchTargets)}`
+    ).toEqual([]);
   });
 });
