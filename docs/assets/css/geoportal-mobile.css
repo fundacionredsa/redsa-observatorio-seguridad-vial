@@ -777,9 +777,11 @@
     body.mobile-sidebar-open .mobile-level-bar,
     body.mobile-layers-open .mobile-level-bar,
     body.mobile-right-context-open .mobile-level-bar,
+    body.mobile-basemap-popover-open .mobile-level-bar,
     body.mobile-sidebar-open .mobile-year-bar,
     body.mobile-layers-open .mobile-year-bar,
-    body.mobile-right-context-open .mobile-year-bar {
+    body.mobile-right-context-open .mobile-year-bar,
+    body.mobile-basemap-popover-open .mobile-year-bar {
         display: none;
     }
 
@@ -1022,9 +1024,11 @@
     body.mobile-sidebar-open .map-left-column,
     body.mobile-layers-open .map-left-column,
     body.mobile-right-context-open .map-left-column,
+    body.mobile-basemap-popover-open .map-left-column,
     body.mobile-sidebar-open .map-legend-card,
     body.mobile-layers-open .map-legend-card,
-    body.mobile-right-context-open .map-legend-card {
+    body.mobile-right-context-open .map-legend-card,
+    body.mobile-basemap-popover-open .map-legend-card {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
