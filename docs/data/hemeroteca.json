@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-10T14:58:09.327880Z",
+  "actualizado_en": "2026-09-11T14:58:38.532843Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -60,6 +60,18 @@
       "tema": "siniestro",
       "oculto": false,
       "fecha_ingesta": "2026-09-10T14:58:09.327880Z",
+      "palabra_clave": "siniestro"
+    },
+    {
+      "id": "165e60cb1bccc89a94d74c683b6fc3a4f3af6b0044d891678414dd491092c8d3",
+      "titulo": "Siniestro de tránsito causa incendio y deja un fallecido en Guayllabamba, en Quito",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-11T12:31:53Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/siniestro-transito-causa-incendio-y-deja-un-fallecido-guayllabamba-quito/",
+      "resumen": "Un choque en la Panamericana Norte provocó un incendio que dejó un fallecido.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-11T14:58:38.532843Z",
       "palabra_clave": "siniestro"
     }
   ]
