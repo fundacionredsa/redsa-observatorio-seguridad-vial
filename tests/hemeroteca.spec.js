@@ -28,6 +28,14 @@ test.describe("Hemeroteca de Seguridad Vial (Fase 23)", () => {
     });
 
     test("la página de Hemeroteca muestra el estado vacío elegante cuando no hay noticias", async ({ page }) => {
+        await page.route("**/data/hemeroteca.json", async route => {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ schema_version: 1, actualizado_en: "2026-09-10T00:00:00Z", noticias: [] })
+            });
+        });
+
         await page.goto("./hemeroteca/", { waitUntil: "domcontentloaded" });
         await page.waitForFunction(() => window.__hemerotecaLoaded === true, null, { timeout: 30_000 });
 

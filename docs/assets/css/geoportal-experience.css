@@ -3199,6 +3199,13 @@ body.light-theme .territory-hover-tooltip {
     color: var(--text-secondary);
 }
 
+#territory-opacity-slider {
+    height: 44px;
+    padding-block: 14px;
+    box-sizing: border-box;
+    background: transparent;
+}
+
 .legend-opacity-slot input[type="range"] {
     order: 2;
     flex: 1 1 auto;
