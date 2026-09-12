@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-11T14:58:38.532843Z",
+  "actualizado_en": "2026-09-12T14:04:38.956748Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -73,6 +73,30 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-11T14:58:38.532843Z",
       "palabra_clave": "siniestro"
+    },
+    {
+      "id": "e1769adb840e2cbe829100b78641c99b126bac5ab13967171a4a88aeccc2fa90",
+      "titulo": "Una mujer falleció en accidente de tránsito en la autopista Narcisa de Jesús",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-11T22:29:48Z",
+      "url": "https://www.expreso.ec/guayaquil/mujer-fallecio-accidente-transito-autopista-narcisa-jesus-295479.html",
+      "resumen": "Una mujer falleció tras un siniestro vial registrado la tarde del viernes 11 de septiembre en la autopista Narcisa de Jesús, hacia Pascuales.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-12T14:04:38.956748Z",
+      "palabra_clave": "siniestro"
+    },
+    {
+      "id": "4bd264a6f825296d3bfcc289fca7b40aebb4b262a399367c411cb8f35da459ed",
+      "titulo": "Un muerto y dos heridos tras choque e incendio en la Panamericana Norte",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-11T15:32:37Z",
+      "url": "https://www.expreso.ec/quito/muerto-dos-heridos-choque-e-incendio-panamericana-norte-295403.html",
+      "resumen": "Una volqueta y un vehículo liviano chocaron en la Panamericana Norte, generando un incendio que dejó un fallecido y dos heridos.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-12T14:04:38.956748Z",
+      "palabra_clave": "choque"
     }
   ]
 }
