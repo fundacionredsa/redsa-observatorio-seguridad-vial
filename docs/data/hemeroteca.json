@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-12T14:04:38.956748Z",
+  "actualizado_en": "2026-09-13T14:54:31.268848Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -96,6 +96,18 @@
       "tema": "siniestro",
       "oculto": false,
       "fecha_ingesta": "2026-09-12T14:04:38.956748Z",
+      "palabra_clave": "choque"
+    },
+    {
+      "id": "a35f86be8ffef772f582a160f651596a99f929d030059fa8dbeb64a513d1d364",
+      "titulo": "Triple choque deja 11 heridos y un fallecido en Babahoyo",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-12T20:37:00Z",
+      "url": "https://www.elcomercio.com/actualidad/ecuador/triple-choque-heridos-cierra-babahoyo/",
+      "resumen": "Un bus, un tráiler y un automóvil colisionaron en la vía Babahoyo–Pueblo Viejo, provocando un incendio y el cierre de la carretera.",
+      "tema": "siniestro",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-13T14:54:31.268848Z",
       "palabra_clave": "choque"
     }
   ]
