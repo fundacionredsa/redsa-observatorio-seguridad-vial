@@ -736,20 +736,11 @@
     }
 
     .mobile-level-bar {
-        position: fixed;
-        z-index: calc(var(--z-mobile-navigation, 1190) + 2);
-        top: calc(var(--site-topbar-mobile-height) + 54px);
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: calc(100vw - 2 * var(--mobile-edge, 10px));
-        overflow-x: auto;
         display: flex;
         gap: var(--space-1);
-        padding: var(--space-1);
-        border-radius: 20px;
-        background: var(--bg-glass);
-        backdrop-filter: blur(12px);
-        box-shadow: var(--shadow);
+        padding: var(--space-1) 0 0;
+        overflow-x: auto;
+        /* ya no es fixed: fluye dentro de map-search-card */
     }
 
     .mobile-level-bar button {
@@ -774,10 +765,6 @@
         opacity: 0.35;
     }
 
-    body.mobile-sidebar-open .mobile-level-bar,
-    body.mobile-layers-open .mobile-level-bar,
-    body.mobile-right-context-open .mobile-level-bar,
-    body.mobile-basemap-popover-open .mobile-level-bar,
     body.mobile-sidebar-open .mobile-year-bar,
     body.mobile-layers-open .mobile-year-bar,
     body.mobile-right-context-open .mobile-year-bar,
@@ -792,7 +779,7 @@
         left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
         display: grid;
-        grid-template-columns: 44px auto minmax(0, 1fr) minmax(88px, 0.55fr);
+        grid-template-columns: auto minmax(0, 1fr) minmax(88px, 0.55fr);
         row-gap: var(--space-1);
         padding: var(--space-1);
         border-radius: 14px;
@@ -832,12 +819,16 @@
     }
 
     .mobile-year-bar-scroll {
-        grid-column: 3 / 5;
+        grid-column: 1 / -1;
         align-self: center;
         display: flex;
         gap: var(--space-1);
         overflow-x: auto;
         min-width: 0;
+    }
+
+    .mobile-timeline-play-slot + .mobile-year-bar-scroll {
+        grid-column: 2 / -1;
     }
 
     .mobile-year-bar button {
@@ -873,13 +864,13 @@
     }
 
     .mobile-period-control-slot {
-        grid-column: 1 / 4;
+        grid-column: 1 / 3;
         padding-top: var(--space-1);
         border-top: 1px solid var(--border-glass);
     }
 
     .mobile-opacity-control-slot {
-        grid-column: 4;
+        grid-column: 3;
         padding-top: var(--space-1);
         border-top: 1px solid var(--border-glass);
     }
