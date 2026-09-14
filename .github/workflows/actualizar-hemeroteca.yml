@@ -47,6 +47,7 @@ jobs:
       - name: Ejecutar agente diario
         env:
           HEMEROTECA_AI_API_KEY: ${{ secrets.HEMEROTECA_AI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           RUN_DRY: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
         run: |
           if [ "$RUN_DRY" = "true" ]; then

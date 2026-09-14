@@ -55,6 +55,29 @@ SEMANTIC_DEDUP_THRESHOLD = (
     if isinstance(_DEFAULT_INGESTION_CONFIG, dict)
     else None
 )
+TAVILY_DOMINIOS_EC = [
+    "elcomercio.com",
+    "primicias.ec",
+    "eluniverso.com",
+    "expreso.ec",
+    "ecuavisa.com",
+    "teleamazonas.com",
+    "ecu911.gob.ec",
+    "transito.gob.ec",
+    "amt.gob.ec",
+    "eldiario.ec",
+    "lahora.com.ec",
+]
+TAVILY_QUERIES = [
+    "accidente tránsito Ecuador",
+    "seguridad vial Ecuador",
+    "siniestro vial Quito",
+    "atropello Ecuador",
+    "fallecidos accidente carretera Ecuador",
+]
+TAVILY_MAX_RESULTS_PER_QUERY = 10
+TAVILY_QUERY_DELAY_SECONDS = 1
+TAVILY_SUMMARY_MAX_CHARACTERS = 400
 
 
 PUBLIC_ENTRY_FIELDS = {
@@ -548,6 +571,51 @@ def extract_og_image(
     return None
 
 
+def extraer_dominio(url: str) -> str:
+    try:
+        return (urlsplit(url).hostname or "desconocido").removeprefix("www.")
+    except Exception:
+        return "desconocido"
+
+
+def buscar_noticias_tavily(
+    api_key: str, max_results_por_query: int = TAVILY_MAX_RESULTS_PER_QUERY
+) -> list[dict[str, Any]]:
+    """Busca noticias de seguridad vial en Ecuador vía Tavily API."""
+    from tavily import TavilyClient
+
+    client = TavilyClient(api_key=api_key)
+    noticias_raw: list[dict[str, Any]] = []
+    for query in TAVILY_QUERIES:
+        try:
+            resultado = client.search(
+                query=query,
+                search_depth="basic",
+                include_domains=TAVILY_DOMINIOS_EC,
+                max_results=max_results_por_query,
+                include_answer=False,
+            )
+            for item in resultado.get("results", []):
+                noticias_raw.append(
+                    {
+                        "titulo": item.get("title", ""),
+                        "url": item.get("url", ""),
+                        "resumen_raw": clean_text(item.get("content"))[
+                            :TAVILY_SUMMARY_MAX_CHARACTERS
+                        ],
+                        "fecha_raw": item.get("published_date", ""),
+                        "fuente": extraer_dominio(item.get("url", "")),
+                    }
+                )
+            time.sleep(TAVILY_QUERY_DELAY_SECONDS)
+        except Exception as error:
+            print(f"[Tavily] Error en query '{query}': {error}")
+            continue
+
+    print(f"[Tavily] {len(noticias_raw)} resultados crudos obtenidos")
+    return noticias_raw
+
+
 def normalized_provider_code(value: Any) -> int | str | None:
     if isinstance(value, int) and not isinstance(value, bool):
         return value
@@ -826,6 +894,8 @@ def empty_report(now: datetime) -> dict[str, Any]:
         "keyword_candidates": 0,
         "duplicate_candidates": 0,
         "semantic_duplicate_candidates": 0,
+        "tavily_results": 0,
+        "tavily_added_to_pool": 0,
         "new_candidates": 0,
         "new_entries": 0,
         "would_modify_output": False,
@@ -842,6 +912,7 @@ def execute_pipeline(
     now: datetime,
     sources: list[dict[str, Any]] | None = None,
     image_extractor: Callable[[str], str | None] | None = None,
+    tavily_loader: Callable[[], list[dict[str, Any]]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     ingestion = config["ingestion"]
     report = empty_report(now)
@@ -852,11 +923,14 @@ def execute_pipeline(
     seen_run_ids: set[str] = set()
     successful_sources = 0
     new_entries: list[dict[str, Any]] = []
+    pool_noticias: list[tuple[str, FeedItem, dict[str, Any]]] = []
+    urls_procesadas = set(existing_urls)
     cutoff = now.astimezone(timezone.utc) - timedelta(days=ingestion["lookback_days"])
     active_sources = sources if sources is not None else [
         source for source in config["sources"] if source["enabled"]
     ]
 
+    # RSS: primero se cargan todos los feeds en un pool común.
     for source in active_sources:
         source_report = {
             "name": source["name"],
@@ -884,69 +958,118 @@ def execute_pipeline(
 
         source_report["items_seen"] = len(items)
         report["items_seen"] += len(items)
-        for item in items:
-            if item.published_at < cutoff:
-                continue
-            report["items_in_window"] += 1
-            keyword = match_keyword(item.title, item.description, config["keywords"])
-            if not keyword:
-                continue
-            report["keyword_candidates"] += 1
-            source_report["candidates"] += 1
-            try:
-                canonical_url = canonicalize_url(
-                    item.link, ingestion["tracking_query_parameters"]
-                )
-            except ValueError as error:
-                report["item_failures"].append(
-                    {"source": source["name"], "url": item.link, "error": str(error)}
-                )
-                continue
-            entry_id = stable_id(canonical_url)
-            if (
-                entry_id in existing_ids
-                or canonical_url in existing_urls
-                or entry_id in seen_run_ids
-            ):
-                report["duplicate_candidates"] += 1
-                continue
-            if es_duplicado_semantico(
-                item.title,
-                existing_entries + new_entries,
-                ingestion["semantic_dedup_threshold"],
-            ):
-                report["duplicate_candidates"] += 1
-                report["semantic_duplicate_candidates"] += 1
-                continue
-            seen_run_ids.add(entry_id)
-            if report["new_candidates"] >= ingestion["max_candidates_per_run"]:
-                continue
-            report["new_candidates"] += 1
-            try:
-                extracted = extractor.extract(
-                    item, source["name"], canonical_url, keyword
-                )
-            except Exception as error:
-                report["item_failures"].append(
-                    {
-                        "source": source["name"],
-                        "url": canonical_url,
-                        "error": f"{type(error).__name__}: {error}",
-                    }
-                )
-                continue
-            entry = {
-                "id": entry_id,
-                **extracted,
-                "imagen_og": image_extractor(canonical_url) if image_extractor else None,
-                "oculto": False,
-                "fecha_ingesta": utc_iso(now),
-                "palabra_clave": keyword,
-            }
-            new_entries.append(entry)
-            existing_ids.add(entry_id)
-            existing_urls.add(canonical_url)
         report["sources"].append(source_report)
+        for item in items:
+            pool_noticias.append((source["name"], item, source_report))
+            urls_procesadas.add(clean_url(item.link))
+
+    # Tavily: búsqueda adicional después de RSS y antes de clasificar con IA.
+    if tavily_loader is not None:
+        tavily_report = {
+            "name": "Tavily",
+            "feed_url": "https://api.tavily.com/search",
+            "status": "ok",
+            "items_seen": 0,
+            "candidates": 0,
+        }
+        try:
+            noticias_tavily_raw = tavily_loader()
+        except Exception as error:
+            tavily_report["status"] = "failed"
+            tavily_report["error"] = f"{type(error).__name__}: {error}"
+            report["source_failures"].append(
+                {
+                    "name": "Tavily",
+                    "feed_url": tavily_report["feed_url"],
+                    "error": tavily_report["error"],
+                }
+            )
+            noticias_tavily_raw = []
+        tavily_report["items_seen"] = len(noticias_tavily_raw)
+        report["items_seen"] += len(noticias_tavily_raw)
+        report["tavily_results"] = len(noticias_tavily_raw)
+        for noticia in noticias_tavily_raw:
+            url = clean_url(noticia.get("url"))
+            titulo = clean_text(noticia.get("titulo"))
+            if not url or not titulo or url in urls_procesadas:
+                continue
+            fecha_publicacion = parse_date(noticia.get("fecha_raw")) or now
+            item = FeedItem(
+                title=titulo,
+                link=url,
+                description=clean_text(noticia.get("resumen_raw")),
+                published_at=fecha_publicacion,
+            )
+            fuente = clean_text(noticia.get("fuente")) or "Tavily"
+            pool_noticias.append((fuente, item, tavily_report))
+            urls_procesadas.add(url)
+            report["tavily_added_to_pool"] += 1
+        print(
+            f"[Tavily] {report['tavily_added_to_pool']} noticias agregadas al pool"
+        )
+        report["sources"].append(tavily_report)
+
+    # Pool común: filtro, deduplicación y clasificación IA.
+    for source_name, item, source_report in pool_noticias:
+        if item.published_at < cutoff:
+            continue
+        report["items_in_window"] += 1
+        keyword = match_keyword(item.title, item.description, config["keywords"])
+        if not keyword:
+            continue
+        report["keyword_candidates"] += 1
+        source_report["candidates"] += 1
+        try:
+            canonical_url = canonicalize_url(
+                item.link, ingestion["tracking_query_parameters"]
+            )
+        except ValueError as error:
+            report["item_failures"].append(
+                {"source": source_name, "url": item.link, "error": str(error)}
+            )
+            continue
+        entry_id = stable_id(canonical_url)
+        if (
+            entry_id in existing_ids
+            or canonical_url in existing_urls
+            or entry_id in seen_run_ids
+        ):
+            report["duplicate_candidates"] += 1
+            continue
+        if es_duplicado_semantico(
+            item.title,
+            existing_entries + new_entries,
+            ingestion["semantic_dedup_threshold"],
+        ):
+            report["duplicate_candidates"] += 1
+            report["semantic_duplicate_candidates"] += 1
+            continue
+        seen_run_ids.add(entry_id)
+        if report["new_candidates"] >= ingestion["max_candidates_per_run"]:
+            continue
+        report["new_candidates"] += 1
+        try:
+            extracted = extractor.extract(item, source_name, canonical_url, keyword)
+        except Exception as error:
+            report["item_failures"].append(
+                {
+                    "source": source_name,
+                    "url": canonical_url,
+                    "error": f"{type(error).__name__}: {error}",
+                }
+            )
+            continue
+        entry = {
+            "id": entry_id,
+            **extracted,
+            "imagen_og": image_extractor(canonical_url) if image_extractor else None,
+            "oculto": False,
+            "fecha_ingesta": utc_iso(now),
+            "palabra_clave": keyword,
+        }
+        new_entries.append(entry)
+        existing_ids.add(entry_id)
+        existing_urls.add(canonical_url)
 
     report["new_entries"] = len(new_entries)
     report["new_entries_preview"] = new_entries
@@ -1120,6 +1243,20 @@ def main(argv: list[str] | None = None) -> int:
                 user_agent=config["ingestion"]["og_image_user_agent"],
             )
 
+        tavily_loader: Callable[[], list[dict[str, Any]]] | None = None
+        if not args.fixture:
+
+            def load_tavily_from_environment() -> list[dict[str, Any]]:
+                tavily_key = os.environ.get("TAVILY_API_KEY", "").strip()
+                if not tavily_key:
+                    print(
+                        "[Tavily] TAVILY_API_KEY no encontrada, se omite búsqueda Tavily"
+                    )
+                    return []
+                return buscar_noticias_tavily(tavily_key)
+
+            tavily_loader = load_tavily_from_environment
+
         updated_archive, report = execute_pipeline(
             config,
             archive,
@@ -1128,6 +1265,7 @@ def main(argv: list[str] | None = None) -> int:
             now,
             sources_override,
             image_extractor,
+            tavily_loader,
         )
         report["dry_run"] = args.dry_run
         report["output_path"] = output_path.relative_to(REPO_ROOT).as_posix()
