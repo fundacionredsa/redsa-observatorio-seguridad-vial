@@ -39,9 +39,16 @@
   ],
   "topics": [
     "siniestro",
-    "seguridad vial",
-    "política pública",
-    "infraestructura"
+    "normativa",
+    "infraestructura",
+    "movilidad_activa",
+    "motociclistas",
+    "transporte_publico",
+    "control_policial",
+    "salud_vial",
+    "educacion_vial",
+    "investigacion",
+    "otro"
   ],
   "ai_provider": {
     "name": "Z.AI",
@@ -108,7 +115,9 @@
     "max_feed_description_characters": 3000,
     "max_summary_characters": 360,
     "request_timeout_seconds": 30,
+    "og_image_timeout_seconds": 5,
     "user_agent": "REDSA-Observa-Hemeroteca/1.0 (+https://observatorio.fundacionredsa.org/)",
+    "og_image_user_agent": "Mozilla/5.0 (compatible; REDSA-Observa-Hemeroteca/1.0; +https://observatorio.fundacionredsa.org/)",
     "minimum_successful_sources": 1,
     "fail_if_all_new_candidates_fail": false,
     "tracking_query_parameters": [

@@ -24,6 +24,9 @@ from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 
+import requests
+from bs4 import BeautifulSoup
+
 
 # CONFIG: todos los parámetros operativos editables viven en este JSON versionado.
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +37,18 @@ try:
     CONFIG: dict[str, Any] = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
 except (OSError, json.JSONDecodeError) as config_error:
     CONFIG = {"_load_error": f"{type(config_error).__name__}: {config_error}"}
+
+_DEFAULT_INGESTION_CONFIG = CONFIG.get("ingestion", {})
+REQUEST_TIMEOUT_OG = (
+    _DEFAULT_INGESTION_CONFIG.get("og_image_timeout_seconds")
+    if isinstance(_DEFAULT_INGESTION_CONFIG, dict)
+    else None
+)
+REQUEST_USER_AGENT_OG = (
+    _DEFAULT_INGESTION_CONFIG.get("og_image_user_agent")
+    if isinstance(_DEFAULT_INGESTION_CONFIG, dict)
+    else None
+)
 
 
 PUBLIC_ENTRY_FIELDS = {
@@ -404,6 +419,7 @@ def validate_config(config: dict[str, Any], repo_root: Path) -> Path:
         "max_feed_description_characters",
         "max_summary_characters",
         "request_timeout_seconds",
+        "og_image_timeout_seconds",
         "minimum_successful_sources",
     )
     for field in integer_fields:
@@ -420,6 +436,10 @@ def validate_config(config: dict[str, Any], repo_root: Path) -> Path:
         errors.append("ingestion.fail_if_all_new_candidates_fail debe ser booleano")
     if not isinstance(ingestion.get("user_agent"), str) or not ingestion.get("user_agent", "").strip():
         errors.append("ingestion.user_agent es obligatorio")
+    if not isinstance(ingestion.get("og_image_user_agent"), str) or not ingestion.get(
+        "og_image_user_agent", ""
+    ).strip():
+        errors.append("ingestion.og_image_user_agent es obligatorio")
     tracking = ingestion.get("tracking_query_parameters")
     if not isinstance(tracking, list) or not all(
         isinstance(value, str) and value.strip() for value in tracking
@@ -481,6 +501,32 @@ def fetch_feed(source: dict[str, Any], ingestion: dict[str, Any]) -> bytes:
     )
     with urlopen(request, timeout=ingestion["request_timeout_seconds"]) as response:
         return response.read()
+
+
+def extract_og_image(
+    url: str,
+    timeout_seconds: int | float | None = REQUEST_TIMEOUT_OG,
+    user_agent: str | None = REQUEST_USER_AGENT_OG,
+) -> str | None:
+    """Extrae og:image de la URL. Retorna None si falla o supera el timeout."""
+    try:
+        response = requests.get(
+            url,
+            timeout=timeout_seconds,
+            headers={"User-Agent": user_agent},
+        )
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        tag = soup.find("meta", property="og:image") or soup.find(
+            "meta", attrs={"name": "og:image"}
+        )
+        if tag and tag.get("content"):
+            image_url = urljoin(url, str(tag["content"]).strip())
+            if urlsplit(image_url).scheme in {"http", "https"}:
+                return image_url
+    except Exception:
+        pass
+    return None
 
 
 def normalized_provider_code(value: Any) -> int | str | None:
@@ -775,6 +821,7 @@ def execute_pipeline(
     extractor: Extractor,
     now: datetime,
     sources: list[dict[str, Any]] | None = None,
+    image_extractor: Callable[[str], str | None] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     ingestion = config["ingestion"]
     report = empty_report(now)
@@ -863,6 +910,7 @@ def execute_pipeline(
             entry = {
                 "id": entry_id,
                 **extracted,
+                "imagen_og": image_extractor(canonical_url) if image_extractor else None,
                 "oculto": False,
                 "fecha_ingesta": utc_iso(now),
                 "palabra_clave": keyword,
@@ -1036,8 +1084,22 @@ def main(argv: list[str] | None = None) -> int:
                 config["ai_provider"], config["topics"], config["ingestion"]
             )
 
+        image_extractor = None
+        if not args.fixture:
+            image_extractor = lambda url: extract_og_image(
+                url,
+                timeout_seconds=config["ingestion"]["og_image_timeout_seconds"],
+                user_agent=config["ingestion"]["og_image_user_agent"],
+            )
+
         updated_archive, report = execute_pipeline(
-            config, archive, feed_loader, extractor, now, sources_override
+            config,
+            archive,
+            feed_loader,
+            extractor,
+            now,
+            sources_override,
+            image_extractor,
         )
         report["dry_run"] = args.dry_run
         report["output_path"] = output_path.relative_to(REPO_ROOT).as_posix()
