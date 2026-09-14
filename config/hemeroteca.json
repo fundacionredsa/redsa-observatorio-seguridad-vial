@@ -25,6 +25,21 @@
       "name": "ECU 911",
       "feed_url": "https://www.ecu911.gob.ec/feed/",
       "enabled": false
+    },
+    {
+      "name": "Google News — accidente vial Ecuador",
+      "feed_url": "https://news.google.com/rss/search?q=accidente+vial+Ecuador&hl=es-419&gl=EC&ceid=EC:es-419",
+      "enabled": true
+    },
+    {
+      "name": "Google News — siniestro tránsito Ecuador",
+      "feed_url": "https://news.google.com/rss/search?q=siniestro+tr%C3%A1nsito+Ecuador&hl=es-419&gl=EC&ceid=EC:es-419",
+      "enabled": true
+    },
+    {
+      "name": "Google News — seguridad vial Ecuador",
+      "feed_url": "https://news.google.com/rss/search?q=seguridad+vial+Ecuador&hl=es-419&gl=EC&ceid=EC:es-419",
+      "enabled": true
     }
   ],
   "keywords": [
@@ -112,6 +127,7 @@
     "lookback_days": 3,
     "max_items_per_source": 60,
     "max_candidates_per_run": 40,
+    "semantic_dedup_threshold": 85,
     "max_feed_description_characters": 3000,
     "max_summary_characters": 360,
     "request_timeout_seconds": 30,

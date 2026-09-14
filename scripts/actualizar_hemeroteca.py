@@ -26,6 +26,7 @@ from xml.etree import ElementTree as ET
 
 import requests
 from bs4 import BeautifulSoup
+from rapidfuzz import fuzz
 
 
 # CONFIG: todos los parámetros operativos editables viven en este JSON versionado.
@@ -46,6 +47,11 @@ REQUEST_TIMEOUT_OG = (
 )
 REQUEST_USER_AGENT_OG = (
     _DEFAULT_INGESTION_CONFIG.get("og_image_user_agent")
+    if isinstance(_DEFAULT_INGESTION_CONFIG, dict)
+    else None
+)
+SEMANTIC_DEDUP_THRESHOLD = (
+    _DEFAULT_INGESTION_CONFIG.get("semantic_dedup_threshold")
     if isinstance(_DEFAULT_INGESTION_CONFIG, dict)
     else None
 )
@@ -168,6 +174,18 @@ def canonicalize_url(url: str, tracking_parameters: list[str]) -> str:
 
 def stable_id(canonical_url: str) -> str:
     return hashlib.sha256(canonical_url.encode("utf-8")).hexdigest()
+
+
+def es_duplicado_semantico(
+    titulo_nuevo: str,
+    noticias_existentes: list[dict[str, Any]],
+    umbral: int = SEMANTIC_DEDUP_THRESHOLD,
+) -> bool:
+    """Retorna True si el título es al menos tan similar como el umbral configurado."""
+    for noticia in noticias_existentes:
+        if fuzz.token_sort_ratio(titulo_nuevo, noticia.get("titulo", "")) >= umbral:
+            return True
+    return False
 
 
 def utc_iso(value: datetime) -> str:
@@ -416,6 +434,7 @@ def validate_config(config: dict[str, Any], repo_root: Path) -> Path:
         "lookback_days",
         "max_items_per_source",
         "max_candidates_per_run",
+        "semantic_dedup_threshold",
         "max_feed_description_characters",
         "max_summary_characters",
         "request_timeout_seconds",
@@ -806,6 +825,7 @@ def empty_report(now: datetime) -> dict[str, Any]:
         "items_in_window": 0,
         "keyword_candidates": 0,
         "duplicate_candidates": 0,
+        "semantic_duplicate_candidates": 0,
         "new_candidates": 0,
         "new_entries": 0,
         "would_modify_output": False,
@@ -889,6 +909,14 @@ def execute_pipeline(
                 or entry_id in seen_run_ids
             ):
                 report["duplicate_candidates"] += 1
+                continue
+            if es_duplicado_semantico(
+                item.title,
+                existing_entries + new_entries,
+                ingestion["semantic_dedup_threshold"],
+            ):
+                report["duplicate_candidates"] += 1
+                report["semantic_duplicate_candidates"] += 1
                 continue
             seen_run_ids.add(entry_id)
             if report["new_candidates"] >= ingestion["max_candidates_per_run"]:

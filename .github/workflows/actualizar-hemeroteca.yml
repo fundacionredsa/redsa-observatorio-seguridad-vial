@@ -2,7 +2,8 @@ name: Actualizar hemeroteca diaria
 
 on:
   schedule:
-    - cron: "15 11 * * *"
+    - cron: "15 11 * * *" # 06:15 Ecuador
+    - cron: "0 2 * * *" # 21:00 Ecuador
   workflow_dispatch:
     inputs:
       dry_run:
