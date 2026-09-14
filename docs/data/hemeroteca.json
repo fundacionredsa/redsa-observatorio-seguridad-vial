@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-13T14:54:31.268848Z",
+  "actualizado_en": "2026-09-14T16:56:56.406522Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -109,6 +109,32 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-13T14:54:31.268848Z",
       "palabra_clave": "choque"
+    },
+    {
+      "id": "4e5682db630bdeabf84f1f4a1bf446e467b83fa528e8b31ecedb5bec796463a1",
+      "titulo": "Bomberos buscan a un motociclista que cayó al río Daule tras un accidente en el puente de la Unidad Nacional",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-14T16:46:34Z",
+      "url": "https://eluniverso.com/guayaquil/comunidad/bomberos-buscan-a-un-motociclista-que-cayo-al-rio-daule-tras-un-accidente-en-el-puente-de-la-unidad-nacional-nota/",
+      "resumen": "Bomberos de Samborondón buscan a un motociclista tras un accidente en el puente de la Unidad Nacional, donde cayó al río Daule.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/H3XMSIMFANB7VNNCL5JRJ4YUMQ.jpg?auth=dd694b6e78e540e2ce98272ddd410c8e805305c90727e7f12371d93c51b785b3&width=377&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-14T16:56:56.406522Z",
+      "palabra_clave": "motociclista"
+    },
+    {
+      "id": "39716c0545c44453cea82168549813333088f26b7db11004f3f1555f5a4b8d2f",
+      "titulo": "Motorizado cayó al río desde el puente de la Unidad Nacional tras siniestro de tránsito: se activó búsqueda con lanchas",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-14T12:34:41Z",
+      "url": "https://eluniverso.com/guayaquil/comunidad/motorizado-cayo-al-rio-daule-desde-el-puente-de-la-unidad-nacional-tras-siniestro-de-transito-se-activo-busqueda-con-lanchas-nota/",
+      "resumen": "Un motorizado cayó al río Daule tras un siniestro de tránsito en el puente de la Unidad Nacional, activándose una búsqueda con lanchas.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/PWAPCSWGDVBURIJULFCZF4GMKE.jpeg?auth=e964937608b6212d1670b90bc3c59f47a5faf1bec1836d7187bc3deae0701622&width=1291&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-14T16:56:56.406522Z",
+      "palabra_clave": "siniestro"
     }
   ]
 }
