@@ -111,7 +111,7 @@
             infrastructureVector: Object.freeze({ name: "infraestructuraPane", zIndex: 450, pointerEvents: "auto" }),
             eventVector: Object.freeze({ name: "eventPane", zIndex: 475, pointerEvents: "none" })
         });
-        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "analysis"]);
+        const RIGHT_CONTEXT_PANELS = Object.freeze(["layers", "analysis", "hemeroteca"]);
         const TOPBAR_CLOSE_KEY = "Escape";
         const MAP_ZOOM_STEP = 1;
         const GEOLOCATION_OPTIONS = Object.freeze({
@@ -538,11 +538,17 @@
             });
 
             const layersOpen = nextPanel === "layers";
+            const hemerotecaOpen = nextPanel === "hemeroteca";
             document.body.classList.toggle("technical-drawer-open", layersOpen);
             document.body.classList.toggle("mobile-layers-open", layersOpen && mobileMediaQuery.matches);
             document.body.classList.toggle("mobile-sidebar-open", analysisOpen && mobileMediaQuery.matches);
+            document.body.classList.toggle("mobile-hemeroteca-open", hemerotecaOpen && mobileMediaQuery.matches);
+            document.body.classList.toggle("hemeroteca-panel-open", hemerotecaOpen);
             document.body.classList.toggle("right-context-open", Boolean(nextPanel));
             document.body.classList.toggle("mobile-right-context-open", Boolean(nextPanel) && mobileMediaQuery.matches);
+            if (hemerotecaOpen) {
+                window.REDSAHemeroteca?.init?.();
+            }
             technicalDrawer?.setAttribute("aria-hidden", String(!layersOpen));
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
             activeLayersShortcut?.setAttribute("aria-expanded", String(layersOpen));

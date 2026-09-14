@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.49">
     <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.49">
     <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.49">
+    <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.49">
 
     <!-- Google Analytics 4 (GA4) -->
     <script>
@@ -249,6 +250,10 @@
             <button class="right-tool-button right-tab-vertical" id="right-tab-analysis" type="button" role="tab" data-right-panel="analysis" aria-controls="territory-sidebar" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Análisis del territorio" title="Análisis del territorio">
                 <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
                 <span class="right-tool-label-vertical">ANÁLISIS</span>
+            </button>
+            <button class="right-tool-button right-tab-vertical" id="right-tab-hemeroteca" type="button" role="tab" data-right-panel="hemeroteca" aria-controls="hemeroteca-panel" aria-selected="false" aria-expanded="false" tabindex="-1" aria-label="Hemeroteca de noticias" title="Hemeroteca de noticias">
+                <i class="fa-solid fa-newspaper" aria-hidden="true"></i>
+                <span class="right-tool-label-vertical">NOTICIAS</span>
             </button>
         </div>
     </nav>
@@ -551,6 +556,64 @@
             </details>
         </div>
 
+        <aside class="right-context-view hemeroteca-panel" id="hemeroteca-panel" role="tabpanel" data-right-context-view="hemeroteca" aria-labelledby="right-tab-hemeroteca" aria-label="Hemeroteca de noticias" aria-hidden="true" hidden tabindex="0">
+            <header class="drawer-header hemeroteca-panel-header">
+                <div class="hemeroteca-header-left">
+                    <span class="hemeroteca-header-icon" aria-hidden="true"><i class="fa-solid fa-newspaper"></i></span>
+                    <h2 class="hemeroteca-panel-title">Hemeroteca</h2>
+                    <span id="hemeroteca-today-badge" class="hemeroteca-today-badge" aria-label="Noticias de hoy" hidden></span>
+                </div>
+                <button class="drawer-close" id="hemeroteca-panel-close" type="button" data-close-right-panel aria-label="Cerrar hemeroteca" title="Cerrar hemeroteca">&times;</button>
+            </header>
+            <div class="hemeroteca-panel-sticky-filters">
+                <div class="hemeroteca-category-chips-scroll" role="region" aria-label="Filtro de temas">
+                    <div class="hemeroteca-category-chips" id="hemeroteca-category-chips" role="radiogroup" aria-label="Temas de noticias"></div>
+                </div>
+                <div class="hemeroteca-date-filter-row">
+                    <label for="hemeroteca-date-select" class="hemeroteca-date-label">
+                        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+                        <span>Fecha:</span>
+                    </label>
+                    <div class="hemeroteca-date-select-wrapper">
+                        <select id="hemeroteca-date-select" class="hemeroteca-date-select" aria-label="Filtrar noticias por fecha"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="hemeroteca-panel-body">
+                <div id="hemeroteca-loading" class="hemeroteca-loading-skeleton" aria-live="polite" aria-busy="true">
+                    <div class="hemeroteca-skeleton-card">
+                        <div class="hemeroteca-skeleton-thumb"></div>
+                        <div class="hemeroteca-skeleton-content">
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-title"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-sub"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-body"></div>
+                        </div>
+                    </div>
+                    <div class="hemeroteca-skeleton-card">
+                        <div class="hemeroteca-skeleton-thumb"></div>
+                        <div class="hemeroteca-skeleton-content">
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-title"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-sub"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-body"></div>
+                        </div>
+                    </div>
+                    <div class="hemeroteca-skeleton-card">
+                        <div class="hemeroteca-skeleton-thumb"></div>
+                        <div class="hemeroteca-skeleton-content">
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-title"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-sub"></div>
+                            <div class="hemeroteca-skeleton-line hemeroteca-skeleton-line-body"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="hemeroteca-empty" class="hemeroteca-empty-state" hidden aria-live="polite">
+                    <i class="fa-regular fa-folder-open hemeroteca-empty-icon" aria-hidden="true"></i>
+                    <p class="hemeroteca-empty-title">Sin noticias para esta fecha</p>
+                    <p class="hemeroteca-empty-desc">Prueba seleccionando otra fecha o cambiando de categoría.</p>
+                </div>
+                <div id="hemeroteca-news-list" class="hemeroteca-news-list" role="feed" aria-busy="false"></div>
+            </div>
+        </aside>
     </div>
     </div>
     <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
@@ -731,6 +794,7 @@
     <script src="assets/js/geoportal-institutional.js?v=0.10.49"></script>
     <script src="assets/js/geoportal-tour.js?v=0.10.49"></script>
     <script src="assets/js/geoportal-catalogo.js?v=0.10.49"></script>
+    <script src="assets/js/geoportal-hemeroteca.js?v=0.10.49"></script>
     <script src="assets/js/geoportal-app.js?v=0.10.49"></script>
 </body>
 </html>
