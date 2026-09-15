@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-15T15:11:28Z",
+  "actualizado_en": "2026-09-15T15:32:49.669022Z",
   "noticias": [
     {
       "id": "bkf_b2c489d73c26",
@@ -1630,6 +1630,19 @@
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily"
+    },
+    {
+      "id": "ba18f4001fd5a4cf05283b195e6dcf9211d61be4683283db2bec75ce540687f6",
+      "titulo": "¿Qué se sabe del motociclista que cayó del puente de la Unidad Nacional este lunes?",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-14T16:03:28Z",
+      "url": "https://www.expreso.ec/guayaquil/motociclista-puente-unidad-nacional-rio-daule-accidente-295692.html",
+      "resumen": "La búsqueda en el río no arrojó resultados y la OIAT maneja otra hipótesis sobre el accidente.",
+      "tema": "investigacion",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/14/6aa81ac7201a7.webp",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-15T15:32:49.669022Z",
+      "palabra_clave": "motociclista"
     }
   ]
 }
