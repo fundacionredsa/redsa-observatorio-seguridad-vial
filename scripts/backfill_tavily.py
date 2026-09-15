@@ -21,6 +21,8 @@ import datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from actualizar_hemeroteca import extract_article_metadata, parse_date
+
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 HEMEROTECA_PATH = Path("docs/data/hemeroteca.json")
 FECHA_INICIO = "2026-08-01"      # inclusive
@@ -28,6 +30,8 @@ FECHA_FIN    = "2026-09-15"      # inclusive (ajustar a hoy si se corre más tar
 DIAS_BUSQUEDA = 50               # días hacia atrás desde hoy (cubre ago-sep)
 MAX_RESULTS_POR_QUERY = 20
 SIMILARIDAD_MINIMA = 85          # umbral rapidfuzz para dedup semántico
+ARTICLE_METADATA_TIMEOUT_SECONDS = 8
+ARTICLE_METADATA_USER_AGENT = "Mozilla/5.0 (compatible; REDSA-Observatorio/1.0)"
 DOMINIOS_EC = [
     "elcomercio.com", "primicias.ec", "eluniverso.com", "expreso.ec",
     "ecuavisa.com", "teleamazonas.com", "ecu911.gob.ec",
@@ -150,11 +154,6 @@ def main():
             omitidas_url += 1
             continue
 
-        # Filtro de rango de fechas
-        if not fecha_en_rango(fecha_raw):
-            omitidas_fecha += 1
-            continue
-
         # Dedup semántico por título
         if dedup_semantico(titulo, titulos_existentes):
             omitidas_dedup += 1
@@ -165,10 +164,27 @@ def main():
         if dominio in DOMINIOS_EXCLUIR:
             continue
 
-        # Determinar fecha_publicacion
-        fecha_pub = fecha_raw[:10] if fecha_raw and len(fecha_raw) >= 10 else ""
-        if not fecha_pub:
-            fecha_pub = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
+        # La fecha del artículo tiene prioridad sobre la fecha devuelta por Tavily.
+        metadata = extract_article_metadata(
+            url,
+            ARTICLE_METADATA_TIMEOUT_SECONDS,
+            ARTICLE_METADATA_USER_AGENT,
+        )
+        fecha_articulo = metadata.get("published_at")
+        fecha_tavily = parse_date(fecha_raw)
+        fecha_verificada = fecha_articulo or fecha_tavily
+        fecha_referencial = fecha_verificada is None
+        if fecha_verificada:
+            fecha_pub = fecha_verificada.astimezone(datetime.timezone.utc).strftime("%Y-%m-%d")
+            fuente_fecha = metadata.get("date_source") or "tavily"
+        else:
+            fecha_pub = FECHA_FIN
+            fuente_fecha = "referencial_backfill"
+
+        # Filtro de rango después de consultar la fecha real del artículo.
+        if not fecha_en_rango(fecha_pub):
+            omitidas_fecha += 1
+            continue
 
         noticia = {
             "id": generar_id(url),
@@ -179,9 +195,11 @@ def main():
             "resumen": item.get("content", "")[:300].strip(),
             "tema": "otro",          # sin clasificación IA en backfill
             "oculto": False,
-            "imagen_og": None,
+            "imagen_og": metadata.get("image_url"),
             "fecha_ingesta": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "palabra_clave": "backfill_tavily"
+            "palabra_clave": "backfill_tavily",
+            "fecha_referencial": fecha_referencial,
+            "fuente_fecha": fuente_fecha,
         }
 
         data["noticias"].append(noticia)

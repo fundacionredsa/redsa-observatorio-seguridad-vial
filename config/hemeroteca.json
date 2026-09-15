@@ -131,6 +131,15 @@
     "max_feed_description_characters": 3000,
     "max_summary_characters": 360,
     "request_timeout_seconds": 30,
+    "article_metadata_timeout_seconds": 8,
+    "article_metadata_minimum_year": 2000,
+    "article_date_future_tolerance_days": 1,
+    "excluded_url_path_fragments": [
+      "/tag/",
+      "/tema/",
+      "/temas/",
+      "/topic/"
+    ],
     "og_image_timeout_seconds": 5,
     "user_agent": "REDSA-Observa-Hemeroteca/1.0 (+https://observatorio.fundacionredsa.org/)",
     "og_image_user_agent": "Mozilla/5.0 (compatible; REDSA-Observa-Hemeroteca/1.0; +https://observatorio.fundacionredsa.org/)",

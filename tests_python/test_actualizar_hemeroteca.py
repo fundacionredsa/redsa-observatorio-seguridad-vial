@@ -15,6 +15,8 @@ from scripts.actualizar_hemeroteca import (
     canonicalize_url,
     execute_pipeline,
     match_keyword,
+    parse_article_metadata_html,
+    parse_publication_date_from_url,
     validate_archive,
     validate_config,
 )
@@ -112,6 +114,54 @@ class HemerotecaPipelineTests(unittest.TestCase):
         )
         self.assertEqual(canonical, "https://example.org/noticia?id=7")
 
+    def test_article_metadata_extracts_published_date_from_jsonld(self):
+        html = """
+        <html><head>
+          <script type="application/ld+json">
+            {"@type":"NewsArticle","datePublished":"2026-09-03T08:30:00-05:00"}
+          </script>
+          <meta property="og:image" content="/imagenes/noticia.webp">
+        </head></html>
+        """
+        metadata = parse_article_metadata_html(html, "https://example.org/noticia")
+        self.assertEqual(metadata["published_at"].isoformat(), "2026-09-03T13:30:00+00:00")
+        self.assertEqual(metadata["date_source"], "jsonld.datePublished")
+        self.assertEqual(metadata["image_url"], "https://example.org/imagenes/noticia.webp")
+
+    def test_complete_date_in_url_is_accepted_without_inferring_months(self):
+        parsed = parse_publication_date_from_url(
+            "https://eldiario.ec/noticia/choque-en-chone-04012026"
+        )
+        self.assertEqual(parsed.strftime("%Y-%m-%d"), "2026-01-04")
+        self.assertIsNone(
+            parse_publication_date_from_url(
+                "https://example.org/noticia/datos-de-accidentes-a-octubre-del-2023"
+            )
+        )
+
+    def test_pipeline_uses_article_date_before_model_extraction(self):
+        verified = datetime(2026, 9, 4, 15, 0, tzinfo=timezone.utc)
+        archive, report = execute_pipeline(
+            self.config,
+            self.empty_archive(),
+            lambda _source: self.fixture,
+            self.extractor(),
+            self.now,
+            [self.source],
+            article_metadata_extractor=lambda _url: {
+                "published_at": verified,
+                "date_source": "jsonld.datePublished",
+                "image_url": "https://example.org/noticia.webp",
+            },
+        )
+        self.assertEqual(report["article_dates_verified"], 2)
+        self.assertEqual(report["reference_dates_used"], 0)
+        self.assertTrue(archive["noticias"])
+        for noticia in archive["noticias"]:
+            self.assertEqual(noticia["fecha_publicacion"], "2026-09-04T15:00:00Z")
+            self.assertFalse(noticia["fecha_referencial"])
+            self.assertEqual(noticia["fuente_fecha"], "jsonld.datePublished")
+
     def test_one_failed_source_does_not_stop_a_valid_source(self):
         sources = [
             {"name": "Fuente caída", "feed_url": "https://invalid.example/rss", "enabled": True},
@@ -180,6 +230,10 @@ class HemerotecaPipelineTests(unittest.TestCase):
         )
         self.assertIn("messages", request_body)
         self.assertNotIn("input", request_body)
+        prompt_payload = json.loads(request_body["messages"][1]["content"])
+        self.assertEqual(prompt_payload["fecha_publicacion"], "2026-09-05T12:00:00Z")
+        self.assertFalse(prompt_payload["fecha_referencial"])
+        self.assertIn("no deduzcas una fecha", request_body["messages"][0]["content"])
         self.assertEqual(extracted["tema"], "siniestro")
         self.assertEqual(extractor.request_count, 1)
         self.assertEqual(extractor.prompt_tokens, 100)
@@ -228,6 +282,46 @@ class HemerotecaPipelineTests(unittest.TestCase):
         mocked_sleep.assert_called_once_with(
             self.config["ai_provider"]["retry_backoff_seconds"]
         )
+
+    def test_future_article_date_is_rejected(self):
+        future = datetime(2026, 10, 15, tzinfo=timezone.utc)
+        archive, report = execute_pipeline(
+            self.config,
+            self.empty_archive(),
+            lambda _source: self.fixture,
+            self.extractor(),
+            self.now,
+            [self.source],
+            article_metadata_extractor=lambda _url: {
+                "published_at": future,
+                "date_source": "texto_fecha_publicada",
+                "image_url": None,
+            },
+        )
+        self.assertEqual(report["article_dates_verified"], 0)
+        self.assertTrue(archive["noticias"])
+        self.assertTrue(
+            all(noticia["fecha_publicacion"] <= "2026-09-06T12:00:00Z" for noticia in archive["noticias"])
+        )
+
+    def test_topic_pages_are_not_added_as_news(self):
+        feed = """<?xml version='1.0' encoding='UTF-8'?>
+        <rss version='2.0'><channel><item>
+          <title>Accidente de transito: archivo temático</title>
+          <link>https://example.org/temas/accidentes-transito</link>
+          <description>Archivo sobre accidentes de tránsito.</description>
+          <pubDate>Sat, 05 Sep 2026 11:00:00 GMT</pubDate>
+        </item></channel></rss>""".encode("utf-8")
+        archive, report = execute_pipeline(
+            self.config,
+            self.empty_archive(),
+            lambda _source: feed,
+            self.extractor(),
+            self.now,
+            [self.source],
+        )
+        self.assertEqual(report["non_article_candidates"], 1)
+        self.assertEqual(archive["noticias"], [])
 
 
 if __name__ == "__main__":

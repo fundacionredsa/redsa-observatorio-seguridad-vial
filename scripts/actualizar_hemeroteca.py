@@ -13,7 +13,7 @@ import sys
 import tempfile
 import time
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
@@ -122,6 +122,8 @@ class FeedItem:
     link: str
     description: str
     published_at: datetime
+    published_is_reference: bool = False
+    published_source: str = "rss"
 
 
 class Extractor(Protocol):
@@ -238,6 +240,235 @@ def parse_date(value: str | None) -> datetime | None:
             parsed = parsed.replace(tzinfo=timezone.utc)
         return parsed.astimezone(timezone.utc)
     except ValueError:
+        return None
+
+
+SPANISH_MONTH_NUMBERS = {
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "setiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
+}
+
+
+def parse_spanish_date(value: str | None) -> datetime | None:
+    """Interpreta una fecha española completa; nunca infiere el año."""
+    text = normalize_text(value)
+    month_names = "|".join(SPANISH_MONTH_NUMBERS)
+    match = re.search(
+        rf"(?<!\d)(\d{{1,2}})\s+de\s+({month_names})(?:\s+de|,)?\s+(\d{{4}})(?!\d)",
+        text,
+    )
+    if not match:
+        return None
+    try:
+        return datetime(
+            int(match.group(3)),
+            SPANISH_MONTH_NUMBERS[match.group(2)],
+            int(match.group(1)),
+            tzinfo=timezone.utc,
+        )
+    except ValueError:
+        return None
+
+
+def _json_ld_published_dates(value: Any) -> list[str]:
+    if isinstance(value, dict):
+        dates: list[str] = []
+        for key, nested in value.items():
+            if key.lower() == "datepublished" and isinstance(nested, str):
+                dates.append(nested)
+            else:
+                dates.extend(_json_ld_published_dates(nested))
+        return dates
+    if isinstance(value, list):
+        dates: list[str] = []
+        for nested in value:
+            dates.extend(_json_ld_published_dates(nested))
+        return dates
+    return []
+
+
+def parse_article_metadata_html(html_text: str, article_url: str) -> dict[str, Any]:
+    """Extrae fecha publicada e imagen desde metadatos del artículo."""
+    soup = BeautifulSoup(html_text, "html.parser")
+    date_candidates: list[tuple[str, str]] = []
+
+    for script in soup.find_all("script", attrs={"type": "application/ld+json"}):
+        raw = script.string or script.get_text(" ", strip=True)
+        if not raw:
+            continue
+        try:
+            structured = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        date_candidates.extend(
+            ("jsonld.datePublished", value)
+            for value in _json_ld_published_dates(structured)
+        )
+
+    metadata_selectors = (
+        ('meta[property="article:published_time"]', "meta.article:published_time"),
+        ('meta[name="article:published_time"]', "meta.article:published_time"),
+        ('meta[itemprop="datePublished"]', "meta.datePublished"),
+        ('meta[name="pubdate"]', "meta.pubdate"),
+        ('meta[name="publish-date"]', "meta.publish-date"),
+        ('meta[name="publication_date"]', "meta.publication_date"),
+        ('meta[name="date"]', "meta.date"),
+    )
+    for selector, source in metadata_selectors:
+        for tag in soup.select(selector):
+            content = clean_text(tag.get("content"))
+            if content:
+                date_candidates.append((source, content))
+
+    for tag in soup.select("time[datetime], [itemprop='datePublished'][datetime]"):
+        raw = clean_text(tag.get("datetime"))
+        if raw:
+            date_candidates.append(("time.datetime", raw))
+
+    # Último recurso: texto de elementos que el sitio identifica como fecha publicada.
+    for tag in soup.select(
+        "time, [class*='publish'], [class*='fecha'], [class*='date'], "
+        "[id*='publish'], [id*='fecha']"
+    ):
+        raw = clean_text(tag.get_text(" ", strip=True))
+        if raw:
+            date_candidates.append(("texto_fecha_publicada", raw))
+
+    published_at = None
+    date_source = None
+    for source, raw in date_candidates:
+        parsed = parse_date(raw) or parse_spanish_date(raw)
+        if parsed:
+            published_at = parsed
+            date_source = source
+            break
+
+    image_url = None
+    image_tag = soup.find("meta", property="og:image") or soup.find(
+        "meta", attrs={"name": "og:image"}
+    )
+    if image_tag and image_tag.get("content"):
+        candidate = urljoin(article_url, str(image_tag["content"]).strip())
+        if urlsplit(candidate).scheme in {"http", "https"}:
+            image_url = candidate
+
+    return {
+        "published_at": published_at,
+        "date_source": date_source,
+        "image_url": image_url,
+    }
+
+
+def extract_article_metadata(
+    url: str,
+    timeout_seconds: int | float,
+    user_agent: str,
+) -> dict[str, Any]:
+    """Consulta una noticia y obtiene su fecha publicada e imagen sin lanzar errores."""
+    url_date = parse_publication_date_from_url(url)
+    try:
+        response = requests.get(
+            url,
+            timeout=timeout_seconds,
+            headers={"User-Agent": user_agent},
+        )
+        response.raise_for_status()
+        final_url = response.url or url
+        metadata = parse_article_metadata_html(response.text, final_url)
+        if not metadata.get("published_at"):
+            soup = BeautifulSoup(response.text, "html.parser")
+            wordpress_date = wordpress_published_date(
+                soup, final_url, timeout_seconds, user_agent
+            )
+            if wordpress_date:
+                metadata["published_at"] = wordpress_date
+                metadata["date_source"] = "wordpress_rest.date_gmt"
+            elif url_date:
+                metadata["published_at"] = url_date
+                metadata["date_source"] = "url_fecha_completa"
+        return metadata
+    except Exception as error:
+        return {
+            "published_at": url_date,
+            "date_source": "url_fecha_completa" if url_date else None,
+            "image_url": None,
+            "error": f"{type(error).__name__}: {error}",
+        }
+
+
+def is_plausible_publication_date(
+    value: datetime,
+    reference_time: datetime,
+    minimum_year: int,
+    future_tolerance_days: int,
+) -> bool:
+    normalized = value.astimezone(timezone.utc)
+    latest = reference_time.astimezone(timezone.utc) + timedelta(days=future_tolerance_days)
+    return minimum_year <= normalized.year and normalized <= latest
+
+
+def parse_publication_date_from_url(url: str) -> datetime | None:
+    """Acepta solo patrones completos de fecha; nunca interpreta meses aislados."""
+    path = urlsplit(url).path
+    patterns = (
+        (r"(?<!\d)(20\d{2})[/-](\d{2})[/-](\d{2})(?!\d)", (1, 2, 3)),
+        (r"-(\d{2})(\d{2})(20\d{2})(?:/|$)", (3, 2, 1)),
+    )
+    for pattern, order in patterns:
+        match = re.search(pattern, path)
+        if not match:
+            continue
+        try:
+            return datetime(
+                int(match.group(order[0])),
+                int(match.group(order[1])),
+                int(match.group(order[2])),
+                tzinfo=timezone.utc,
+            )
+        except ValueError:
+            continue
+    return None
+
+
+def wordpress_published_date(
+    soup: BeautifulSoup,
+    article_url: str,
+    timeout_seconds: int | float,
+    user_agent: str,
+) -> datetime | None:
+    """Consulta WordPress REST cuando la plantilla oculta la fecha del artículo."""
+    shortlink = soup.find("link", rel=lambda value: value and "shortlink" in value)
+    href = clean_url(shortlink.get("href")) if shortlink else ""
+    post_id = dict(parse_qsl(urlsplit(href).query)).get("p")
+    if not post_id or not post_id.isdigit():
+        return None
+    parsed = urlsplit(article_url)
+    endpoint = urlunsplit(
+        (parsed.scheme, parsed.netloc, f"/wp-json/wp/v2/posts/{post_id}", "", "")
+    )
+    try:
+        response = requests.get(
+            endpoint,
+            timeout=timeout_seconds,
+            headers={"User-Agent": user_agent},
+        )
+        response.raise_for_status()
+        payload = response.json()
+        date_gmt = clean_text(payload.get("date_gmt"))
+        date_local = clean_text(payload.get("date"))
+        return parse_date(f"{date_gmt}Z" if date_gmt else date_local)
+    except Exception:
         return None
 
 
@@ -467,6 +698,9 @@ def validate_config(config: dict[str, Any], repo_root: Path) -> Path:
         "max_feed_description_characters",
         "max_summary_characters",
         "request_timeout_seconds",
+        "article_metadata_timeout_seconds",
+        "article_metadata_minimum_year",
+        "article_date_future_tolerance_days",
         "og_image_timeout_seconds",
         "minimum_successful_sources",
     )
@@ -493,6 +727,11 @@ def validate_config(config: dict[str, Any], repo_root: Path) -> Path:
         isinstance(value, str) and value.strip() for value in tracking
     ):
         errors.append("ingestion.tracking_query_parameters debe ser una lista de textos")
+    excluded_paths = ingestion.get("excluded_url_path_fragments")
+    if not isinstance(excluded_paths, list) or not all(
+        isinstance(value, str) and value.startswith("/") for value in excluded_paths
+    ):
+        errors.append("ingestion.excluded_url_path_fragments debe ser una lista de rutas")
 
     if errors:
         raise ConfigurationError("Configuración inválida:\n- " + "\n- ".join(errors))
@@ -694,6 +933,8 @@ class CompatibleChatExtractor:
             "titulo": item.title,
             "fuente": source_name,
             "fecha_publicacion": published,
+            "fecha_referencial": item.published_is_reference,
+            "fuente_fecha": item.published_source,
             "url": canonical_url,
             "descripcion_rss": description,
             "palabra_clave_detectada": keyword,
@@ -712,7 +953,10 @@ class CompatibleChatExtractor:
                         "contexto NO es vial, devuelve \"relevante\": false y no incluyas la noticia. "
                         "Si el contexto es vial, devuelve únicamente un objeto JSON "
                         "con las claves titulo, fuente, fecha_publicacion, url, resumen y tema. Conserva "
-                        "título, fuente, fecha y URL. Redacta en español un resumen factual de 1 o 2 "
+                        "título, fuente, fecha y URL. La fecha_publicacion ya fue verificada contra "
+                        "la página del artículo o el RSS: consérvala exactamente y no deduzcas una "
+                        "fecha desde palabras o meses mencionados en el titular. Redacta en español "
+                        "un resumen factual de 1 o 2 "
                         f"líneas y hasta {self.ingestion['max_summary_characters']} caracteres, como "
                         "paráfrasis breve, sin citas extensas ni texto completo. tema debe ser uno de: "
                         f"{json.dumps(self.topics, ensure_ascii=False)}. No agregues hechos ausentes del RSS."
@@ -903,8 +1147,12 @@ def empty_report(now: datetime) -> dict[str, Any]:
         "keyword_candidates": 0,
         "duplicate_candidates": 0,
         "semantic_duplicate_candidates": 0,
+        "non_article_candidates": 0,
         "tavily_results": 0,
         "tavily_added_to_pool": 0,
+        "article_dates_verified": 0,
+        "reference_dates_used": 0,
+        "article_metadata_failures": [],
         "new_candidates": 0,
         "new_entries": 0,
         "would_modify_output": False,
@@ -922,6 +1170,7 @@ def execute_pipeline(
     sources: list[dict[str, Any]] | None = None,
     image_extractor: Callable[[str], str | None] | None = None,
     tavily_loader: Callable[[], list[dict[str, Any]]] | None = None,
+    article_metadata_extractor: Callable[[str], dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     ingestion = config["ingestion"]
     report = empty_report(now)
@@ -1002,12 +1251,15 @@ def execute_pipeline(
             titulo = clean_text(noticia.get("titulo"))
             if not url or not titulo or url in urls_procesadas:
                 continue
-            fecha_publicacion = parse_date(noticia.get("fecha_raw")) or now
+            fecha_tavily = parse_date(noticia.get("fecha_raw"))
+            fecha_publicacion = fecha_tavily or now
             item = FeedItem(
                 title=titulo,
                 link=url,
                 description=clean_text(noticia.get("resumen_raw")),
                 published_at=fecha_publicacion,
+                published_is_reference=fecha_tavily is None,
+                published_source="tavily" if fecha_tavily else "fecha_ingesta_referencial",
             )
             fuente = clean_text(noticia.get("fuente")) or "Tavily"
             pool_noticias.append((fuente, item, tavily_report))
@@ -1020,14 +1272,9 @@ def execute_pipeline(
 
     # Pool común: filtro, deduplicación y clasificación IA.
     for source_name, item, source_report in pool_noticias:
-        if item.published_at < cutoff:
-            continue
-        report["items_in_window"] += 1
         keyword = match_keyword(item.title, item.description, config["keywords"])
         if not keyword:
             continue
-        report["keyword_candidates"] += 1
-        source_report["candidates"] += 1
         try:
             canonical_url = canonicalize_url(
                 item.link, ingestion["tracking_query_parameters"]
@@ -1036,6 +1283,13 @@ def execute_pipeline(
             report["item_failures"].append(
                 {"source": source_name, "url": item.link, "error": str(error)}
             )
+            continue
+        canonical_path = urlsplit(canonical_url).path.lower()
+        if any(
+            fragment.lower() in canonical_path
+            for fragment in ingestion["excluded_url_path_fragments"]
+        ):
+            report["non_article_candidates"] += 1
             continue
         entry_id = stable_id(canonical_url)
         if (
@@ -1053,6 +1307,53 @@ def execute_pipeline(
             report["duplicate_candidates"] += 1
             report["semantic_duplicate_candidates"] += 1
             continue
+
+        article_metadata: dict[str, Any] = {}
+        if article_metadata_extractor:
+            article_metadata = article_metadata_extractor(canonical_url) or {}
+            verified_date = article_metadata.get("published_at")
+            if isinstance(verified_date, datetime) and is_plausible_publication_date(
+                verified_date,
+                now,
+                ingestion["article_metadata_minimum_year"],
+                ingestion["article_date_future_tolerance_days"],
+            ):
+                item = replace(
+                    item,
+                    published_at=verified_date,
+                    published_is_reference=False,
+                    published_source=clean_text(article_metadata.get("date_source"))
+                    or "pagina_articulo",
+                )
+                report["article_dates_verified"] += 1
+            elif article_metadata.get("error"):
+                report["article_metadata_failures"].append(
+                    {
+                        "source": source_name,
+                        "url": canonical_url,
+                        "error": article_metadata["error"],
+                    }
+                )
+
+        if not is_plausible_publication_date(
+            item.published_at,
+            now,
+            ingestion["article_metadata_minimum_year"],
+            ingestion["article_date_future_tolerance_days"],
+        ):
+            item = replace(
+                item,
+                published_at=now,
+                published_is_reference=True,
+                published_source="fecha_ingesta_referencial",
+            )
+        if item.published_at < cutoff:
+            continue
+        report["items_in_window"] += 1
+        report["keyword_candidates"] += 1
+        source_report["candidates"] += 1
+        if item.published_is_reference:
+            report["reference_dates_used"] += 1
         seen_run_ids.add(entry_id)
         if report["new_candidates"] >= ingestion["max_candidates_per_run"]:
             continue
@@ -1071,10 +1372,13 @@ def execute_pipeline(
         entry = {
             "id": entry_id,
             **extracted,
-            "imagen_og": image_extractor(canonical_url) if image_extractor else None,
+            "imagen_og": article_metadata.get("image_url")
+            or (image_extractor(canonical_url) if image_extractor else None),
             "oculto": False,
             "fecha_ingesta": utc_iso(now),
             "palabra_clave": keyword,
+            "fecha_referencial": item.published_is_reference,
+            "fuente_fecha": item.published_source,
         }
         new_entries.append(entry)
         existing_ids.add(entry_id)
@@ -1144,6 +1448,8 @@ def append_github_summary(report: dict[str, Any]) -> None:
         f"- Candidatos por palabras clave: {report['keyword_candidates']}",
         f"- Duplicados omitidos: {report['duplicate_candidates']}",
         f"- Entradas nuevas: {report['new_entries']}",
+        f"- Fechas verificadas en artículo: {report['article_dates_verified']}",
+        f"- Fechas referenciales usadas: {report['reference_dates_used']}",
         f"- Solicitudes al modelo: {report['model_usage']['http_requests']}",
         f"- Eventos de rate-limit: {report['model_usage']['rate_limit_events']}",
         f"- Costo estimado: USD {report['model_usage']['estimated_cost_usd']}",
@@ -1245,10 +1551,11 @@ def main(argv: list[str] | None = None) -> int:
             )
 
         image_extractor = None
+        article_metadata_extractor = None
         if not args.fixture:
-            image_extractor = lambda url: extract_og_image(
+            article_metadata_extractor = lambda url: extract_article_metadata(
                 url,
-                timeout_seconds=config["ingestion"]["og_image_timeout_seconds"],
+                timeout_seconds=config["ingestion"]["article_metadata_timeout_seconds"],
                 user_agent=config["ingestion"]["og_image_user_agent"],
             )
 
@@ -1275,6 +1582,7 @@ def main(argv: list[str] | None = None) -> int:
             sources_override,
             image_extractor,
             tavily_loader,
+            article_metadata_extractor,
         )
         report["dry_run"] = args.dry_run
         report["output_path"] = output_path.relative_to(REPO_ROOT).as_posix()
