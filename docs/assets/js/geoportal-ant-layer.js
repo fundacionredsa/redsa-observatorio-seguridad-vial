@@ -268,41 +268,6 @@
         window.REDSAOverlayState?.notify();
     }
 
-    function syncBottomOpacity() {
-        const bottomOpacitySlot = document.getElementById("map-bottom-opacity-slot");
-        const antOpacityControl = document.getElementById("ant-heat-opacity-control");
-        const mainSlider = document.getElementById("ant-heat-opacity-slider");
-        if (!bottomOpacitySlot || !antOpacityControl || !mainSlider) return;
-
-        if (antOpacityControl.hidden) {
-            bottomOpacitySlot.replaceChildren();
-            return;
-        }
-
-        let bottomSlider = document.getElementById("bottom-ant-opacity-slider");
-        if (!bottomSlider) {
-            const label = document.createElement("label");
-            label.className = "map-bottom-opacity-label";
-            label.htmlFor = "bottom-ant-opacity-slider";
-            label.textContent = "Opacidad ANT";
-
-            bottomSlider = document.createElement("input");
-            bottomSlider.type = "range";
-            bottomSlider.id = "bottom-ant-opacity-slider";
-            bottomSlider.setAttribute("aria-label", "Opacidad de Siniestros ANT");
-            bottomSlider.addEventListener("input", event => {
-                mainSlider.value = event.target.value;
-                mainSlider.dispatchEvent(new Event("input", { bubbles: true }));
-            });
-            bottomOpacitySlot.replaceChildren(label, bottomSlider);
-        }
-
-        for (const attribute of ["min", "max", "step"]) {
-            bottomSlider.setAttribute(attribute, mainSlider.getAttribute(attribute));
-        }
-        bottomSlider.value = mainSlider.value;
-    }
-
     function syncControls() {
         const toggle = document.getElementById("ant-layer-toggle");
         const jumpButton = document.getElementById("ant-jump-year");
@@ -331,7 +296,6 @@
             button.disabled = isAccumulatedMode() || !state.active || state.status !== "ready" || state.year !== state.loadedYear;
         });
         if (heatOpacityControl) heatOpacityControl.hidden = !(state.active && state.mode === "heat" && !isAccumulatedMode());
-        syncBottomOpacity();
     }
 
     function setHeatOpacity(value) {
@@ -342,10 +306,8 @@
         if (pane) pane.style.opacity = String(state.heatOpacity);
         const percentage = Math.round(state.heatOpacity * 100);
         const slider = document.getElementById("ant-heat-opacity-slider");
-        const bottomSlider = document.getElementById("bottom-ant-opacity-slider");
         const output = document.getElementById("ant-heat-opacity-value");
         if (slider && Number(slider.value) !== percentage) slider.value = String(percentage);
-        if (bottomSlider && Number(bottomSlider.value) !== percentage) bottomSlider.value = String(percentage);
         if (output) output.value = `${percentage}%`;
     }
 
