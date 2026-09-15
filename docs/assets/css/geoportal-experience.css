@@ -1146,6 +1146,7 @@ body.right-context-open .right-tools-rail {
     color: var(--text-secondary);
     font-size: var(--fs-lg);
     cursor: pointer;
+    height: auto;
 }
 
 .right-tool-button:hover,
