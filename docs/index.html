@@ -31,10 +31,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.53">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.54">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.53">
-    <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.53">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.55">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.55">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.55">
+    <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.55">
 
     <!-- Flatpickr date picker -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
@@ -619,9 +619,18 @@
         </aside>
     </div>
     </div>
-    <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button" aria-controls="map-legend-card" aria-expanded="false" aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
-        <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
-    </button>
+    <div id="map-bottom-bar" class="map-bottom-bar" role="toolbar" aria-label="Controles del mapa">
+        <div class="map-bottom-bar-start">
+            <div id="map-bottom-opacity-slot" class="map-bottom-opacity-slot"></div>
+        </div>
+        <div class="map-bottom-bar-end">
+            <button id="legend-visibility-toggle" class="legend-visibility-toggle" type="button"
+                aria-controls="map-legend-card" aria-expanded="false"
+                aria-label="Mostrar leyenda del mapa" title="Mostrar leyenda del mapa" hidden>
+                <i class="fa-solid fa-list" aria-hidden="true"></i><span>Leyenda</span>
+            </button>
+        </div>
+    </div>
     <div class="right-tools-status" id="right-tools-status" role="status" aria-live="polite" hidden></div>
 
     <div id="mobile-year-bar" class="mobile-year-bar" role="group" aria-label="Año, periodo e intensidad del mapa">
@@ -786,18 +795,18 @@
     <script src="assets/js/vendor/jspdf.umd.min.js"></script>
 
     <!-- App Modularizada -->
-    <script src="assets/js/geoportal-classification.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-registry.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-overlay-state.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-experience.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-territories.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-panels.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-institutional.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-tour.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-catalogo.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-hemeroteca.js?v=0.10.53"></script>
-    <script src="assets/js/geoportal-app.js?v=0.10.53"></script>
+    <script src="assets/js/geoportal-classification.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-registry.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-overlay-state.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-experience.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-territories.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-panels.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-institutional.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-tour.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-catalogo.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-hemeroteca.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-app.js?v=0.10.55"></script>
 </body>
 </html>

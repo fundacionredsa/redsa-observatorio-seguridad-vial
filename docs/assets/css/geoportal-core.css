@@ -98,6 +98,9 @@
             --loader-draw-duration: 2.4s;
             --loader-road-draw-duration: 3.2s;
             --loader-progress-duration: 1.6s;
+            --map-bottom-bar-height: 52px;
+            --map-bottom-control-min-height: 36px;
+            --map-bottom-opacity-slider-width: 100px;
         }
 
         body.light-theme {
@@ -969,7 +972,7 @@
         /* Custom Zoom Buttons Container */
         .zoom-control-container {
             position: absolute;
-            bottom: 30px;
+            bottom: calc(var(--map-bottom-bar-height, 52px) + var(--space-3));
             left: 20px;
             z-index: var(--z-map-controls);
             pointer-events: auto;
