@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-14T16:56:56.406522Z",
+  "actualizado_en": "2026-09-15T07:35:35.611728Z",
   "noticias": [
     {
       "id": "f44cb65aa5babc26f1b6966bc5e093e84484440dfc73b4d21d8bbc637289e26a",
@@ -134,6 +134,19 @@
       "imagen_og": "https://www.eluniverso.com/resizer/v2/PWAPCSWGDVBURIJULFCZF4GMKE.jpeg?auth=e964937608b6212d1670b90bc3c59f47a5faf1bec1836d7187bc3deae0701622&width=1291&height=670&quality=75&smart=true",
       "oculto": false,
       "fecha_ingesta": "2026-09-14T16:56:56.406522Z",
+      "palabra_clave": "siniestro"
+    },
+    {
+      "id": "512d975f7758ded21cd0cc9284c880d73006be82f8c5dac4a38153df9e31b0c4",
+      "titulo": "CTE realizó la reconstrucción del siniestro que causó la muerte de Mónica Martinich en la avenida Samborondón",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-14T21:02:21Z",
+      "url": "https://eluniverso.com/guayaquil/comunidad/cte-realizo-la-reconstruccion-del-siniestro-que-causo-la-muerte-de-monica-martinich-en-la-avenida-samborondon-nota/",
+      "resumen": "La CTE reconstruyó el siniestro vial que causó la muerte de Mónica Martinich en la avenida Samborondón para aportar elementos técnicos al esclarecimiento del atropellamiento.",
+      "tema": "investigacion",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/33NBQKJH7JH2RHMZLW2LKMDOVU.jpg?auth=3cb24293fd11e471cf09692931c44e3dff23ba8249f5ea1475f46a9b904887d2&width=1191&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-15T07:35:35.611728Z",
       "palabra_clave": "siniestro"
     }
   ]
