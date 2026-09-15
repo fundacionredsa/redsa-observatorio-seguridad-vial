@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-15T16:00:46Z",
+  "actualizado_en": "2026-09-15T16:14:09Z",
   "noticias": [
     {
       "id": "bkf_b2c489d73c26",
       "titulo": "Ecuador: 1.942 fallecidos en accidentes de tránsito a octubre del 2023 | Informes | Noticias | El Universo",
       "fuente": "eluniverso.com",
-      "fecha_publicacion": "2026-10-15",
+      "fecha_publicacion": "2023-11-17",
       "url": "https://www.eluniverso.com/noticias/informes/ecuador-1942-fallecidos-en-accidentes-de-transito-a-octubre-de-2023-nota",
       "resumen": "Publicidad\n\nPublicidad\n\nA continuación las actividades que se realizarán por el Día Mundial en Recuerdo de las Víctimas de Siniestros de Tráfico.\n\n#### Compañía\n\n#### Ayuda / Asistencia\n\n#### Nuestras marcas\n\n© 2026 C.A. EL UNIVERSO. Todos los derechos reservados\n\nSegún el Art. 60 de la Ley Orgánica",
       "tema": "otro",
-      "oculto": false,
+      "oculto": true,
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily"

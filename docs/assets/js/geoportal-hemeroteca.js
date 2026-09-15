@@ -67,7 +67,7 @@
         if (loadingEl) loadingEl.hidden = false;
 
         try {
-            const response = await fetch(HEMEROTECA_CONFIG.dataUrl);
+            const response = await fetch(HEMEROTECA_CONFIG.dataUrl, { cache: "no-store" });
             if (!response.ok) {
                 throw new Error(`HTTP error ${response.status}`);
             }
