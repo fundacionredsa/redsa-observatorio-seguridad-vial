@@ -137,41 +137,55 @@
     }
 
     function iniciarDatePicker(noticias) {
-        const fechasDisponibles = [...new Set(
-            noticias
+        const fechasConNoticias = new Set(
+            (noticias || cachedNews || [])
                 .filter(n => !n.oculto && n.fecha_publicacion)
                 .map(n => n.fecha_publicacion.slice(0, 10))
-        )].sort();
+        );
 
         const input = document.getElementById("hemeroteca-date-input");
         const clearBtn = document.getElementById("hemeroteca-date-clear");
         if (!input || !clearBtn) return;
+
+        // Posicionar el calendario en el mes más reciente con noticias.
+        const fechasOrdenadas = [...fechasConNoticias].sort().reverse();
+        const defaultDate = fechasOrdenadas.length > 0 ? fechasOrdenadas[0] : null;
 
         if (typeof window.flatpickr !== "function") {
             console.warn("[Hemeroteca] Flatpickr no está disponible; se omite el filtro de fecha.");
             return;
         }
 
-        datePickerInstance = window.flatpickr(input, {
+        const fp = window.flatpickr(input, {
             locale: "es",
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "j M Y",
-            enable: fechasDisponibles,
-            disableMobile: false,
+            defaultDate: defaultDate,
+            disableMobile: true,
+            onDayCreate: function(dObj, dStr, instance, dayElem) {
+                if (!dayElem.dateObj) return;
+                const iso = dayElem.dateObj.toISOString().slice(0, 10);
+                if (fechasConNoticias.has(iso)) {
+                    dayElem.classList.add("fp-has-news");
+                }
+            },
             onChange: function(selectedDates, dateStr) {
                 if (dateStr) {
-                    activeDate = dateStr;
                     clearBtn.hidden = false;
+                    activeDate = dateStr;
                     renderNews();
                 }
             }
         });
 
+        datePickerInstance = fp;
+        fp.jumpToDate(defaultDate || new Date(), false);
+
         clearBtn.addEventListener("click", function() {
-            datePickerInstance.clear();
-            activeDate = null;
+            fp.clear();
             clearBtn.hidden = true;
+            activeDate = null;
             renderNews();
         });
     }

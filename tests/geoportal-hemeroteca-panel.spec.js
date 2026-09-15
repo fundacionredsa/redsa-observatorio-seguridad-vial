@@ -100,19 +100,27 @@ test.describe("Panel Hemeroteca en Geoportal", () => {
             expect(dateBox.height).toBeGreaterThanOrEqual(44);
         }
 
-        // Flatpickr debe habilitar únicamente fechas que tienen noticias.
+        // Flatpickr debe mostrar el mes completo y marcar los días con noticias.
         const datePickerState = await panel.locator("#hemeroteca-date-input").evaluate(input => {
             const instance = input._flatpickr;
             if (!instance) return null;
-            const firstEnabled = instance.config.enable[0];
-            const firstDate = firstEnabled instanceof Date ? firstEnabled : new Date(firstEnabled);
+            const days = Array.from(instance.calendarContainer.querySelectorAll(".flatpickr-day"));
+            const newsDays = days.filter(day => day.classList.contains("fp-has-news"));
+            const firstNewsDate = newsDays[0]?.dateObj;
             return {
-                enabledCount: instance.config.enable.length,
-                firstDate: instance.formatDate(firstDate, "Y-m-d")
+                enabledCount: Array.isArray(instance.config.enable) ? instance.config.enable.length : 0,
+                calendarDayCount: days.length,
+                newsDayCount: newsDays.length,
+                unmarkedDayCount: days.length - newsDays.length,
+                firstDate: firstNewsDate ? instance.formatDate(firstNewsDate, "Y-m-d") : null
             };
         });
         expect(datePickerState).not.toBeNull();
-        expect(datePickerState.enabledCount).toBeGreaterThan(1);
+        expect(datePickerState.enabledCount).toBe(0);
+        expect(datePickerState.calendarDayCount).toBeGreaterThan(27);
+        expect(datePickerState.newsDayCount).toBeGreaterThan(0);
+        expect(datePickerState.unmarkedDayCount).toBeGreaterThan(0);
+        expect(datePickerState.firstDate).not.toBeNull();
 
         // Tarjetas visibles
         const cards = panel.locator(".hemeroteca-card");

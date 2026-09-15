@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-15T15:32:49.669022Z",
+  "actualizado_en": "2026-09-15T16:00:46Z",
   "noticias": [
     {
       "id": "bkf_b2c489d73c26",
@@ -1613,7 +1613,7 @@
       "url": "https://www.eluniverso.com/noticias/2013/11/16/nota/1732986/dos-heridos-accidente-vehicular",
       "resumen": "“El accidente es de tipología pérdida de pista por exceso de velocidad. En el lugar dos personas resultaron heridas, las cuales fueron rescatadas de inmediato por parte del Cuerpo de Bomberos de Guayaquil”, dijo el vigilante John Naranjo, de la Comisión de Tránsito del Ecuador (CTE).\n\nPublicidad\n\nCu",
       "tema": "otro",
-      "oculto": false,
+      "oculto": true,
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily"
@@ -1626,7 +1626,7 @@
       "url": "https://www.eluniverso.com/2011/11/30/1/1447/ecuador-uno-paises-mas-accidentes-cada-100000-habitantes.html",
       "resumen": "Estos días, el BID ha organizado la Semana Vial en Ecuador, que inició el 28 de noviembre y termina el 2 de diciembre, para concienciar a las autoridades sobre la importancia de que exista una verdadera seguridad vial en el país.\n\nSoraya Herrea hace cuatro años perdió a su hija en un accidente de tr",
       "tema": "otro",
-      "oculto": false,
+      "oculto": true,
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily"
