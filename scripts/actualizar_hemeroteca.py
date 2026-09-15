@@ -68,6 +68,12 @@ TAVILY_DOMINIOS_EC = [
     "eldiario.ec",
     "lahora.com.ec",
 ]
+TAVILY_DOMINIOS_EXCLUIR = {
+    "youtube.com",
+    "youtu.be",
+    "instagram.com",
+    "facebook.com",
+}
 TAVILY_QUERIES = [
     "accidente tránsito Ecuador",
     "seguridad vial Ecuador",
@@ -596,15 +602,18 @@ def buscar_noticias_tavily(
                 include_answer=False,
             )
             for item in resultado.get("results", []):
+                item_url = clean_url(item.get("url"))
+                if extraer_dominio(item_url) in TAVILY_DOMINIOS_EXCLUIR:
+                    continue
                 noticias_raw.append(
                     {
                         "titulo": item.get("title", ""),
-                        "url": item.get("url", ""),
+                        "url": item_url,
                         "resumen_raw": clean_text(item.get("content"))[
                             :TAVILY_SUMMARY_MAX_CHARACTERS
                         ],
                         "fecha_raw": item.get("published_date", ""),
-                        "fuente": extraer_dominio(item.get("url", "")),
+                        "fuente": extraer_dominio(item_url),
                     }
                 )
             time.sleep(TAVILY_QUERY_DELAY_SECONDS)

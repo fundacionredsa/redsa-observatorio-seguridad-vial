@@ -33,6 +33,7 @@ DOMINIOS_EC = [
     "ecuavisa.com", "teleamazonas.com", "ecu911.gob.ec",
     "transito.gob.ec", "amt.gob.ec", "eldiario.ec", "lahora.com.ec"
 ]
+DOMINIOS_EXCLUIR = {"youtube.com", "youtu.be", "instagram.com", "facebook.com"}
 QUERIES = [
     "accidente tránsito Ecuador agosto septiembre 2026",
     "siniestro vial Quito 2026",
@@ -59,7 +60,7 @@ def cargar_hemeroteca() -> dict:
         return json.load(f)
 
 def guardar_hemeroteca(data: dict) -> None:
-    data["actualizado_en"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    data["actualizado_en"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     with open(HEMEROTECA_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -159,20 +160,27 @@ def main():
             omitidas_dedup += 1
             continue
 
+        # Excluir resultados de plataformas sociales o de video.
+        dominio = extraer_dominio(url)
+        if dominio in DOMINIOS_EXCLUIR:
+            continue
+
         # Determinar fecha_publicacion
         fecha_pub = fecha_raw[:10] if fecha_raw and len(fecha_raw) >= 10 else ""
+        if not fecha_pub:
+            fecha_pub = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
 
         noticia = {
             "id": generar_id(url),
             "titulo": titulo,
-            "fuente": extraer_dominio(url),
+            "fuente": dominio,
             "fecha_publicacion": fecha_pub,
             "url": url,
             "resumen": item.get("content", "")[:300].strip(),
             "tema": "otro",          # sin clasificación IA en backfill
             "oculto": False,
             "imagen_og": None,
-            "fecha_ingesta": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "fecha_ingesta": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "palabra_clave": "backfill_tavily"
         }
 
