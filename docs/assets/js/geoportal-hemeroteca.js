@@ -29,6 +29,7 @@
     let isFetching = false;
     let activeCategory = "todas";
     let activeDate = null;
+    let datePickerInstance = null;
     let initialized = false;
 
     function escapeHtml(str) {
@@ -135,50 +136,42 @@
         });
     }
 
-    function populateDateSelect(selectEl, newsList) {
-        if (!selectEl) return;
-        selectEl.innerHTML = "";
+    function iniciarDatePicker(noticias) {
+        const fechasDisponibles = [...new Set(
+            noticias
+                .filter(n => !n.oculto && n.fecha_publicacion)
+                .map(n => n.fecha_publicacion.slice(0, 10))
+        )].sort();
 
-        const uniqueDates = [];
-        newsList.forEach(item => {
-            const d = getIsoDate(item.fecha_publicacion);
-            if (d && !uniqueDates.includes(d)) {
-                uniqueDates.push(d);
+        const input = document.getElementById("hemeroteca-date-input");
+        const clearBtn = document.getElementById("hemeroteca-date-clear");
+        if (!input || !clearBtn) return;
+
+        if (typeof window.flatpickr !== "function") {
+            console.warn("[Hemeroteca] Flatpickr no está disponible; se omite el filtro de fecha.");
+            return;
+        }
+
+        datePickerInstance = window.flatpickr(input, {
+            locale: "es",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "j M Y",
+            enable: fechasDisponibles,
+            disableMobile: false,
+            onChange: function(selectedDates, dateStr) {
+                if (dateStr) {
+                    activeDate = dateStr;
+                    clearBtn.hidden = false;
+                    renderNews();
+                }
             }
         });
 
-        // Orden descendente
-        uniqueDates.sort((a, b) => b.localeCompare(a));
-
-        if (uniqueDates.length > 0) {
-            HEMEROTECA_CONFIG.defaultFecha = uniqueDates[0];
-            if (!activeDate) {
-                activeDate = uniqueDates[0];
-            }
-        }
-
-        // Opción todas
-        const optAll = document.createElement("option");
-        optAll.value = "todas";
-        optAll.textContent = "Todas las fechas";
-        selectEl.appendChild(optAll);
-
-        uniqueDates.forEach(dateStr => {
-            const opt = document.createElement("option");
-            opt.value = dateStr;
-            opt.textContent = formatDisplayDate(dateStr);
-            if (dateStr === activeDate) {
-                opt.selected = true;
-            }
-            selectEl.appendChild(opt);
-        });
-
-        if (activeDate) {
-            selectEl.value = activeDate;
-        }
-
-        selectEl.addEventListener("change", (e) => {
-            activeDate = e.target.value;
+        clearBtn.addEventListener("click", function() {
+            datePickerInstance.clear();
+            activeDate = null;
+            clearBtn.hidden = true;
             renderNews();
         });
     }
@@ -272,13 +265,11 @@
         initialized = true;
 
         const chipsContainer = document.getElementById("hemeroteca-category-chips");
-        const dateSelect = document.getElementById("hemeroteca-date-select");
-
         renderChips(chipsContainer);
 
         const news = await loadData();
         if (news) {
-            populateDateSelect(dateSelect, news);
+            iniciarDatePicker(news);
             updateTodayBadge(news);
             renderNews();
         }
@@ -290,7 +281,15 @@
         render: renderNews,
         setFilter: (category, date) => {
             if (category !== undefined) activeCategory = category;
-            if (date !== undefined) activeDate = date;
+            if (date !== undefined) {
+                activeDate = date;
+                const clearBtn = document.getElementById("hemeroteca-date-clear");
+                if (clearBtn) clearBtn.hidden = !date;
+                if (datePickerInstance) {
+                    if (date) datePickerInstance.setDate(date);
+                    else datePickerInstance.clear();
+                }
+            }
             renderNews();
         }
     };

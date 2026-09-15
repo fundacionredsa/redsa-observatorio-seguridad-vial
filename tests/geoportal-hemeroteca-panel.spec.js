@@ -91,27 +91,41 @@ test.describe("Panel Hemeroteca en Geoportal", () => {
         await expect(chips.first()).toHaveAttribute("aria-checked", "true");
         await expect(chips.first()).toHaveClass(/is-active/);
 
-        // Date select touch target ≥ 44px
-        const dateSelect = panel.locator("#hemeroteca-date-select");
-        await expect(dateSelect).toBeVisible();
-        const dateBox = await dateSelect.boundingBox();
+        // Date picker Flatpickr: touch target ≥ 44px
+        const dateInput = panel.locator(".hemeroteca-date-picker-wrapper input:not([type='hidden'])");
+        await expect(dateInput).toBeVisible();
+        const dateBox = await dateInput.boundingBox();
         expect(dateBox).not.toBeNull();
         if (dateBox) {
             expect(dateBox.height).toBeGreaterThanOrEqual(44);
         }
 
-        // Las opciones de fecha deben tener formato "DD MMM YYYY" o "Todas"
-        const options = dateSelect.locator("option");
-        const count = await options.count();
-        expect(count).toBeGreaterThan(1);
-        const secondOptText = await options.nth(1).textContent();
-        // Regex para "DD MMM YYYY", ej "10 Sep 2026"
-        expect(secondOptText).toMatch(/\d{2}\s+[A-Za-z]{3}\s+\d{4}/);
+        // Flatpickr debe habilitar únicamente fechas que tienen noticias.
+        const datePickerState = await panel.locator("#hemeroteca-date-input").evaluate(input => {
+            const instance = input._flatpickr;
+            if (!instance) return null;
+            const firstEnabled = instance.config.enable[0];
+            const firstDate = firstEnabled instanceof Date ? firstEnabled : new Date(firstEnabled);
+            return {
+                enabledCount: instance.config.enable.length,
+                firstDate: instance.formatDate(firstDate, "Y-m-d")
+            };
+        });
+        expect(datePickerState).not.toBeNull();
+        expect(datePickerState.enabledCount).toBeGreaterThan(1);
 
         // Tarjetas visibles
         const cards = panel.locator(".hemeroteca-card");
         const initialCount = await cards.count();
         expect(initialCount).toBeGreaterThan(0);
+
+        // Seleccionar y limpiar una fecha debe filtrar y restaurar las tarjetas.
+        await page.evaluate(date => window.REDSAHemeroteca.setFilter(undefined, date), datePickerState.firstDate);
+        await expect(panel.locator("#hemeroteca-date-clear")).toBeVisible();
+        expect(await cards.count()).toBeLessThanOrEqual(initialCount);
+        await panel.locator("#hemeroteca-date-clear").click();
+        await expect(panel.locator("#hemeroteca-date-clear")).toBeHidden();
+        await expect(cards).toHaveCount(initialCount);
 
         // Cada tarjeta es clickable con target="_blank"
         const firstCard = cards.first();

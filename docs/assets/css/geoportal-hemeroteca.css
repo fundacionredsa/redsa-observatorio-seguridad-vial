@@ -526,3 +526,40 @@
         pointer-events: auto !important;
     }
 }
+
+/* ── Flatpickr date picker ── */
+.hemeroteca-date-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 8px;
+    padding: 0 8px;
+    min-height: 44px;
+    background: var(--color-surface, #fff);
+}
+.hemeroteca-cal-icon {
+    flex-shrink: 0;
+    opacity: 0.5;
+}
+#hemeroteca-date-input,
+.hemeroteca-date-picker-wrapper .form-control.input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    min-height: 44px;
+    cursor: pointer;
+    outline: none;
+}
+#hemeroteca-date-input:focus,
+.hemeroteca-date-picker-wrapper .form-control.input:focus { outline: none; }
+.flatpickr-day.flatpickr-disabled {
+    opacity: 0.25 !important;
+    cursor: not-allowed !important;
+}
+.flatpickr-day.selected, .flatpickr-day.selected:hover {
+    background: var(--color-accent, #e63946) !important;
+    border-color: var(--color-accent, #e63946) !important;
+}
+.flatpickr-calendar { z-index: 99999 !important; }
