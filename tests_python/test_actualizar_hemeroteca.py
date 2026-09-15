@@ -13,6 +13,7 @@ from scripts.actualizar_hemeroteca import (
     FeedItem,
     MockExtractor,
     canonicalize_url,
+    es_url_articulo,
     execute_pipeline,
     match_keyword,
     parse_article_metadata_html,
@@ -113,6 +114,22 @@ class HemerotecaPipelineTests(unittest.TestCase):
             self.config["ingestion"]["tracking_query_parameters"],
         )
         self.assertEqual(canonical, "https://example.org/noticia?id=7")
+
+    def test_url_listing_pages_are_rejected(self):
+        rejected = [
+            "https://teleamazonas.com/etiqueta/atropello/1/",
+            "https://example.org/category/transito/",
+            "https://example.org/page/2/",
+            "https://example.org/noticias?s=choque",
+            "https://example.org/?p=42",
+        ]
+        for url in rejected:
+            with self.subTest(url=url):
+                self.assertFalse(es_url_articulo(url))
+
+        self.assertTrue(
+            es_url_articulo("https://example.org/2026/09/15/choque-en-quito")
+        )
 
     def test_article_metadata_extracts_published_date_from_jsonld(self):
         html = """

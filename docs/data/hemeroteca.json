@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-15T16:57:03.055064Z",
+  "actualizado_en": "2026-09-15T21:56:52.374216Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -40,7 +40,8 @@
       "url": "https://teleamazonas.com/etiqueta/atropello/1",
       "resumen": "Un bus atropelló a una persona en el carril exclusivo del transporte público.\n\nQuito\n\n## Bus del corredor Central Norte atropelló a una persona en la avenida América, en Quito\n\nRevise las noticias más destacadas de Guayaquil en nuestro Noticiero 24 Horas Primera Emisión de este jueves 15 de enero de",
       "tema": "otro",
-      "oculto": false,
+      "oculto": true,
+      "razon_oculto": "url_listado",
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily",

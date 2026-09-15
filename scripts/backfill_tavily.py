@@ -21,7 +21,7 @@ import datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from actualizar_hemeroteca import extract_article_metadata, parse_date
+from actualizar_hemeroteca import es_url_articulo, extract_article_metadata, parse_date
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 HEMEROTECA_PATH = Path("docs/data/hemeroteca.json")
@@ -147,6 +147,10 @@ def main():
         fecha_raw = item.get("published_date", "")
 
         if not url or not titulo:
+            continue
+
+        # Excluir páginas de etiqueta, categoría, búsqueda o paginación.
+        if not es_url_articulo(url):
             continue
 
         # Dedup por URL

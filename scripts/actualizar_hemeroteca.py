@@ -74,6 +74,23 @@ TAVILY_DOMINIOS_EXCLUIR = {
     "instagram.com",
     "facebook.com",
 }
+# Patrones de URL que identifican páginas de listado, no artículos.
+URL_PATRONES_EXCLUIR = [
+    r"/etiqueta/",
+    r"/tag/",
+    r"/tags/",
+    r"/categoria/",
+    r"/category/",
+    r"/topics?/",
+    r"/search/",
+    r"/busqueda/",
+    r"/autor/",
+    r"/author/",
+    r"/page/\d+(?:/|$)",
+    r"/\d+/?$",
+    r"[?&]s=",
+    r"[?&]p=\d+(?:&|$)",
+]
 TAVILY_QUERIES = [
     "accidente tránsito Ecuador",
     "seguridad vial Ecuador",
@@ -823,6 +840,14 @@ def extraer_dominio(url: str) -> str:
         return "desconocido"
 
 
+def es_url_articulo(url: str) -> bool:
+    """Devuelve True si la URL parece un artículo individual, no un listado."""
+    if not url:
+        return False
+    url_lower = clean_url(url).lower()
+    return not any(re.search(patron, url_lower) for patron in URL_PATRONES_EXCLUIR)
+
+
 def buscar_noticias_tavily(
     api_key: str, max_results_por_query: int = TAVILY_MAX_RESULTS_PER_QUERY
 ) -> list[dict[str, Any]]:
@@ -842,6 +867,8 @@ def buscar_noticias_tavily(
             )
             for item in resultado.get("results", []):
                 item_url = clean_url(item.get("url"))
+                if not es_url_articulo(item_url):
+                    continue
                 if extraer_dominio(item_url) in TAVILY_DOMINIOS_EXCLUIR:
                     continue
                 noticias_raw.append(
@@ -1249,7 +1276,11 @@ def execute_pipeline(
         for noticia in noticias_tavily_raw:
             url = clean_url(noticia.get("url"))
             titulo = clean_text(noticia.get("titulo"))
-            if not url or not titulo or url in urls_procesadas:
+            if (
+                not es_url_articulo(url)
+                or not titulo
+                or url in urls_procesadas
+            ):
                 continue
             fecha_tavily = parse_date(noticia.get("fecha_raw"))
             fecha_publicacion = fecha_tavily or now
