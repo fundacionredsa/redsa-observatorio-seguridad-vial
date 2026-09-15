@@ -57,9 +57,9 @@ test("IA fija la leyenda a la izquierda sin intersecciones en todas las combinac
   }
 });
 
-test("IB ofrece dos pestañas ARIA y análisis con ancho propio", async ({ page }, testInfo) => {
+test("IB ofrece tres pestañas ARIA y análisis con ancho propio", async ({ page }, testInfo) => {
   await loadPortal(page);
-  await expect(page.locator("[role=tab][data-right-panel]")).toHaveCount(2);
+  await expect(page.locator("[role=tab][data-right-panel]")).toHaveCount(3);
   await page.locator("#right-tab-analysis").click();
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#right-tab-analysis")).toHaveAttribute("aria-selected", "true");

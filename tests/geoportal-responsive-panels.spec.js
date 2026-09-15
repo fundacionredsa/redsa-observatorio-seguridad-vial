@@ -39,7 +39,7 @@ function intersects(a, b) {
   return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
-test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPAS", async ({ page }) => {
+test("la barra derecha conserva CAPAS, ANÁLISIS y NOTICIAS con los ajustes dentro de CAPAS", async ({ page }) => {
   await loadPortal(page);
 
   const rail = page.locator("#right-tools-rail");
@@ -48,10 +48,11 @@ test("la barra derecha conserva CAPAS y ANÁLISIS con los ajustes dentro de CAPA
   const isMobile = (page.viewportSize()?.width || 0) <= 768;
 
   await expect(rail).toBeVisible();
-  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(2);
+  await expect(page.locator("#right-tools-rail [role='tab']")).toHaveCount(3);
   await expect(page.locator("#right-tools-rail [role='tab']")).toHaveText([
     "CAPAS",
-    "ANÁLISIS"
+    "ANÁLISIS",
+    "NOTICIAS"
   ]);
   await expect(page.locator('[data-right-panel="legend"]')).toHaveCount(0);
   await expect(layersButton).toHaveAttribute("aria-expanded", "false");
@@ -665,7 +666,7 @@ test("zoom, ubicación y grupos de herramientas son operables en la barra", asyn
   await loadPortal(page);
 
   await expect(page.locator("#right-tools-rail .right-tool-group")).toHaveCount(3);
-  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(6);
+  await expect(page.locator("#right-tools-rail .right-tool-button")).toHaveCount(7);
   const originalZoom = await page.evaluate(() => window.__redsaAudit.state().zoom);
   await page.locator("#map-zoom-in").click();
   await expect.poll(() => page.evaluate(() => window.__redsaAudit.state().zoom)).toBe(originalZoom + 1);

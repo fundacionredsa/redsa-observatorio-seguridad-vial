@@ -31,7 +31,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         const mobileSidebarToggle = page.locator('[data-right-panel="analysis"]');
         const mobileSidebarClose = page.locator('#mobile-sidebar-close');
         const layersToggle = page.locator('[data-right-panel="layers"]');
-        await expect(page.locator('#right-tools-rail [role="tab"]')).toHaveCount(2);
+        await expect(page.locator('#right-tools-rail [role="tab"]')).toHaveCount(3);
         await expect(page.locator('[data-right-panel="settings"]')).toHaveCount(0);
         await expect(page.locator('#mobile-period-control-slot .period-mode-control')).toBeVisible();
         await expect(page.locator('#mobile-opacity-control-slot #territory-opacity-control')).toBeVisible();
@@ -105,7 +105,7 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         await page.evaluate(() => window.__redsaAudit.selectVariable('fallecidos_sppat_2016_2021'));
         const yearBar = page.locator('#mobile-year-bar');
         await expect(yearBar).toBeVisible();
-        await expect(yearBar.locator('.mobile-year-bar-label')).toHaveText('Año');
+        await expect(yearBar.locator('.mobile-year-bar-label')).toHaveCount(0);
         await expect(yearBar.locator('[data-year]')).toHaveCount(11);
         await expect(yearBar.locator('.my-available')).toHaveCount(6);
         await expect(yearBar.locator('.my-unavailable')).toHaveCount(5);
@@ -131,15 +131,12 @@ test.describe('Geoportal Mobile UX Improvements', () => {
         expect(layout.overlapsZoom, JSON.stringify(layout)).toBeFalsy();
         expect(layout.overlapsRail, JSON.stringify(layout)).toBeFalsy();
 
-        const labelPosition = await page.evaluate(() => {
-            const label = document.querySelector('.mobile-year-bar-label');
+        const yearScroll = await page.evaluate(() => {
             const scroll = document.querySelector('#mobile-year-bar-scroll');
-            const before = label.getBoundingClientRect().left;
             scroll.scrollLeft = scroll.scrollWidth;
-            return { before, after: label.getBoundingClientRect().left, scrollLeft: scroll.scrollLeft };
+            return scroll.scrollLeft;
         });
-        expect(labelPosition.after).toBe(labelPosition.before);
-        expect(labelPosition.scrollLeft).toBeGreaterThan(0);
+        expect(yearScroll).toBeGreaterThan(0);
 
         if (await page.locator('#right-context-host').isVisible()) {
             await page.locator('[data-right-panel="layers"]').click();
