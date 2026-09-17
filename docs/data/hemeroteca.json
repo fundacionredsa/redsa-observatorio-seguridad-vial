@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-15T21:56:52.374216Z",
+  "actualizado_en": "2026-09-17T15:31:52.128926Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -1896,6 +1896,21 @@
       "imagen_og": null,
       "fecha_ingesta": "2026-09-15T14:26:39Z",
       "palabra_clave": "backfill_tavily",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "68296ae85ae7de0104b5a60a6eeb8358cf5ada00311d1c21c9b6db08330087ad",
+      "titulo": "Siniestro de tránsito entre un bus y un camión se registró en la vía Alóag-Santo Domingo",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-17T13:47:20.052000Z",
+      "url": "https://eluniverso.com/noticias/seguridad/siniestro-de-transito-entre-un-bus-y-un-camion-se-registro-en-la-via-aloag-santo-domingo-nota/",
+      "resumen": "Se registró un nuevo percance de tránsito entre un bus y un camión en la vía Alóag-Santo Domingo.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/3I72WK3E4ZBURO2PJEZE25DVAM.png?auth=12d6aff651e684624d6a9b47b9a5c571434832dd1fe0e967e0dfe0eca3d97532&width=1192&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-17T15:31:52.128926Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
     }
