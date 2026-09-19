@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-17T15:31:52.128926Z",
+  "actualizado_en": "2026-09-19T07:16:35.571217Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -1911,6 +1911,51 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-17T15:31:52.128926Z",
       "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "01b5d7edb19a1a62f50246cadeaeb01886a166e47009cf11516a12f21df13b56",
+      "titulo": "Choque entre seis vehículos en la Ruta Viva deja heridos y cierres viales en Quito",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-19T01:41:49Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/choque-seis-vehiculos-ruta-viva-heridos-cierres-viales-quito/",
+      "resumen": "El ECU 911 atiende un choque entre seis vehículos en la Ruta Viva de Quito que deja heridos y genera cierres viales.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Diseno-sin-titulo-23.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-19T07:16:35.571217Z",
+      "palabra_clave": "choque",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "c65cd246cabb74116984aaa4b91bafa93a586a1f5cb07ecf6caf39312d85e8c0",
+      "titulo": "¿Qué pasó con el motociclista que presuntamente cayó de un puente de Guayaquil?",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-18T23:21:48Z",
+      "url": "https://www.elcomercio.com/actualidad/seguridad/que-paso-con-el-motociclista-emilio-alvarez-puente-de-guayaquil/",
+      "resumen": "La familia de Emilio Álvaro busca reconstruir su recorrido hasta el puente de la Unidad Nacional mediante cámaras de videovigilancia.",
+      "tema": "investigacion",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Diseno-sin-titulo-14.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-19T07:16:35.571217Z",
+      "palabra_clave": "motociclista",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "001e183ca817d5513167d16cd5edb64823afe8a1aab23101e8f0ff3dda5479a3",
+      "titulo": "AMT controla buses en la Panamericana Norte de Quito: esta es la infracción que más se repite",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-18T14:19:25Z",
+      "url": "https://www.expreso.ec/quito/amt-controla-buses-panamericana-norte-quito-infraccion-repite-296244.html",
+      "resumen": "La AMT desplegó agentes en la Panamericana Norte de Quito para controlar buses y prevenir siniestros, identificando la apertura de puertas como la infracción más frecuente.",
+      "tema": "control_policial",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/18/6aad454fbb154.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-19T07:16:35.571217Z",
+      "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
     }
