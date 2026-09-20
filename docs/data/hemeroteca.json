@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-19T07:16:35.571217Z",
+  "actualizado_en": "2026-09-20T07:40:41.881767Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -1958,6 +1958,96 @@
       "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "bcc91f37c00b8850dc8a7b12ffa26737e891ad950a02011ce7c2ece36bc87a6a",
+      "titulo": "Dos muertos deja un siniestro de tránsito en Santo Domingo este sábado",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-19T23:57:24Z",
+      "url": "https://www.elcomercio.com/actualidad/seguridad/dos-muertos-deja-un-siniestro-de-transito-en-santo-domingo-este-sabado/",
+      "resumen": "Un siniestro de tránsito en Santo Domingo dejó un saldo preliminar de seis heridos y dos muertos este sábado.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/siniestro-santo-domingo-19-septiembre-ecu911.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "7e92a8e9e459a1765ed3ab29ffcac6f3350b346f7b36a16e51876de1476424fc",
+      "titulo": "Dos muertos y varios heridos en siniestro de tránsito de un bus en Santo Domingo de los Tsáchilas",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-20T00:44:57.162000Z",
+      "url": "https://eluniverso.com/noticias/seguridad/dos-muertos-y-varios-heridos-en-siniestro-de-transito-de-un-bus-en-santo-domingo-de-los-tsachilas-nota/",
+      "resumen": "Un bus de transporte público sufrió un accidente en Santo Domingo de los Tsáchilas, dejando dos fallecidos y varios heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/F7WDRT6VWBDGVGAUTIOST67NQI.jpg?auth=1d7e274f387064c2ebd2dc95151e9f2c368a128f7eccb322f5da975747aabca2&width=897&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "dd340db007564510d366289c1bd0c8e8a08dce172dff3f6d9a5dd0ee0d91faab",
+      "titulo": "Choque múltiple en el interior del túnel de Guayasamín de Quito",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-19T22:50:11.878000Z",
+      "url": "https://eluniverso.com/noticias/ecuador/quito-ecuador-choque-siniestro-de-transito-tunel-guayasamin-nota/",
+      "resumen": "Un choque múltiple en el túnel Guayasamín generó congestión vehicular en el norte de Quito.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/SHMR3JMTWRHPTDPCSE4QIDGBUA.jpeg?auth=eb40f831c79c6ebccfba6d970641c4cf32d0aeaa477e753271888e31e73b9cbd&width=831&height=468&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "choque",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "a47f8422673fc6eeb7f7ea43b70beee103d5ad467562ed70e7947b764b285cca",
+      "titulo": "Dos fallecidos en accidentes de tránsito marcan el inicio del fin de semana en Guayaquil",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-19T15:25:24Z",
+      "url": "https://www.expreso.ec/guayaquil/dos-fallecidos-accidentes-transito-marcan-inicio-semana-guayaquil-296371.html",
+      "resumen": "Se registraron al menos seis siniestros viales en Guayaquil entre la noche del viernes 18 y el sábado 19 de septiembre, con dos fallecidos.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/19/6aaea95f63aa5.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "ae1a49e4939dcb7be1841af060f93857a84de1a9313085b1a6f256d072362aa0",
+      "titulo": "Cierre de Ruta Viva por accidente de tránsito que involucra a seis carros - Ecuador 221",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-19T17:00:00Z",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNN25qejhzTl8walF5VExqN1V3aDNDM05vQ0txY3N5SHhQT0dHMGZiNDBHdm92Zk5aX2hsZVpOUzctcFJKN2lSaHVQRk43SE1hdEtpa1psRjd1ekJJTlJNdTdEaXNBTWtxU0hXRU5LV0tnNmF4Z2JQNjZNdmUzbzlXQ2NSYkVvd3d4NXhhcklxWEtsc1E5UHp3bmFxZW1Mckg5UFE?oc=5",
+      "resumen": "Un accidente de tránsito con seis vehículos cerró la Ruta Viva.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "c7652d3ee213cba84f4759b67df0dc6ec1ed5cb48d20c4316bfd8c62cf0365ee",
+      "titulo": "Múltiple siniestro de tránsito provoca cierre vial en la Ruta Viva - ecuavisa.com",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-19T02:12:09Z",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxObGQxZ2pGS1haZVA2R1dQNWlWYXVuM0FFWjB5QzlXbmZXbnlHcTVzWWh6cV9xNXJIY0xMZTc2Rkd3WXhHT3I5TXItUUN4dG5KZkNKSklBazRoVFJwcV9sVG1oLXR2X0pTYUdybmh5VDc2Y3Z1bEZpaVBvMjFTUGtEZkMzYTVRTTlmT1E2N1lzN1VuYjNDSXd6RjRjT0RvaTJkV3AzYWJVamnSAa4BQVVfeXFMUEZoX0ktS24yQml6MjV5VVQ4YXhzZHRscTFTckZ4ekZFMmRrS0pVWlhKallpeXpza2lldmlkMnc5VkxIRlhIRkFBb08yZWpySVpFM21DS3NDUVVNUWNFVldYYXZRdDVoaTFqQ0phejQ3VkM1QWVqb0dHYWxCRGp5YV8xc1BLR1doVHdtbXRwRktsWHRKR0JyRm96MGNRVm45akl5NFg1MjUzS0JDbHVB?oc=5",
+      "resumen": "Un siniestro vial en la Ruta Viva generó el cierre de la vía.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
