@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-20T07:40:41.881767Z",
+  "actualizado_en": "2026-09-20T14:41:13.542316Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2046,6 +2046,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-20T07:40:41.881767Z",
       "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "6e6dbbfa4fa9a8588b8dfa47b67ac6e75bd736c05382fc04ed07b57a93bc36b1",
+      "titulo": "Cinco siniestros de tránsito se reportaron en Guayaquil desde la madrugada de este sábado - El Universo",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-19T14:26:00Z",
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxORXNmQ3hFS0JrQllPZW5CU1BsQXJOamE2QXcwNDRnM2dac2RFczQtOTBqZU1DdUkyMkhrYWRobU1ac1FBLVdCMFNEcEEyOHRtUzJMX2J0YXdpQ0NxVkVoLXp5QTVIejI5MmZWbmVXUFc1amp6THJGMHB2Z09oWmtRNXc2RTk5R1d4SkNQTm9kUldKdHVRTTZ6SkNZSEM1eE94UnZiYnV6LXBvWU5sRFFIb3BrNHU0cXFMNm5aTkZwaUNNNUtRYmV0RW9QZjVOYVBPeEJEUmZwcndpUQ?oc=5",
+      "resumen": "Se reportaron cinco siniestros de tránsito en Guayaquil desde la madrugada de este sábado.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-20T14:41:13.542316Z",
+      "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
