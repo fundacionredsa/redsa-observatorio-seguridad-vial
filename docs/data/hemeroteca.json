@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-20T14:41:13.542316Z",
+  "actualizado_en": "2026-09-21T17:00:44.108723Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2061,6 +2061,51 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-20T14:41:13.542316Z",
       "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "462ebcfe1265658daabe672c3d5a61bc9e97801aa9f4da2e2c01f3514f895847",
+      "titulo": "Trágico siniestro de tránsito en La Comuna deja un fallecido y tres heridos",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-21T15:08:59.751000Z",
+      "url": "https://eluniverso.com/noticias/ecuador/quito-siniestro-de-transito-la-comuna-noroccidente-atropellamiento-choque-nota/",
+      "resumen": "Un siniestro vial en La Comuna dejó un fallecido y tres heridos; se aplicó un test de alcoholemia al conductor.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/TXH7OEW6BZEN3OSNHXXU73PYJM.jpeg?auth=0ccea0a824d748b78d43027a4b1862cdc4d8ae4731453ca40e475b99e94f443d&width=662&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-21T17:00:44.108723Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "fdd23634f6c9d00f8e91b55dc8179ba15dc6158561d282f34e80cdeaec9dee2d",
+      "titulo": "Siniestro de tránsito en Quito deja un fallecido y tres heridos tras choque de cuatro vehículos",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-21T12:56:51Z",
+      "url": "https://www.expreso.ec/quito/siniestro-transito-quito-deja-fallecido-tres-heridos-choque-cuatro-vehiculos-296486.html",
+      "resumen": "Un choque de cuatro vehículos en La Comuna, Quito, dejó un fallecido y tres heridos durante la noche.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/21/6ab128e9e5ef6.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-21T17:00:44.108723Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "f10e5986b3546ed583e5cc7cd760be4d9f9ccda46ec3108accca60e58a9a0ccf",
+      "titulo": "Siniestro de tránsito dejó tres heridos y un fallecido en La Comuna, centro norte de Quito - Ecuavisa",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-21T13:02:13Z",
+      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNb01ldkRYR0xRSGtZYVg0a2V3Q005SWNFWTBEYlplSWczS2RwMVZJa3NqeGdsRnJZbE5wMFVYTGZpbDdxUi1XUzVMc0k4WGQ2QV9jV1pnR1p4dWZRUmVuQkdOM3hPX2lGZXdEdjc0Z0JhYVdZblhSTVdxZ3E5MXJmNk4wRG8teE5kOU5SSVFBUjZBUlI1bVVjRG1vdnNJQnU00gGmAUFVX3lxTE5PZHVmMVB4S1dMeGhsQXNEOTJROFdtRGMyV2dhNHpsRUt5bW5nUHRFV05iakFjaW1YZGlrRXJ3Z2g0R3RxTFYzODF0UDdOSUxfMElUWjRyS2Z6Tzl1bWJtNXBlM0JZM1ZFOGx4ZHhQcm04eHZObTJTWERJNkpCMFhNTTZEaDh0ckktcDJFTHdCSHNjeWREVVNjenh2MTFScE53SEVjZlE?oc=5",
+      "resumen": "Un siniestro vial en La Comuna, Quito, dejó tres heridos y un fallecido.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-21T17:00:44.108723Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
