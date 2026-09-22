@@ -740,11 +740,22 @@
         gap: var(--space-1);
         padding: var(--space-1) 0 0;
         overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        white-space: nowrap;
         /* ya no es fixed: fluye dentro de map-search-card */
+    }
+
+    .mobile-level-bar::-webkit-scrollbar {
+        display: none;
     }
 
     .mobile-level-bar button {
         min-height: 44px;
+        scroll-snap-align: start;
+        flex-shrink: 0;
         padding: 0 var(--space-3);
         border: 0;
         border-radius: 16px;
@@ -776,8 +787,10 @@
         position: fixed;
         z-index: calc(var(--z-mobile-navigation, 1190) + 2);
         bottom: calc(var(--mobile-edge, 10px) + 48px + 6px);
+        bottom: calc(var(--mobile-bottom-nav-height, 56px) + var(--mobile-edge, 10px));
         left: var(--mobile-edge, 10px);
         right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width, 48px) + 8px);
+        right: var(--mobile-edge, 10px);
         display: grid;
         grid-template-columns: auto minmax(0, 1fr) minmax(88px, 0.55fr);
         row-gap: var(--space-1);
@@ -923,16 +936,23 @@
     .mobile-opacity-control-slot .contextual-opacity-control {
         display: grid;
         grid-template-columns: 1fr;
+        position: relative;
+        width: 100%;
+        min-width: 0;
         align-items: center;
         gap: 0;
         margin: 0;
         padding: var(--space-1) var(--space-2);
         border-radius: 999px;
+        overflow: hidden;
+        box-sizing: border-box;
     }
 
     .mobile-opacity-control-slot .contextual-opacity-heading {
         position: absolute;
+        inset: 0;
         margin: 0;
+        pointer-events: none;
     }
 
     .mobile-opacity-control-slot .contextual-opacity-heading label {
@@ -947,14 +967,22 @@
     .mobile-opacity-control-slot .contextual-opacity-heading output {
         position: absolute;
         right: 5px;
-        bottom: 4px;
-        min-width: 32px;
+        top: 50%;
+        min-width: 0;
+        width: 30px;
         font-size: var(--fs-2xs);
+        text-align: right;
+        transform: translateY(-50%);
     }
 
     .mobile-opacity-control-slot .contextual-opacity-control input[type="range"] {
         min-height: 28px;
-        padding-right: var(--space-8);
+        width: calc(100% - 32px);
+        min-width: 0;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
     .map-left-column {
@@ -962,9 +990,9 @@
         top: calc(var(--site-topbar-mobile-height) + 6px);
         bottom: var(--left-context-bottom, 12px);
         left: var(--mobile-edge, 10px);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        right: var(--mobile-edge, 10px);
         width: auto;
-        max-width: calc(100vw - (2 * var(--mobile-edge, 10px)) - var(--right-tool-rail-width) - 8px);
+        max-width: calc(100vw - (2 * var(--mobile-edge, 10px)));
         max-height: none;
         display: flex;
         flex-direction: column;
@@ -1076,12 +1104,14 @@
     }
 
     .right-tools-rail {
+        display: none;
         width: var(--right-tool-rail-width);
         gap: 0;
         transition: opacity 160ms ease, visibility 160ms ease;
     }
 
     body.mobile-sidebar-open .right-tools-rail {
+        display: none;
         visibility: hidden;
         opacity: 0;
         pointer-events: none;
@@ -1092,15 +1122,15 @@
     }
 
     .basemap-popover {
-        flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
-        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
+        flex-basis: min(var(--mobile-drawer-width), calc(100vw - (2 * var(--mobile-edge, 10px))));
+        width: min(var(--mobile-drawer-width), calc(100vw - (2 * var(--mobile-edge, 10px))));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         padding: var(--space-3);
     }
 
     .right-context-host {
-        flex-basis: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
-        width: min(var(--mobile-drawer-width), calc(100vw - var(--right-tool-rail-width) - (2 * var(--mobile-edge, 10px))));
+        flex-basis: min(var(--mobile-drawer-width), calc(100vw - (2 * var(--mobile-edge, 10px))));
+        width: min(var(--mobile-drawer-width), calc(100vw - (2 * var(--mobile-edge, 10px))));
         height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
         max-height: calc(100dvh - var(--mobile-context-top) - var(--mobile-context-bottom));
     }
@@ -1158,12 +1188,13 @@
 
     .mobile-year-bar {
         left: var(--mobile-edge, 10px);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        right: var(--mobile-edge, 10px);
     }
 
     body.mobile-right-context-open .mobile-year-bar {
         left: var(--mobile-edge, 10px);
-        right: calc(var(--mobile-edge, 10px) + var(--right-tool-rail-width) + 8px);
+        right: var(--mobile-edge, 10px);
+        bottom: calc(var(--mobile-bottom-nav-height, 56px) + var(--mobile-edge, 10px));
     }
 
     body.mobile-right-context-open .mobile-overlay-backdrop,
@@ -1175,5 +1206,115 @@
 
     body.mobile-right-context-open .road-scale-control {
         visibility: hidden;
+    }
+
+    /* Fase 27: navegación inferior */
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: var(--mobile-bottom-nav-height, 56px);
+        z-index: calc(var(--z-mobile-navigation, 1190) + 4);
+        background: rgba(15, 23, 42, 0.96);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+        box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .mobile-bottom-nav .mobile-nav-toggle,
+    .mobile-bottom-nav #mobile-layers-toggle {
+        display: inline-flex;
+        position: static;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        flex: 1;
+        height: 100%;
+        min-height: var(--mobile-bottom-nav-height, 56px);
+        border-radius: 0;
+        border: none;
+        background: transparent;
+        flex-direction: column;
+        gap: 2px;
+        padding: 0;
+        font-size: var(--fs-2xs);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+    .mobile-bottom-nav .mobile-nav-toggle i {
+        font-size: 18px;
+    }
+
+    .mobile-bottom-nav .mobile-nav-toggle:not(:last-child) {
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    body.mobile-sidebar-open .mobile-bottom-nav .mobile-nav-toggle,
+    body.mobile-layers-open .mobile-bottom-nav .mobile-nav-toggle {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.mobile-layers-open .mobile-bottom-nav .mobile-layers-toggle,
+    body.mobile-sidebar-open .mobile-bottom-nav .mobile-sidebar-toggle {
+        color: var(--accent, #3b82f6);
+    }
+
+    /* Fase 27: paneles inferiores de Capas y Análisis */
+    :root {
+        --sheet-height-mid: 52dvh;
+        --sheet-height-full: 92dvh;
+    }
+
+    body.mobile-layers-open .right-context-host,
+    body.mobile-sidebar-open .right-context-host {
+        position: fixed;
+        bottom: var(--mobile-bottom-nav-height, 56px);
+        left: 0;
+        right: 0;
+        top: auto;
+        height: var(--sheet-height-mid);
+        max-height: var(--sheet-height-full);
+        width: 100%;
+        max-width: 100%;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--bg-panel, var(--bg-glass));
+        overflow: hidden;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+        animation: mobile-sheet-enter 300ms cubic-bezier(0.32, 0.72, 0, 1);
+        transition: height 300ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    body.mobile-layers-open.sheet-expanded .right-context-host,
+    body.mobile-sidebar-open.sheet-expanded .right-context-host {
+        height: var(--sheet-height-full);
+    }
+
+    body.mobile-sidebar-open #territory-sidebar {
+        position: relative;
+        inset: auto;
+        height: 100%;
+        max-height: 100%;
+        transform: none;
+        padding-bottom: var(--space-4);
+    }
+
+    @keyframes mobile-sheet-enter {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        body.mobile-layers-open .right-context-host,
+        body.mobile-sidebar-open .right-context-host {
+            animation: none;
+            transition: none;
+        }
     }
 }

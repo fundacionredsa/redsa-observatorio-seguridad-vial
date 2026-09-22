@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.56">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.57">
     <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.56">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.55">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.57">
     <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.55">
 
     <!-- Flatpickr date picker -->
@@ -629,14 +629,16 @@
         <div id="mobile-period-control-slot" class="mobile-map-control-slot mobile-period-control-slot"></div>
         <div id="mobile-opacity-control-slot" class="mobile-map-control-slot mobile-opacity-control-slot"></div>
     </div>
-    <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
-        <span aria-hidden="true">&#9776;</span>
-        <span>Análisis</span>
-    </button>
-    <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
-        <span aria-hidden="true">&#9638;</span>
-        <span>Capas</span>
-    </button>
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Navegación principal del mapa">
+        <button type="button" class="mobile-nav-toggle mobile-layers-toggle" id="mobile-layers-toggle" aria-controls="mobile-layer-control" aria-expanded="false">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            <span>Capas</span>
+        </button>
+        <button type="button" class="mobile-nav-toggle mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="territory-sidebar" aria-expanded="false">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+            <span>Análisis</span>
+        </button>
+    </nav>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
 
     <div class="institutional-modal" id="institutional-modal" role="dialog" aria-modal="true" aria-labelledby="institutional-modal-title" aria-hidden="true" hidden>
@@ -791,7 +793,7 @@
     <script src="assets/js/geoportal-overlay-state.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-ant-layer.js?v=0.10.56"></script>
     <script src="assets/js/geoportal-experience.js?v=0.10.55"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.55"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.57"></script>
     <script src="assets/js/geoportal-territories.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-panels.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-institutional.js?v=0.10.55"></script>

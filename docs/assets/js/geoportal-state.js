@@ -816,6 +816,35 @@
             syncMobileLayerDrawer();
             setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
         });
+
+        // Fase 27: doble toque en la cabecera para ampliar el panel inferior.
+        (function initSheetExpand() {
+            const sheet = document.getElementById("right-context-host");
+            if (!sheet) return;
+            let lastTap = 0;
+
+            sheet.addEventListener("click", event => {
+                if (!mobileMediaQuery.matches) return;
+                const header = event.target.closest(".drawer-header, .mobile-sidebar-topbar, .right-context-section-header");
+                if (!header || !sheet.contains(header) || event.target.closest("button, a, input, select")) return;
+                const now = Date.now();
+                if (now - lastTap < 400) {
+                    document.body.classList.toggle("sheet-expanded");
+                    event.preventDefault();
+                    lastTap = 0;
+                } else {
+                    lastTap = now;
+                }
+            });
+
+            document.addEventListener("click", event => {
+                if (event.target.closest("#mobile-overlay-backdrop, .drawer-close, .mobile-sidebar-close, .mobile-nav-toggle")) {
+                    document.body.classList.remove("sheet-expanded");
+                    lastTap = 0;
+                }
+            });
+        })();
+
         technicalPanelToggle?.addEventListener("click", () => {
             syncMobileLayerDrawer();
             setRightContextPanel("layers", activeRightPanel !== "layers");

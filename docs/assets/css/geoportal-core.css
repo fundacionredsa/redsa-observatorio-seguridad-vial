@@ -59,6 +59,7 @@
             --right-context-gap: 0px;
             --site-topbar-height: 44px;
             --site-topbar-mobile-height: 48px;
+            --mobile-bottom-nav-height: 56px;
             --site-topbar-edge: 8px;
             --mobile-navigation-clearance: 92px;
             --right-context-top: calc(var(--site-topbar-height) + var(--site-topbar-edge));
@@ -957,6 +958,7 @@
             cursor: pointer;
         }
 
+        .mobile-bottom-nav,
         .mobile-nav-toggle,
         .mobile-sidebar-topbar,
         .mobile-overlay-backdrop,
