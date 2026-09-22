@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-21T17:00:44.108723Z",
+  "actualizado_en": "2026-09-22T15:30:34.935604Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2108,6 +2108,21 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "ad36f2104ee5f699d477c92a06b9cf2ab3e195695ece33ba2d89585885e3e397",
+      "titulo": "Siniestro en la Panamericana Norte deja un fallecido y heridos en Cayambe",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-22T14:59:38Z",
+      "url": "https://www.elcomercio.com/actualidad/seguridad/siniestro-panamericana-norte-fallecido-heridos-cayambe/",
+      "resumen": "Tres vehículos chocaron en la Panamericana Norte, en el sector Cajas, dejando un fallecido y heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Siniestro-panamericana-norte.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-22T15:30:34.935604Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
