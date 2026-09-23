@@ -5,6 +5,40 @@
  * Desktop and intermediate desktop/tablet rules remain in the core styles.
  */
 
+.analysis-key-metrics,
+.mobile-sheet-expand {
+    display: none;
+}
+
+.analysis-technical-details > summary {
+    display: none;
+}
+
+.analysis-source-pair {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: 1px solid var(--analysis-card-border);
+    border-radius: var(--analysis-disclosure-radius);
+}
+
+.analysis-source-note {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+    line-height: 1.4;
+}
+
+#territory-sidebar .mobile-sidebar-topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+#territory-sidebar .mobile-sidebar-topbar .detail-period-control {
+    min-width: 0;
+    margin: 0;
+}
+
 @media (max-width: 768px) {
     :root {
         --brand-logo-width: 30px;
@@ -1279,7 +1313,7 @@
         right: 0;
         top: auto;
         height: var(--sheet-height-mid);
-        max-height: var(--sheet-height-full);
+        max-height: calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-bottom-nav-height));
         width: 100%;
         max-width: 100%;
         border-radius: 16px 16px 0 0;
@@ -1294,16 +1328,157 @@
 
     body.mobile-layers-open.sheet-expanded .right-context-host,
     body.mobile-sidebar-open.sheet-expanded .right-context-host {
-        height: var(--sheet-height-full);
+        height: min(var(--sheet-height-full), calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-bottom-nav-height)));
     }
 
     body.mobile-sidebar-open #territory-sidebar {
         position: relative;
         inset: auto;
+        display: flex;
+        flex-direction: column;
         height: 100%;
         max-height: 100%;
         transform: none;
-        padding-bottom: var(--space-4);
+        padding: 0;
+        overflow: hidden;
+    }
+
+    #territory-sidebar .mobile-sidebar-topbar {
+        position: relative;
+        top: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        flex: 0 0 auto;
+        gap: var(--space-2);
+        margin: 0;
+        padding: var(--space-3);
+        text-transform: none;
+    }
+
+    .analysis-sheet-title {
+        align-self: center;
+        min-width: 0;
+        font-size: var(--fs-md);
+        line-height: 1.25;
+    }
+
+    #territory-sidebar .mobile-sidebar-topbar .detail-period-control {
+        position: static;
+        grid-column: 1 / -1;
+        min-width: 0;
+        margin: 0;
+    }
+
+    #territory-sidebar .mobile-sidebar-close {
+        display: inline-flex;
+        width: var(--right-tool-button-size);
+        min-width: var(--right-tool-button-size);
+        height: var(--right-tool-button-size);
+        padding: 0;
+        font-size: var(--fs-xl);
+    }
+
+    .mobile-sheet-expand {
+        display: inline-flex;
+        min-height: var(--right-tool-button-size);
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-1);
+        padding: 0 var(--space-2);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--analysis-disclosure-radius);
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        color: var(--text-primary);
+        font: inherit;
+        font-size: var(--fs-xs);
+        text-transform: none;
+        cursor: pointer;
+    }
+
+    .mobile-sheet-expand:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    #territory-sidebar .analysis-scroll-content {
+        min-width: 0;
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        padding: var(--space-3);
+    }
+
+    #territory-sidebar .analysis-key-metrics:not([hidden]) {
+        display: grid;
+        gap: var(--space-2);
+    }
+
+    .analysis-key-metric {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: baseline;
+        gap: var(--space-1) var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--analysis-card-border);
+        border-radius: var(--analysis-disclosure-radius);
+        background: var(--analysis-card-bg);
+    }
+
+    .analysis-key-label {
+        min-width: 0;
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+    }
+
+    .analysis-key-metric strong {
+        color: var(--text-primary);
+        font-size: var(--fs-lg);
+        text-align: right;
+    }
+
+    .analysis-key-metric small {
+        grid-column: 2;
+        color: var(--text-muted);
+        font-size: var(--fs-2xs);
+        text-align: right;
+    }
+
+    #territory-sidebar .analysis-technical-details {
+        margin-top: var(--space-3);
+    }
+
+    #territory-sidebar .analysis-technical-details > summary {
+        display: flex;
+        min-height: var(--ui-secondary-control-height-mobile);
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--analysis-card-border);
+        border-radius: var(--analysis-disclosure-radius);
+        color: var(--text-primary);
+        font-size: var(--fs-sm);
+        font-weight: 800;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    #territory-sidebar .analysis-technical-details > summary::after {
+        content: '+';
+        color: var(--accent);
+    }
+
+    #territory-sidebar .analysis-technical-details[open] > summary::after {
+        content: '−';
+    }
+
+    #territory-sidebar .analysis-technical-details .info-section {
+        margin-top: var(--space-3);
+    }
+
+    #territory-sidebar:has(#analysis-empty-state:not([hidden])) .analysis-technical-details {
+        display: none;
     }
 
     @keyframes mobile-sheet-enter {

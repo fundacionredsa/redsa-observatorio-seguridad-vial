@@ -817,19 +817,36 @@
             setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
         });
 
-        // Fase 27: doble toque en la cabecera para ampliar el panel inferior.
+        // El control visible y el doble toque comparten el estado de expansión.
         (function initSheetExpand() {
             const sheet = document.getElementById("right-context-host");
             if (!sheet) return;
             let lastTap = 0;
+            const expandedMaxHeight = "calc(100dvh - var(--site-topbar-mobile-height) - var(--mobile-bottom-nav-height))";
+
+            function setSheetExpanded(expanded) {
+                document.body.classList.toggle("sheet-expanded", expanded);
+                sheet.style.maxHeight = expanded ? expandedMaxHeight : "";
+                sheet.querySelectorAll(".mobile-sheet-expand").forEach(button => {
+                    button.setAttribute("aria-expanded", String(expanded));
+                    button.setAttribute("aria-label", expanded ? "Ver menos del panel" : "Ver más del panel");
+                    button.querySelector("span").textContent = expanded ? "Ver menos" : "Ver más";
+                    button.querySelector("i").className = expanded ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
+                });
+            }
 
             sheet.addEventListener("click", event => {
                 if (!mobileMediaQuery.matches) return;
+                if (event.target.closest(".mobile-sheet-expand")) {
+                    setSheetExpanded(!document.body.classList.contains("sheet-expanded"));
+                    lastTap = 0;
+                    return;
+                }
                 const header = event.target.closest(".drawer-header, .mobile-sidebar-topbar, .right-context-section-header");
                 if (!header || !sheet.contains(header) || event.target.closest("button, a, input, select")) return;
                 const now = Date.now();
                 if (now - lastTap < 400) {
-                    document.body.classList.toggle("sheet-expanded");
+                    setSheetExpanded(!document.body.classList.contains("sheet-expanded"));
                     event.preventDefault();
                     lastTap = 0;
                 } else {
@@ -839,10 +856,79 @@
 
             document.addEventListener("click", event => {
                 if (event.target.closest("#mobile-overlay-backdrop, .drawer-close, .mobile-sidebar-close, .mobile-nav-toggle")) {
-                    document.body.classList.remove("sheet-expanded");
+                    setSheetExpanded(false);
                     lastTap = 0;
                 }
             });
+            mobileMediaQuery.addEventListener("change", () => setSheetExpanded(false));
+        })();
+
+        (function initAnalysisSummary() {
+            const details = document.getElementById("analysis-technical-details");
+            const metrics = document.getElementById("analysis-key-metrics");
+            const emptyState = document.getElementById("analysis-empty-state");
+            if (!details || !metrics || !emptyState) return;
+
+            function syncDetailVisibility() {
+                details.open = !mobileMediaQuery.matches;
+            }
+            syncDetailVisibility();
+            mobileMediaQuery.addEventListener("change", syncDetailVisibility);
+
+            const readValue = id => {
+                const element = document.getElementById(id);
+                const value = element?.textContent.trim() || "";
+                return element && !element.classList.contains("empty")
+                    && value && !["—", "Sin dato", "Sin datos"].includes(value) ? value : null;
+            };
+            let pending = false;
+            function syncMetrics() {
+                pending = false;
+                const hasSelection = emptyState.hidden;
+                metrics.hidden = !hasSelection;
+                if (!hasSelection) return;
+                const period = document.getElementById("siniestros-section-year")?.textContent.trim();
+                document.getElementById("analysis-key-siniestros-label").textContent = `Siniestros ${period || ""}`.trim();
+                document.getElementById("analysis-key-siniestros").textContent = readValue("info-siniestros-inec") || "Sin dato";
+                const rate = readValue("info-tasa-siniestros");
+                document.getElementById("analysis-key-rate").textContent = rate?.split(" por cada")[0] || "Sin dato";
+
+                const parishRow = document.getElementById("fallecidos-parroquia-row");
+                const parishVisible = parishRow && getComputedStyle(parishRow).display !== "none";
+                let fatalities = (parishVisible && readValue("info-fallecidos-parroquia"))
+                    || readValue("info-fallecidos-inec") || readValue("info-fallecidos-sppat");
+                let source = parishVisible && readValue("info-fallecidos-parroquia") ? "Registro parroquial"
+                    : readValue("info-fallecidos-inec") ? "Registro civil"
+                    : readValue("info-fallecidos-sppat") ? "Reclamaciones del seguro" : "";
+                let fatalityLabel = "Fallecidos";
+                const selectedPeriodMode = document.querySelector("[data-detail-period-mode].active")?.dataset.detailPeriodMode;
+                if (!fatalities && selectedPeriodMode === "year") {
+                    const annualDeaths = selectedTerritory?.props?.fallecidos_historico;
+                    const latestYear = annualDeaths && Object.keys(annualDeaths)
+                        .filter(year => annualDeaths[year] !== null && annualDeaths[year] !== "" && Number.isFinite(Number(annualDeaths[year])))
+                        .sort((a, b) => Number(b) - Number(a))[0];
+                    if (latestYear) {
+                        fatalities = Number(annualDeaths[latestYear]).toLocaleString("es-EC");
+                        fatalityLabel = `Fallecidos ${latestYear}`;
+                        source = "Último dato del registro civil";
+                    }
+                }
+                document.getElementById("analysis-key-fallecidos-label").textContent = fatalityLabel;
+                document.getElementById("analysis-key-fallecidos").textContent = fatalities || "Sin dato";
+                document.getElementById("analysis-key-fallecidos-source").textContent = source;
+            }
+            function scheduleMetrics() {
+                if (pending) return;
+                pending = true;
+                requestAnimationFrame(syncMetrics);
+            }
+            const observedIds = ["analysis-empty-state", "territory-breadcrumb", "siniestros-section-year", "info-siniestros-inec", "info-tasa-siniestros", "info-fallecidos-parroquia", "fallecidos-parroquia-row", "info-fallecidos-inec", "info-fallecidos-sppat"];
+            const observer = new MutationObserver(scheduleMetrics);
+            observedIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) observer.observe(element, { attributes: true, childList: true, characterData: true, subtree: true });
+            });
+            scheduleMetrics();
         })();
 
         technicalPanelToggle?.addEventListener("click", () => {
@@ -903,10 +989,6 @@
             if (wasOpen) siteTopbarMenuToggle?.focus({ preventScroll: true });
         });
         technicalDrawerClose?.addEventListener("click", () => {
-            setRightContextPanel(null, false);
-        });
-        const analysisDrawerClose = document.getElementById("analysis-drawer-close");
-        analysisDrawerClose?.addEventListener("click", () => {
             setRightContextPanel(null, false);
         });
         rightContextHost?.addEventListener("keydown", event => {

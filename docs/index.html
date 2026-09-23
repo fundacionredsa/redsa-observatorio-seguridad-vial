@@ -31,9 +31,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     
     <!-- Estilos Premium Personalizados -->
-    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.57">
-    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.56">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.58">
+    <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.59">
+    <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.59">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.59">
     <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.55">
 
     <!-- Flatpickr date picker -->
@@ -285,6 +285,9 @@
                 <h2>Capas del mapa</h2>
                 <p>Variables, periodos e infraestructura para análisis técnico.</p>
             </div>
+            <button type="button" class="mobile-sheet-expand" id="layers-sheet-expand" aria-controls="right-context-host" aria-expanded="false" aria-label="Ver más capas">
+                <span>Ver más</span><i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+            </button>
             <button class="drawer-close" id="technical-drawer-close" type="button" aria-label="Cerrar capas del mapa">&times;</button>
         </div>
         <div class="technical-controls-slot" id="technical-controls-slot">
@@ -363,19 +366,11 @@
     </aside>
         <div class="ui-panel sidebar right-context-view" id="territory-sidebar" role="tabpanel" data-right-context-view="analysis" aria-labelledby="right-tab-analysis" aria-label="Informacion del territorio" aria-hidden="true" hidden>
             <div class="mobile-sidebar-topbar">
-                <span class="mobile-sidebar-drag-handle" aria-hidden="true"></span>
-                <span>Análisis del territorio</span>
-                <button type="button" class="mobile-sidebar-close analysis-back-button" id="mobile-sidebar-close" aria-label="Volver al resumen territorial">
-                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-                    <span>Volver</span>
+                <span class="analysis-sheet-title">Análisis del territorio</span>
+                <button type="button" class="mobile-sheet-expand" id="analysis-sheet-expand" aria-controls="right-context-host" aria-expanded="false" aria-label="Ver más análisis">
+                    <span>Ver más</span><i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
                 </button>
-                <button class="drawer-close" id="analysis-drawer-close" type="button" aria-label="Cerrar análisis del territorio">&times;</button>
-            </div>
-            <div id="territory-search-adjustment-note" class="territory-search-adjustment-note redsa-callout" role="status" aria-live="polite" hidden></div>
-            <nav id="territory-breadcrumb" class="territory-breadcrumb" aria-label="Ubicación territorial seleccionada" aria-live="polite" hidden></nav>
-            <!-- Sección Informativa Dinámica -->
-            <div class="info-section">
-                <div class="section-title">Información del territorio</div>
+                <button class="mobile-sidebar-close" id="mobile-sidebar-close" type="button" aria-label="Cerrar panel de análisis">&times;</button>
                 <div class="detail-period-control" aria-label="Periodo de los datos del territorio">
                     <span class="detail-period-label">Datos mostrados <button type="button" class="sigla-tooltip-trigger" data-sigla="Periodo del análisis" data-custom-text="Año seleccionado muestra el periodo marcado en la línea de tiempo. Acumulado histórico suma únicamente conteos compatibles y conserva el periodo real de cada fuente; las tasas anuales no se suman." aria-label="Cómo funciona el periodo del análisis">ⓘ</button></span>
                     <div class="detail-period-segments" role="group" aria-label="Mostrar un año o el acumulado histórico">
@@ -384,9 +379,23 @@
                     </div>
                     <div class="detail-period-note sr-only" data-detail-period-note aria-live="polite">Conteos del año marcado en la línea de tiempo.</div>
                 </div>
-                <div class="analysis-empty-state" id="analysis-empty-state" hidden>
-                    <p class="citizen-summary-empty">Haz clic en una unidad del mapa o busca una provincia, cantón o parroquia para ver su análisis detallado.</p>
-                </div>
+            </div>
+            <div class="analysis-scroll-content" id="analysis-scroll-content">
+            <div id="territory-search-adjustment-note" class="territory-search-adjustment-note redsa-callout" role="status" aria-live="polite" hidden></div>
+            <nav id="territory-breadcrumb" class="territory-breadcrumb" aria-label="Ubicación territorial seleccionada" aria-live="polite" hidden></nav>
+            <div class="analysis-key-metrics" id="analysis-key-metrics" hidden aria-label="Cifras clave del territorio">
+                <div class="analysis-key-metric"><span class="analysis-key-label" id="analysis-key-siniestros-label">Siniestros</span><strong id="analysis-key-siniestros">—</strong></div>
+                <div class="analysis-key-metric"><span class="analysis-key-label" id="analysis-key-fallecidos-label">Fallecidos</span><strong id="analysis-key-fallecidos">—</strong><small id="analysis-key-fallecidos-source"></small></div>
+                <div class="analysis-key-metric"><span class="analysis-key-label">Tasa por 100k hab.</span><strong id="analysis-key-rate">—</strong></div>
+            </div>
+            <div class="analysis-empty-state" id="analysis-empty-state" hidden>
+                <p class="citizen-summary-empty">Haz clic en una unidad del mapa o busca una provincia, cantón o parroquia para ver su análisis detallado.</p>
+            </div>
+            <details class="analysis-technical-details" id="analysis-technical-details" open>
+                <summary>Ver detalle técnico</summary>
+            <!-- Sección Informativa Dinámica -->
+            <div class="info-section">
+                <div class="section-title">Información del territorio</div>
 
                 <div class="canton-details">
                     <!-- SECCIÓN 1: IDENTIFICACIÓN -->
@@ -477,13 +486,16 @@
                     <!-- SECCIÓN 4: FALLECIDOS EN SINIESTROS DE TRÁNSITO -->
                     <section id="fatalities-section">
                         <div class="section-title u-section-gap">Personas fallecidas</div>
+                        <div class="analysis-source-pair">
                         <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities redsa-callout redsa-callout--emphasis">
-                            <div class="detail-label">Según reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button><span id="sppat-sidebar-year" class="sr-only">2024</span></div>
-                            <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
+                            <div class="detail-label">Registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button> <span id="edg-sidebar-year" class="source-label">2024</span></div>
+                            <div id="info-fallecidos-inec" class="detail-value empty">—</div>
                         </div>
                         <div class="detail-row analysis-hero-stat analysis-hero-stat-fatalities redsa-callout redsa-callout--emphasis">
-                            <div class="detail-label">Según registro civil <button type="button" class="sigla-tooltip-trigger" data-sigla="EDG" aria-label="Definición de EDG">ⓘ</button><span id="edg-sidebar-year" class="sr-only">2024</span></div>
-                            <div id="info-fallecidos-inec" class="detail-value empty">—</div>
+                            <div class="detail-label">Reclamaciones del seguro <button type="button" class="sigla-tooltip-trigger" data-sigla="SPPAT" aria-label="Definición de SPPAT">ⓘ</button> <span id="sppat-sidebar-year" class="source-label">2024</span></div>
+                            <div id="info-fallecidos-sppat" class="detail-value empty">—</div>
+                        </div>
+                        <p class="analysis-source-note">El registro civil cuenta muertes por causa; el seguro registra reclamaciones pagadas. Estas cifras no se suman.</p>
                         </div>
                     </section>
                     <details class="analysis-disclosure analysis-disclosure-secondary" id="complementary-indicators-disclosure">
@@ -559,6 +571,8 @@
                     </div>
                 </div>
             </details>
+            </details>
+            </div>
         </div>
 
         <aside class="right-context-view hemeroteca-panel" id="hemeroteca-panel" role="tabpanel" data-right-context-view="hemeroteca" aria-labelledby="right-tab-hemeroteca" aria-label="Hemeroteca de noticias" aria-hidden="true" hidden tabindex="0">
@@ -793,7 +807,7 @@
     <script src="assets/js/geoportal-overlay-state.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-ant-layer.js?v=0.10.56"></script>
     <script src="assets/js/geoportal-experience.js?v=0.10.55"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.57"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.59"></script>
     <script src="assets/js/geoportal-territories.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-panels.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-institutional.js?v=0.10.55"></script>
