@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-22T15:30:34.935604Z",
+  "actualizado_en": "2026-09-23T07:39:25.780491Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2120,6 +2120,51 @@
       "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Siniestro-panamericana-norte.jpg",
       "oculto": false,
       "fecha_ingesta": "2026-09-22T15:30:34.935604Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "8cca983dae0abc371d13a138a6f0b30eb8a829780485eea00795673eb40fe11f",
+      "titulo": "Motociclista falleció en siniestro vial en la avenida Galo Plaza Lasso, norte de Quito",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-22T19:50:00Z",
+      "url": "https://eluniverso.com/noticias/ecuador/motociclista-fallecio-en-siniestro-vial-en-la-avenida-galo-plaza-lasso-norte-de-quito-nota/",
+      "resumen": "Un motociclista murió tras un choque con un taxi en la avenida Galo Plaza Lasso, en Quito.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/4IBWNQRQPRFHNBWUU6OY2DSYPI.jpg?auth=8855685e84b38da3d09da3dcdc937227adfe5b6cc14a5845778e40eb9bad4621&width=1191&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T07:39:25.780491Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "b53b2a222823009458c4d6eeca24d15a65ce178eea5c0bb1a1d277f78d4af8d1",
+      "titulo": "Un fallecido y cuatro heridos tras accidente de tránsito registrado en la avenida Panamericana norte",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-22T18:34:17.186000Z",
+      "url": "https://eluniverso.com/noticias/ecuador/un-fallecido-y-cuatro-heridos-tras-accidente-de-transito-registrado-en-la-avenida-panamericana-norte-nota/",
+      "resumen": "Un siniestro vial en la avenida Panamericana norte dejó un fallecido y cuatro heridos, involucrando a dos camiones y un auto.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/JLUQUEY7PBGWBLQVKGMVSHQPAA.jpg?auth=8c34a582ccd9b87f1c2416673f84f81edf177f1f83fd03ed8c11b6397ef06930&width=420&height=322&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T07:39:25.780491Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "bffb76ee82c7a98ac39236e01d1eb706e1dd55f353afe671cb8f793d28c12562",
+      "titulo": "Tres vehículos chocaron en la autopista General Rumiñahui, en Quito",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-22T23:12:16Z",
+      "url": "https://www.expreso.ec/quito/tres-vehiculos-chocaron-autopista-general-ruminahui-quito-296712.html",
+      "resumen": "Tres vehículos chocaron en la autopista General Rumiñahui, en Quito, sin reportarse heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/22/6ab2f57254461.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T07:39:25.780491Z",
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
