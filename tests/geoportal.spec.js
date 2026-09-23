@@ -1212,57 +1212,51 @@ test("Territory tooltip deduplicates fixed lines by source field", async ({ page
   expect(rateTooltip).toContain("Fallecidos por cada 100.000 habitantes:");
 });
 
-test("switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincronizacion bidireccional", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop", "Verificación exhaustiva de switches en desktop");
+test("controles de Capas actualizan la leyenda al apagar y reactivar overlays", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "Verificación exhaustiva de capas en desktop");
   await loadPortal(page);
 
-  // 1. Capa ANT (siniestros_ant) - Nace activa en modo calor
-  const antSwitch = page.locator('.infrastructure-toggle-input[data-legend-layer-toggle="siniestros_ant"]');
-  await expect(antSwitch).toBeChecked();
-
-  // Abrir panel lateral de capas para observar los controles del drawer
+  // Los overlays se controlan desde Capas; la leyenda solo explica el mapa.
+  await expect(page.locator('[data-legend-layer-toggle]')).toHaveCount(0);
   await page.locator('[data-right-panel="layers"]').click();
   await page.locator('#event-layer-disclosure summary').click();
   const antDrawerCheckbox = page.locator("#ant-layer-toggle");
   await expect(antDrawerCheckbox).toBeChecked();
+  const antLegendRow = page.locator('.legend-overlay-block[data-legend-layer-id="siniestros_ant"]');
 
   for (let i = 1; i <= 3; i++) {
-    // Apagar desde la leyenda
-    await antSwitch.click();
-    await expect(antSwitch).not.toBeChecked();
+    await antDrawerCheckbox.click();
     await expect(antDrawerCheckbox).not.toBeChecked();
+    await expect(antLegendRow).toHaveAttribute("data-disabled", "true");
     expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().active)).toBe(false);
 
-    // Reencender desde la leyenda
-    await antSwitch.click();
-    await expect(antSwitch).toBeChecked();
+    await antDrawerCheckbox.click();
     await expect(antDrawerCheckbox).toBeChecked();
+    await expect(antLegendRow).not.toHaveAttribute("data-disabled", "true");
     expect(await page.evaluate(() => window.REDSAAntLayer.getAuditState().active)).toBe(true);
   }
 
-  // 2. Capas OSM de infraestructura (Ciclovías)
+  // Ciclovías aparece en la leyenda al activarse y conserva su fila al apagarse.
   await page.locator('#infrastructure-disclosure summary').click();
   const osmCheckbox = page.locator("#infrastructure-layer-ciclovias");
   await osmCheckbox.click();
   await expect(osmCheckbox).toBeChecked();
-  const osmSwitch = page.locator('.infrastructure-toggle-input[data-legend-layer-toggle="infra-ciclovias"]');
-  await expect(osmSwitch).toBeChecked();
+  const osmLegendRow = page.locator('.legend-overlay-block[data-legend-layer-id="infra-ciclovias"]');
+  await expect(osmLegendRow).toBeAttached();
 
   for (let i = 1; i <= 3; i++) {
-    // Apagar desde la leyenda
-    await osmSwitch.click();
-    await expect(osmSwitch).not.toBeChecked();
+    await osmCheckbox.click();
     await expect(osmCheckbox).not.toBeChecked();
+    await expect(osmLegendRow).toHaveAttribute("data-disabled", "true");
     expect(await page.evaluate(() => window.__redsaAudit.state().osmLayers["Ciclovías"]?.visible)).toBe(false);
 
-    // Reencender desde la leyenda
-    await osmSwitch.click();
-    await expect(osmSwitch).toBeChecked();
+    await osmCheckbox.click();
     await expect(osmCheckbox).toBeChecked();
+    await expect(osmLegendRow).not.toHaveAttribute("data-disabled", "true");
     expect(await page.evaluate(() => window.__redsaAudit.state().osmLayers["Ciclovías"]?.visible)).toBe(true);
   }
 
-  // 3. Variable territorial (coropleta)
+  // La variable territorial conserva su control en Capas y su estado en la leyenda.
   await page.locator('#variable-disclosure summary').click();
   const varInput = page.locator("#variable-disclosure input[value='siniestros_inec_2019']");
   await varInput.click();
@@ -1271,14 +1265,12 @@ test("switches de la leyenda apagan y reactivan capas 3 veces seguidas con sincr
   await expect(varInput).toBeChecked();
 
   for (let i = 1; i <= 3; i++) {
-    // Apagar desde la leyenda
-    await varSwitch.click();
+    await varInput.click();
     await expect(varSwitch).not.toBeChecked();
     await expect(varInput).not.toBeChecked();
     expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("normal");
 
-    // Reencender desde la leyenda
-    await varSwitch.click();
+    await varInput.click();
     await expect(varSwitch).toBeChecked();
     await expect(varInput).toBeChecked();
     expect(await page.evaluate(() => window.__redsaAudit.state().selectedVariable)).toBe("siniestros_inec_2019");
