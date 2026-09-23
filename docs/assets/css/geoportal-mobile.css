@@ -1090,7 +1090,7 @@
     }
 
     .map-legend-card .legend-active-layers-list {
-        max-height: 110px;
+        max-height: none;
     }
 
     .map-legend-card .legend-active-layer-row {

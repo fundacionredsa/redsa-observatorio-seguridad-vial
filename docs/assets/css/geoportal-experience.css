@@ -3332,6 +3332,97 @@ body.light-theme .territory-hover-tooltip {
     line-height: 1.25;
 }
 
+.map-legend-card .legend-active-layers-list {
+    display: grid;
+    min-width: 0;
+    gap: var(--space-1);
+    max-height: none;
+}
+
+.legend-active-layers-list .legend-overlay-block {
+    display: block;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--analysis-disclosure-radius);
+}
+
+.legend-active-layers-list .legend-overlay-block[data-disabled="true"] {
+    opacity: 0.55;
+}
+
+.legend-active-layer-row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) var(--right-tool-button-size);
+    min-height: var(--right-tool-button-size);
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+    cursor: pointer;
+    list-style: none;
+    text-align: left;
+}
+
+.legend-active-layer-row::-webkit-details-marker {
+    display: none;
+}
+
+.legend-active-layer-row::marker {
+    content: "";
+}
+
+.legend-active-layer-row > i {
+    color: var(--accent);
+    text-align: center;
+}
+
+.legend-active-layer-row .legend-active-layer-name {
+    overflow: hidden;
+    margin: 0;
+    font-size: var(--fs-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.legend-active-layer-row > span:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: var(--space-1);
+}
+
+.legend-active-layer-row > span:last-child > i {
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+    transition: transform 160ms ease;
+}
+
+.legend-active-layers-list .legend-overlay-block[open] .legend-active-layer-row > span:last-child > i {
+    transform: rotate(180deg);
+}
+
+.legend-active-layer-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.legend-active-layers-list .legend-overlay-block > .legend-layer-items {
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-top: 1px solid var(--border-glass);
+    text-align: left;
+}
+
+.legend-active-layers-list .legend-overlay-block > .legend-layer-items > strong {
+    margin: 0;
+    font-size: var(--fs-sm);
+}
+
+.legend-active-layers-list .legend-overlay-notes p {
+    margin: 0;
+}
+
 .legend-territory-shortcut-copy {
     display: grid;
     gap: var(--space-1);

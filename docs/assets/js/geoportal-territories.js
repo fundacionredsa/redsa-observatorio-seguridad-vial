@@ -306,7 +306,7 @@ function onEachProvinceFeature(feature, layer) {
             }
 
             const metadata = visibleParts.join(" · ");
-            const fuenteTrigger = fuente
+            const fuenteTrigger = fuente && options?.showSourceTooltip !== false
                 ? `<button type="button" class="sigla-tooltip-trigger" data-sigla="Fuente de datos" data-custom-text="${String(fuente).replace(/"/g, '&quot;')}" aria-label="Fuente de los datos">ⓘ</button>`
                 : "";
 
@@ -376,12 +376,23 @@ function onEachProvinceFeature(feature, layer) {
             `;
         }
 
+        function renderTerritorialInformation(config, classificationText = "") {
+            const details = [
+                config.fuente ? `Fuente: ${config.fuente}.` : "",
+                config.metodologia ? `Metodología: ${config.metodologia}` : (config.description || ""),
+                classificationText
+            ].filter(Boolean).join(" ");
+            if (!details) return "";
+            return `<button type="button" class="sigla-tooltip-trigger" data-sigla="Fuente y metodología" data-info-sigla="${config.infoSigla || ""}" data-custom-text="${details.replace(/"/g, '&quot;')}" aria-label="Fuente, metodología y clasificación de ${(config.displayLabel || config.label).replace(/"/g, '&quot;')}">ⓘ</button>`;
+        }
+
         function renderActiveLayersCard(currentLevel, effectiveVariable, overlayEntries) {
             const component = document.getElementById("map-legend-card");
             const count = document.getElementById("legend-active-layers-count");
             if (!component || !count) return;
 
             const activeLayerCount = (selectedVariable === "normal" ? 0 : 1) + overlayEntries.filter(e => !e.disabled).length;
+            const previousLayerCount = Number(component.dataset.layerCount) || 0;
 
             const layersShortcut = document.getElementById("active-layers-shortcut");
             if (layersShortcut) {
@@ -399,6 +410,9 @@ function onEachProvinceFeature(feature, layer) {
             count.textContent = `${activeLayerCount} ${activeLayerCount === 1 ? "capa" : "capas"}`;
             count.hidden = activeLayerCount === 0;
             component.dataset.layerCount = String(activeLayerCount);
+            if (activeLayerCount > 1 && previousLayerCount <= 1 && !component.classList.contains("is-collapsed")) {
+                document.getElementById("map-legend-card-collapse")?.click();
+            }
         }
 
         // --- LÓGICA DE ACTUALIZACIÓN DE LEYENDA ---
@@ -409,6 +423,11 @@ function onEachProvinceFeature(feature, layer) {
             const overlayNotesContainer = document.getElementById("legend-overlay-notes") || overlayContainer;
             const panel = document.querySelector(".legend-panel");
             if (!container || !panel) return;
+
+            const expandedOverlayIds = new Set(Array.from(
+                overlayContainer.querySelectorAll("details.legend-overlay-block[open][data-legend-layer-id]"),
+                element => element.dataset.legendLayerId
+            ));
 
             territoryContainer.innerHTML = "";
             if (overlayContainer !== territoryContainer) overlayContainer.innerHTML = "";
@@ -443,7 +462,7 @@ function onEachProvinceFeature(feature, layer) {
 
                 if (unavailableAtLevel || noValuesAtLevel || yearUnavailable) {
                     const levelName = LEVEL_LABELS[currentLevel] || "territorio seleccionado";
-                    const technicalInfo = requestedConfig.infoSigla ? siglaInfoIcon(requestedConfig.infoSigla) : "";
+                    const technicalInfo = renderTerritorialInformation(requestedConfig);
                     territoryContainer.innerHTML += `
                         ${renderLegendHeading(
                             requestedConfig.displayLabel || requestedConfig.label,
@@ -453,7 +472,7 @@ function onEachProvinceFeature(feature, layer) {
                                 getLegendPeriodLabel(requestedConfig) ? `Periodo: ${getLegendPeriodLabel(requestedConfig)}` : ""
                             ],
                             technicalInfo,
-                            { fuente: requestedConfig.fuente, active: true }
+                            { fuente: requestedConfig.fuente, active: true, showSourceTooltip: false }
                         )}
                         <div class="legend-unavailable ${yearUnavailable ? "legend-period-unavailable" : ""}" role="status">
                             <strong>${yearUnavailable ? "No disponible para este periodo." : "Sin datos disponibles en este nivel territorial."}</strong>
@@ -489,10 +508,10 @@ function onEachProvinceFeature(feature, layer) {
                         const scaleText = activeVariableBins.logScaled
                             ? " Se aplicó una escala logarítmica para representar mejor valores muy concentrados; los rangos visibles se mantienen en sus unidades originales."
                             : "";
-                        classificationInfo = ` ${siglaInfoIcon('INFO', `Clasificación: ${activeVariableBins.method}.${gvfText}${scaleText}`)}`;
+                        classificationInfo = `Clasificación: ${activeVariableBins.method}.${gvfText}${scaleText}`;
                     }
 
-                    const technicalInfo = `${config.infoSigla ? siglaInfoIcon(config.infoSigla) : ""}${classificationInfo}`;
+                    const technicalInfo = renderTerritorialInformation(config, classificationInfo);
                     const bins = getVariableBins(effectiveVariable, currentLevel);
                     const displayBins = activeVariableBins.displayBins || bins;
                     const colors = activeVariableBins.colors && activeVariableBins.colors.length > 0 ? activeVariableBins.colors : config.colors;
@@ -506,7 +525,7 @@ function onEachProvinceFeature(feature, layer) {
                                 getLegendPeriodLabel(config) ? `Periodo: ${getLegendPeriodLabel(config)}` : ""
                             ],
                             technicalInfo,
-                            { fuente: config.fuente, active: true }
+                            { fuente: config.fuente, active: true, showSourceTooltip: false }
                         )}
                     `;
 
@@ -563,12 +582,11 @@ function onEachProvinceFeature(feature, layer) {
                 }
             }
 
-            let hasActiveOsmLayer = false;
             const overlayLegendEntries = window.REDSAOverlayState?.getLegendEntries?.() || [];
             renderActiveLayersCard(currentLevel, effectiveVariable, overlayLegendEntries);
+            const overlayRows = [];
             overlayLegendEntries.forEach(entry => {
                 hasItems = true;
-                hasActiveOsmLayer = hasActiveOsmLayer || Boolean(entry.osmAudit);
                 const legendItems = (entry.items || []).map(item => {
                     if (item.shape === "gradient") {
                         return `
@@ -593,6 +611,9 @@ function onEachProvinceFeature(feature, layer) {
                     ].filter(Boolean).join(" · ");
                     notesList.unshift(`Geolocalización: ${auditDetails}.`);
                 }
+                if (entry.osmAudit) {
+                    notesList.push('Cobertura OSM desigual: "sin elementos mapeados" indica falta de registro, no ausencia comprobada de infraestructura.');
+                }
                 const combinedNotes = notesList.join("\n\n").replace(/"/g, '&quot;');
                 const notesTrigger = combinedNotes
                     ? `<button type="button" class="sigla-tooltip-trigger" data-sigla="${(entry.title || 'Metodología').replace(/"/g, '&quot;')}" data-custom-text="${combinedNotes}" aria-label="Notas metodológicas de ${(entry.title || 'la capa').replace(/"/g, '&quot;')}">ⓘ</button>`
@@ -612,29 +633,27 @@ function onEachProvinceFeature(feature, layer) {
                     ? `<div class="legend-unavailable legend-period-unavailable" role="status"><strong>No disponible para este periodo.</strong><span>Elige un año con datos para volver a mostrar esta capa.</span></div>`
                     : "";
                 const info = entry.infoText ? siglaInfoIcon("Información", entry.infoText) : "";
-                overlayContainer.innerHTML += `
-                    <section class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""} ${entry.disabled ? "legend-overlay-block--disabled" : ""}" data-legend-layer-id="${entry.id}">
-                        <div class="legend-overlay-header">
-                            <div class="legend-item legend-overlay-title">${entry.title}${info}</div>
-                            <label class="legend-layer-switch" aria-label="Activar o desactivar ${entry.title}">
-                                <input type="checkbox" class="infrastructure-toggle-input" data-legend-layer-toggle="${entry.id}" ${entry.disabled ? "" : "checked"}>
-                                <span class="infrastructure-switch-visual" aria-hidden="true"></span>
-                            </label>
+                const swatchItem = (entry.items || []).find(item => item.color || item.colors?.length);
+                const swatchStyle = swatchItem?.shape === "gradient"
+                    ? `background:linear-gradient(90deg, ${(swatchItem.colors || []).join(",")});`
+                    : `background-color:${swatchItem?.color || "var(--text-muted)"};`;
+                overlayRows.push(`
+                    <details class="legend-overlay-block ${unavailable ? "legend-layer-unavailable" : ""}" data-legend-layer-id="${entry.id}" ${entry.disabled ? 'data-disabled="true"' : ""} ${expandedOverlayIds.has(entry.id) ? "open" : ""}>
+                        <summary class="legend-active-layer-row">
+                            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                            <span class="legend-active-layer-name legend-overlay-title" title="${String(entry.title).replace(/"/g, '&quot;')}${entry.disabled ? " (apagada)" : ""}">${entry.title}${entry.disabled ? " · apagada" : ""}</span>
+                            <span aria-hidden="true"><span class="legend-active-layer-symbol${swatchItem?.shape === "circle" ? " is-circle" : ""}" style="${swatchStyle}"></span><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <div class="legend-layer-items">
+                            <strong>${entry.title}</strong>
+                            ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
+                            ${entry.infoText ? `<div class="legend-overlay-subtitle">${entry.infoText} ${info}</div>` : ""}
+                            ${legendItems}${audit}${loading}${unavailable}
+                            ${notesList.length ? `<div class="legend-overlay-notes">${notesList.map(note => `<p>${note}</p>`).join("")}</div>` : ""}
                         </div>
-                        ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
-                        ${legendItems}${audit}${loading}${unavailable}
-                    </section>`;
+                    </details>`);
             });
-
-            if (hasActiveOsmLayer) {
-                const osmNoteTooltip = 'Cobertura OSM desigual: el tramado indica "sin elementos mapeados", no que la infraestructura no exista.';
-                overlayNotesContainer.innerHTML += `
-                    <div class="legend-item legend-overlay-osm-note">
-                        <span class="legend-color-line"></span>
-                        <span>Sin elementos mapeados (OSM)</span>
-                        <button type="button" class="sigla-tooltip-trigger" data-sigla="Cobertura OSM" data-custom-text="${osmNoteTooltip.replace(/"/g, '&quot;')}" aria-label="Aclaración sobre cobertura OpenStreetMap">ⓘ</button>
-                    </div>`;
-            }
+            if (overlayRows.length) overlayContainer.innerHTML = `<div class="legend-active-layers-list">${overlayRows.join("")}</div>`;
             if (typeof syncMobileLayerDrawer === "function") syncMobileLayerDrawer();
             if (typeof syncTerritorySurfaceAutoHideNote === "function") {
                 syncTerritorySurfaceAutoHideNote(currentLevel);
