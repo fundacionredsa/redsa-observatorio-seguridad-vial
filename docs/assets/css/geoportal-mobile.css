@@ -107,6 +107,7 @@
         --mobile-drawer-width: min(420px, calc(100vw - 16px));
         --road-scale-bottom-offset: 64px;
         --legend-bottom-clearance: 86px;
+        --mobile-year-bar-clearance: 125px;
     }
 
     body:has(#map-legend-card:not(.is-collapsed)) {
@@ -988,7 +989,7 @@
     .map-left-column {
         position: fixed;
         top: calc(var(--site-topbar-mobile-height) + 6px);
-        bottom: var(--left-context-bottom, 12px);
+        bottom: calc(var(--mobile-bottom-nav-height, 56px) + var(--mobile-edge, 10px) + var(--mobile-year-bar-clearance, 125px));
         left: var(--mobile-edge, 10px);
         right: var(--mobile-edge, 10px);
         width: auto;
@@ -1065,7 +1066,7 @@
 
     .legend-visibility-toggle {
         right: auto;
-        bottom: 112px;
+        bottom: calc(var(--mobile-bottom-nav-height, 56px) + var(--mobile-edge, 10px) + var(--mobile-year-bar-clearance, 125px));
         left: var(--mobile-edge, 10px);
         min-height: 44px;
     }
