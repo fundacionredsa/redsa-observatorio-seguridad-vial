@@ -250,6 +250,9 @@
                     pane: "infraestructuraPane",
                     padding: 0.5
                 });
+                const BASE_POINT_OPACITY = 1;
+                const BASE_POINT_FILL_OPACITY = 0.82;
+                const BASE_LINE_OPACITY = 0.82;
 
                 function layerOptionsFromConfig(config) {
                     const options = {
@@ -270,8 +273,8 @@
                                 pane: "infraestructuraPane",
                                 renderer: infrastructureRenderer,
                                 weight: 1,
-                                opacity: 1,
-                                fillOpacity: 0.82
+                                opacity: BASE_POINT_OPACITY,
+                                fillOpacity: BASE_POINT_FILL_OPACITY
                             });
                         };
                     }
@@ -280,7 +283,7 @@
                             return {
                                 color: config.color,
                                 weight: config.weight || 3,
-                                opacity: 0.82
+                                opacity: BASE_LINE_OPACITY
                             };
                         };
                     }
@@ -325,6 +328,23 @@
                     placeholder._redsaLoaded = false;
                     placeholder._redsaFeatureCount = 0;
                     placeholder._redsaConfigId = config.id;
+                    placeholder._redsaOpacityPercent = 100;
+                    placeholder._redsaSetOpacity = percent => {
+                        placeholder._redsaOpacityPercent = Math.max(20, Math.min(100, Number(percent)));
+                        const factor = placeholder._redsaOpacityPercent / 100;
+                        const applyStyle = (child, geometryType = child.feature?.geometry?.type) => {
+                            if (typeof child.setStyle === "function") {
+                                const isPoint = ["Point", "MultiPoint"].includes(geometryType);
+                                child.setStyle(isPoint
+                                    ? { opacity: BASE_POINT_OPACITY * factor, fillOpacity: BASE_POINT_FILL_OPACITY * factor }
+                                    : { opacity: BASE_LINE_OPACITY * factor });
+                            } else if (typeof child.eachLayer === "function") {
+                                child.eachLayer(nested => applyStyle(nested, geometryType));
+                            }
+                        };
+                        placeholder._redsaMainLayer?.eachLayer?.(child => applyStyle(child));
+                    };
+                    window.REDSAOverlayState?.registerOpacityHandler(`infra-${config.id}`, placeholder._redsaSetOpacity);
                     const startLoad = () => {
                         if (placeholder._redsaLoadPromise) return placeholder._redsaLoadPromise;
                         placeholder._redsaLoadPromise = Promise.all([
@@ -370,6 +390,8 @@
                                 placeholder._redsaUnmappedCantonCount = unmappedFeatures.length;
                                 placeholder._redsaLoaded = true;
                                 placeholder.addLayer(layer);
+                                placeholder._redsaMainLayer = layer;
+                                placeholder._redsaSetOpacity(placeholder._redsaOpacityPercent);
                                 updateLegend();
                                 return layer;
                             })
@@ -397,6 +419,8 @@
                             title: config.label,
                             disabled: !isVisible,
                             items: !isVisible ? [] : (config.legend || []),
+                            opacityPercent: placeholder._redsaOpacityPercent,
+                            supportsOpacity: isVisible,
                             osmAudit: Boolean(config.osmAudit),
                             infoText: config.osmAudit
                                 ? `Fotografía del mapeo colaborativo OpenStreetMap${placeholder._redsaExtractionDates?.length ? `, extraída el ${placeholder._redsaExtractionDates.join(", ")}` : ""}. No constituye una serie anual y no cambia con el año seleccionado.`

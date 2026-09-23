@@ -981,10 +981,12 @@
         const available = isYearAvailable();
         const audit = auditForYear();
         const modeLabels = { heat: "Calor", clusters: "Agrupaciones", cases: "Casos individuales" };
+        const period = periodForYear();
+        const isStandardPeriod = period === "año completo";
         return {
             id: "siniestros_ant",
             title: "Siniestros (ANT)",
-            subtitle: `${modeLabels[state.mode]} · ${state.year}${available ? ` (${periodForYear()})` : " · No disponible para este periodo"}`,
+            subtitle: `${modeLabels[state.mode]} · ${state.year}${available ? (isStandardPeriod ? "" : ` (${period})`) : " · No disponible para este periodo"}`,
             status: state.status,
             available,
             disabled: !state.active,

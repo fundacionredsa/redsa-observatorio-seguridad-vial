@@ -1,6 +1,7 @@
 (function () {
     const providers = new Map();
     const listeners = new Set();
+    const opacityHandlers = new Map();
 
     function register(id, provider) {
         if (!id || typeof provider !== "function") return () => {};
@@ -42,5 +43,15 @@
         });
     }
 
-    window.REDSAOverlayState = Object.freeze({ register, getLegendEntries, subscribe, notify });
+    function registerOpacityHandler(id, handler) {
+        if (!id || typeof handler !== "function") return () => {};
+        opacityHandlers.set(id, handler);
+        return () => opacityHandlers.delete(id);
+    }
+
+    function setOpacity(id, percent) {
+        opacityHandlers.get(id)?.(percent);
+    }
+
+    window.REDSAOverlayState = Object.freeze({ register, getLegendEntries, subscribe, notify, registerOpacityHandler, setOpacity });
 })();

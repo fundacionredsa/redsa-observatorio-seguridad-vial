@@ -428,6 +428,11 @@ function onEachProvinceFeature(feature, layer) {
                 overlayContainer.querySelectorAll("details.legend-overlay-block[open][data-legend-layer-id]"),
                 element => element.dataset.legendLayerId
             ));
+            // Conservar el control real de ANT y sus listeners al reconstruir las filas.
+            const antOpacityControl = document.getElementById("ant-heat-opacity-control");
+            if (antOpacityControl && overlayContainer.contains(antOpacityControl)) {
+                overlayContainer.before(antOpacityControl);
+            }
 
             territoryContainer.innerHTML = "";
             if (overlayContainer !== territoryContainer) overlayContainer.innerHTML = "";
@@ -493,7 +498,7 @@ function onEachProvinceFeature(feature, layer) {
                         ${renderLegendHeading(levelTitle, [
                             "Vista: límites administrativos",
                             `Nivel: ${LEVEL_LABELS[currentLevel]}`,
-                        ], "", { active: false })}
+                        ], "", { active: false, showSwitch: false })}
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
                             <span>Límites administrativos</span>
@@ -649,6 +654,18 @@ function onEachProvinceFeature(feature, layer) {
                             ${entry.subtitle ? `<div class="legend-overlay-subtitle">${entry.subtitle}</div>` : ""}
                             ${entry.infoText ? `<div class="legend-overlay-subtitle">${entry.infoText} ${info}</div>` : ""}
                             ${legendItems}${audit}${loading}${unavailable}
+                            ${entry.id === "siniestros_ant" ? `<div class="legend-opacity-slot" id="legend-overlay-opacity-slot" data-legend-layer="siniestros_ant"></div>` : ""}
+                            ${entry.supportsOpacity ? `
+                                <div class="legend-opacity-slot">
+                                    <div class="contextual-opacity-control">
+                                        <div class="contextual-opacity-heading">
+                                            <label>Opacidad</label>
+                                            <output>${entry.opacityPercent}%</output>
+                                        </div>
+                                        <input type="range" min="20" max="100" step="5" value="${entry.opacityPercent}" data-legend-opacity-input="${entry.id}" aria-label="Opacidad de ${String(entry.title).replace(/"/g, '&quot;')}">
+                                    </div>
+                                </div>
+                            ` : ""}
                             ${notesList.length ? `<div class="legend-overlay-notes">${notesList.map(note => `<p>${note}</p>`).join("")}</div>` : ""}
                         </div>
                     </details>`);
@@ -670,6 +687,16 @@ function onEachProvinceFeature(feature, layer) {
         map.on('overlayadd', updateLegend);
         map.on('overlayremove', updateLegend);
         window.REDSAOverlayState?.subscribe(updateLegend);
+
+        document.addEventListener("input", event => {
+            const opacityInput = event.target.closest("[data-legend-opacity-input]");
+            if (!opacityInput) return;
+            const layerId = opacityInput.getAttribute("data-legend-opacity-input");
+            const percent = Number(opacityInput.value);
+            const output = opacityInput.closest(".contextual-opacity-control")?.querySelector("output");
+            if (output) output.textContent = `${percent}%`;
+            window.REDSAOverlayState?.setOpacity(layerId, percent);
+        });
 
         document.addEventListener("change", event => {
             const layerToggle = event.target.closest("[data-legend-layer-toggle]");

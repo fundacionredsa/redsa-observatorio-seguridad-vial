@@ -3305,15 +3305,15 @@ body.light-theme .territory-hover-tooltip {
 
 .legend-active-layer-symbol {
     display: inline-block;
-    width: 20px;
-    height: 5px;
+    width: 32px;
+    height: 10px;
     border: 1px solid color-mix(in srgb, var(--text-primary) 24%, transparent);
     border-radius: 999px;
 }
 
 .legend-active-layer-symbol.is-circle {
-    width: 11px;
-    height: 11px;
+    width: 16px;
+    height: 16px;
     justify-self: center;
     border-radius: 50%;
 }
@@ -3354,7 +3354,7 @@ body.light-theme .territory-hover-tooltip {
 
 .legend-active-layer-row {
     display: grid;
-    grid-template-columns: 22px minmax(0, 1fr) var(--right-tool-button-size);
+    grid-template-columns: 22px minmax(0, 1fr) 64px;
     min-height: var(--right-tool-button-size);
     align-items: center;
     gap: var(--space-2);
@@ -3362,6 +3362,10 @@ body.light-theme .territory-hover-tooltip {
     cursor: pointer;
     list-style: none;
     text-align: left;
+}
+
+.map-legend-card .legend-active-layers-list .legend-active-layer-row {
+    grid-template-columns: 22px minmax(0, 1fr) 64px;
 }
 
 .legend-active-layer-row::-webkit-details-marker {
