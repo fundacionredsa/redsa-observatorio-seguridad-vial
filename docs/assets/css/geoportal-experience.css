@@ -680,6 +680,10 @@ body:not(.light-theme) .site-topbar-brand-mark {
     padding: var(--space-3) var(--space-3);
 }
 
+.map-legend-card #legend-summary {
+    padding: 0 var(--space-3);
+}
+
 .map-legend-card .legend-panel {
     border: 0;
     border-radius: 0;
@@ -704,9 +708,9 @@ body:not(.light-theme) .site-topbar-brand-mark {
 
 .map-legend-card .legend-territory-profile {
     box-sizing: border-box;
-    width: calc(100% - 20px);
-    max-width: calc(100% - 20px);
-    margin: 10px;
+    width: calc(100% - calc(var(--space-3) * 2));
+    max-width: calc(100% - calc(var(--space-3) * 2));
+    margin: var(--space-3);
 }
 
 .legend-visibility-toggle {

@@ -394,6 +394,7 @@
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO || "Territorio";
         const level = props.DPA_DESPAR ? "Parroquia" : (props.nivel_agregacion === "provincia" ? "Provincia" : "Cantón");
         const province = props.DPA_DESPRO || "";
+        const showProvinceLine = Boolean(province) && province !== name;
         const rawVar = state.context?.getSelectedVariable?.();
         const variable = (rawVar === "normal") ? (window._lastActiveVariable || "siniestros_inec_2019") : rawVar;
         const config = state.context?.getVariableConfig?.(variable);
@@ -405,7 +406,7 @@
 
         summary.innerHTML = `
             <div class="citizen-summary-title">${name} <span style="font-weight:500;">(${level})</span></div>
-            <div class="citizen-summary-province">${province}</div>
+            ${showProvinceLine ? `<div class="citizen-summary-province">${province}</div>` : ""}
             <section class="citizen-territory-reference" aria-label="Resumen de la variable activa en el territorio">
                 <span class="citizen-national-kicker">Este territorio · ${escapeHtml(config?.displayLabel || config?.label || "Variable activa")}</span>
                 <strong class="citizen-national-value">${value ?? "Sin dato"} <span>${escapeHtml(config?.unidad || "")}</span></strong>
