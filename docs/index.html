@@ -33,7 +33,7 @@
     <!-- Estilos Premium Personalizados -->
     <link rel="stylesheet" href="assets/css/geoportal-core.css?v=0.10.59">
     <link rel="stylesheet" href="assets/css/geoportal-experience.css?v=0.10.59">
-    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.59">
+    <link rel="stylesheet" href="assets/css/geoportal-mobile.css?v=0.10.60">
     <link rel="stylesheet" href="assets/css/geoportal-hemeroteca.css?v=0.10.55">
 
     <!-- Flatpickr date picker -->
@@ -652,6 +652,15 @@
             <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
             <span>Análisis</span>
         </button>
+        <button type="button" class="mobile-nav-toggle" id="mobile-more-toggle" aria-controls="mobile-more-menu" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+            <span>Más</span>
+        </button>
+        <div id="mobile-more-menu" class="mobile-more-menu" role="group" aria-label="Más herramientas del mapa" hidden>
+            <button type="button" data-mobile-tool-target="map-locate"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i><span>Mi ubicación</span></button>
+            <button type="button" data-mobile-tool-target="map-basemap-toggle"><i class="fa-solid fa-map" aria-hidden="true"></i><span>Mapa base</span></button>
+            <button type="button" data-mobile-tool-target="right-tab-hemeroteca"><i class="fa-solid fa-newspaper" aria-hidden="true"></i><span>Noticias</span></button>
+        </div>
     </nav>
     <button type="button" class="mobile-overlay-backdrop" id="mobile-overlay-backdrop" aria-label="Cerrar panel movil"></button>
 
@@ -805,9 +814,9 @@
     <script src="assets/js/geoportal-classification.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-registry.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-overlay-state.js?v=0.10.55"></script>
-    <script src="assets/js/geoportal-ant-layer.js?v=0.10.56"></script>
+    <script src="assets/js/geoportal-ant-layer.js?v=0.10.60"></script>
     <script src="assets/js/geoportal-experience.js?v=0.10.55"></script>
-    <script src="assets/js/geoportal-state.js?v=0.10.59"></script>
+    <script src="assets/js/geoportal-state.js?v=0.10.60"></script>
     <script src="assets/js/geoportal-territories.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-panels.js?v=0.10.55"></script>
     <script src="assets/js/geoportal-institutional.js?v=0.10.55"></script>

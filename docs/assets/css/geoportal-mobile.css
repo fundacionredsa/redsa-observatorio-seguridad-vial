@@ -1284,8 +1284,67 @@
         font-size: 18px;
     }
 
-    .mobile-bottom-nav .mobile-nav-toggle:not(:last-child) {
+    .mobile-bottom-nav .mobile-nav-toggle:not(#mobile-more-toggle) {
         border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-bottom-nav #mobile-more-toggle[aria-expanded="true"],
+    body.mobile-hemeroteca-open .mobile-bottom-nav #mobile-more-toggle {
+        color: var(--accent, #3b82f6);
+    }
+
+    .mobile-more-menu {
+        position: absolute;
+        right: var(--mobile-edge, 10px);
+        bottom: calc(100% + var(--space-2));
+        display: grid;
+        width: min(var(--mobile-drawer-width), calc(100vw - (2 * var(--mobile-edge, 10px))));
+        padding: var(--space-2);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--analysis-disclosure-radius);
+        background: #172235;
+        box-shadow: var(--shadow);
+    }
+
+    body.light-theme .mobile-more-menu {
+        background: #fff;
+    }
+
+    body.mobile-more-open .map-left-column,
+    body.mobile-more-open .mobile-year-bar {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .mobile-more-menu[hidden] {
+        display: none;
+    }
+
+    .mobile-more-menu button {
+        display: flex;
+        min-height: var(--right-tool-button-size);
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-2) var(--space-3);
+        border: 0;
+        border-radius: var(--analysis-disclosure-radius);
+        background: transparent;
+        color: var(--text-primary);
+        font: inherit;
+        font-size: var(--fs-sm);
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .mobile-more-menu button:hover,
+    .mobile-more-menu button:focus-visible {
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        outline: 2px solid var(--accent);
+    }
+
+    .mobile-more-menu button i {
+        width: var(--space-4);
+        text-align: center;
     }
 
     body.mobile-sidebar-open .mobile-bottom-nav .mobile-nav-toggle,

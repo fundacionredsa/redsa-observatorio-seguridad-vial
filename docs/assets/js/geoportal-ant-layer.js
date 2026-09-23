@@ -10,6 +10,8 @@
     const CLUSTER_QUERY_DEBOUNCE_MS = 90;
     const SPIDERFY_RADIUS_PX = 18;
     const CASE_RADIUS_PX = 4;
+    const CASE_TOUCH_RADIUS_PX = 12;
+    const MOBILE_MEDIA_QUERY = window.matchMedia("(max-width: 768px)");
     const CLUSTER_COLOR = "#0f766e";
     const CASE_COLOR = "#7c2d12";
     const CLUSTER_RADIUS_MIN = 10;
@@ -213,14 +215,33 @@
         if (!state.active || !state.layer || state.mode === "heat" || !state.map || !latlng) return null;
         const point = state.map.latLngToLayerPoint(latlng);
         let found = null;
+        let nearestDistanceSquared = Infinity;
         if (typeof state.layer.eachLayer === "function") {
             state.layer.eachLayer(marker => {
-                if (!found && typeof marker._containsPoint === "function" && marker._containsPoint(point)) {
+                if (typeof marker._containsPoint !== "function") return;
+                const markerPoint = state.map.latLngToLayerPoint(marker.getLatLng());
+                const distanceSquared = (markerPoint.x - point.x) ** 2 + (markerPoint.y - point.y) ** 2;
+                const isMobileCase = MOBILE_MEDIA_QUERY.matches && marker.options.radius === CASE_RADIUS_PX;
+                const containsPoint = isMobileCase
+                    ? distanceSquared <= CASE_TOUCH_RADIUS_PX ** 2
+                    : marker._containsPoint(point);
+                if (containsPoint && distanceSquared < nearestDistanceSquared) {
                     found = marker;
+                    nearestDistanceSquared = distanceSquared;
                 }
             });
         }
         return found;
+    }
+
+    function handleAntMapCaptureClick(event) {
+        if (!state.active || state.status !== "ready" || !state.map || event.defaultPrevented) return;
+        if (event.target.closest(".leaflet-control, .leaflet-popup")) return;
+        const marker = findAntMarkerAtLatLng(state.map.mouseEventToLatLng(event));
+        if (!marker) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        marker.fire("click", { latlng: marker.getLatLng(), originalEvent: event });
     }
 
     function handleAntMapClick(e) {
@@ -550,10 +571,10 @@
         });
     }
 
-    function clusterMarker(feature, renderer) {
+    function clusterMarker(feature, renderer, popupOptions) {
         const [lon, lat] = feature.geometry.coordinates;
         const props = feature.properties || {};
-        if (!props.cluster) return caseMarker(feature, [lat, lon], renderer, false);
+        if (!props.cluster) return caseMarker(feature, [lat, lon], renderer, false, popupOptions);
         const count = Number(props.point_count || 0);
         const radius = Math.max(
             CLUSTER_RADIUS_MIN,
@@ -582,10 +603,12 @@
 
     function renderClusters(message) {
         if (message.queryId !== state.queryId || state.mode !== "clusters") return;
+        if (hasOpenCasePopup()) return;
         const started = performance.now();
         removeCurrentLayer();
         const renderer = L.canvas({ padding: 0.5, pane: state.eventPane });
-        state.layer = L.layerGroup(message.clusters.map(feature => clusterMarker(feature, renderer))).addTo(state.map);
+        const popupOptions = casePopupOptions();
+        state.layer = L.layerGroup(message.clusters.map(feature => clusterMarker(feature, renderer, popupOptions))).addTo(state.map);
         disablePanePointerEvents(state.eventPane);
         if (renderer._container) renderer._container.style.pointerEvents = "none";
         state.renderMetrics.clusters = {
@@ -644,7 +667,16 @@
         `;
     }
 
-    function caseMarker(feature, latlng, renderer, displaced) {
+    function casePopupOptions() {
+        const options = { maxWidth: 340 };
+        if (MOBILE_MEDIA_QUERY.matches) {
+            const searchBottom = document.querySelector(".map-search-card")?.getBoundingClientRect().bottom || 0;
+            options.autoPanPaddingTopLeft = L.point(0, Math.ceil(searchBottom));
+        }
+        return options;
+    }
+
+    function caseMarker(feature, latlng, renderer, displaced, popupOptions) {
         const marker = L.circleMarker(latlng, {
             renderer,
             pane: state.eventPane,
@@ -656,8 +688,7 @@
         });
         // Preparar 6.000 fichas completas bloqueaba el hilo principal. Leaflet
         // acepta una función y construye el contenido solo al abrir el caso.
-        marker.bindPopup(() => casePopupContent(feature, displaced), { maxWidth: 340 });
-        marker.on("click", event => state.context?.selectTerritoryBelow?.(event.latlng));
+        marker.bindPopup(() => casePopupContent(feature, displaced), popupOptions);
         return marker;
     }
 
@@ -676,9 +707,11 @@
 
     function renderCases(message) {
         if (message.queryId !== state.queryId || state.mode !== "cases") return;
+        if (hasOpenCasePopup()) return;
         const started = performance.now();
         removeCurrentLayer();
         const renderer = L.canvas({ padding: 0.5, pane: state.eventPane });
+        const popupOptions = casePopupOptions();
         const groups = new Map();
         message.features.forEach(feature => {
             const key = feature.geometry.coordinates.join(",");
@@ -691,7 +724,8 @@
                 feature,
                 spiderfiedLatLng(feature, index, group.length),
                 renderer,
-                group.length > 1
+                group.length > 1,
+                popupOptions
             ));
         }));
         state.layer = L.layerGroup(markers).addTo(state.map);
@@ -829,8 +863,13 @@
         window.REDSAOverlayState?.notify();
     }
 
+    function hasOpenCasePopup() {
+        const openPopup = state.map?._popup;
+        return Boolean(openPopup?.isOpen() && openPopup._source?.options?.radius === CASE_RADIUS_PX);
+    }
+
     function scheduleViewportRender() {
-        if (!state.active || state.status !== "ready" || !dataReadyForMode()) return;
+        if (!state.active || state.status !== "ready" || !dataReadyForMode() || hasOpenCasePopup()) return;
         clearTimeout(state.queryTimer);
         state.queryTimer = setTimeout(() => {
             if (state.mode === "heat") renderHeat();
@@ -980,6 +1019,11 @@
         state.map = context.map;
         state.heatPane = context.heatPane || "antHeatPane";
         state.eventPane = context.eventPane || context.pane || "eventPane";
+        const eventPane = state.map.getPane(state.eventPane);
+        const territoryPane = state.map.getPane(window.REDSA_MAP_PANES?.territorySurface?.name || "territorioPane");
+        if (eventPane && territoryPane && Number(eventPane.style.zIndex) <= Number(territoryPane.style.zIndex)) {
+            eventPane.style.zIndex = String(Number(territoryPane.style.zIndex) + 1);
+        }
         state.year = Number(context.getYear());
         state.periodMode = context.getPeriodMode?.() === "accumulated" ? "accumulated" : "year";
         state.bandwidthProfile = HEAT_BANDWIDTH_PROFILES[context.config.heatBandwidthProfile]
@@ -995,7 +1039,11 @@
         });
         document.getElementById("ant-jump-year")?.addEventListener("click", () => context.setYear(Math.max(...availableYears())));
         state.map.on("moveend zoomend", scheduleViewportRender);
+        state.map.on("popupclose", event => {
+            if (event.popup?._source?.options?.radius === CASE_RADIUS_PX) scheduleViewportRender();
+        });
         state.map.on("click", handleAntMapClick);
+        state.map.getContainer().addEventListener("click", handleAntMapCaptureClick, true);
         state.map.on("mousemove", handleAntMapMouseMove);
         window.REDSAOverlayState?.register("siniestros_ant", legendEntry);
         setHeatOpacity(state.heatOpacity);

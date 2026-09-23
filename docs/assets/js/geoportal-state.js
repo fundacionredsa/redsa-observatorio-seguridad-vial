@@ -369,6 +369,8 @@
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
+        const mobileMoreToggle = document.getElementById("mobile-more-toggle");
+        const mobileMoreMenu = document.getElementById("mobile-more-menu");
         const openAnalysisButton = document.getElementById("open-analysis-button");
         const mobileOverlayBackdrop = document.getElementById("mobile-overlay-backdrop");
         const technicalPanelToggle = document.getElementById("technical-panel-toggle");
@@ -816,6 +818,40 @@
             syncMobileLayerDrawer();
             setMobilePanel("layers", !document.body.classList.contains("mobile-layers-open"));
         });
+        function setMobileMoreMenu(open) {
+            if (!mobileMoreMenu || !mobileMoreToggle) return;
+            const shouldOpen = Boolean(open && mobileMediaQuery.matches);
+            mobileMoreMenu.hidden = !shouldOpen;
+            mobileMoreToggle.setAttribute("aria-expanded", String(shouldOpen));
+            document.body.classList.toggle("mobile-more-open", shouldOpen);
+        }
+        mobileMoreToggle?.addEventListener("click", () => {
+            setMobileMoreMenu(mobileMoreMenu.hidden);
+        });
+        mobileMoreMenu?.addEventListener("click", event => {
+            const button = event.target.closest("[data-mobile-tool-target]");
+            if (!button || !mobileMoreMenu.contains(button)) return;
+            event.stopPropagation();
+            setMobileMoreMenu(false);
+            document.getElementById(button.dataset.mobileToolTarget)?.click();
+            if (button.dataset.mobileToolTarget === "map-basemap-toggle" && !basemapPopover?.hidden) {
+                basemapPopover.querySelector("input:checked, input, button")?.focus({ preventScroll: true });
+            } else if (button.dataset.mobileToolTarget === "right-tab-hemeroteca") {
+                document.getElementById("hemeroteca-panel-close")?.focus({ preventScroll: true });
+            } else {
+                mobileMoreToggle.focus({ preventScroll: true });
+            }
+        });
+        document.addEventListener("click", event => {
+            if (!event.target.closest("#mobile-more-toggle, #mobile-more-menu")) setMobileMoreMenu(false);
+        });
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && mobileMoreMenu && !mobileMoreMenu.hidden) {
+                setMobileMoreMenu(false);
+                mobileMoreToggle.focus({ preventScroll: true });
+            }
+        });
+        mobileMediaQuery.addEventListener("change", () => setMobileMoreMenu(false));
 
         // El control visible y el doble toque comparten el estado de expansión.
         (function initSheetExpand() {
