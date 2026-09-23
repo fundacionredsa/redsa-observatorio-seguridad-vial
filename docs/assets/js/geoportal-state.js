@@ -810,7 +810,9 @@
         });
 
         mobileSidebarToggle?.addEventListener("click", () => {
-            setMobilePanel("sidebar", !document.body.classList.contains("mobile-sidebar-open"), { returnTarget: "map" });
+            const opening = !document.body.classList.contains("mobile-sidebar-open");
+            if (opening && !selectedTerritory?.props && !currentProps) updateSidebar(null);
+            setMobilePanel("sidebar", opening, { returnTarget: "map" });
         });
         mobileSidebarClose?.addEventListener("click", () => {
             setMobilePanel("sidebar", false);
