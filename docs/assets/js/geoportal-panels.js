@@ -783,7 +783,11 @@
                 document.getElementById("chart-wrapper"),
                 document.getElementById("traffic-events-section"),
                 document.getElementById("territory-codes-disclosure"),
-                document.getElementById("fatalities-section")
+                document.getElementById("fatalities-section"),
+                document.getElementById("territory-identity-block"),
+                document.getElementById("population-detail-row"),
+                document.getElementById("siniestros-rate-detail-row"),
+                document.getElementById("complementary-indicators-disclosure")
             ].filter(Boolean);
 
             let parishProps = null;
@@ -929,7 +933,7 @@
                 domTasaSiniestros.textContent = selectedSiniestrosRate.value.toLocaleString('de-DE', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
-                }) + " por cada 100.000 habitantes";
+                });
                 domTasaSiniestros.classList.remove("empty");
                 domTasaSiniestrosYear.textContent = selectedSiniestrosRate.year;
             } else {
@@ -981,7 +985,7 @@
                 domTasaFallecidos.textContent = "No aplica al acumulado";
                 domTasaFallecidos.classList.add("empty");
             } else if (tasa !== null && tasa !== undefined) {
-                domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " por cada 100.000 habitantes";
+                domTasaFallecidos.textContent = tasa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 domTasaFallecidos.classList.remove("empty");
             } else {
                 domTasaFallecidos.textContent = "Dato no disponible a este nivel";
