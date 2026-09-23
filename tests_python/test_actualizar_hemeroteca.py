@@ -17,7 +17,9 @@ from scripts.actualizar_hemeroteca import (
     execute_pipeline,
     match_keyword,
     parse_article_metadata_html,
+    parse_feed,
     parse_publication_date_from_url,
+    strip_source_suffix,
     validate_archive,
     validate_config,
 )
@@ -89,6 +91,60 @@ class HemerotecaPipelineTests(unittest.TestCase):
         self.assertEqual(second_report["duplicate_candidates"], 2)
         self.assertEqual(len(second_archive["noticias"]), 2)
         self.assertTrue(second_archive["noticias"][0]["oculto"])
+
+    def test_direct_and_google_news_feeds_share_one_story_with_real_source(self):
+        direct_title = (
+            "Siniestro en el sur de Quito deja un fallecido y cuatro heridos "
+            "este miércoles 23 de septiembre"
+        )
+        google_title = (
+            "Siniestro de tránsito en el sur de Quito dejó un fallecido "
+            "y cuatro heridos - Ecuavisa"
+        )
+
+        def feed(title, url, source_name=""):
+            source_tag = f"<source>{source_name}</source>" if source_name else ""
+            return (
+                f"<rss><channel><item><title>{title}</title><link>{url}</link>"
+                "<description>Siniestro de tránsito en Quito.</description>"
+                "<pubDate>Wed, 23 Sep 2026 12:00:00 GMT</pubDate>"
+                f"{source_tag}</item></channel></rss>"
+            ).encode("utf-8")
+
+        direct = {"name": "El Comercio", "feed_url": "https://example.org/direct"}
+        google = {
+            "name": "Google News — siniestro tránsito Ecuador",
+            "feed_url": "https://example.org/google",
+        }
+        feeds = {
+            direct["name"]: feed(direct_title, "https://elcomercio.com/quito/siniestro"),
+            google["name"]: feed(
+                google_title, "https://news.google.com/rss/articles/example", "Ecuavisa"
+            ),
+        }
+        self.assertEqual(parse_feed(feeds[google["name"]], 1)[0].source_name, "Ecuavisa")
+        self.assertEqual(parse_feed(feeds[direct["name"]], 1)[0].source_name, "")
+        self.assertEqual(strip_source_suffix(google_title, "Ecuavisa"), google_title[:-11])
+
+        now = datetime(2026, 9, 23, 15, 0, tzinfo=timezone.utc)
+        for sources, expected_source, expected_title in (
+            ([direct, google], "El Comercio", direct_title),
+            ([google, direct], "Ecuavisa", strip_source_suffix(google_title, "Ecuavisa")),
+        ):
+            with self.subTest(first_source=sources[0]["name"]):
+                archive, report = execute_pipeline(
+                    self.config,
+                    self.empty_archive(),
+                    lambda source: feeds[source["name"]],
+                    self.extractor(),
+                    now,
+                    sources,
+                )
+                self.assertEqual(report["new_entries"], 1)
+                self.assertEqual(report["semantic_duplicate_candidates"], 1)
+                self.assertEqual(len(archive["noticias"]), 1)
+                self.assertEqual(archive["noticias"][0]["fuente"], expected_source)
+                self.assertEqual(archive["noticias"][0]["titulo"], expected_title)
 
     def test_generic_non_road_accident_is_filtered_out(self):
         keywords = self.config["keywords"]

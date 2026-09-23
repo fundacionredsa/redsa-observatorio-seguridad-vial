@@ -141,6 +141,7 @@ class FeedItem:
     published_at: datetime
     published_is_reference: bool = False
     published_source: str = "rss"
+    source_name: str = ""
 
 
 class Extractor(Protocol):
@@ -231,9 +232,19 @@ def es_duplicado_semantico(
 ) -> bool:
     """Retorna True si el título es al menos tan similar como el umbral configurado."""
     for noticia in noticias_existentes:
-        if fuzz.token_sort_ratio(titulo_nuevo, noticia.get("titulo", "")) >= umbral:
+        if fuzz.token_set_ratio(titulo_nuevo, noticia.get("titulo", "")) >= umbral:
             return True
     return False
+
+
+def strip_source_suffix(title: str, source_name: str) -> str:
+    """Quita el nombre del medio cuando el agregador lo añade al título."""
+    if not source_name:
+        return title
+    suffix = f" - {source_name}"
+    if title.endswith(suffix):
+        return title[: -len(suffix)].strip()
+    return title
 
 
 def utc_iso(value: datetime) -> str:
@@ -537,8 +548,11 @@ def parse_feed(content: bytes, max_items: int) -> list[FeedItem]:
             element, {"pubdate", "published", "updated", "date"}
         )
         published_at = parse_date(published_text)
+        source_name = child_text(element, {"source"})
         if title and link and published_at:
-            items.append(FeedItem(title, link, description, published_at))
+            items.append(
+                FeedItem(title, link, description, published_at, source_name=source_name)
+            )
     return items
 
 
@@ -1245,7 +1259,11 @@ def execute_pipeline(
         report["items_seen"] += len(items)
         report["sources"].append(source_report)
         for item in items:
-            pool_noticias.append((source["name"], item, source_report))
+            effective_source_name = item.source_name or source["name"]
+            cleaned_title = strip_source_suffix(item.title, item.source_name)
+            if cleaned_title != item.title:
+                item = replace(item, title=cleaned_title)
+            pool_noticias.append((effective_source_name, item, source_report))
             urls_procesadas.add(clean_url(item.link))
 
     # Tavily: búsqueda adicional después de RSS y antes de clasificar con IA.
