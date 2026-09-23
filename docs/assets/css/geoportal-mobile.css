@@ -1289,8 +1289,12 @@
     }
 
     .mobile-bottom-nav #mobile-more-toggle[aria-expanded="true"],
-    body.mobile-hemeroteca-open .mobile-bottom-nav #mobile-more-toggle {
+    body.mobile-hemeroteca-open .mobile-bottom-nav #mobile-news-toggle {
         color: var(--accent, #3b82f6);
+    }
+
+    .mobile-bottom-nav .mobile-nav-toggle {
+        min-width: 0;
     }
 
     .mobile-more-menu {
@@ -1538,6 +1542,103 @@
 
     #territory-sidebar:has(#analysis-empty-state:not([hidden])) .analysis-technical-details {
         display: none;
+    }
+
+    /* Fila compacta de año; sus dos contenidos se despliegan por separado. */
+    :root {
+        --mobile-year-row-height: calc(var(--mobile-bottom-nav-height) - var(--space-2));
+    }
+
+    body {
+        --mobile-year-scroll-clearance: 0px;
+        --mobile-year-settings-clearance: 0px;
+        --mobile-year-bar-clearance: calc(var(--mobile-year-row-height) + var(--space-2) + var(--mobile-edge) + var(--mobile-year-scroll-clearance) + var(--mobile-year-settings-clearance));
+    }
+
+    body.mobile-year-bar-inactive {
+        --mobile-year-bar-clearance: 0px;
+    }
+
+    body.mobile-year-bar-inactive .mobile-year-bar {
+        display: none;
+    }
+
+    body:has(.mobile-year-bar-expanded) {
+        --mobile-year-scroll-clearance: var(--mobile-year-row-height);
+    }
+
+    body:has(.mobile-year-bar-settings-open) {
+        --mobile-year-settings-clearance: calc(var(--mobile-year-row-height) * 3);
+    }
+
+    .mobile-year-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .mobile-year-bar-row {
+        display: flex;
+        min-height: var(--mobile-year-row-height);
+        align-items: center;
+        gap: var(--space-1);
+    }
+
+    .mobile-year-bar-row #mobile-year-current {
+        flex: 1 1 auto;
+        min-width: 0;
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+        color: var(--text-primary);
+        font-size: var(--fs-base);
+    }
+
+    .mobile-year-bar-row #mobile-year-settings-toggle[aria-expanded="true"],
+    .mobile-year-bar-row #mobile-year-current[aria-expanded="true"] {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .mobile-year-bar-row button:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+    .mobile-year-bar-scroll {
+        align-self: stretch;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        overflow-y: hidden;
+        transition: max-height 160ms ease, opacity 160ms ease;
+    }
+
+    .mobile-year-bar-expanded .mobile-year-bar-scroll {
+        max-height: var(--mobile-year-row-height);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-year-bar-settings {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        overflow: hidden;
+        transition: max-height 160ms ease, opacity 160ms ease;
+    }
+
+    .mobile-year-bar-settings-open .mobile-year-bar-settings {
+        max-height: calc(var(--mobile-year-row-height) * 4);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-year-bar-settings .mobile-map-control-slot {
+        grid-column: auto;
     }
 
     @keyframes mobile-sheet-enter {

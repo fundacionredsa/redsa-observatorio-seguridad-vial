@@ -369,6 +369,8 @@
         const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
         const mobileSidebarClose = document.getElementById("mobile-sidebar-close");
         const mobileLayersToggle = document.getElementById("mobile-layers-toggle");
+        const mobileBottomNav = document.getElementById("mobile-bottom-nav");
+        const mobileNewsToggle = document.getElementById("mobile-news-toggle");
         const mobileMoreToggle = document.getElementById("mobile-more-toggle");
         const mobileMoreMenu = document.getElementById("mobile-more-menu");
         const openAnalysisButton = document.getElementById("open-analysis-button");
@@ -555,6 +557,7 @@
             technicalPanelToggle?.setAttribute("aria-expanded", String(layersOpen));
             activeLayersShortcut?.setAttribute("aria-expanded", String(layersOpen));
             mobileLayersToggle?.setAttribute("aria-expanded", String(layersOpen));
+            mobileNewsToggle?.setAttribute("aria-expanded", String(hemerotecaOpen));
             territorySidebar?.setAttribute("aria-hidden", String(!analysisOpen));
             mobileSidebarToggle?.setAttribute("aria-expanded", String(analysisOpen));
 
@@ -828,9 +831,9 @@
         mobileMoreToggle?.addEventListener("click", () => {
             setMobileMoreMenu(mobileMoreMenu.hidden);
         });
-        mobileMoreMenu?.addEventListener("click", event => {
+        mobileBottomNav?.addEventListener("click", event => {
             const button = event.target.closest("[data-mobile-tool-target]");
-            if (!button || !mobileMoreMenu.contains(button)) return;
+            if (!button || !mobileBottomNav.contains(button)) return;
             event.stopPropagation();
             setMobileMoreMenu(false);
             document.getElementById(button.dataset.mobileToolTarget)?.click();
@@ -1183,6 +1186,11 @@
             { length: TIMELINE_MAX_YEAR - TIMELINE_MIN_YEAR + 1 },
             (_, index) => TIMELINE_MIN_YEAR + index
         );
+        const mobileYearBar = document.getElementById("mobile-year-bar");
+        const mobileYearPrev = document.getElementById("mobile-year-prev");
+        const mobileYearCurrent = document.getElementById("mobile-year-current");
+        const mobileYearNext = document.getElementById("mobile-year-next");
+        const mobileYearSettingsToggle = document.getElementById("mobile-year-settings-toggle");
         let yearAdjustmentNotice = null;
 
         function getAvailableYearsForVariable(variable) {
@@ -1370,6 +1378,37 @@
             refreshCitizenSummary();
         }
 
+        function centerSelectedMobileYear() {
+            const list = document.getElementById("mobile-year-bar-scroll");
+            const selected = list?.querySelector(`[data-year="${selectedYear}"]`);
+            if (!selected) return;
+            const listRect = list.getBoundingClientRect();
+            const selectedRect = selected.getBoundingClientRect();
+            list.scrollLeft += selectedRect.left - listRect.left - (listRect.width - selectedRect.width) / 2;
+        }
+
+        mobileYearBar?.addEventListener("click", event => {
+            const button = event.target.closest("button");
+            if (!button || !mobileYearBar.contains(button)) return;
+            if (button === mobileYearCurrent || button === mobileYearSettingsToggle) {
+                const className = button === mobileYearCurrent ? "mobile-year-bar-expanded" : "mobile-year-bar-settings-open";
+                const expanded = mobileYearBar.classList.toggle(className);
+                button.setAttribute("aria-expanded", String(expanded));
+                button.setAttribute("aria-label", button === mobileYearCurrent
+                    ? `${expanded ? "Ocultar" : "Mostrar"} años disponibles para ${selectedYear}`
+                    : `${expanded ? "Ocultar" : "Mostrar"} ajustes de período e intensidad`);
+                if (button === mobileYearCurrent && expanded) centerSelectedMobileYear();
+                return;
+            }
+            if (button !== mobileYearPrev && button !== mobileYearNext) return;
+            const years = getAvailableYearsForVariable(selectedVariable);
+            const nextIndex = years.indexOf(Number(selectedYear)) + (button === mobileYearPrev ? -1 : 1);
+            if (nextIndex < 0 || nextIndex >= years.length) return;
+            selectedPeriodMode = "year";
+            updatePeriodModeControl();
+            setSelectedYearAndRefresh(years[nextIndex]);
+        });
+
         window.setMobilePanel = setMobilePanel;
         window.closeMobilePanels = closeMobilePanels;
         window.setRightContextPanel = setRightContextPanel;
@@ -1384,6 +1423,24 @@
         function updateTimelineControl() {
             const coverage = TEMPORAL_COVERAGE[selectedVariable] || { tipo: "foto_unica", anios_disponibles: [] };
             const isAnnual = coverage.tipo === "anual";
+            const yearBarApplies = selectedVariable !== "normal" && isAnnual;
+            document.body.classList.toggle("mobile-year-bar-inactive", !yearBarApplies);
+            if (!yearBarApplies) mobileYearBar?.classList.remove("mobile-year-bar-expanded", "mobile-year-bar-settings-open");
+            const availableYears = getAvailableYearsForVariable(selectedVariable);
+            const selectedIndex = availableYears.indexOf(Number(selectedYear));
+            if (mobileYearPrev) mobileYearPrev.disabled = !yearBarApplies || selectedIndex <= 0;
+            if (mobileYearNext) mobileYearNext.disabled = !yearBarApplies || selectedIndex < 0 || selectedIndex >= availableYears.length - 1;
+            if (mobileYearCurrent) {
+                mobileYearCurrent.textContent = String(selectedYear);
+                const expanded = Boolean(yearBarApplies && mobileYearBar?.classList.contains("mobile-year-bar-expanded"));
+                mobileYearCurrent.setAttribute("aria-expanded", String(expanded));
+                mobileYearCurrent.setAttribute("aria-label", `${expanded ? "Ocultar" : "Mostrar"} años disponibles para ${selectedYear}`);
+            }
+            if (mobileYearSettingsToggle) {
+                const expanded = Boolean(yearBarApplies && mobileYearBar?.classList.contains("mobile-year-bar-settings-open"));
+                mobileYearSettingsToggle.setAttribute("aria-expanded", String(expanded));
+                mobileYearSettingsToggle.setAttribute("aria-label", `${expanded ? "Ocultar" : "Mostrar"} ajustes de período e intensidad`);
+            }
             const accumulated = selectedPeriodMode === "accumulated" && supportsHistoricalAccumulation(VARIABLE_CONFIGS[selectedVariable]);
 
             function renderYearButton(year, isMobile) {
@@ -1415,6 +1472,7 @@
             const mobileYearBarScroll = document.getElementById("mobile-year-bar-scroll");
             if (mobileYearBarScroll) {
                 mobileYearBarScroll.innerHTML = ALL_TIMELINE_YEARS.map(year => renderYearButton(year, true)).join("");
+                if (mobileYearBar?.classList.contains("mobile-year-bar-expanded")) centerSelectedMobileYear();
             }
 
             updateYearAdjustmentNotice();
