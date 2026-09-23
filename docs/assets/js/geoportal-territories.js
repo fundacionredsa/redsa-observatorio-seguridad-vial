@@ -493,12 +493,7 @@ function onEachProvinceFeature(feature, layer) {
                         </div>
                     `;
                 } else if (effectiveVariable === 'normal') {
-                    const levelTitle = "Sin variable seleccionada";
                     territoryContainer.innerHTML += `
-                        ${renderLegendHeading(levelTitle, [
-                            "Vista: límites administrativos",
-                            `Nivel: ${LEVEL_LABELS[currentLevel]}`,
-                        ], "", { active: false, showSwitch: false })}
                         <div class="legend-item" style="padding-left: 8px;">
                             <span class="legend-color-line" style="background-color: ${COLOR_BOUNDARY}; height: 8px; width: 12px; border-radius: 2px;"></span>
                             <span>Límites administrativos</span>

@@ -198,7 +198,8 @@ body.basemap-dark-matter .leaflet-event-pane {
     background: transparent;
 }
 
-.citizen-national-reference {
+.citizen-national-reference,
+.citizen-territory-reference {
     display: grid;
     gap: var(--space-1);
     padding: var(--space-3) var(--space-3);
@@ -3519,6 +3520,35 @@ body.light-theme .territory-hover-tooltip {
     border-radius: 8px;
     background: color-mix(in srgb, var(--bg-glass-hover) 65%, transparent);
     border: 1px solid var(--border-glass);
+}
+
+.legend-download-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    width: 100%;
+    min-height: var(--right-tool-button-size);
+    margin-bottom: var(--space-2);
+    padding: 0 var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border-glass));
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-glass));
+    color: var(--accent);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.legend-download-action:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 24%, var(--bg-glass));
+    border-color: var(--accent);
+}
+
+.legend-download-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #demographic-hover-card .profile-card-header {
