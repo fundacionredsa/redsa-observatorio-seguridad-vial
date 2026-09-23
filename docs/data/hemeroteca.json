@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-23T07:39:25.780491Z",
+  "actualizado_en": "2026-09-23T15:26:38.086322Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2168,6 +2168,96 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "5a005af0a1d85476b9bac8737fa1acf32074c0d424c732023db892be4038b9ce",
+      "titulo": "Siniestro en el sur de Quito deja un fallecido y cuatro heridos este miércoles 23 de septiembre",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-23T12:59:14Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/siniestro-sur-quito-deja-fallecido-y-cuatro-heridos-miercoles-23-de-septiembre/",
+      "resumen": "Un siniestro vial en el sur de Quito dejó un fallecido y cuatro heridos durante la madrugada, coordinado por ECU911.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/siniestro-5.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "b3e731fcf95ddb2a21eff8516172a4bc454da61bcaefe7b9d464450823daccb0",
+      "titulo": "Avenida Simón Bolívar, con cierre parcial por siniestro de tránsito en Quito este miércoles",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-23T12:29:20Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/avenida-simon-bolivar-cierre-parcial-por-siniestro-transito-quito-miercoles/",
+      "resumen": "El cierre parcial de la Avenida Simón Bolívar en Quito se debió a un siniestro de tránsito coordinado por el ECU 911, que dejó únicamente daños materiales.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Simon-1.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "9e796a7547b83bcec814569d9ca47c02e151d5d15b04ce97c999045b599b8076",
+      "titulo": "Las lluvias anegan calles de Sauces y La Florida en el norte de Guayaquil",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-23T02:10:30Z",
+      "url": "https://www.elcomercio.com/actualidad/guayaquil/lluvias-anegan-calles-sauces-la-florida-norte-guayaquil/",
+      "resumen": "Las intensas lluvias en el norte de Guayaquil han anegado calles y generado siniestros, complicando el tránsito vehicular.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/lluvias-en-el-norte-de-Guayaquil-Segura-EP.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "82e0fc2076dfed1b48985df31ab23e012e676f12226163982f8f3178afcde7aa",
+      "titulo": "Choque en la Panamericana Norte deja un fallecido y cuatro heridos en Cayambe - eltelegrafo.com.ec",
+      "fuente": "Google News — accidente vial Ecuador",
+      "fecha_publicacion": "2026-09-22T20:09:24Z",
+      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNX2tUMVo4azl6YW14bXgzVUk1ZEZZN1BCam05SXlkUWI0Zk5DMkZjSE9VU0ROcm4tbm44UmxHaHNKNzk2STg3Z0g4R0hkcGh4bnJnSDhDV1FtZmt1eVlucm5MUVVHcl80WHVLdUsyeFR5OXV1VDdlMnRUOGJyS2RzLXhXN3l4RXpJY1JFbTBrSGFnSmpTTnM4dWxsSUtRdlNnYmN0d21pZkljOXJiMVB5clZOdXB2czBKTE5GLXZyTjR0MVlBQWxNVnAwN1k?oc=5",
+      "resumen": "Un choque en la Panamericana Norte en Cayambe dejó un fallecido y cuatro heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "choque",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "e4c698a8fc03397ccc838a9db4adcef7d06776b4fa94fb7eb3bc990dbd423200",
+      "titulo": "Fuerte congestión vehicular en la avenida Simón Bolívar por siniestro de tránsito en Gualo - Metro Ecuador",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-23T11:57:45Z",
+      "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPLWZmWEROejk0cGkwOTcyb3N2NXZndE52LXBVdW9DaElOdk1zeVREMkFyYy1JX2sxTjBIemtmR2tMUEhSclBRU0UxcDF5T3lxRWptY2tEYTVDTmhwZlZZbVVNSHpvdVJoaVN5Wm11akZBM0pqYk5oeTdEeDhVMC1JLWJZR2UyLWtfaXR6Y2l1WUxURVp1dExPU1hBMXZ2a2FqVk9LaGV3cnJxRmRXMEFTZ0tCX0xxNDU3TEMxRDVNaG0wMEQ3UjdFNlZxc056M3ljeWhJM19mSXhtZEE?oc=5",
+      "resumen": "Un siniestro de tránsito en Gualo generó una fuerte congestión vehicular en la avenida Simón Bolívar.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "ba4c6fbc6e76586365fb729f6e40415fc710adffd00ae41ecd8881d531ac810d",
+      "titulo": "Siniestro de tránsito en el sur de Quito dejó un fallecido y cuatro heridos - Ecuavisa",
+      "fuente": "Google News — siniestro tránsito Ecuador",
+      "fecha_publicacion": "2026-09-23T13:30:46Z",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQRzZNZGNQUUdvalo2cHl1dV9va21fWnBHUHB5c2ZTaVkyQXk4emhMZVd1Tk1iTGpMM3IydHp0dVVCUk9UcTlHMVNKSUpRME9QcVJVU1puVjQ3M3RCdjJNQUdBVlMwa09kZXFNcUpIcVk0dENhTzMzNjJmamZWQ1E1R3hoOUtpeW9JV0dyRTZPSHZveThvY1JTS0lCQ0ZISUlTdzBN0gGoAUFVX3lxTFBBV3gxRXBSb3BvZkNRRzZ2d2wxVzhxTHZfU2VydzAtTmlmOU1vUkc3NGk5aWlxVHFPeUJSVm03THRrb0dTUEl6NE5YMjB3V3JlUjZTeGpYTEpfOFI1Rm5VQUJCWUtsemplLVpaU29qUGh1SXhNYU1pdjFzSVo5dUluVC1LVThfNjJpMk95THhELVlVZnBPTm1nc2RielRCb0JLWG1aY19WeQ?oc=5",
+      "resumen": "Un siniestro vial en el sur de Quito dejó un fallecido y cuatro heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-23T15:26:38.086322Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
