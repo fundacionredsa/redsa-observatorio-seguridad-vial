@@ -72,11 +72,12 @@
             format: value => value.toString()
         },
         tasa_fallecidos_100k: {
-            label: "Fallecidos por cada 100.000 habitantes",
+            label: "Fallecidos en siniestros de tránsito por cada 100.000 habitantes",
+            displayLabel: "Fallecidos en siniestros por cada 100.000 hab.",
             categoria: "Indicadores Relativos",
             fuenteCorta: "Cálculo REDSA / INEC",
             fuente: "Cálculo REDSA con INEC EDG y población INEC",
-            description: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
+            description: "Fallecidos en siniestros de tránsito por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
             unidad: "personas fallecidas por cada 100.000 habitantes",
             metodologia: "Personas fallecidas EDG del año divididas para la población del mismo año, multiplicado por 100.000. Las tasas agregadas se recalculan con numeradores y denominadores sumados; no se promedian tasas territoriales.",
             licencia: "Derivado de fuentes INEC con atribución",

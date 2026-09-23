@@ -659,7 +659,7 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
 
   const descriptions = {
     siniestros_inec_2019: "Número de siniestros de tránsito registrados oficialmente. ANT e INEC/ESTRA forman una sola cadena estadística y sus cifras no deben sumarse entre sí. Entre 2021 y 2024, 72 registros corresponden a zonas en estudio y permanecen en el total nacional sin asignarse a un cantón.",
-    tasa_fallecidos_100k: "Fallecidos por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
+    tasa_fallecidos_100k: "Fallecidos en siniestros de tránsito por cada 100.000 habitantes: permite comparar zonas con poblaciones de distinto tamaño.",
     cobertura_mapeo_osm: "Qué tanto se ha registrado la infraestructura de seguridad vial (semáforos, cruces y aceras) en el mapa colaborativo OpenStreetMap. No mide si la infraestructura existe o no; solo si alguien ya la mapeó."
   };
   for (const [variable, text] of Object.entries(descriptions)) {
@@ -678,7 +678,12 @@ test("explica variables y perfiles en lenguaje ciudadano", async ({ page }) => {
   await expect(shortcut).toContainText("Código DPA 1701");
   await expect(shortcut.locator(".profile-card-citizen-title, .profile-card-source-detail, .perfil-card-section")).toHaveCount(0);
 
-  await page.locator('[data-right-panel="analysis"]').click();
+  if ((page.viewportSize()?.width || 0) <= 768) {
+    await page.getByRole("button", { name: "Análisis", exact: true }).click();
+    await page.locator("#analysis-technical-details > summary").click();
+  } else {
+    await page.locator('[data-right-panel="analysis"]').click();
+  }
   await expect(page.locator("#territory-sidebar")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator("#info-fallecidos-inec")).toHaveText("504");
   await expect(page.locator("#info-fallecidos-sppat")).not.toBeEmpty();
@@ -1209,7 +1214,7 @@ test("Territory tooltip deduplicates fixed lines by source field", async ({ page
   expect(rateTooltip).toContain("Población (2024):");
   expect(rateTooltip).toContain("Siniestros (2024):");
   expect(rateTooltip).toContain("Fallecidos (2024):");
-  expect(rateTooltip).toContain("Fallecidos por cada 100.000 habitantes:");
+  expect(rateTooltip).toContain("Fallecidos en siniestros de tránsito por cada 100.000 habitantes:");
 });
 
 test("controles de Capas actualizan la leyenda al apagar y reactivar overlays", async ({ page }, testInfo) => {
