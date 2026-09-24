@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-24T07:31:32.399179Z",
+  "actualizado_en": "2026-09-24T15:48:28.166004Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2333,6 +2333,21 @@
       "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "83c9caca3ddfcafcc1881b99f2980fe5be50d741e5a104e1f1ce4cce92762ecc",
+      "titulo": "En Ecuador muere una persona cada 3,8 horas por siniestros de tránsito",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-24T02:50:00Z",
+      "url": "https://www.elcomercio.com/actualidad/ecuador/ecuador-muere-una-persona-cada-38-horas-siniestros-transito/",
+      "resumen": "Ecuador registra una alta tasa de fallecidos en las vías, con una provincia de la Amazonía reportando las cifras más altas.",
+      "tema": "salud_vial",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/siniestros-transito-Ecuador.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-24T15:48:28.166004Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
