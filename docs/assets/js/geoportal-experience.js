@@ -11,6 +11,7 @@
 
     const MAP_CAPTURE_MIN_OUTPUT_WIDTH_PX = 2000;
     const MAP_CAPTURE_MAX_SCALE = 4;
+    const MAP_IMAGE_MAX_HEIGHT_MM = 82;
 
     const SEARCH_LEVELS = Object.freeze({
         province: {
@@ -437,7 +438,11 @@
             scale: dynamicScale,
             ignoreElements: element => element.matches?.("#right-tools-rail, #right-context-host, #right-control-shell, .opacity-control, .basemap-control, .mobile-nav-toggle, .map-left-column, .map-search-card, .map-legend-card, .legend-visibility-toggle, #site-topbar, .site-topbar, #mobile-level-bar, #mobile-year-bar, .road-scale-control, .leaflet-control-container")
         });
-        return canvas.toDataURL("image/jpeg", 0.9);
+        return {
+            dataUrl: canvas.toDataURL("image/jpeg", 0.9),
+            width: canvas.width,
+            height: canvas.height
+        };
     }
 
     function buildTechnicalPdf(props, year, mapImage) {
@@ -631,12 +636,24 @@
             y += 3;
         }
 
-        if (mapImage) {
+        if (typeof mapImage === "string") {
+            mapImage = { dataUrl: mapImage, width: contentWidth, height: MAP_IMAGE_MAX_HEIGHT_MM };
+        }
+
+        if (mapImage?.dataUrl) {
             addSection("Ubicación y mapa de referencia");
             addParagraph("Fuente cartográfica: límites INEC/CONALI vía datosabiertos.gob.ec (CC BY); mapa base según la selección visible y sus atribuciones.", { size: 7.5 });
-            ensureSpace(87);
-            pdf.addImage(mapImage, "JPEG", margin, y, contentWidth, 82, undefined, "FAST");
-            y += 87;
+            const aspect = mapImage.width / mapImage.height;
+            let imgWidth = contentWidth;
+            let imgHeight = imgWidth / aspect;
+            if (imgHeight > MAP_IMAGE_MAX_HEIGHT_MM) {
+                imgHeight = MAP_IMAGE_MAX_HEIGHT_MM;
+                imgWidth = imgHeight * aspect;
+            }
+            const imgX = margin + (contentWidth - imgWidth) / 2;
+            ensureSpace(imgHeight + 5);
+            pdf.addImage(mapImage.dataUrl, "JPEG", imgX, y, imgWidth, imgHeight, undefined, "FAST");
+            y += imgHeight + 5;
         }
 
         ensureSpace(82);
