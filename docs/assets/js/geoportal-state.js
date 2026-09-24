@@ -698,6 +698,19 @@
             if (territoryOpacityControl && opacityTarget && territoryOpacityControl.parentElement !== opacityTarget) {
                 opacityTarget.appendChild(territoryOpacityControl);
             }
+
+            function updateViewSettingsVisibility() {
+                const section = document.getElementById("view-settings-section");
+                if (!section) return;
+                const periodSlot = document.getElementById("view-settings-period-slot");
+                const opacitySlot = document.getElementById("view-settings-opacity-slot");
+                const hasContent = Boolean(
+                    (periodSlot && periodSlot.children.length > 0) ||
+                    (opacitySlot && opacitySlot.children.length > 0)
+                );
+                section.classList.toggle("is-empty-hidden", !hasContent);
+            }
+            updateViewSettingsVisibility();
             if (mapLevelNote && mapToolbarStatusSlot && mapLevelNote.parentElement !== mapToolbarStatusSlot) {
                 mapToolbarStatusSlot.appendChild(mapLevelNote);
             }
@@ -721,6 +734,7 @@
             if (container && variableDisclosure && levelControl && periodControl && (timelineControl || document.getElementById("timeline-years-bar"))) {
                 document.body.classList.add("technical-ready");
             }
+            updateViewSettingsVisibility();
         }
 
         document.addEventListener("input", event => {

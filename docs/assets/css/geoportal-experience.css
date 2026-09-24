@@ -794,6 +794,10 @@ body:not(.light-theme) .site-topbar-brand-mark {
     clear: both;
 }
 
+.is-empty-hidden {
+    display: none !important;
+}
+
 .layers-card-section > details > summary,
 .basemap-section-header {
     padding: var(--space-3);
