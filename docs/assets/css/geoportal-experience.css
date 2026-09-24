@@ -3373,6 +3373,16 @@ body.light-theme .territory-hover-tooltip {
     grid-template-columns: 22px minmax(0, 1fr) 64px;
 }
 
+.map-legend-card .legend-active-layers-list .legend-overlay-block[data-legend-layer-id="siniestros_ant"] .legend-active-layer-row {
+    grid-template-columns: 22px minmax(0, 1fr) 88px;
+}
+
+.legend-overlay-block[data-legend-layer-id="siniestros_ant"] .legend-active-layer-symbol {
+    width: 56px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
 .legend-active-layer-row::-webkit-details-marker {
     display: none;
 }
