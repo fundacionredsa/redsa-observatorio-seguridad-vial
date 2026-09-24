@@ -389,7 +389,6 @@
             summary.innerHTML = `${renderNationalReference()}<p class="citizen-summary-empty">Busca una provincia, un cantón o una parroquia para ver sus datos, su evolución y una comparación orientativa con el país.</p>`;
             if (downloadButton) {
                 downloadButton.disabled = true;
-                downloadButton.hidden = true;
             }
             return;
         }
@@ -418,7 +417,6 @@
             ${renderNationalReference()}
         `;
         if (downloadButton) {
-            downloadButton.hidden = false;
             downloadButton.disabled = false;
         }
     }
@@ -837,7 +835,9 @@
         const name = props.DPA_DESPAR || props.DPA_DESCAN || props.DPA_DESPRO;
         if (button) {
             button.disabled = true;
-            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Generando ficha…';
+            button.title = "Generando ficha…";
+            button.setAttribute("aria-label", "Generando ficha PDF…");
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
         }
         try {
             const mapImage = await captureMapImage();
@@ -850,7 +850,9 @@
         } finally {
             if (button) {
                 button.disabled = false;
-                button.innerHTML = '<i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Descargar ficha PDF';
+                button.title = "Descargar ficha PDF";
+                button.setAttribute("aria-label", "Descargar ficha PDF del territorio seleccionado");
+                button.innerHTML = '<i class="fa-solid fa-file-pdf" aria-hidden="true"></i>';
             }
         }
     }
