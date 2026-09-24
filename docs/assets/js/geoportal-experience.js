@@ -9,6 +9,9 @@
         initialized: false
     };
 
+    const MAP_CAPTURE_MIN_OUTPUT_WIDTH_PX = 2000;
+    const MAP_CAPTURE_MAX_SCALE = 4;
+
     const SEARCH_LEVELS = Object.freeze({
         province: {
             featuresKey: "provinceFeatures",
@@ -423,12 +426,17 @@
     async function captureMapImage() {
         const map = document.getElementById("map");
         if (!map || typeof window.html2canvas !== "function") return null;
+        const mapWidth = map.offsetWidth || map.getBoundingClientRect().width || 1;
+        const dynamicScale = Math.min(
+            MAP_CAPTURE_MAX_SCALE,
+            Math.max(2, MAP_CAPTURE_MIN_OUTPUT_WIDTH_PX / mapWidth)
+        );
         const canvas = await window.html2canvas(map, {
             backgroundColor: "#f8fafc",
             useCORS: true,
             allowTaint: false,
             logging: false,
-            scale: 2,
+            scale: dynamicScale,
             ignoreElements: element => element.matches?.("#right-tools-rail, #right-context-host, #right-control-shell, .opacity-control, .basemap-control, .mobile-nav-toggle, .map-left-column, .map-search-card, .map-legend-card, .legend-visibility-toggle, #site-topbar, .site-topbar, #mobile-level-bar, #mobile-year-bar, .road-scale-control, .leaflet-control-container")
         });
         return canvas.toDataURL("image/jpeg", 0.9);
