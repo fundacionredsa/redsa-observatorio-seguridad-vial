@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-24T15:48:28.166004Z",
+  "actualizado_en": "2026-09-25T07:35:17.583489Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2348,6 +2348,36 @@
       "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "bf73057cfc0cdb2d0d30f237e4eb588cb588a194e7e6de4d62fd2ac73ad09f1f",
+      "titulo": "Choque entre un camión y un bus genera congestión en la vía Alóag – Santo Domingo",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-25T01:52:54Z",
+      "url": "https://www.elcomercio.com/actualidad/seguridad/choque-camion-bus-genera-congestion-via-aloag-santo-domingo/",
+      "resumen": "Un choque entre un camión y un autobús en la vía Alóag, en Santo Domingo, provocó una congestión vehicular.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/09/Diseno-sin-titulo-60-1.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-25T07:35:17.583489Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "5ae4719bdb374cc924bb582d2874f531f7f101e6b0491797d21f0a3935a7b73f",
+      "titulo": "Siniestro en Guayas: choque, incendio y muerte en carretera al cantón Naranjal",
+      "fuente": "extra.ec",
+      "fecha_publicacion": "2026-09-24T21:54:26Z",
+      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPbTE0NmdFblY5QU9RQmF6UGctSzg1WGtuUTRLbWVXV0Q3bm9tdTRiTmVIZWhVZkU2Uk4zVFNYTUpUUDdqNzIzcTVEYVlROUt2UGpGTzVZWnRHRTFiMFlhUUFJZ3pEZi1KTzhiQlZ2NFZBNHJ6WDRuTnh5NFI0Tm5zQ1VUZUV5aWZwTTMwUXZzUkJKc25GTHF6dURZU1hiLTVzOW9SQUF0cXVCbGRZdEJETFFRVi3SAboBQVVfeXFMUEFkYUxtdkhJM2gtTVpjVFVxWEJucy0xSTkzME9zWnhxN3lUYTVVZ1oydmtPcDd5UGt6YnhUa2V3RTdHd3ZERExkamFsTkpfdGVhZVQ4QlJ5c3dZRU5WNTVkNlNwNWpNNXdfSEh3bXNPRkFEaFlLZmNTMkhHUFpmOHdvWS1hSUJwc2VSOHYxd3RlcnR3WDkwUG1ONV91N21ZTkhVTmZ5b1pMRVdXTTRoNVlSS1J1eTAtTUZB?oc=5",
+      "resumen": "Un siniestro vial en la carretera al cantón Naranjal (Guayas) dejó un fallecido tras un choque seguido de un incendio.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-25T07:35:17.583489Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
