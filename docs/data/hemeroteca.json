@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-26T07:28:00.363872Z",
+  "actualizado_en": "2026-09-26T14:57:43.300931Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2408,6 +2408,36 @@
       "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "70c0c556e60d5b18c58add74905695e06e8f3958c530e0f396f7c6860ad22997",
+      "titulo": "Accidente de tránsito: bus accidentado tiene más de 30 citaciones",
+      "fuente": "Ecuador 221",
+      "fecha_publicacion": "2026-09-26T11:40:00Z",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOVEs2UXlReXYyMFdWRmFVbDFXOVVTU1d4YjlfU1RQcERpcW5jUDJpQVhJak1qMUdQYVpyelJMeUp3UVlHVkxsVEdEMFJlNlFsQWhWZUJqYTJXUS1NMTRXSWhOX3JObW9PUW90OXJQejB4VXhaanNlREdUMjJWLUdpcV9LOW91V1Z6bE5XWWdrVVB6NkpSVkE?oc=5",
+      "resumen": "Un bus accidentado en Ecuador tiene más de 30 citaciones pendientes.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-26T14:57:43.300931Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "74d8902f41b218f98499bd30b936db5a16d0957a5516acad68c93d7425f08c64",
+      "titulo": "Al menos un fallecido y 15 lesionados en trágico accidente de tránsito en La Yaguara | #EUVzla | #ElUniversal",
+      "fuente": "facebook.com",
+      "fecha_publicacion": "2026-09-25T14:13:22Z",
+      "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxPZEswX3I2aGhZdWp5ajU0TzVINkhZZmpzaEpZaUdsVXZHR3lTTUdBRVcxd295bkx3NFdPU29zSXRvTnBpTVRZdkg1RjAzQlNRcVl3bHJzUG9MRnN2V3M5YllxUm9tX2NNUnJCeG83RzhWUkNvZ09PQVFkTm1aN01CNnZVUWR2OThJcVd4R0RwNzdJRHlaUGdsTC1DdVBnREhwNDM4ZGlwVjJtcDlQN1E1dXNiRm1DMVlfNHM0ZlYtYmsxeFRwNkVvcWZtSDRheUZpUmJEaGFKUjI2Z1BZd2lRaUpOaXV1UQ?oc=5",
+      "resumen": "Un accidente de tránsito en La Yaguara dejó al menos un fallecido y 15 personas heridas.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-26T14:57:43.300931Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
