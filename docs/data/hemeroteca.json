@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-25T15:48:22.145040Z",
+  "actualizado_en": "2026-09-26T07:28:00.363872Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2393,6 +2393,21 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "2242873d358357b0f423b6bc00dd0780e4a7cbf52a8808d508f518d308261a88",
+      "titulo": "Exceso de velocidad en Guayaquil: siniestros asociados subieron 109 % desde 2023",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-25T19:19:10Z",
+      "url": "https://www.expreso.ec/guayaquil/exceso-velocidad-guayaquil-siniestros-asociados-subieron-109-2023-297112.html",
+      "resumen": "El exceso de velocidad es causa probable en 1.792 siniestros en Guayaquil desde 2023. La autoridad activó controles y construye resaltos.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2025/09/03/68b8bf5a2a584.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-26T07:28:00.363872Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
