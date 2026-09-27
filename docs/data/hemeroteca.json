@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-26T14:57:43.300931Z",
+  "actualizado_en": "2026-09-27T15:38:24.947987Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2436,6 +2436,51 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-26T14:57:43.300931Z",
       "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "75528b1072e833507e201eb249c47a11e4cc4f14224b3eaec840a4837260565a",
+      "titulo": "De la vía a la costa a la vía a Daule: estos son los siniestros reportados en Guayaquil",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-27T10:58:19.754000Z",
+      "url": "https://eluniverso.com/guayaquil/comunidad/de-la-via-a-la-costa-a-la-via-a-daule-estos-son-los-siniestros-reportados-en-guayaquil-nota/",
+      "resumen": "Se reportaron varios siniestros viales en Guayaquil, incluyendo la destrucción de un SUV en la vía a la costa.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/C3I42UYS2VHZ3PGKJXDDBLITRE.jpg?auth=481f06dfe68cd62931e6e49821f38a9be1dae6538c3eeb1fa9ae13434195436f&width=670&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-27T15:38:24.947987Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "e902bbee6f2ce6610d4fb49b10f1a81e5b53a3073a6577d97e8e3e60340b3cda",
+      "titulo": "Un muerto y dos heridos deja siniestro de tránsito en la vía a la Costa",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-09-27T14:49:51Z",
+      "url": "https://www.expreso.ec/guayaquil/muerto-dos-heridos-deja-siniestro-transito-via-costa-297263.html",
+      "resumen": "Un árbol cayó sobre la vía a la Costa, cerca del kilómetro 97, dejando un fallecido y dos heridos tras el accidente.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/09/27/6ab92c159912c.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-27T15:38:24.947987Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "745828a4d36d4bb59b8ce07a1e852f5a1c2477a4a9a45b0d3e45c8cde10e4d9c",
+      "titulo": "Siniestro de tránsito entre un bus y camión que chocan de frente en la vía Balzar",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-09-27T15:08:21Z",
+      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOeW1KYzdKak9USnlLZWpjUk03VXcwbk00UGZSY3hSVXRyQ1ZZcC1mTHkxRFIzMnR2amd1czR4MDlQMm1UeDRIdE9YdlpRWDlwOENsZU9VOFI1SWFDbDJCWVFEYWVvWE43QXJTWFZsYnVNbDQyVUFrNE9jWkZTendjS1R5NzJ2dDhId2x6Y0xrN0lCQjNMMTY1ajRleUgzMmd2N1A4a3Z0TkswYjVYeElRX255NVZLQQ?oc=5",
+      "resumen": "Un choque frontal entre un bus y un camión ocurrió en la vía Balzar.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-27T15:38:24.947987Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
