@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-28T08:35:02.001997Z",
+  "actualizado_en": "2026-09-28T18:35:17.438317Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2496,6 +2496,36 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-28T08:35:02.001997Z",
       "palabra_clave": "choque",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "b23e4cea9ac601d1babb5f3e9fb93f99f36047652450d2a4711ef3455e5c2691",
+      "titulo": "Tres heridos por siniestros de tránsito en Quito este 28 de septiembre",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-09-28T15:55:04.921000Z",
+      "url": "https://eluniverso.com/noticias/ecuador/quito-accidente-siniestro-de-transito-ponceano-quitumbe-heridos-transito-ecu911-emergencias-nota/",
+      "resumen": "Se registraron tres heridos y varios hechos de tránsito en las vías del norte y sur de Quito que complicaron el tráfico, según reportes de la AMT.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/XPJZFPSH3VFFJD57INM75E6VWQ.jpeg?auth=a10f9ea44aadc8b61b88b243f69d586aea1f2c24644d6d2e190538d8f5024173&width=717&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-28T18:35:17.438317Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "340ad5a883b83d2c466bd64329a9c5e82fd6d906a45b06094793c2cae4ee266a",
+      "titulo": "Siniestro de tránsito entre dos buses deja 12 personas heridas en Ventanas, Los Ríos",
+      "fuente": "Vistazo",
+      "fecha_publicacion": "2026-09-28T14:20:00Z",
+      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPNEN3VVh2LTlacWlxdnhrRkFzSU1XNGRkRHFvZW5aU2xNVjJBNjBPbW5MQXphU1U2ZGJIQThZbkdVSlNhYXhfR2tub3VuYkVua2lZQW5xamt5eFdHWlEzcmx1VFR6cGJZS3FOTlpzTTN6NlZiaUZ2dXpGY1hUX1Y3cll5X3pFZlpWWUxpV2E4bE80VEd6WGlOLVRlUDZrUXAxbzNvSNIBqgFBVV95cUxPb05jcW5mcjU1a2ttdV9WOWg4cFAxZ3pTclhpYWZ2MjVxY3hHZW1yNDVjT3JneXpFVzhxODF6T2Y2OVJWeHhHQW9CYmFJdnZ0bXF5TDdPQVVOR0t6VU1iRTU2UEJZc0RqWTBDNXd2SzdMdms4SzRBclB5dlBRVnhNYkp2bmFtbzBjZVBpZmx2U1E2MEJ4Z3dsZ2hJQWthOG1ZbmkwQ0ZpOUxHZw?oc=5",
+      "resumen": "Un choque entre dos buses en Ventanas, Los Ríos, dejó 12 personas heridas.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-28T18:35:17.438317Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
