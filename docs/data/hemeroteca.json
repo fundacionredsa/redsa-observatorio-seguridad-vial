@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-27T15:38:24.947987Z",
+  "actualizado_en": "2026-09-28T08:35:02.001997Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2481,6 +2481,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-27T15:38:24.947987Z",
       "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "4194f9ca52646699e60a08c4a0b853e2c03df979d3fa1b65b813161d8b658980",
+      "titulo": "Choque entre dos vehículos deja dos muertos y tres heridos en Ambato",
+      "fuente": "Ecuavisa",
+      "fecha_publicacion": "2026-09-27T20:57:56Z",
+      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQRWhhOVBjN1Y2SzhPN2ZHeE1LX3NJQk16VDZfUVN2enlNY05kajdpXzlUWGx4UFljQ2owaFRhclNZSWN3dVZtS0ZrS3E1QnNqSE50a1FvVlhSMmUyNW90aVRYbHZ0WWVTc0QyNndfU0pzTWtHUHlFMkpFc3pvbGpBVmVMSENhX1ZjaWZfcWNuc3AwV2poQWfSAZsBQVVfeXFMT08yRkx0TExoUnRLeXlKUkpyLXRyekxvX2JiaVU4SEJZU0tyaDNiRGhaSDVjTktTS05MYU5vVWR5bmZkbGRYVFpCMWMzV1hoYTZfTHQxZjJ6cUZ0NDNPVFRkU0wxWDZPWk1IRXlvU090MUNuMEY2bkJXWlNZNUZlajdJUjVWVzZiUUFQWklxZTk5OF9IbkJ6WU5lNEE?oc=5",
+      "resumen": "Un choque entre dos vehículos en Ambato dejó dos fallecidos y tres heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-28T08:35:02.001997Z",
+      "palabra_clave": "choque",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
