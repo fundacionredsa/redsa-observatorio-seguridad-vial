@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-28T18:35:17.438317Z",
+  "actualizado_en": "2026-09-29T16:52:55.183284Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2526,6 +2526,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-28T18:35:17.438317Z",
       "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "af4306193585a0af720590e1a26a7488ddb18273482da87a892872008a3dddf5",
+      "titulo": "Quito: Motociclista resultó herido tras accidente en Carapungo y cierran la Av. Panamericana Norte",
+      "fuente": "Metro Ecuador",
+      "fecha_publicacion": "2026-09-29T15:54:35Z",
+      "url": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQQngwOHdxR0luTmJObjM5OHVYd056MFRpb3M0N3oyV1hXZWF3eFUwTmkwVXpDNkxzaUJwbjJlN1lCNUVSM2VDY2huV3FVczNKVnRqbU52MzdjUC1jb0IzSVlyY2dweXdwUjhSMm04NGZBWG5TY18wcUNPOTlIT0VuNlZYaExld19GRTRTX3ZaYjg3SW9aRmFJZHRINXduN3QyUnhuOU5DbGphZWdGb1ZHZm5IV2xBODctc01CODAzSEI4dDFINWtJNVV3eXl1V1JNWTRUVmhNQmhJd1V5TlpYS1ZuMA?oc=5",
+      "resumen": "Un motociclista resultó herido tras un accidente en Carapungo, lo que obligó a cerrar la Av. Panamericana Norte.",
+      "tema": "motociclistas",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-29T16:52:55.183284Z",
+      "palabra_clave": "motociclista",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
