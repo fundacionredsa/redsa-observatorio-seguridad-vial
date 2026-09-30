@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-29T16:52:55.183284Z",
+  "actualizado_en": "2026-09-30T08:18:33.521884Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2541,6 +2541,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-29T16:52:55.183284Z",
       "palabra_clave": "motociclista",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "dc66f47d17f29837a9ccbebc58d7945ff365df70f338a0c774edf07e395d7aa4",
+      "titulo": "Cierre en la avenida Simón Bolívar por accidente de tránsito sentido Quito-Cumbayá",
+      "fuente": "Metro Ecuador",
+      "fecha_publicacion": "2026-09-30T02:48:39Z",
+      "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQXzFaeWFSUXpEUHQ1RmhPajh4bWZTTzlrV3J0OVR3UVp3Y25ZaVhQZEhUcGg2bWJmRVI0RXA3THA2QUNIblFzM3Y4MmFGSnp1VE1aeHlJbkVhTzVQbkZGNDBBTEI3dnBoTTJnZGluVFVMenJQWGJUQTN4cTBTLWNqVXZ2a2xtR1hyWWVZbENOWnZCMHhPcXRSZ0FZUm54SktEM0Zkd296ZEtrUFVUVHF4SFhhaGM1UVEwT0JldW55U05zRnZ4R1pWbUJNZmEtVUVl?oc=5",
+      "resumen": "Se reporta un cierre en la avenida Simón Bolívar debido a un accidente de tránsito en el sentido Quito-Cumbayá.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-09-30T08:18:33.521884Z",
+      "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
