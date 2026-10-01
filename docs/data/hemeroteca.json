@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-09-30T08:18:33.521884Z",
+  "actualizado_en": "2026-10-01T17:21:36.006509Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2556,6 +2556,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-09-30T08:18:33.521884Z",
       "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "48670613f261e7fcee0f8d82085d725412158ffec40724917f691cf965863775",
+      "titulo": "Siniestro de tránsito provoca cierre de carriles en la avenida Eloy Alfaro, norte de Quito",
+      "fuente": "Metro Ecuador",
+      "fecha_publicacion": "2026-09-30T23:37:54Z",
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPUkdIcFdITk5HYUlDY2EwVnFqM1RJanNudndHUkJNdUlMMmViWEdFNzBhLUVxaFNsVDdnNDFTSFZVWHVib24zNUJFMEdZVUlmcFRSNXpKUDVjS3R6dXByLV9rSFZsUE43WXVDTDBoOF9VSllCTzByaGdScHZSV2RFems3c19aZXVWd3c5RlNOMlVwUXVwR25GNGNJa0NxNkxxRFNGYUZkTHpyYXZ5S3dWV2poem9NQXI3Ujc4SXIxX2tXbkhfUE1aQ1lKM2ZwT0xKc3J1d0lsNUJRQQ?oc=5",
+      "resumen": "Un siniestro vial en la avenida Eloy Alfaro, norte de Quito, obligó al cierre de carriles.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-01T17:21:36.006509Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
