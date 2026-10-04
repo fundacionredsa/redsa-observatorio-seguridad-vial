@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-02T16:37:13.831919Z",
+  "actualizado_en": "2026-10-04T08:17:53.504454Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2736,6 +2736,51 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-02T16:37:13.831919Z",
       "palabra_clave": "motociclista",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "f3cf8453a08f6ee4e231cd1152a7d8565a5f9b6e8194d8891a8f937ed20bf728",
+      "titulo": "Una moto se incendió en la avenida José María Egas; al menos seis siniestros y desperfectos mecánicos se reportaron en otras vías de Guayaquil",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-03T21:40:33.259000Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/una-moto-se-incendio-en-la-avenida-jose-maria-egas-al-menos-seis-siniestros-y-desperfectos-mecanicos-se-reportaron-en-otras-vias-de-guayaquil-nota/",
+      "resumen": "Se reportó un incendio de una moto en la avenida José María Egas y se registraron al menos seis siniestros y desperfectos mecánicos en otras vías de Guayaquil.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/5ZX3QXSK2NFQTJES7KNVD6GZVQ.png?auth=f9d7e383d464bdf4cd604df87a7f750996be09861afd827619dd9f5a3774f786&width=268&height=259&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-04T08:17:53.504454Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "b0f561ed9b3453c2faa85f18fc25db3aeafbd0b7ca6c387d40a64945d85bcdf8",
+      "titulo": "Bus se volcó en el Guasmo sur y dejó 25 heridos: ¿En qué sector ocurrió el siniestro?",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-10-03T15:11:30Z",
+      "url": "https://www.expreso.ec/guayaquil/bus-volco-guasmo-sur-dejo-25-heridos-sector-ocurrio-siniestro-297994.html",
+      "resumen": "Personal de cuatro instituciones de rescate acudió a atender la emergencia de un bus que se volcó en Guasmo sur.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/10/03/6ac112fdb3b06.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-04T08:17:53.504454Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "aaec9f4887eaf4f07d58cfdd2679313e92398e849f94aaa3e56c8d874c42bb7b",
+      "titulo": "Al menos 25 heridos tras siniestro de tránsito de bus en Guayaquil",
+      "fuente": "Diario La Hora",
+      "fecha_publicacion": "2026-10-03T15:31:52Z",
+      "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNZEt1SkFMQjkzUTJyYlgzck1HcTNXYTJHTF91Tjl5UnIyeFIwX2VQMUh5anBPbGRYd2V6VDRlbUpqYUNJZjVya0xTMkNkZVp5RUdCUElUWGl0TkNfVnBUM2JKSXFxLWczc2hBYmVydmtJMTM5M1RPaHdWOEIwdnVSc1YtbXcyWFhaS0JVRzZUZ2Y5SUlBei1QOHlMQjBCcFhlaHlhTWxVcnFJcmlxb0ltUTVwQ3ZmcFpOSXJWY2N3?oc=5",
+      "resumen": "Un bus sufrió un siniestro vial en Guayaquil que dejó al menos 25 personas heridas.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-04T08:17:53.504454Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
