@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-04T08:17:53.504454Z",
+  "actualizado_en": "2026-10-04T15:46:50.878482Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2780,6 +2780,36 @@
       "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
       "oculto": false,
       "fecha_ingesta": "2026-10-04T08:17:53.504454Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "24b9b5c4a9c59b4577bd57126c471fec81ed837537de74706869af695cd44bb5",
+      "titulo": "Siniestro de tránsito en Puebloviejo, Los Ríos, dejó un fallecido y cuatro heridos",
+      "fuente": "Ecuavisa",
+      "fecha_publicacion": "2026-10-04T15:17:04Z",
+      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPbi1lUkRnZ083Yk5WYi1vN0IyYXF0S053Ym92YVppUHllMWRMcGpfemhkTmdTTjhadGZOSC05LUs2anNIa2Q2NW9XWDVSbXVvWkdCTXdMNEcwclRKaVcyX1hfQnQtTVJBTGl4dmpLLUlXNDBHT3ZyUnFyVTI2WnlDUWg5T0ZkYWZ6Rm1YdmZwdE5YOEJDV2xaQU5CdlRtaWZwWEhEQXJyRUxLdEdoNFFJaGY5NVN5UdIBuwFBVV95cUxPQ0Z5ejc3RkpXYXpfeUZPekl0N0RxLUJnUmdoTTBXbHhFaVVVOEMzWjhxbjZ3am4xZXkzVE92V2tsdXl6QWRnalJYemRfamlOaGlmdF9vT0tRMEJmOHVFRGV4RmowM2thVVY0dU9mQzI1UGJFNUR1MU03TmpLOUFyNXJnOGwwYkNQWlBlczZJMll5VFJ4WXRnTmY5OTdJU1BKU3NwcU10dExJSW0zR2drR1NuZFczSHdySUh3?oc=5",
+      "resumen": "Un siniestro vial en Puebloviejo, Los Ríos, dejó un fallecido y cuatro heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-04T15:46:50.878482Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "e0cb02869884e04740c0ecf2b37b5a2f13da66b50d684732274a0e40bceb65c4",
+      "titulo": "Fatal siniestro de tránsito en la vía San Juan-Pueblo Viejo deja muertos y heridos",
+      "fuente": "Teleamazonas",
+      "fecha_publicacion": "2026-10-04T14:04:06Z",
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPS0JraTNPYXhQckU2aFgzUzRNYVFHRFZiVTJFM3hRZDNaZU5wRW5sdmNwc3hxanhreFJ4Y2poUWRxYWdrNHpYc29YWnlJbFFSWU5zY2tJVE01MDQ0Z05lbXNHWDRHQ2UzRXhySU1GcGhUX2hLRHhDQTR4Z2lQbGE1S21NM0FKcFl0T1pvRV9ldXc2VmJFdU1lTjB3bW5FSFpoUlQwWXJxNGFRZDBZNkVlX3Zn?oc=5",
+      "resumen": "Un siniestro vial en la vía San Juan-Pueblo Viejo dejó fallecidos y heridos.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-04T15:46:50.878482Z",
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
