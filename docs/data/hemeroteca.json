@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-04T15:46:50.878482Z",
+  "actualizado_en": "2026-10-06T08:51:35.325575Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2811,6 +2811,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-04T15:46:50.878482Z",
       "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "39c58d31d8b00d6983e68c485aafb83353c91d0a3a22edcd1c8de7e571320e43",
+      "titulo": "El cantante colombiano Hebert Vargas y su agrupación sufrieron un choque en la vía AmbatoQuito",
+      "fuente": "ecuavisa.com",
+      "fecha_publicacion": "2026-10-05T14:12:51Z",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPRDZwa2Rlc0lnTFpmNUJCZG1uSUpsdHBPQjBvcXZ3cnc5dFFSQmdYZ2Q1dEw1REIwNkctVV9aWll1WUZhVHNHWi1XQWNuRFd4a3hZaXNQdWVSMm84SU5kTE0yaVpPUWxCU0JuSkc3V0d5RTdGMVdfeS13QzAwRE9nd2lIZGs3bGdjeERCOHR0UVAySmIxbXhWZTB3ZElGc09Ddmk0ZWI2UE9WTFhzUy1NLdIBtgFBVV95cUxOb21kZlQxbnRBeHNkaGFEOUNHWGYzN09CRHBCajFQVkFyWmwxTE1HemZ3UTN4VXJsTWFzSWppQ0RpcXhmUEE4SWRrUzRXLVFSeWswckJtSWpkS3BneENsR1p0enRkYkw0UWJQSmFrQTM2eXZ0UWJUSDJOUldNUkt6ZkVjOEwwUEVVci1XeVByMUs2VGJvV2RQTGJPd2tlQVhyZzRldUdoQk1yb09KTC1pVGtZX3huZw?oc=5",
+      "resumen": "El cantante colombiano Hebert Vargas y su agrupación sufrieron un choque en la vía AmbatoQuito.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-06T08:51:35.325575Z",
+      "palabra_clave": "choque",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
