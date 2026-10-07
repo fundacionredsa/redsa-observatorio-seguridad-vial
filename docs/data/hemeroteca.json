@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-07T08:30:30.095243Z",
+  "actualizado_en": "2026-10-07T17:47:55.982729Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2931,6 +2931,51 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-07T08:30:30.095243Z",
       "palabra_clave": "atropello",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "ebb9607c3fab7bd9ec1b6456760d1add9812808083366b2951a05b2e3e2acf05",
+      "titulo": "Robo de armas a empresa de seguridad en Guayaquil termina en persecución policial y accidente de tránsito",
+      "fuente": "Primicias",
+      "fecha_publicacion": "2026-10-07T12:32:09Z",
+      "url": "https://www.primicias.ec/sucesos/detenidos-robo-armas-empresa-seguridad-kennedy-muerte-atropellada-via-perimetral-134380/",
+      "resumen": "Delincuentes vestidos como policías robaron más de 40 armas a una empresa de seguridad en Guayaquil; durante la persecución policial se registró un accidente de tránsito.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.primicias.ec/files/og_thumbnail/uploads/2026/10/07/6ac63fb4be122.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-07T17:47:55.982729Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "ca8f69999ed78d0cf869d5cafba1e4baa82c00af0080339c39b3daefbd02bff4",
+      "titulo": "Un hombre muere atropellado en la vía Perimetral de Guayaquil",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-07T14:56:44.076000Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/un-hombre-muere-atropellado-en-la-via-perimetral-de-guayaquil-nota/",
+      "resumen": "Un hombre falleció tras ser atropellado en la vía Perimetral de Guayaquil, donde personal de la CTE atendió el siniestro.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/FK2F7AP4QJH4FM255MLUPFCUCA.jpg?auth=3cff26498f4017f7b45163f1a4af005ac69e148c0c3b09bda94608bbc00a8074&width=704&height=576&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-07T17:47:55.982729Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "7cada0135ab8e6646bf0e2113ecf6c3afccd01b7ffa2b9cfb402606ab904d65c",
+      "titulo": "Mujer señalada por intentar huir tras siniestro en Quito aclara lo ocurrido: “No abandoné el lugar”",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-07T13:59:52.279000Z",
+      "url": "https://eluniverso.com/comunidad/quito/quito-ecuador-municpio-de-quito-seguridad-policia-nacional-que-paso-con-la-mujer-que-intento-huir-del-lugar-luego-de-causar-siniestro-de-transito-en-quito-mujer-senalada-por-intentar-huir-de-siniestro-de-transito-en-quito-nota/",
+      "resumen": "La mujer, Mónica Reyes, aclaró en redes sociales que no abandonó el lugar tras causar un siniestro de tránsito en Quito.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/64G26R5DRZGPXOPBZZA6ZSIB7I.jpeg?auth=22d690e51f85346a49826cca75fb443cfa58541af51d17fe0fed4d225915076f&width=860&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-07T17:47:55.982729Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
     }
