@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-06T17:10:02.404582Z",
+  "actualizado_en": "2026-10-07T08:30:30.095243Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2918,6 +2918,21 @@
       "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "0b03f531ed2d65873bacd5f87e3542f0f61331d41da6ae5ea8213c9c42aa3c10",
+      "titulo": "Adulto mayor muere atropellado por un bus en Quito y el conductor queda bajo investigación",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-10-06T18:20:02Z",
+      "url": "https://www.expreso.ec/quito/adulto-mayor-muere-atropellado-bus-quito-conductor-investigacion-298340.html",
+      "resumen": "Un bus del Corredor Central Norte atropelló a un adulto mayor en Quito, falleciendo la víctima. La AMT investiga las circunstancias del siniestro.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/10/06/6ac53b5b81ee9.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-07T08:30:30.095243Z",
+      "palabra_clave": "atropello",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
