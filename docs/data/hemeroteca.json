@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-07T17:47:55.982729Z",
+  "actualizado_en": "2026-10-11T08:38:42.732440Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2975,6 +2975,21 @@
       "imagen_og": "https://www.eluniverso.com/resizer/v2/64G26R5DRZGPXOPBZZA6ZSIB7I.jpeg?auth=22d690e51f85346a49826cca75fb443cfa58541af51d17fe0fed4d225915076f&width=860&height=670&quality=75&smart=true",
       "oculto": false,
       "fecha_ingesta": "2026-10-07T17:47:55.982729Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "fa63c9adcec6c882f42a8569a5f9286c71dfbe12e1a9cefaaa54a28db0512878",
+      "titulo": "Taxista resultó herido y conductor de la Metrovía fue aprehendido tras siniestro en el centro de Guayaquil",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-10T23:30:43.641000Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/taxista-resulto-herido-y-conductor-de-la-metrovia-fue-aprehendido-tras-siniestro-en-el-centro-de-guayaquil-nota/",
+      "resumen": "Un choque entre un taxi y una unidad de Metrovía dejó a un taxista herido y al conductor de transporte público detenido en Guayaquil.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/RIDWBZXT4FDN5KVRFCKGGOL5ME.jpg?auth=ce7811b1b1a8c915fd99d9f58496b3b8aaa4e402a9c243868413ccc77eeb5d3b&width=1005&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-11T08:38:42.732440Z",
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
