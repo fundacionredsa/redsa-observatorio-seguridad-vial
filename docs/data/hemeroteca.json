@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-11T08:38:42.732440Z",
+  "actualizado_en": "2026-10-12T20:15:42.734606Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -2993,6 +2993,36 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "dde0a68f79de52ceb74b0b5fd745f0383e807cd9c8a562dfa057a4440e2af97d",
+      "titulo": "Motociclista muere tras caer de paso a desnivel en el norte de Guayaquil",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-12T19:42:15Z",
+      "url": "https://www.elcomercio.com/actualidad/guayaquil/motociclista-muere-tras-caer-de-paso-a-desnivel-en-el-norte-de-guayaquil/",
+      "resumen": "Un motociclista falleció tras sufrir una caída en un paso a desnivel en el norte de Guayaquil.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/10/Motociclistas-junto-a-barrera-vial-rayada-1024x961.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-12T20:15:42.734606Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "5a3319bf7766109dd5969a05be51adf80732f3a98cb1da9995841d2c1c2eed51",
+      "titulo": "Tráfico en Quito: lluvias, siniestros en Carcelén y la Simón Bolívar complican la movilidad en el norte",
+      "fuente": "Metro Ecuador",
+      "fecha_publicacion": "2026-10-12T13:11:03Z",
+      "url": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxOSXktbnRWdFM0WktBaUsyNExuMDNxUDNWQWhaejluc1lMUi0wOXZOV3E2ZzNDcEpESDRQNjZrcGFuREw5dDN2X0dLbGtoT1FRVTdDZnFZdk1JUjkzOXQ2MVNFcVhwbGNVUDdQb1pqMTVma20yLUtHYnVLNGl5a3Fyb2h4QVFQTXdQdHZ0cjY2bTlyeUZ0a2VvVGpfSlhUQUw5NVRZeVhKeVJVU1k4bVZ0eng0VjBWc2Z3WnJvQVVPdHU0bE1kcnYyZVV3clZSaG15QThNazB3UnM1UVZiY2FyT2VUMk5scHM4VEE?oc=5",
+      "resumen": "Lluvias y siniestros viales en Carcelén y la Simón Bolívar han generado congestión vehicular en el norte de Quito.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-12T20:15:42.734606Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
