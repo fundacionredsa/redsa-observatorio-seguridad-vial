@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-12T20:15:42.734606Z",
+  "actualizado_en": "2026-10-13T18:14:16.930242Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3021,6 +3021,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-12T20:15:42.734606Z",
       "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "05c84e38e230ecd6433445afb8710ef01f1661966769cf9963dc92f702b11921",
+      "titulo": "El pedido de justicia en Machala por la muerte de un conductor en un accidente de tránsito",
+      "fuente": "Diario Extra",
+      "fecha_publicacion": "2026-10-12T22:14:35Z",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQUHBrSVFwZF9OdjFWSFRoM3VDZ2l5YmJHNG5vMWNrQ2Mzb05qOVl2NlJMR0Y4SzYzTWlKRHdNU3RuVUlNUF8zZEVEY2dSYTZyRUdNVTZrcnFQZlNUTHRBWWMya3RhVnowQy1xNXQxVFZKM3M0VnhnaTkyQWN2bmhhUVE4T0xqSi1FZE9GQzZxd1RxMlB6aURZbHBGdnNyaXRyZTRTM2JVeEpoeXVZ0gGyAUFVX3lxTE9EWGhzOURVV3cxZ3ZBdnVpRHk1V1IzSEpYQVFrNkRqNGFOZGQ3d2RQbFFhT3B4dzdleVZLTmVDc0s2encwSzgwM2pjQ1NTMG4xdlc3bU52Sll4QVRLWkVnSWhLRHhnN0dLTWdBWk5yTXdkMWFVaGMwdC1GcGtacXZONGJfTUZqcElKYVowaWVNNDNMclFqNTRMMkNpOWxkTGVQNUZFWTR1MDRNakkwODl5Q1E?oc=5",
+      "resumen": "Vecinos de Machala exigen justicia tras la muerte de un conductor en un siniestro vial.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-13T18:14:16.930242Z",
+      "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
