@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-14T07:31:18.787225Z",
+  "actualizado_en": "2026-10-14T15:48:36.622777Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3098,6 +3098,36 @@
       "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "a72a5eb6f0e9b4b2cb3735c9cd3f9dcedabbbda49b2cb6bd9d3bed33888c9b5a",
+      "titulo": "Siniestro entre bus y vehículo militar en Quevedo deja heridos",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-14T15:18:11Z",
+      "url": "https://www.elcomercio.com/actualidad/ecuador/siniestro-entre-bus-vehiculo-militar-quevedo-deja-heridos/",
+      "resumen": "Un choque entre un bus y un vehículo militar dejó restos de ambos automotores sobre la vía en Quevedo.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/10/siniestro-bus-militar-quevedo.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-14T15:48:36.622777Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "32d29caa04f3928827643f932f2ce61982f7725c662e94269d52194eb41dc657",
+      "titulo": "Once heridos y una persona atrapada tras siniestro de tránsito en la vía Quito-Papallacta",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-14T14:41:50Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/siniestro-de-transito-en-la-via-quito-papallacta/",
+      "resumen": "Un bus se volcó en la vía Quito-Papallacta, dejando once heridos y una persona atrapada.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/10/HUmE10GXIAAZlUZ.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-14T15:48:36.622777Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
