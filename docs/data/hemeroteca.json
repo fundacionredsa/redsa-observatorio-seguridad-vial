@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-14T15:48:36.622777Z",
+  "actualizado_en": "2026-10-15T07:17:03.695753Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3128,6 +3128,36 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "fece4aa609135a61632e76392cd4362324a3a54ceca75bdf886394a117be1105",
+      "titulo": "Accidente de tránsito en el sur de Guayaquil moviliza cuatro ambulancias dejando heridos",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-15T04:51:23.689000Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/accidente-de-transito-en-el-sur-de-guayaquil-moviliza-cuatro-ambulancias-dejando-heridos-nota/",
+      "resumen": "Bomberos y agentes de tránsito atendieron un siniestro en el sur de Guayaquil que requirió la movilización de cuatro ambulancias.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/EYKDYOWIJVCM5CXETMHASR5C6E.jpg?auth=4cf16008922aeda74a8b965e85ce92a0d1ea60bb79b064ff45742dd1b5a2b6a2&width=846&height=634&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-15T07:17:03.695753Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "8cd0b4742ea2c09fad12d2f914e1a4c288fea7994fd67cb3f6a4d21ee1f31ad2",
+      "titulo": "Choque entre bus interprovincial y vehículo militar deja dos muertos, entre ellos un militar, en Quevedo",
+      "fuente": "Ecuavisa",
+      "fecha_publicacion": "2026-10-14T16:28:18Z",
+      "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNMm5rNkx4NFFtNUNWb3NLdGZyM3E2SGNHWEFHeXFvYnYwQ1luQ2l2WG9ieDlRZkNsR1VNTFFuSEt6bXg5UnFDOFJDZUdTaEdDWkd0dDdYUXJoSHVPNXdkWjlaRDgwNDVDbUtzNHJiTDlPWGEyVzZJLW9IZTcwOF9tSEU0dEhnekl0aUNR0gGQAUFVX3lxTFBMS1BRYXY4cEIzelJSTEFjT1lXSWwyNU9RRmE4Nnl1Y1cyMkxkSHRSOFR4X1BReTJMYloyUnA2cy05dnhveG44aXV2Uy1mWEh5anZqcHZCUS1jMDl4Y2FMajFlQlhPT0lvOW12UE1jM3dSbUhBUlRFbkhfZ3JQNWxlb3owV3F6RWRER1dDdjYtcA?oc=5",
+      "resumen": "Un bus interprovincial y un vehículo militar chocaron en Quevedo, resultando en dos fallecidos, uno de ellos un militar.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-15T07:17:03.695753Z",
+      "palabra_clave": "choque",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
