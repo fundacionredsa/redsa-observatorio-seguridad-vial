@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-15T07:17:03.695753Z",
+  "actualizado_en": "2026-10-15T15:34:48.018196Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3158,6 +3158,21 @@
       "palabra_clave": "choque",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "047fbbeda1e5477b64520ebe5b67e257466dcde9b9cfc269975068ad6fc4fab4",
+      "titulo": "Cierre parcial en la Autopista General Rumiñahui tras un accidente de tránsito",
+      "fuente": "Primicias",
+      "fecha_publicacion": "2026-10-15T11:44:35Z",
+      "url": "https://www.primicias.ec/quito/accidente-transito-autopista-ruminahui-valle-quito-cierre-vial-15octubre-134962/",
+      "resumen": "Un accidente de tránsito en la Autopista General Rumiñahui, cerca del puente 2, provocó un cierre parcial y afectó el suministro de energía en Quito.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.primicias.ec/files/og_thumbnail/uploads/2026/10/15/6ad0ce1be5ab6.jpeg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-15T15:34:48.018196Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
