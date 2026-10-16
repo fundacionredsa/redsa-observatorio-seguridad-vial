@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-16T07:00:08.176931Z",
+  "actualizado_en": "2026-10-16T15:21:46.022636Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3188,6 +3188,21 @@
       "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "35d5d726549bc64891319d70e0c2b66d52e4c13b546361084409ce7978b4687f",
+      "titulo": "Accidente en la vía Perimetral de Guayaquil dejó un herido y provocó congestión",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-10-16T13:22:36Z",
+      "url": "https://www.expreso.ec/guayaquil/accidente-via-perimetral-guayaquil-dejo-herido-provoco-congestion-299574.html",
+      "resumen": "Un motociclista resultó herido tras un accidente en la vía Perimetral de Guayaquil, lo que generó congestión vehicular.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/10/16/6ad223fc572e6.png",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-16T15:21:46.022636Z",
+      "palabra_clave": "motociclista",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
