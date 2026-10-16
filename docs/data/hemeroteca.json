@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-15T15:34:48.018196Z",
+  "actualizado_en": "2026-10-16T07:00:08.176931Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3173,6 +3173,21 @@
       "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "cc8748569ad22679dec14f1cbe3c8c537a68a52249e44114f31e798cb8cde2d3",
+      "titulo": "Autopista General Rumiñahui habilitada tras accidente de tránsito en el puente 2",
+      "fuente": "Primicias",
+      "fecha_publicacion": "2026-10-15T11:44:35Z",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQOXFWVmxCZUNwWnAzV2RIcnJrR2tWVEV2eEVvNUxFNlJabGJ6N1Z1ZjVxSmtCcWZ1MlNXV1JKWUtZTkJhRmxfMktwWk93Wm1MWFZxdGlUdzBxNUNXSS0yMENYLTFnS0w5T3pSM1JORkI0LVZrUkMyUEktSXhEVFdjTWNqSHNNZEtycTVNbmRaa1R5RnJseVdJS18xZVRjbElZRjlhOVM1emd4TmZJVktNOQ?oc=5",
+      "resumen": "Se habilitó el tránsito en la Autopista General Rumiñahui tras un siniestro ocurrido en el puente 2.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-16T07:00:08.176931Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
