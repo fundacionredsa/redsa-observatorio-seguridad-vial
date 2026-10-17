@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-16T15:21:46.022636Z",
+  "actualizado_en": "2026-10-17T06:50:09.897959Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3203,6 +3203,36 @@
       "palabra_clave": "motociclista",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "21372da9519f0452455d8c230e2cb058c87489d2bb4f828ae091da40e7324d3e",
+      "titulo": "Accidente de tránsito entre un taxi y una motocicleta deja una persona herida en el Centro Histórico de Quito",
+      "fuente": "Metro Ecuador",
+      "fecha_publicacion": "2026-10-16T22:55:04Z",
+      "url": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxQQU02UzZ4ekxHWktrWEpTN1FzOXcwNFRhYlJDRXJvNkJhUllRYU9yYk9CZXFHeDdSZ0JNY1hNLTRpQ0YtUU1RLXhlbHF6eWlvX1lraGpDX1VRQ1JzM25WUVhJeHRkajJPQW5xbnY5UGUzU1E5TDVXMFVuTVlNaXNZSGsxS1U2d1RTdHlwQzVZSUNuMU5KeW00Y2pnRDVKYmJkN1ZwZWpPTVJVSnFvQ09pZllsOGxYVXJOenRBYmRTZ1ZITm5fOUlzT1dhSE1HTU5jTnJuaFIwUHlQNXJwcVlNWHIxZ3BNYWNvaFVvd0NETzVoVnBQ?oc=5",
+      "resumen": "Un choque entre un taxi y una motocicleta en el Centro Histórico de Quito dejó una persona herida.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-17T06:50:09.897959Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "d0ee6f9d7a675c8b37d5d5f9d84fa4798ddee8e1106e76b2b1ae8225b4df8d7e",
+      "titulo": "Otro accidente de tránsito ocurrió en la autopista General Rumiñahui, en donde se colocaron cámaras",
+      "fuente": "Primicias",
+      "fecha_publicacion": "2026-10-16T14:44:55Z",
+      "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQeS1nek1hTUFUeUhOZjJzMFRyUzRFRkdidjFEd3hRX3pfWWRoZlgwN0EyOVR2RktzRzFLX2xpenFPSnlsZkhrNUNiNDNJUkNzM3hKdEN1TkJpUHRLaUJTaEdGNDdzVzRRd1pOaklKUjZmYnhVdXp1cGtrTXozRllPQUdlalVIajJLSmpKZUpTektEWnRJWXdNRlhQd2JkS3VZbFlyVnJZeng5NTBvaE04?oc=5",
+      "resumen": "Se reportó un nuevo siniestro vial en la autopista General Rumiñahui, donde se instalaron cámaras de seguridad.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-17T06:50:09.897959Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
