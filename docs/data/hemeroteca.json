@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-18T07:09:43.686837Z",
+  "actualizado_en": "2026-10-18T14:32:31.590195Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3248,6 +3248,36 @@
       "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
+    },
+    {
+      "id": "f9b91a6f48794a9a9a22b049456cdfb0bccc37b01e9cba09ff7621a0ab6b3d0b",
+      "titulo": "Motociclista muere tras chocar contra un taxi en la avenida Simón Bolívar",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-17T22:00:09.113000Z",
+      "url": "https://eluniverso.com/comunidad/quito/quito-ecuador-avenida-simon-bolivar-muerte-por-choque-en-la-avenida-simon-bolivar-vehiculo-liviano-muerto-en-la-avenida-simon-bolivar-siniestro-de-transito-en-la-avenida-simon-bolivar-nota/",
+      "resumen": "Un motociclista falleció tras colisionar con un taxi en la avenida Simón Bolívar.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/6DTUYQGFPVFYTBZTR27V6DO6LI.jpeg?auth=b6fbc2162de6011ed6328f915028264751673783cbfb9d7b4244ecb0b3f29a46&width=893&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-18T14:32:31.590195Z",
+      "palabra_clave": "motociclista",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "b9a1c08b903f6f33105d56dbabdcd5ab302c6423d49be6f2dfa1b63540c7fd9d",
+      "titulo": "Volcamiento en la Garzota y otros siniestros viales se registran en Guayaquil",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-17T21:34:52.602000Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/volcamiento-en-la-garzota-y-otros-siniestros-viales-se-registran-en-guayaquil-nota/",
+      "resumen": "La ATM reportó otros accidentes de tránsito en la vía a Daule, en el Guasmo sur y en otros puntos del centro y norte de la ciudad.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/TNX46F3OTNADVGM5RHTNKVGLFU.jfif?auth=63198aa62127da402840ed91ecc2d4e33fc492f51466ea1d0fa8b3dfe9bc1b0b&width=1466&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-18T14:32:31.590195Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
     }
   ]
 }
