@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-17T06:50:09.897959Z",
+  "actualizado_en": "2026-10-18T07:09:43.686837Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3231,6 +3231,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-17T06:50:09.897959Z",
       "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
+    },
+    {
+      "id": "dfd85a4dfeb38c00301da62897114e386bd4a49764b7ade999c74b68b077efd1",
+      "titulo": "Siniestro de tránsito en Ruta Viva deja tres afectados y reduce el paso",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-17T15:33:27Z",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOWFR5OHdmenNCb3J4MVlJMXdMemJKb2VaeC1ZQTkzczNOcS1TbXhjUjZJRVU4UE4xb1Z2ZDZVZ0pId29ENW1UVUtGQmxDU0tzaXhVM2trV2ZOS3IwQjZ6WVcybnNybTg3cEVLaUZIajltYmFOX0h4bWVjRWVyUlVSNHZ2dlZyQ1MtbWc3a2Yyamk3bnliOVZMLXF0MnhlMkxRQnZNS2ZYX2dkY2VabDVjd0o0WFhlRTg?oc=5",
+      "resumen": "Un siniestro vial en la Ruta Viva afectó a tres personas y generó congestión en el tránsito.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-18T07:09:43.686837Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "rss"
     }
