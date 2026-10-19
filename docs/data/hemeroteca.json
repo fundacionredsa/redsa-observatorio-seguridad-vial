@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-18T14:32:31.590195Z",
+  "actualizado_en": "2026-10-19T17:27:02.945512Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3278,6 +3278,51 @@
       "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "fde8c7ca30d513e579c48432e2e006b9ef868e700aae6537cd550b8713e509ee",
+      "titulo": "Un vehículo se volcó en la avenida Simón Bolívar, en Quito, este lunes 19 de octubre",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-19T16:04:04Z",
+      "url": "https://www.elcomercio.com/actualidad/quito/vehiculo-volco-simon-bolivar-quito-lunes-octubre/",
+      "resumen": "Un siniestro de tránsito provocó restricciones en la avenida Simón Bolívar, en Quito, este lunes.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/10/Carro-volcado-Simon-Bolivar-Quito.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-19T17:27:02.945512Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "fb608b1c22702cf1a94c609f9a3697d9df47c9c03a960a1562301867a82aae60",
+      "titulo": "Quito registra al menos tres accidentes este lunes: un auto se volcó tras impactarse contra un muro",
+      "fuente": "Expreso",
+      "fecha_publicacion": "2026-10-19T13:32:49Z",
+      "url": "https://www.expreso.ec/quito/quito-registra-tres-accidentes-lunes-auto-volco-impactarse-muro-299875.html",
+      "resumen": "Se reportaron al menos tres accidentes en Quito, incluyendo un auto que se volcó tras chocar contra un muro en la avenida Simón Bolívar.",
+      "tema": "siniestro",
+      "imagen_og": "https://imagenes.expreso.ec/files/og_thumbnail/uploads/2026/10/19/6ad6182525f44.webp",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-19T17:27:02.945512Z",
+      "palabra_clave": "siniestros",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "837af1364aaac5d3f328466587725ee7e34af3fe33c037a773b831fab0faab8a",
+      "titulo": "Lluvias en Guayaquil: Cuatro personas heridas en accidente de tránsito en la vía Perimetral",
+      "fuente": "expreso.ec",
+      "fecha_publicacion": "2026-10-19T15:08:29Z",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNN1FTWnI2d0Q2N2pFSjZRSVJKZ2xjNjBlZ3RGLXhPZ0dYRDFlamo4OVQ5akxhY3JPZ1NZd1dSWVZfWWxIQlN4Sm0zaFh1QWgwc001eW9vU1NjYzJxTEFYOHlOeV8yQ2JnOWxIZlh0Zlc1VEw5QmlxV0stZjBnLUVKSWxXY1lsRVFaUm9aVVhWblIxbTZ6Tkk3ZUpFMEpkUEtvQ0w3UXFabnNkWkdYX0FQMUJQYnhFUE56dUdOSA?oc=5",
+      "resumen": "Cuatro personas resultaron heridas tras un accidente de tránsito registrado en la vía Perimetral de Guayaquil debido a las lluvias.",
+      "tema": "siniestro",
+      "imagen_og": "https://lh3.googleusercontent.com/J6_coFbogxhRI9iM864NL_liGXvsQp2AupsKei7z0cNNfDvGUmWUy20nuUhkREQyrpY4bEeIBuc=s0-w300",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-19T17:27:02.945512Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "rss"
     }
   ]
 }
