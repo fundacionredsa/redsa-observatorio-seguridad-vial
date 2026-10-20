@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-20T07:24:21.012431Z",
+  "actualizado_en": "2026-10-20T15:38:31.665559Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3336,6 +3336,36 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-20T07:24:21.012431Z",
       "palabra_clave": "atropello",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "bc9701d9031ba8575b622cbe0f5d9b05780bf103af11917be41fc98d9473333c",
+      "titulo": "Siniestro entre un alimentador de la Metrovía y una motocicleta deja un fallecido en Guayaquil",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-20T15:15:31Z",
+      "url": "https://www.elcomercio.com/actualidad/guayaquil/siniestro-metrovia-motocicleta-fallecido-guayaquil/",
+      "resumen": "Un siniestro entre una unidad alimentadora de la Metrovía y una motocicleta en Guayaquil dejó un fallecido y un herido.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.elcomercio.com/wp-content/uploads/2022/07/El-Municipio-de-Guayaquil-aprobo-un-fondo-de-compensacion-para-mantener-el-precio-de-los-pasajes-en-la-Metrovia.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-20T15:38:31.665559Z",
+      "palabra_clave": "siniestro",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "cd79e9510748b50b12bf96c9501cecabf8953828026c0707a6ec7cf7704063c1",
+      "titulo": "“Todas las semanas hay accidentes, ¿qué les cuesta poner un semáforo?”: residentes de la Garzota piden este dispositivo para evitar nuevos siniestros de tránsito",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-20T12:00:00Z",
+      "url": "https://eluniverso.com/comunidad/guayaquil/todas-las-semanas-hay-accidentes-que-les-cuesta-poner-un-semaforo-residentes-de-la-garzota-piden-este-dispositivo-para-evitar-nuevos-siniestros-de-transito-nota/",
+      "resumen": "Residentes de la Garzota exigen la instalación de un semáforo para frenar la frecuencia de accidentes de tránsito, tras presentar múltiples solicitudes a la ATM.",
+      "tema": "infraestructura",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/7PVL4D247JHSZN23ADUZTWYB7U.jpg?auth=35b086a5d6a05239ea4ba30e99072363e74707fdc2a6c74ff2e950f666e9def0&width=1005&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-20T15:38:31.665559Z",
+      "palabra_clave": "siniestros",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
     }
