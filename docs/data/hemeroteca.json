@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-22T07:25:48.196425Z",
+  "actualizado_en": "2026-10-22T15:52:11.130434Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3396,6 +3396,21 @@
       "oculto": false,
       "fecha_ingesta": "2026-10-22T07:25:48.196425Z",
       "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "8525adeb67a54c5a1bde6051cb66bd0ad099fda496380a18e8fa9767b82e6bab",
+      "titulo": "Motociclista muere bajo las llantas de un tráiler en Guayaquil",
+      "fuente": "El Comercio",
+      "fecha_publicacion": "2026-10-22T14:29:19Z",
+      "url": "https://www.elcomercio.com/actualidad/guayaquil/motociclista-trailer-guayaquil-via-a-la-costa/",
+      "resumen": "Un motociclista falleció tras ser atropellado por un tráiler en la Vía a la Costa, en Guayaquil.",
+      "tema": "siniestro",
+      "imagen_og": "https://media.elcomercio.com/wp-content/uploads/2026/10/siniestro-1.jpg",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-22T15:52:11.130434Z",
+      "palabra_clave": "siniestro",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
     }
