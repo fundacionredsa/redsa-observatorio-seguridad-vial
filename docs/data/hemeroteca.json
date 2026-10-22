@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "actualizado_en": "2026-10-21T07:25:27.926785Z",
+  "actualizado_en": "2026-10-22T07:25:48.196425Z",
   "noticias": [
     {
       "id": "bkf_8fced6bfdd05",
@@ -3380,6 +3380,21 @@
       "imagen_og": "https://imagenes.primicias.ec/files/og_thumbnail/uploads/2026/10/20/6ad7e6f90cf43.jpeg",
       "oculto": false,
       "fecha_ingesta": "2026-10-21T07:25:27.926785Z",
+      "palabra_clave": "accidente de tránsito",
+      "fecha_referencial": false,
+      "fuente_fecha": "jsonld.datePublished"
+    },
+    {
+      "id": "ed15f8596bd56ed4d0ff3a4632e0800d396d4a751a20773676a8ea40e8734b75",
+      "titulo": "Profesor en EE. UU. sufrió accidente de tránsito en Ecuador y su familia recauda fondos porque estará con licencia sin remuneración",
+      "fuente": "El Universo",
+      "fecha_publicacion": "2026-10-21T23:00:00Z",
+      "url": "https://eluniverso.com/internacional/estados-unidos/profesor-en-ee-uu-sufrio-accidente-de-transito-en-ecuador-y-su-familia-recauda-fondos-porque-estara-con-licencia-sin-remuneracion-nota/",
+      "resumen": "Un profesor estadounidense sufrió múltiples fracturas tras el vuelco de un bus en Ecuador. Su familia recauda fondos para cubrir los gastos médicos mientras él se encuentra en licencia.",
+      "tema": "siniestro",
+      "imagen_og": "https://www.eluniverso.com/resizer/v2/FJ6QAM2SUJH4DILXVUH634MQSA.jpg?auth=6f17d1e9f66933a97d5c45954a350a76d857d092a35805eebf688604502563c3&width=503&height=670&quality=75&smart=true",
+      "oculto": false,
+      "fecha_ingesta": "2026-10-22T07:25:48.196425Z",
       "palabra_clave": "accidente de tránsito",
       "fecha_referencial": false,
       "fuente_fecha": "jsonld.datePublished"
